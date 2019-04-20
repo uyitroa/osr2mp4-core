@@ -103,7 +103,8 @@ def main():
 
 	index_hitobject = 0
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
-	for i in range(1000): #len(replay_event)
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})
+	for i in range(len(replay_event)): #len(replay_event)
 		for n in range(replay_event[i][TIMES]):
 			img = np.copy(orig_img)
 			cursor_x = int(replay_event[i][CURSOR_X] * scale) + move_to_right
@@ -123,7 +124,7 @@ def main():
 
 			x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
 			y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
-			if start_time >= beatmap.hitobjects[index_hitobject]["time"] - skin.circles.time_preempt:
+			if start_time + skin.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
 				skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"])
 				index_hitobject += 1
 			skin.circles.add_to_frame(img)
