@@ -1,0 +1,4 @@
+optimization:
+prepare frame before the big loop:
+	- cursor and cursortrail (about 10 images)
+	- hitcircle + number (alpha(24) * number(15) * color(4))
