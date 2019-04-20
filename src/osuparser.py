@@ -22,7 +22,7 @@ class Beatmap:
 		# print("\n\nDiff:", self.diff)
 		# print("\n\nBreak Periods:", self.breakperiods)
 		# print("\n\nTiming points:", self.timing_point)
-		print("\n\nHitObjects:", self.hitobjects)
+		# print("\n\nHitObjects:", self.hitobjects)
 
 	def parse_general(self):
 		general = self.info[1]
