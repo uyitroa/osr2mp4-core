@@ -266,15 +266,31 @@ class Number:
 
 
 class ApproachCircle(Images):
-	def __init__(self, filename, scale):
+	def __init__(self, filename, scale, cs, time_preempt, interval, opacity_interval):
 		Images.__init__(self, filename)
 		self.scale = scale
+		self.cs = cs
+		self.time_preempt = round(time_preempt)
+		self.interval = round(interval)
+		self.opacity_interval = opacity_interval
+		self.approach_frames = []
 
-	def add_to_frame(self, background, x_offset, y_offset, time_left, alpha, time_preempt, cs):
-		approach_size = cs + (time_left / time_preempt) * self.scale * cs
-		scale = approach_size * 2/self.orig_cols
-		self.change_size(scale, scale)
-		self.img[:, :, 0:3] = self.img[:, :, 0:3] * (alpha / 100)
+		self.prepare_sizes()
+		print("done")
+
+	def prepare_sizes(self):
+		alpha = 0
+		for time_left in range(self.time_preempt, 0, -self.interval):
+			alpha = min(100, alpha + self.opacity_interval)
+			approach_size = self.cs + (time_left / self.time_preempt) * self.scale * self.cs
+			scale = approach_size * 2/self.orig_cols
+			self.change_size(scale, scale)
+			self.img[:, :, 3] = self.img[:, :, 3] * (alpha / 100)
+			self.approach_frames.append(self.img)
+
+
+	def add_to_frame(self, background, x_offset, y_offset, time_left):
+		self.img = self.approach_frames[int((self.time_preempt - time_left)/self.interval)]
 		super().add_to_frame(background, x_offset, y_offset)
 
 
@@ -297,7 +313,6 @@ class Circles(Images):
 			self.time_preempt = 1200 - 750 * (ar - 5) / 5
 			fade_in = 800 - 500 * (ar - 5) / 5
 		self.opacity_interval = fade_in / 100
-
 		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 		cur_radius = self.orig_cols/2
 		radius_scale = self.cs/cur_radius
@@ -311,7 +326,7 @@ class Circles(Images):
 		self.gap = gap
 
 		self.number_drawer = Number(self.orig_rows/2, path, default_circle_size)
-		self.approachCircle = ApproachCircle(approachfile, scale)
+		self.approachCircle = ApproachCircle(approachfile, scale, self.cs, self.time_preempt, self.interval, self.opacity_interval)
 
 		self.circle_frames = []
 		self.prepare_circle()
@@ -328,17 +343,16 @@ class Circles(Images):
 	def add_to_frame(self, background):
 		i = len(self.circles) - 1
 		while i > -1:
-			if self.circles[i][2] <= 0:
-				del self.circles[i]
-				break # break since variable i is always 0 which means done with drawing circle
 			self.circles[i][2] -= self.interval
 			self.circles[i][3] = min(100, self.circles[i][3] + self.opacity_interval)
+			if self.circles[i][2] <= 0:
+				del self.circles[i]
+				break
 
 			self.circle_frames[self.circles[i][4] - 1][:, :, 3] = self.orig_img[:, :, 3] * ((self.circles[i][3])/100)
 			self.img = self.circle_frames[self.circles[i][4] - 1]
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
-			self.approachCircle.add_to_frame(background, self.circles[i][0], self.circles[i][1], self.circles[i][2],
-			                                 self.circles[i][3], self.time_preempt, self.cs)
+			self.approachCircle.add_to_frame(background, self.circles[i][0], self.circles[i][1], self.circles[i][2])
 
 			i -= 1
 
