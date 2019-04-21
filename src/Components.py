@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
+import sys
 
+np.set_printoptions(threshold=sys.maxsize)
 
 
 class Images:
@@ -32,21 +34,24 @@ class Images:
 			pos2 = limit - 1
 		return pos1, pos2, start, end
 
-	def add_to_frame(self, background, x_offset, y_offset):
+	def add_to_frame(self, background, x_offset, y_offset, overlayalpha=False):
 		y1, y2 = y_offset - int(self.img.shape[0]/2), y_offset + int(self.img.shape[0]/2)
 		x1, x2 = x_offset - int(self.img.shape[1]/2), x_offset + int(self.img.shape[1]/2)
 
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-
 		alpha_s = self.img[ystart:yend, xstart:xend, 3] / 255.0
 		alpha_l = 1.0 - alpha_s
 
-		# self.to_reset[:] = background[y1:y2, x1:x2]
+		# self.to_reset[:] = background[y1:y2, x1:x2
 		# self.y1_toreset, self.y2_toreset, self.x1_toreset, self.x2_toreset = y1, y2, x1, x2
-		for c in range(0, 3):
+		for c in range(3):
 			background[y1:y2, x1:x2, c] = (alpha_s * self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-
+		if overlayalpha:
+			sub = self.img[ystart:xend, xstart:xend, 3] + background[y1:y2, x1:x2, 3]
+			sub[sub > 255] = 255
+			background[y1:y2, x1:x2, 3] = sub
+			
 	# def reset_frame(self, background):
 	# 	background[self.y1_toreset:self.y2_toreset, self.x1_toreset:self.x2_toreset] = self.to_reset
 
@@ -274,7 +279,6 @@ class ApproachCircle(Images):
 		self.interval = round(interval)
 		self.opacity_interval = opacity_interval
 		self.approach_frames = []
-
 		self.prepare_sizes()
 		print("done")
 
@@ -285,7 +289,7 @@ class ApproachCircle(Images):
 			approach_size = self.cs + (time_left / self.time_preempt) * self.scale * self.cs
 			scale = approach_size * 2/self.orig_cols
 			self.change_size(scale, scale)
-			self.img[:, :, 3] = self.img[:, :, 3] * (alpha / 100)
+			#self.img[:, :, 3] = self.img[:, :, 3] * (alpha / 100)
 			self.approach_frames.append(self.img)
 
 
@@ -312,7 +316,7 @@ class Circles(Images):
 		else:
 			self.time_preempt = 1200 - 750 * (ar - 5) / 5
 			fade_in = 800 - 500 * (ar - 5) / 5
-		self.opacity_interval = fade_in / 100
+		self.opacity_interval = int(fade_in / 100)
 		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 		cur_radius = self.orig_cols/2
 		radius_scale = self.cs/cur_radius
@@ -331,28 +335,54 @@ class Circles(Images):
 		self.circle_frames = []
 		self.prepare_circle()
 
+	def add_ar(self, background, x_offset, y_offset):
+		y1, y2 = y_offset - int(self.img.shape[0]/2), y_offset + int(self.img.shape[0]/2)
+		x1, x2 = x_offset - int(self.img.shape[1]/2), x_offset + int(self.img.shape[1]/2)
+
+		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
+		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
+
+		background[y1:y2, x1:x2, :] += self.img[ystart:yend, xstart:xend, :]
+		background[y1:y2, x1:x2, :][background[y1:y2, x1:x2, :] > 255] = 255
+
 	def prepare_circle(self):
 		for x in range(1, self.maxcombo + 1):
 			self.number_drawer.draw(self.img, x, self.gap)
-			self.circle_frames.append(self.img)
+			alpha = 0
+			self.circle_frames.append([])
+			#self.img[:, :, 3] *= 1.5
+			#self.img[:, :, 3][ self.img[:, :, 3] > 255] = 255
+			for i in range(len(self.approachCircle.approach_frames)):
+				#self.img[:, :, 3] = self.orig_img[:, :, 3] * (alpha/100)
+				approach_circle = np.copy(self.approachCircle.approach_frames[i])
+				
+				x_offset = int(approach_circle.shape[1]/2)
+				y_offset = int(approach_circle.shape[0]/2)
+				#cv2.imwrite(str(x) + "-" + str(i) + "before.png", self.img)	
+				#approach_circle[:, :, 3] = self.img[:, :, 3]
+				#super().add_to_frame(approach_circle, x_offset, y_offset, overlayalpha=True)
+				self.add_ar(approach_circle, x_offset, y_offset)
+				#cv2.imwrite(str(x) + "-" + str(i) + "after.png", approach_circle)
+				approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha/100)
+				self.circle_frames[-1].append(approach_circle)
+				alpha = min(100, alpha + self.opacity_interval)
 			self.img = np.copy(self.orig_img)
+		del self.approachCircle
 
 	def add_circle(self, x, y, combo_number):
-		self.circles.append([x, y, self.time_preempt, 0, combo_number])
+		self.circles.append([x, y, self.time_preempt, -1, combo_number])
 
 	def add_to_frame(self, background):
 		i = len(self.circles) - 1
 		while i > -1:
 			self.circles[i][2] -= self.interval
-			self.circles[i][3] = min(100, self.circles[i][3] + self.opacity_interval)
+			self.circles[i][3] += 1
 			if self.circles[i][2] <= 0:
 				del self.circles[i]
 				break
 
-			self.circle_frames[self.circles[i][4] - 1][:, :, 3] = self.orig_img[:, :, 3] * ((self.circles[i][3])/100)
-			self.img = self.circle_frames[self.circles[i][4] - 1]
+			self.img = self.circle_frames[self.circles[i][4] - 1][self.circles[i][3]]
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
-			self.approachCircle.add_to_frame(background, self.circles[i][0], self.circles[i][1], self.circles[i][2])
 
 			i -= 1
 
