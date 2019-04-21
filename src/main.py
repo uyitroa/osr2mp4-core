@@ -90,7 +90,6 @@ def main():
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
 	orig_img = img.copy()
-
 	replay_info = osrparse.parse_replay_file("../res/future.osr")
 	replay_event, start_time = setupReplay(replay_info)
 

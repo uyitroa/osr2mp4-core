@@ -78,7 +78,7 @@ class Beatmap:
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
 		hitobject = hitobject.split("\n")
-		cur_combo_number = 11
+		cur_combo_number = 1
 		for item in hitobject:
 			if item == '':
 				continue
@@ -103,7 +103,7 @@ class Beatmap:
 					my_dict["edgeAdditions"] = osuobject[9]
 			if int(bin_info[2]):
 				object_type.append("new combo")
-				cur_combo_number = 10
+				cur_combo_number = 1
 				skip = 1
 				n_combo = bin_info[4:7]
 				n_combo = int(n_combo[::-1], 2)
