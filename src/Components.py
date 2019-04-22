@@ -408,7 +408,6 @@ class Circles(Images):
 			background[y1:y2, x1:x2, c] = self.img[ystart:yend, xstart:xend, c] * alpha_l + alpha_s * background[y1:y2, x1:x2, c]
 
 
-
 	def to_3channel(self, image):
 		alpha_s = image[:, :, 3]/255.0
 		for c in range(3):
