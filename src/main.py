@@ -24,7 +24,7 @@ class Skin:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.circles = Circles(path + "hitcircle.png", path, diff, scale, path + "approachcircle.png", maxcombo, gap)
+		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path, diff, scale, path + "approachcircle.png", maxcombo, gap)
 
 
 def setupReplay(replay_info):
@@ -103,7 +103,7 @@ def main():
 	index_hitobject = 0
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})
-	for i in range(len(replay_event)): #len(replay_event)
+	for i in range(1000): #len(replay_event)
 		for n in range(replay_event[i][TIMES]):
 			img = np.copy(orig_img)
 			cursor_x = int(replay_event[i][CURSOR_X] * scale) + move_to_right
