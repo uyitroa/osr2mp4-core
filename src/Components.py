@@ -54,6 +54,7 @@ class Images:
 		# self.y1_toreset, self.y2_toreset, self.x1_toreset, self.x2_toreset = y1, y2, x1, x2
 		for c in range(3):
 			background[y1:y2, x1:x2, c] = (self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+
 			
 	# def reset_frame(self, background):
 	# 	background[self.y1_toreset:self.y2_toreset, self.x1_toreset:self.x2_toreset] = self.to_reset
@@ -76,21 +77,40 @@ class Cursor(Images):
 class InputOverlay(Images):
 	def __init__(self, filename):
 		Images.__init__(self, filename)
+
 		self.cur_blue = 0
-		self.size = 1
+		self.blue_step = 30
+
+		self.frame_index = 0
 		self.font_scale = 0.5
-		self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)[0]
+		self.font_step = 0.02
+		self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 		self.one_digit_size = self.font_width
+
 		self.clicked_called = False
 		self.going_down_frame = False
 		self.going_up_frame = False
+
 		self.n = '0'
-		self.color = (0, 255, 0)
+		self.color = (0, 0, 0)
+
+		self.button_frames = []
+		self.prepare_buttons()
 
 		self.to_3channel()
 
 	def addcolor(self, n, color=0):
 		self.img[:, :, color] = np.add(self.img[:, :, color], n)
+	
+	def prepare_buttons(self):
+		blue = 0
+		for size in range(100, 90, -2):
+			size /= 100
+			self.change_size(size, size)
+			self.addcolor(blue)
+
+			self.button_frames.append(np.copy(self.img))
+			blue -= self.blue_step
 
 	def clicked(self):
 		if not self.going_down_frame:
@@ -98,14 +118,11 @@ class InputOverlay(Images):
 			self.font_width = self.one_digit_size * len(self.n)
 		self.clicked_called = True
 		self.going_down_frame = True
-		if self.size > 0.9:
-			self.size -= 0.02
-			self.font_scale -= 0.02
-			self.font_width *= self.font_scale/(self.font_scale + 0.02)
-			self.font_height *= self.font_scale/(self.font_scale + 0.02)
-			self.cur_blue -= 30
-			self.change_size(self.size, self.size)
-			self.addcolor(self.cur_blue)
+		if self.frame_index < len(self.button_frames) - 1:
+			self.frame_index += 1
+			self.font_scale -= self.font_step
+			self.font_width *= self.font_scale/(self.font_scale + self.font_step)
+			self.font_height *= self.font_scale/(self.font_scale + self.font_step)
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		if not self.clicked_called and self.going_down_frame:
@@ -113,19 +130,19 @@ class InputOverlay(Images):
 			self.already_down = False
 			self.going_up_frame = True
 		if self.going_up_frame:
-			self.size += 0.02
-			self.font_scale += 0.02
-			self.font_width *= self.font_scale/(self.font_scale - 0.02)
-			self.font_height *= self.font_scale/(self.font_scale - 0.02)
-			self.cur_blue += 30
-			if self.size == 1:
+			self.frame_index -= 1
+			self.font_scale += self.font_step
+			self.font_width *= self.font_scale/(self.font_scale - self.font_step)
+			self.font_height *= self.font_scale/(self.font_scale - self.font_step)
+			if self.frame_index == 0:
 				self.going_up_frame = False
 				self.cur_blue = 0
-			self.change_size(self.size, self.size)
-		center_x = int((self.img.shape[1] - self.font_width) / 2)
-		center_y = int((self.font_height + self.img.shape[0])/2)
-		cv2.putText(self.img, self.n, (center_x, center_y), cv2.FONT_HERSHEY_SIMPLEX, self.font_scale, self.color, 2)
+
+		self.img = self.button_frames[self.frame_index]
 		super().add_to_frame(background, x_offset, y_offset)
+		center_x = int(x_offset - self.font_width/ 2)
+		center_y = int(self.font_height/2 + y_offset)
+		cv2.putText(background, self.n, (center_x, center_y), cv2.FONT_HERSHEY_DUPLEX, self.font_scale, self.color, 1)
 		self.clicked_called = False
 
 
