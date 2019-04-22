@@ -22,6 +22,13 @@ class Images:
 		# self.x2_toreset = None
 		# self.to_reset = np.empty((self.img.shape[0], self.img.shape[1], 3))
 
+	def to_3channel(self):
+		alpha_s = self.orig_img[:, :, 3]/255.0
+		for c in range(3):
+			self.orig_img[:, :, c] = (self.orig_img[:, :, c] * alpha_s).astype(self.orig_img.dtype)
+		self.img = self.orig_img
+
+
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
 		start = 0
@@ -34,7 +41,7 @@ class Images:
 			pos2 = limit - 1
 		return pos1, pos2, start, end
 
-	def add_to_frame(self, background, x_offset, y_offset, overlayalpha=False):
+	def add_to_frame(self, background, x_offset, y_offset):
 		y1, y2 = y_offset - int(self.img.shape[0]/2), y_offset + int(self.img.shape[0]/2)
 		x1, x2 = x_offset - int(self.img.shape[1]/2), x_offset + int(self.img.shape[1]/2)
 
@@ -46,11 +53,7 @@ class Images:
 		# self.to_reset[:] = background[y1:y2, x1:x2
 		# self.y1_toreset, self.y2_toreset, self.x1_toreset, self.x2_toreset = y1, y2, x1, x2
 		for c in range(3):
-			background[y1:y2, x1:x2, c] = (alpha_s * self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-		if overlayalpha:
-			sub = self.img[ystart:xend, xstart:xend, 3] + background[y1:y2, x1:x2, 3]
-			sub[sub > 255] = 255
-			background[y1:y2, x1:x2, 3] = sub
+			background[y1:y2, x1:x2, c] = (self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 			
 	# def reset_frame(self, background):
 	# 	background[self.y1_toreset:self.y2_toreset, self.x1_toreset:self.x2_toreset] = self.to_reset
@@ -67,6 +70,7 @@ class Images:
 class Cursor(Images):
 	def __init__(self, filename):
 		Images.__init__(self, filename)
+		self.to_3channel()
 
 
 class InputOverlay(Images):
@@ -82,6 +86,8 @@ class InputOverlay(Images):
 		self.going_up_frame = False
 		self.n = '0'
 		self.color = (0, 255, 0)
+
+		self.to_3channel()
 
 	def addcolor(self, n, color=0):
 		self.img[:, :, color] = np.add(self.img[:, :, color], n)
@@ -128,13 +134,23 @@ class Cursortrail(Images):
 		Images.__init__(self, filename)
 		# self.change_size(1, 1)
 		# self.orig_img = np.copy(self.img)
-		self.trail = [[cursor_x, cursor_y, x] for x in[0.2, 0.32, 0.44, 0.56, 0.68, 0.8, 0.92, 1, 0]]
+		self.trail = [[cursor_x, cursor_y] for _ in range(8)]
+		self.trail_frames = []
+		self.to_3channel()
+		self.prepare_trails()
+
+	def prepare_trails(self):
+		for x in [0.8, 0.82, 0.85, 0.89, 0.94, 0.99, 1, 0]:
+			self.img[:, :, 0:3] = self.orig_img[:, :, 0:3] * x
+			self.trail_frames.append(self.img)
+			self.img = np.copy(self.orig_img)
+
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		self.trail[-1][0], self.trail[-1][1] = x_offset, y_offset
 		for x in range(len(self.trail) - 1):
-			self.img[:, :, 0:3] = self.orig_img[:, :, 0:3] * self.trail[x][2]
 			self.trail[x][0], self.trail[x][1] = self.trail[x + 1][0], self.trail[x + 1][1]
+			self.img = self.trail_frames[x]
 			super().add_to_frame(background, self.trail[x][0], self.trail[x][1])
 
 
@@ -144,6 +160,8 @@ class Smoke(Images):
 		Images.__init__(self, filename)
 		self.smokes = [[]]
 		self.holding = False
+
+		self.to_3channel()
 
 	def clicked(self, cursor_x, cursor_y):
 		self.holding = True
@@ -250,6 +268,8 @@ class HitCircleNumber(Images):
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
 
+		self.to_3channel()
+
 
 class Number:
 	def __init__(self, radius, path, default_circle_size):
@@ -345,25 +365,25 @@ class Circles(Images):
 		background[y1:y2, x1:x2, :] += self.img[ystart:yend, xstart:xend, :]
 		background[y1:y2, x1:x2, :][background[y1:y2, x1:x2, :] > 255] = 255
 
+	def to_3channel(self, image):
+		alpha_s = image[:, :, 3]/255.0
+		for c in range(3):
+			image[:, :, c] = (image[:, :, c] * alpha_s).astype(self.orig_img.dtype)
+
 	def prepare_circle(self):
 		for x in range(1, self.maxcombo + 1):
 			self.number_drawer.draw(self.img, x, self.gap)
 			alpha = 0
 			self.circle_frames.append([])
-			#self.img[:, :, 3] *= 1.5
-			#self.img[:, :, 3][ self.img[:, :, 3] > 255] = 255
 			for i in range(len(self.approachCircle.approach_frames)):
-				#self.img[:, :, 3] = self.orig_img[:, :, 3] * (alpha/100)
 				approach_circle = np.copy(self.approachCircle.approach_frames[i])
 				
 				x_offset = int(approach_circle.shape[1]/2)
 				y_offset = int(approach_circle.shape[0]/2)
-				#cv2.imwrite(str(x) + "-" + str(i) + "before.png", self.img)	
-				#approach_circle[:, :, 3] = self.img[:, :, 3]
-				#super().add_to_frame(approach_circle, x_offset, y_offset, overlayalpha=True)
 				self.add_ar(approach_circle, x_offset, y_offset)
-				#cv2.imwrite(str(x) + "-" + str(i) + "after.png", approach_circle)
-				approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha/100)
+				self.to_3channel(approach_circle)
+				approach_circle[:, :, 0:3] = approach_circle[:, :, 0:3] * (alpha/100)
+
 				self.circle_frames[-1].append(approach_circle)
 				alpha = min(100, alpha + self.opacity_interval)
 			self.img = np.copy(self.orig_img)
