@@ -54,17 +54,16 @@ class Images:
 		# self.y1_toreset, self.y2_toreset, self.x1_toreset, self.x2_toreset = y1, y2, x1, x2
 		for c in range(3):
 			background[y1:y2, x1:x2, c] = (self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-
 			
 	# def reset_frame(self, background):
 	# 	background[self.y1_toreset:self.y2_toreset, self.x1_toreset:self.x2_toreset] = self.to_reset
 
-	def change_size(self, new_row, new_col):
+	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA):
 		n_rows = int(new_row * self.orig_rows)
 		n_rows -= int(n_rows % 2 == 1)
 		n_cols = int(new_col * self.orig_cols)
 		n_cols -= int(n_cols % 2 == 1)
-		self.img = cv2.resize(self.orig_img, (n_cols, n_rows), interpolation=cv2.INTER_NEAREST)
+		self.img = cv2.resize(self.orig_img, (n_cols, n_rows), interpolation=inter_type)
 		self.to_reset = np.empty((self.img.shape[0], self.img.shape[1], 3))
 
 
@@ -95,13 +94,12 @@ class InputOverlay(Images):
 		self.color = (0, 0, 0)
 
 		self.button_frames = []
-		self.prepare_buttons()
-
 		self.to_3channel()
+		self.prepare_buttons()
 
 	def addcolor(self, n, color=0):
 		self.img[:, :, color] = np.add(self.img[:, :, color], n)
-	
+
 	def prepare_buttons(self):
 		blue = 0
 		for size in range(100, 90, -2):
@@ -109,7 +107,7 @@ class InputOverlay(Images):
 			self.change_size(size, size)
 			self.addcolor(blue)
 
-			self.button_frames.append(np.copy(self.img))
+			self.button_frames.append(self.img)
 			blue -= self.blue_step
 
 	def clicked(self):
@@ -121,8 +119,8 @@ class InputOverlay(Images):
 		if self.frame_index < len(self.button_frames) - 1:
 			self.frame_index += 1
 			self.font_scale -= self.font_step
-			self.font_width *= self.font_scale/(self.font_scale + self.font_step)
-			self.font_height *= self.font_scale/(self.font_scale + self.font_step)
+			self.font_width *= self.font_scale / (self.font_scale + self.font_step)
+			self.font_height *= self.font_scale / (self.font_scale + self.font_step)
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		if not self.clicked_called and self.going_down_frame:
@@ -132,16 +130,16 @@ class InputOverlay(Images):
 		if self.going_up_frame:
 			self.frame_index -= 1
 			self.font_scale += self.font_step
-			self.font_width *= self.font_scale/(self.font_scale - self.font_step)
-			self.font_height *= self.font_scale/(self.font_scale - self.font_step)
+			self.font_width *= self.font_scale / (self.font_scale - self.font_step)
+			self.font_height *= self.font_scale / (self.font_scale - self.font_step)
 			if self.frame_index == 0:
 				self.going_up_frame = False
 				self.cur_blue = 0
 
 		self.img = self.button_frames[self.frame_index]
 		super().add_to_frame(background, x_offset, y_offset)
-		center_x = int(x_offset - self.font_width/ 2)
-		center_y = int(self.font_height/2 + y_offset)
+		center_x = int(x_offset - self.font_width / 2)
+		center_y = int(self.font_height / 2 + y_offset)
 		cv2.putText(background, self.n, (center_x, center_y), cv2.FONT_HERSHEY_DUPLEX, self.font_scale, self.color, 1)
 		self.clicked_called = False
 
@@ -335,52 +333,81 @@ class ApproachCircle(Images):
 		super().add_to_frame(background, x_offset, y_offset)
 
 
-class Circles(Images):
-	def __init__(self, filename, path, diff, scale, approachfile, maxcombo, gap):
+class CircleOverlay(Images):
+	def __init__(self, filename):
 		Images.__init__(self, filename)
+		self.change_size(1.13, 1.13, inter_type=cv2.INTER_LINEAR)
+		self.orig_img = np.copy(self.img)
+		self.orig_rows = self.img.shape[0]
+		self.orig_cols = self.img.shape[1]
+		#self.to_3channel()
 
+
+class Circles(Images):
+	def __init__(self, filename, overlay_filename, path, diff, scale, approachfile, maxcombo, gap):
+		Images.__init__(self, filename)
+		self.overlay_filename = overlay_filename
 		self.diff = diff
 		self.circles = []
 		self.interval = 1000 / 60  # ms between 2 frames
 
-		ar = diff["ApproachRate"]
-		if ar < 5:
-			self.time_preempt = 1200 + 600 * (5 - ar) / 5
-			fade_in = 800 + 400 * (5 - ar) / 5
-		elif ar == 5:
-			self.time_preempt = 1200
-			fade_in = 800
-		else:
-			self.time_preempt = 1200 - 750 * (ar - 5) / 5
-			fade_in = 800 - 500 * (ar - 5) / 5
-		self.opacity_interval = int(fade_in / 100)
+		self.ar = diff["ApproachRate"]
 		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
-		cur_radius = self.orig_cols/2
-		radius_scale = self.cs/cur_radius
-		default_circle_size = self.orig_rows # save for number class
-		self.change_size(radius_scale, radius_scale)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
+
+		self.calculate_ar()
+		self.load_circle()
 
 		self.maxcombo = maxcombo
 		self.gap = gap
 
-		self.number_drawer = Number(self.orig_rows/2, path, default_circle_size)
+		self.number_drawer = Number(self.orig_rows/2, path, self.default_circle_size)
 		self.approachCircle = ApproachCircle(approachfile, scale, self.cs, self.time_preempt, self.interval, self.opacity_interval)
 
 		self.circle_frames = []
 		self.prepare_circle()
 
-	def add_ar(self, background, x_offset, y_offset):
+	def calculate_ar(self):
+		if self.ar < 5:
+			self.time_preempt = 1200 + 600 * (5 - self.ar) / 5
+			self.fade_in = 800 + 400 * (5 - self.ar) / 5
+		elif self.ar == 5:
+			self.time_preempt = 1200
+			self.fade_in = 800
+		else:
+			self.time_preempt = 1200 - 750 * (self.ar - 5) / 5
+			self.fade_in = 800 - 500 * (self.ar - 5) / 5
+		self.opacity_interval = int(self.fade_in / 100)
+
+	def load_circle(self):
+		self.overlay = CircleOverlay(self.overlay_filename)
+		self.overlay_alpha(self.overlay.img, int(self.overlay.orig_cols/2), int(self.overlay.orig_rows/2))
+		self.orig_img = self.overlay.img
+		self.orig_rows = self.overlay.orig_rows
+		self.orig_cols = self.overlay.orig_cols
+
+		cur_radius = self.orig_cols/2
+		self.radius_scale = self.cs/cur_radius
+		self.default_circle_size = self.orig_rows # save for number class
+		self.change_size(self.radius_scale * 1.13, self.radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
+		self.orig_img = np.copy(self.img)
+		self.orig_rows = self.img.shape[0]
+		self.orig_cols = self.img.shape[1]
+		self.img = np.copy(self.orig_img)
+
+
+	def overlay_alpha(self, background, x_offset, y_offset):
 		y1, y2 = y_offset - int(self.img.shape[0]/2), y_offset + int(self.img.shape[0]/2)
 		x1, x2 = x_offset - int(self.img.shape[1]/2), x_offset + int(self.img.shape[1]/2)
 
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 
-		background[y1:y2, x1:x2, :] += self.img[ystart:yend, xstart:xend, :]
-		background[y1:y2, x1:x2, :][background[y1:y2, x1:x2, :] > 255] = 255
+		alpha_s = background[y1:y2, x1:x2, 3] / 255.0
+		alpha_l = 1 - alpha_s
+		for c in range(4):
+			background[y1:y2, x1:x2, c] = self.img[ystart:yend, xstart:xend, c] * alpha_l + alpha_s * background[y1:y2, x1:x2, c]
+
+
 
 	def to_3channel(self, image):
 		alpha_s = image[:, :, 3]/255.0
@@ -394,15 +421,19 @@ class Circles(Images):
 			self.circle_frames.append([])
 			for i in range(len(self.approachCircle.approach_frames)):
 				approach_circle = np.copy(self.approachCircle.approach_frames[i])
-				
+
 				x_offset = int(approach_circle.shape[1]/2)
 				y_offset = int(approach_circle.shape[0]/2)
-				self.add_ar(approach_circle, x_offset, y_offset)
+				self.overlay_alpha(approach_circle, x_offset, y_offset)
 				self.to_3channel(approach_circle)
 				approach_circle[:, :, 0:3] = approach_circle[:, :, 0:3] * (alpha/100)
 
 				self.circle_frames[-1].append(approach_circle)
 				alpha = min(100, alpha + self.opacity_interval)
+				# self.img[:, :, 0:3] = self.orig_img[:, :, 0:3] * (alpha/100)
+				# self.to_3channel(self.img)
+				# self.circle_frames[-1].append(self.img)
+				# alpha = min(100, alpha + self.opacity_interval)
 			self.img = np.copy(self.orig_img)
 		del self.approachCircle
 
