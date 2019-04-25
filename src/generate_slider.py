@@ -1,86 +1,77 @@
+import math
 import numpy as np
+from PIL import Image
+from PIL import ImageDraw
 import cv2
-from curve import *
 
 
-def convert(string):
-	string = string.split(",")
-	p_start = Position(int(string[0]), int(string[1]))
+def convert(string, scale):
+    string = string.split(",")
+    ps = [[int(string[0]), int(string[1])]]
+    slider_path = string[5]
+    slider_path = slider_path.split("|")
+    slider_path = slider_path[1:]
 
-	slider_path = string[5]
-	slider_path = slider_path.split("|")
-	slider_path = slider_path[1:]
+    for pos in slider_path:
+        pos = pos.split(":")
+        ps.append([int(int(pos[0]) * scale), int(int(pos[1]) * scale)])
 
-	ps = [p_start]
-	for pos in slider_path:
-		pos = pos.split(":")
-		ps.append(Position(int(pos[0]), int(pos[1])))
-		end_point = [int(pos[0]), int(pos[1])]
+        end_point = [int(pos[0]), int(pos[1])]
 
-	pixel_length = float(string[7])
-	return ps, pixel_length, end_point
-
-
-def get_pos_from_bezier(test):
-	cur_pos = test(0)
-	t = 0.05
-	curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
-	min_x, max_x, min_y, max_y = float('inf'), 0, float('inf'), 0
-	while t <= 1:
-		cur_pos = test.at(t)
-		curve_pos.append([int(cur_pos[0][0]), int(cur_pos[0][1])])
-		t += 0.05
-		min_x = min(min_x, int(cur_pos[0][0]))
-		max_x = max(max_x, int(cur_pos[0][0]))
-
-		min_y = min(min_y, int(cur_pos[0][1]))
-		max_y = max(max_y, int(cur_pos[0][1]))
-	width = max_x - min_x + thiccness * 2
-	height = max_y - min_y + thiccness * 2
-	return curve_pos, min_x, min_y, width, height
+    pixel_length = float(string[7])
+    return ps#, pixel_length, end_point
 
 
-def draw(slider_border, slider_track, slider_override, curve_pos, img, radius):
-	cv2.polylines(img, [curve_pos], 0, (*slider_border, 255), int(radius*2), 8)
-	cv2.polylines(img, [curve_pos], 0, (*slider_track, 255), int(radius*2 - 10), 8)
-	radius_sqrt = math.sqrt(radius)
-	for c in range(5, int(radius), 2):
-		# coefficient_color = ((3.5 * c + 12.5) * 64/radius) / 255
-		# alpha = (4.5 * c + 32.5) * 64/radius
-		coefficient_color = (radius_sqrt - math.sqrt(abs(radius - c))) / radius_sqrt
-		print(coefficient_color)
-		#coefficient_color = 1/(radius + 1 - c)
-		#coefficient_color = c/(radius*0.9)
-		cur_sliderride = slider_override * coefficient_color + np.array(slider_track)
-		cur_sliderride[cur_sliderride > 255] = 255
-		cv2.polylines(img, [curve_pos], 0, (*cur_sliderride, 255), int(radius*2 - c*2), 8)
+def pascal_row(n, memo={}):
+    # This returns the nth row of Pascal's Triangle
+    if n in memo:
+        return memo[n]
+    result = [1]
+    x, numerator = 1, n
+    for denominator in range(1, n//2+1):
+        # print(numerator,denominator,x)
+        x *= numerator
+        x /= denominator
+        result.append(x)
+        numerator -= 1
+    if n&1 == 0:
+        # n is even
+        result.extend(reversed(result[:-1]))
+    else:
+        result.extend(reversed(result))
+    memo[n] = result
+    return result
 
 
-WIDTH = 1920
-HEIGHT = 1080
-playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
-scale = playfield_width/512
+def make_bezier(xys):
+    # xys should be a sequence of 2-tuples (Bezier control points)
+    n = len(xys)
+    combinations = pascal_row(n-1)
+    def bezier(ts):
+        # This uses the generalized formula for bezier curves
+        # http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Generalization
+        result = []
+        for t in ts:
+            tpowers = (t**i for i in range(n))
+            upowers = reversed([(1-t)**i for i in range(n)])
+            coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
+            result.append(
+                tuple(sum([coef*p for coef, p in zip(coefs, ps)]) for ps in zip(*xys)))
+        return result
+    return bezier
 
-# circle = cv2.imread("underslider.png", -1)
-# circle[:, :, 0:3] = [0, 0, 0]
-slider_code = "88,100,0,2,0,B|158:2|424:158|140:382|88:100,1,475"
-thiccness = 5
-ps, length, end_point = convert(slider_code)
-test = Bezier(ps, length)
-curve_pos, min_x, min_y, width, height = get_pos_from_bezier(test)
-# prepare_circle(img, [0, 0, 0], [255, 255, 255])
-# draw(min_x, min_y, width, height, img, curve_pos)
-curve_pos = np.array(curve_pos, np.int32)
 
-img = np.zeros((384, 512, 4))
-draw((0, 69, 255), (120, 60, 0), np.array([50, 50, 50]), curve_pos, img, 36.48)
-# cv2.polylines(img, [curve_pos], 0, (255, 255, 255, 255), 60, 4)
-# cv2.polylines(img, [curve_pos], 0, (0, 0, 0, 255), 50, 4)
-# cv2.polylines(img, [curve_pos], 0, (5, 5, 5, 255), 45, 4)
-# cv2.polylines(img, [curve_pos], 0, (15, 15, 15, 255), 40, 4)
-# cv2.polylines(img, [curve_pos], 0, (25, 25, 25, 255), 30, 4)
-# cv2.polylines(img, [curve_pos], 0, (40, 40, 40, 255), 15, 4)
-# cv2.polylines(img, [curve_pos], 0, (45, 45, 45, 255), 13, 4)
-# cv2.polylines(img, [curve_pos], 0, (50, 50, 50, 255), 10, 4)
-# cv2.polylines(img, [curve_pos], 0, (0, 0, 0, 255), 1, 4)
-cv2.imwrite("test.png", img)
+if __name__ == '__main__':
+    WIDTH, HEIGHT = 1920, 1080
+    im = Image.new('RGBA', (WIDTH, HEIGHT), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(im)
+    ts = [t/100.0 for t in range(101)]
+    string = "88,100,0,2,0,B|158:2|424:158|140:382|88:100,1,475"
+    playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
+    scale = playfield_width / 512
+    xys = convert(string, scale)
+    bezier = make_bezier(xys)
+    points = bezier(ts)
+
+    draw.polygon(points, fill='red')
+    im.save('out.png')
