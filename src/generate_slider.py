@@ -1,77 +1,70 @@
 import math
 import numpy as np
 from PIL import Image
-from PIL import ImageDraw
 import cv2
+import aggdraw
+from curve import *
 
 
-def convert(string, scale):
-    string = string.split(",")
-    ps = [[int(string[0]), int(string[1])]]
-    slider_path = string[5]
-    slider_path = slider_path.split("|")
-    slider_path = slider_path[1:]
+def convert(string):
+	string = string.split(",")
+	ps = [Position(int(string[0]), int(string[1]))]
+	slider_path = string[5]
+	slider_path = slider_path.split("|")
+	slider_path = slider_path[1:]
 
-    for pos in slider_path:
-        pos = pos.split(":")
-        ps.append([int(int(pos[0]) * scale), int(int(pos[1]) * scale)])
+	for pos in slider_path:
+		pos = pos.split(":")
+		ps.append(Position(int(pos[0]), int(pos[1])))
 
-        end_point = [int(pos[0]), int(pos[1])]
+		end_point = [int(pos[0]), int(pos[1])]
 
-    pixel_length = float(string[7])
-    return ps#, pixel_length, end_point
-
-
-def pascal_row(n, memo={}):
-    # This returns the nth row of Pascal's Triangle
-    if n in memo:
-        return memo[n]
-    result = [1]
-    x, numerator = 1, n
-    for denominator in range(1, n//2+1):
-        # print(numerator,denominator,x)
-        x *= numerator
-        x /= denominator
-        result.append(x)
-        numerator -= 1
-    if n&1 == 0:
-        # n is even
-        result.extend(reversed(result[:-1]))
-    else:
-        result.extend(reversed(result))
-    memo[n] = result
-    return result
+	pixel_length = float(string[7])
+	return ps, pixel_length#, end_point
 
 
-def make_bezier(xys):
-    # xys should be a sequence of 2-tuples (Bezier control points)
-    n = len(xys)
-    combinations = pascal_row(n-1)
-    def bezier(ts):
-        # This uses the generalized formula for bezier curves
-        # http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Generalization
-        result = []
-        for t in ts:
-            tpowers = (t**i for i in range(n))
-            upowers = reversed([(1-t)**i for i in range(n)])
-            coefs = [c*a*b for c, a, b in zip(combinations, tpowers, upowers)]
-            result.append(
-                tuple(sum([coef*p for coef, p in zip(coefs, ps)]) for ps in zip(*xys)))
-        return result
-    return bezier
+def get_pos_from_bezier(test):
+	cur_pos = test(0)
+	t = 0.02
+	curve_pos = [int(cur_pos.x), int(cur_pos.y)]
+	while t <= 1:
+		cur_pos = test.at(t)
+		curve_pos.append(int(cur_pos[0][0]))
+		curve_pos.append(int(cur_pos[0][1]))
+		t += 0.02
+
+	return curve_pos
 
 
-if __name__ == '__main__':
-    WIDTH, HEIGHT = 1920, 1080
-    im = Image.new('RGBA', (WIDTH, HEIGHT), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(im)
-    ts = [t/100.0 for t in range(101)]
-    string = "88,100,0,2,0,B|158:2|424:158|140:382|88:100,1,475"
-    playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
-    scale = playfield_width / 512
-    xys = convert(string, scale)
-    bezier = make_bezier(xys)
-    points = bezier(ts)
+def draw(sliderborder, slideroverride, radius, curve_pos):
+	to_color = np.array([50, 50, 50])
+	im = Image.new('RGBA', (512, 384), (0, 0, 0, 0))
+	draw = aggdraw.Draw(im)
+	draw.setantialias(True)
+	draw.line(curve_pos, aggdraw.Pen(sliderborder, int(radius) * 2))
+	draw.line(curve_pos, aggdraw.Pen(slideroverride, int(radius - 8) * 2))
+	for c in range(4, int(radius), 2):
+		coefficient = c/radius
+		cur_slider = to_color * coefficient + np.array(slideroverride)
+		cur_slider[cur_slider > 255] = 255
+		cur_slider = cur_slider.astype(int)
+		cur_slider = tuple(cur_slider)
+		draw.line(curve_pos, aggdraw.Pen(cur_slider, int(radius*2 - c*2)))
+	draw.flush()
+	return im
 
-    draw.polygon(points, fill='red')
-    im.save('out.png')
+# for x in range(1000):
+code = "88,100,0,2,0,B|158:2|424:158|140:382|88:100,1,475"
+ps, pixel_length = convert(code)
+test = Bezier(ps, pixel_length)
+curve_pos = get_pos_from_bezier(test)
+color = [255, 69, 0]
+color[0], color[2] = color[2], color[0]
+color = tuple(color)
+
+override = [0, 60, 120]
+override[0], override[2] = override[2], override[0]
+override = tuple(override)
+im = draw(color, override, 36.48, curve_pos)
+img = np.array(im)
+cv2.imwrite("test.png", img)
