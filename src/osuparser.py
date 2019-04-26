@@ -1,5 +1,5 @@
 import re
-
+from generate_slider import *
 
 class Beatmap:
 	def __init__(self, info):
@@ -12,6 +12,7 @@ class Beatmap:
 		self.hitobjects = []
 		self.max_combo = 0
 		self.to_stack = []
+		self.gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48)
 
 		self.parse_general()
 		self.parse_diff()
@@ -122,9 +123,7 @@ class Beatmap:
 
 			if int(bin_info[1]):
 				object_type.append("slider")
-				my_dict["slider_path"] = osuobject[5]
-				my_dict["repeat"] = int(osuobject[6])
-				my_dict["pixelLength"] = float(osuobject[7])
+				my_dict["slider_img"] = self.gs.get_slider_img(item)
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]
