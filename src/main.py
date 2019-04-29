@@ -34,16 +34,20 @@ def setupReplay(replay_info):
 	life_bar_graph[-1] = 'inf|1'
 	cur_life = life_bar_graph[0].split("|")
 	cur_life[0], cur_life[1] = float(cur_life[0]), float(cur_life[1])
-
+	print(cur_life)
 	total_time = 0
 	start_index = 0
 	end_index = 0
 	start_time = cur_life[0] - 3000 # gameplay start
-	end_time = int(life_bar_graph[-2].split("|")[0]) + 1000 # gameplay end
+	print(life_bar_graph)
+	#end_time = int(life_bar_graph[-2].split("|")[0]) + 1000 # gameplay end
+	end_time = float('inf')
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
 		total_time += times
+		print(replay_info.play_data[index].time_since_previous_action)
 		if total_time >= end_time:
+			print("yo")
 			break
 		end_index += 1
 		if total_time < start_time:
@@ -103,7 +107,7 @@ def main():
 	index_hitobject = 0
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})
-	for i in range(1000): #len(replay_event)
+	for i in range(len(replay_event)): #len(replay_event)
 		for n in range(replay_event[i][TIMES]):
 			img = np.copy(orig_img)
 			cursor_x = int(replay_event[i][CURSOR_X] * scale) + move_to_right
