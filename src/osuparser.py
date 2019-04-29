@@ -1,8 +1,9 @@
 import re
 from generate_slider import *
 
+
 class Beatmap:
-	def __init__(self, info):
+	def __init__(self, info, scale):
 		self.info = info
 		self.general = {}
 		self.diff = {}
@@ -12,7 +13,8 @@ class Beatmap:
 		self.hitobjects = []
 		self.max_combo = 0
 		self.to_stack = []
-		self.gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48)
+		self.scale = scale
+		self.gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48, self.scale)
 
 		self.parse_general()
 		self.parse_diff()
@@ -113,8 +115,8 @@ class Beatmap:
 				else:
 					stacking = False
 
-			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')
-			bin_info = bin_info[::-1]
+			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
+			bin_info = bin_info[::-1]  # reverse the binary
 			object_type = []
 			skip = 0
 
@@ -148,10 +150,12 @@ class Beatmap:
 			if cur_combo_number > self.max_combo:
 				self.max_combo = cur_combo_number
 			index += 1
+		self.start_time = self.hitobjects[0]["time"]
+		self.end_time = self.hitobjects[-1]["time"]
 
 	def stack_position(self):
 		for info in self.to_stack:
-			space = -0.4 * self.diff["CircleSize"] + 4.9 # lol my own formula
+			space = -0.4 * self.diff["CircleSize"] + 4.9  # lol my own formula
 			for i in range(info["start"] + 1, info["end"] + 1):
 				self.hitobjects[i]["x"] += space
 				self.hitobjects[i]["y"] += space
@@ -163,12 +167,12 @@ def split(delimiters, string):
 	return re.split(regrex_pattern, string)
 
 
-def read_file(filename):
+def read_file(filename, scale):
 	content = open(filename, "r").read()
 	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
 	              "[HitObjects]"]
 	info = split(delimiters, content)
-	return Beatmap(info)
+	return Beatmap(info, scale)
 
 
 if __name__ == "__main__":
