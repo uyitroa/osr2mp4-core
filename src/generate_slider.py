@@ -36,9 +36,9 @@ class GenerateSlider:
 		t = 0.02
 		curve_pos = [int(cur_pos.x), int(cur_pos.y)]
 		while t <= 1:
-			cur_pos = baiser_class.at(t)
-			curve_pos.append(int(cur_pos[0][0]))
-			curve_pos.append(int(cur_pos[0][1]))
+			cur_pos = baiser_class(t)
+			curve_pos.append(int(cur_pos.x))
+			curve_pos.append(int(cur_pos.y))
 			t += 0.02
 		return curve_pos
 
@@ -88,17 +88,24 @@ class GenerateSlider:
 
 	def get_slider_img(self, slider_code):
 		ps, pixel_length = self.convert(slider_code)
-		baiser = Bezier(ps, pixel_length)
+		baiser = MultiBezier(ps, pixel_length)
 		curve_pos = self.get_pos_from_bezier(baiser)
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)
 		im = self.draw(curve_pos)
 		img = np.array(im)
-		img = img[int(min_y - self.radius):math.ceil(max_y + self.radius),
-		      int(min_x - self.radius):math.ceil(max_x + self.radius)]
+		extended = math.sqrt(2 * (self.radius ** 2))
+		left_y_corner = int(min_y - extended) if int(min_y - extended) >= 0 else 0
+		left_x_corner = int(min_x - extended) if int(min_x - extended) >= 0 else 0
+		right_y_corner = math.ceil(max_y + extended) if math.ceil(max_y + extended) < img.shape[0] else img.shape[0]
+		right_x_corner = math.ceil(max_x + extended) if math.ceil(max_x + extended) < img.shape[1] else img.shape[1]
+
+		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 		return img
 
 
 if __name__ == "__main__":
-	slidercode = "150,131,0,2,0,B|362:78|338:306|172:295,1,375"
+	# slidercode = "96,180,0,2,0,B|286:44|286:44|416:201|416:201|251:340|251:340|95:179|95:179,1,875"
+	# slidercode = "130,77,0,2,0,B|414:155|98:307,1,375"
+	# slidercode = "137,88,0,2,0,B|370:89|370:89|376:292|376:292|135:296|135:296,1,675"
 	gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48)
 	cv2.imwrite("test.png", gs.get_slider_img(slidercode))
