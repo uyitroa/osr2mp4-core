@@ -334,7 +334,7 @@ def get_center(a, b, c):
     c_squared = np.sum(np.square(a - b))
 
     if np.isclose([a_squared, b_squared, c_squared], 0).any():
-        raise ValueError(f'given points are collinear: {a}, {b}, {c}')
+        raise ValueError(f'gfiven points are collinear: {a}, {b}, {c}')
 
     s = a_squared * (b_squared + c_squared - a_squared)
     t = b_squared * (a_squared + c_squared - b_squared)
@@ -343,7 +343,7 @@ def get_center(a, b, c):
     sum_ = s + t + u
 
     if np.isclose(sum_, 0):
-        raise ValueError(f'given points are collinear: {a}, {b}, {c}')
+        raise ValueError(f'givenf points are collinear: {a}, {b}, {c}')
 
     return Position(*(s * a + t * b + u * c) / sum_)
 

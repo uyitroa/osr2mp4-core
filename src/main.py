@@ -8,7 +8,6 @@ CURSOR_X = 0
 CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
-LIFE_BAR = 4
 
 # const
 PATH = "../res/skin1/"
@@ -27,49 +26,40 @@ class Skin:
 		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path, diff, scale, path + "approachcircle.png", maxcombo, gap)
 
 
-def setupReplay(replay_info):
+def setupReplay(replay_info, start_time, end_time):
 	replay_data = [None] * len(replay_info.play_data)
 
-	life_bar_graph = replay_info.life_bar_graph.split(",")
-	life_bar_graph[-1] = 'inf|1'
-	cur_life = life_bar_graph[0].split("|")
-	cur_life[0], cur_life[1] = float(cur_life[0]), float(cur_life[1])
-	print(cur_life)
 	total_time = 0
 	start_index = 0
 	end_index = 0
-	start_time = cur_life[0] - 3000 # gameplay start
-	print(life_bar_graph)
-	#end_time = int(life_bar_graph[-2].split("|")[0]) + 1000 # gameplay end
-	end_time = float('inf')
+
+	start_osr = max(0, start_time - 3000)
+	end_osr = end_time + 1000
+
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
 		total_time += times
-		print(replay_info.play_data[index].time_since_previous_action)
-		if total_time >= end_time:
-			print("yo")
+
+		if total_time >= end_osr:
 			break
 		end_index += 1
-		if total_time < start_time:
-			start_index += 1
+
+		if total_time < start_osr:
+			start_index = index + 1  # to crop later, everything before we can ignore
 			continue
-		replay_data[index] = [None, None, None, None, None]
+
+		replay_data[index] = [None, None, None, None]
 		replay_data[index][CURSOR_X] = replay_info.play_data[index].x
 		replay_data[index][CURSOR_Y] = replay_info.play_data[index].y
 		replay_data[index][KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
 		replay_data[index][TIMES] = total_time
+
 	replay_data = replay_data[start_index:end_index]
-	replay_data.sort(key=lambda x: x[3]) # sort replay data based on the third elements
+	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
 	intervals = 1000/60
-	life_index = 0
 	start_time = replay_data[0][TIMES]
 	for index2 in range(len(replay_data) - 1):
 		delta = replay_data[index2 + 1][TIMES] - replay_data[index2][TIMES]
-		if replay_data[index2][TIMES] > cur_life[0]:
-			life_index += 1
-			cur_life = life_bar_graph[life_index].split("|")
-			cur_life[0], cur_life[1] = float(cur_life[0]), float(cur_life[1])
-		replay_data[index2][LIFE_BAR] = cur_life[1]
 
 		# quick maths
 		ratio = delta / intervals
@@ -77,42 +67,44 @@ def setupReplay(replay_info):
 
 		replay_data[index2][TIMES] = round_ratio
 		replay_data[index2 + 1][TIMES] += ratio - round_ratio
-	replay_data[-1][LIFE_BAR] = cur_life[1]
 	replay_data[-1][TIMES] = int(intervals)
 	replay_data[0][TIMES] = 0
 	return replay_data, start_time
 
 
 def main():
-	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
+	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 	scale = playfield_width/512
-	move_to_right = int(WIDTH * 0.2)
+	move_to_right = int(WIDTH * 0.2) # center the playfield
 	move_down = int(HEIGHT * 0.2)
 	fps = 60
+
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), fps, (WIDTH, HEIGHT))
 	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8') # setup background
+
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
 	orig_img = img.copy()
+
+	beatmap = read_file("../res/futurecider.osu", scale)
+
 	replay_info = osrparse.parse_replay_file("../res/future.osr")
-	replay_event, start_time = setupReplay(replay_info)
+	replay_event, start_time = setupReplay(replay_info, beatmap.start_time, beatmap.end_time)
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * scale) + move_to_right
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * scale) + move_to_right
-
-	beatmap = read_file("../res/futurecider.osu")
 
 	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38)
 
 	index_hitobject = 0
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
-	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})
-	for i in range(len(replay_event)): #len(replay_event)
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
+	for i in range(1000): #len(replay_event)
 		for n in range(replay_event[i][TIMES]):
-			img = np.copy(orig_img)
+			img = np.copy(orig_img)  # reset background
+
 			cursor_x = int(replay_event[i][CURSOR_X] * scale) + move_to_right
 			cursor_y = int(replay_event[i][CURSOR_Y] * scale) + move_down
-
 
 			if replay_event[i][KEYS_PRESSED] == 10 or replay_event[i][KEYS_PRESSED] == 15:
 				skin.key2.clicked()
@@ -122,8 +114,6 @@ def main():
 			skin.cursor.add_to_frame(img, cursor_x, cursor_y)
 			skin.key1.add_to_frame(img, 1800, 450)
 			skin.key2.add_to_frame(img, 1800, 500)
-			skin.lifegraph.goes_to(replay_event[i][LIFE_BAR])
-			skin.lifegraph.add_to_frame(img)
 
 			x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
 			y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
