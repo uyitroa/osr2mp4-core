@@ -6,7 +6,7 @@ import numpy as np
 from scipy.misc import comb
 from toolz import sliding_window
 
-from abc import ABCMeta, abstractmethod
+from abec import ABCMeta, abstractmethod
 from position import Position
 from utils import lazyval
 
