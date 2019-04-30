@@ -1,6 +1,5 @@
-import numpy as np
 import cv2
-from curve import *
+from Curves.curve import *
 
 
 class GenerateSlider:

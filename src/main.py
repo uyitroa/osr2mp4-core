@@ -1,6 +1,7 @@
 import osrparse
 import os
-from Components import *
+from Objects.Components import *
+from Objects.HitObjects import Circles
 from osuparser import *
 import numpy as np
 
@@ -11,7 +12,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin2/"
+PATH = "../res/skin1/"
 WIDTH = 1920
 HEIGHT = 1080
 
@@ -24,7 +25,8 @@ class Skin:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path, diff, scale, path + "approachcircle.png", maxcombo, gap)
+		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png", path,
+		                       diff, scale, path + "approachcircle.png", maxcombo, gap)
 
 
 def setupReplay(replay_info, start_time, end_time):

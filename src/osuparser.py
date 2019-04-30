@@ -1,5 +1,5 @@
 import re
-from generate_slider import *
+from Curves.generate_slider import *
 
 
 class Beatmap:
