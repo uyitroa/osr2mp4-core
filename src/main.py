@@ -1,8 +1,9 @@
-import osrparse
 import os
 from Objects.Components import *
 from Objects.HitObjects import Circles, Slider
-from osuparser import *
+from Parser.osuparser import *
+from Parser.osrparser import *
+from Parser.skinparser import Skin
 import numpy as np
 
 # index for replay_event
@@ -17,7 +18,7 @@ WIDTH = 1920
 HEIGHT = 1080
 
 
-class Skin:
+class Object:
 	def __init__(self, path, cursor_x, cursor_y, diff, scale, maxcombo, gap, slider_combo):
 		self.cursor = Cursor(path + "cursor.png")
 		self.key1 = InputOverlay(path + "inputoverlay-key.png")
@@ -28,40 +29,6 @@ class Skin:
 		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png",
 		                       slider_combo, path, diff, scale, path + "approachcircle.png", maxcombo, gap)
 		self.sliders = Slider(diff["SliderMultiplier"], self.circles.time_preempt, self.circles.opacity_interval, scale)
-
-
-def setupReplay(replay_info, start_time, end_time):
-	replay_data = [None] * len(replay_info.play_data)
-
-	total_time = 0
-	start_index = 0
-	end_index = 0
-
-	start_osr = max(0, start_time - 3000)
-	end_osr = end_time + 1000
-
-	for index in range(len(replay_data)):
-		times = replay_info.play_data[index].time_since_previous_action
-		total_time += times
-
-		if total_time >= end_osr:
-			break
-		end_index += 1
-
-		if total_time < start_osr:
-			start_index = index + 1  # to crop later, everything before we can ignore
-			continue
-
-		replay_data[index] = [None, None, None, None]
-		replay_data[index][CURSOR_X] = replay_info.play_data[index].x
-		replay_data[index][CURSOR_Y] = replay_info.play_data[index].y
-		replay_data[index][KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
-		replay_data[index][TIMES] = total_time
-
-	replay_data = replay_data[start_index:end_index]
-	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
-	start_time = replay_data[0][TIMES]
-	return replay_data, start_time
 
 
 def nearer(cur_time, replay, index):
@@ -90,14 +57,13 @@ def main():
 
 	beatmap = read_file("../res/futurecider.osu", scale)
 
-	replay_info = osrparse.parse_replay_file("../res/future.osr")
-	replay_event, cur_time = setupReplay(replay_info, beatmap.start_time, beatmap.end_time)
+	replay_event, cur_time = setupReplay("../res/future.osr", beatmap.start_time, beatmap.end_time)
 	osr_index = 0
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * scale) + move_to_right
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * scale) + move_to_right
 
-	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38, beatmap.slider_combo)
+	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38, beatmap.slider_combo)
 
 	index_hitobject = 0
 	cur_offset = 0
@@ -110,32 +76,32 @@ def main():
 		cursor_y = int(replay_event[osr_index][CURSOR_Y] * scale) + move_down
 
 		if replay_event[osr_index][KEYS_PRESSED] == 10 or replay_event[osr_index][KEYS_PRESSED] == 15:
-			skin.key2.clicked()
+			component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
-			skin.key1.clicked()
-		skin.key1.add_to_frame(img, 1800, 450)
-		skin.key2.add_to_frame(img, 1800, 500)
+			component.key1.clicked()
+			component.key1.add_to_frame(img, 1800, 450)
+			component.key2.add_to_frame(img, 1800, 500)
 
 		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
 		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
-		if cur_time + skin.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
+		if cur_time + component.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
 			isSlider = 0
 			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
 				isSlider = 1
-				skin.sliders.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
+				component.sliders.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
 				                        beatmap.hitobjects[index_hitobject]["x_offset"],
 				                        beatmap.hitobjects[index_hitobject]["y_offset"],
 				                        x_circle, y_circle,
 				                        beatmap.hitobjects[index_hitobject]["pixel_length"],
 				                        beatmap.timing_point[cur_offset]["BeatDuration"])
 
-			skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"], isSlider)
+			component.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"], isSlider)
 			index_hitobject += 1
-		skin.sliders.add_to_frame(img)
-		skin.circles.add_to_frame(img)
+		component.sliders.add_to_frame(img)
+		component.circles.add_to_frame(img)
 
-		skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-		skin.cursor.add_to_frame(img, cursor_x, cursor_y)
+		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
+		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 		writer.write(img)
