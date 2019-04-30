@@ -5,10 +5,14 @@ from itertools import accumulate
 import numpy as np
 from scipy.misc import comb
 from toolz import sliding_window
-
-from Curves.abec import ABCMeta, abstractmethod
-from Curves.position import Position
-from Curves.utils import lazyval
+try:
+    from Curves.abec import ABCMeta, abstractmethod
+    from Curves.position import Position
+    from Curves.utils import lazyval
+except:
+	from abec import ABCMeta, abstractmethod
+	from position import Position
+	from utils import lazyval
 
 
 class Curve(metaclass=ABCMeta):

@@ -56,5 +56,4 @@ class Images:
 		n_cols = int(new_col * self.orig_cols)
 		n_cols -= int(n_cols % 2 == 1)  # need to be even
 		self.img = cv2.resize(self.orig_img, (n_cols, n_rows), interpolation=inter_type)
-		self.to_reset = np.empty((self.img.shape[0], self.img.shape[1], 3))
 
