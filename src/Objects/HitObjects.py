@@ -247,13 +247,32 @@ class Circles(Images):
 
 
 class Slider:
-	def __init__(self, slidermultiplier):
+	def __init__(self, slidermultiplier, time_preempt, opacity_interval, scale):
 		self.sliders = []
 		self.slidermutiplier = slidermultiplier
+		self.time_preempt = time_preempt
+		self.interval = 1000/60
+		self.opacity_interval = opacity_interval
+		self.scale = scale
 
-	def add_slider(self, image, x_offset, y_offset, pixel_legnth, beat_duration):
+	def change_size(self, new_row, new_col, image, inter_type=cv2.INTER_AREA):
+		n_rows = int(new_row * image.shape[0])
+		n_rows -= int(n_rows % 2 == 1)  # need to be even
+		n_cols = int(new_col * image.shape[1])
+		n_cols -= int(n_cols % 2 == 1)  # need to be even
+		image = cv2.resize(image, (n_cols, n_rows), interpolation=inter_type)
+		return image
+
+	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
 		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
-		self.sliders.append([image, x_offset, y_offset, slider_duration])
+
+		# to_frame always draw from the center of the image slider, meanwhile we want it to draw from the slider's start pos
+		translate_x = int((x_offset + image.shape[0] / 2) * self.scale)
+		translate_y = int((y_offset + image.shape[0] / 2) * self.scale)
+
+		image = self.change_size(self.scale, self.scale, image)
+
+		self.sliders.append([image, x_pos + translate_x, y_pos + translate_y, slider_duration + self.time_preempt, 0])
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
@@ -268,7 +287,7 @@ class Slider:
 		return pos1, pos2, start, end
 
 	def to_frame(self, img, background, x_offset, y_offset):
-		# need to do to_3channel first.
+		# to_3channel done in generate_slider.py
 		y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
 		x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
 
@@ -282,8 +301,16 @@ class Slider:
 					img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 	def add_to_frame(self, background):
-		i = len(self.sliders - 1)
+		i = len(self.sliders) - 1
 		while i > - 1:
+			self.sliders[i][3] -= self.interval
+			self.sliders[i][4] = min(100, self.sliders[i][4] + self.opacity_interval)
+			if self.sliders[i][3] <= 0:
+				del self.sliders[i]
+				break  # same as circle add_to_frame reason
+			cur_img = np.copy(self.sliders[i][0])
+			cur_img[:, :, 0:3] *= self.sliders[i][4]/100
+			self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 			i -= 1
 
 

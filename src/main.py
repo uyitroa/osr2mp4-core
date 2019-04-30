@@ -1,7 +1,7 @@
 import osrparse
 import os
 from Objects.Components import *
-from Objects.HitObjects import Circles
+from Objects.HitObjects import Circles, Slider
 from osuparser import *
 import numpy as np
 
@@ -27,6 +27,7 @@ class Skin:
 
 		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png",
 		                       slider_combo, path, diff, scale, path + "approachcircle.png", maxcombo, gap)
+		self.sliders = Slider(diff["SliderMultiplier"], self.circles.time_preempt, self.circles.opacity_interval, scale)
 
 
 def setupReplay(replay_info, start_time, end_time):
@@ -81,7 +82,7 @@ def main():
 	fps = 60
 
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), fps, (WIDTH, HEIGHT))
-	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8') # setup background
+	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8')  # setup background
 
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
@@ -99,8 +100,9 @@ def main():
 	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38, beatmap.slider_combo)
 
 	index_hitobject = 0
+	cur_offset = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
-
+	print("setup done")
 	while osr_index < 1000: #len(replay_event) - 3
 		img = np.copy(orig_img)  # reset background
 
@@ -120,9 +122,16 @@ def main():
 			isSlider = 0
 			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
 				isSlider = 1
+				skin.sliders.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
+				                        beatmap.hitobjects[index_hitobject]["x_offset"],
+				                        beatmap.hitobjects[index_hitobject]["y_offset"],
+				                        x_circle, y_circle,
+				                        beatmap.hitobjects[index_hitobject]["pixel_length"],
+				                        beatmap.timing_point[cur_offset]["BeatDuration"])
 
 			skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"], isSlider)
 			index_hitobject += 1
+		skin.sliders.add_to_frame(img)
 		skin.circles.add_to_frame(img)
 
 		skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
@@ -133,6 +142,8 @@ def main():
 
 		cur_time += 1000/fps
 		osr_index += nearer(cur_time, replay_event, osr_index)
+		if cur_time > beatmap.timing_point[cur_offset]["Offset"]:
+			cur_offset += 1
 
 	writer.release()
 
