@@ -11,7 +11,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin1/"
+PATH = "../res/skin2/"
 WIDTH = 1920
 HEIGHT = 1080
 
@@ -98,7 +98,7 @@ def main():
 	index_hitobject = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 
-	while osr_index < len(replay_event) - 3: #len(replay_event)
+	while osr_index < 1000: #len(replay_event) - 3
 		img = np.copy(orig_img)  # reset background
 
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * scale) + move_to_right
