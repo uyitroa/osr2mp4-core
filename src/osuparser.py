@@ -12,6 +12,7 @@ class Beatmap:
 		self.timing_point = []
 		self.hitobjects = []
 		self.max_combo = 0
+		self.slider_combo = set()  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
 		self.gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48, self.scale)
@@ -87,7 +88,7 @@ class Beatmap:
 		index = 0
 		stacking = False
 
-		ar = self.diff["ApproachRate"]
+		ar = self.diff["ApproachRate"]  # for stacks
 		if ar < 5:
 			preempt = 1200 + 600 * (5 - ar) / 5
 		elif ar == 5:
@@ -125,6 +126,7 @@ class Beatmap:
 
 			if int(bin_info[1]):
 				object_type.append("slider")
+				self.slider_combo.add(cur_combo_number)
 				#my_dict["slider_img"] = self.gs.get_slider_img(item)
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
