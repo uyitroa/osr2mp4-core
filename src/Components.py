@@ -301,7 +301,6 @@ class ApproachCircle(Images):
 		self.opacity_interval = opacity_interval
 		self.approach_frames = []
 		self.prepare_sizes()
-		print("done")
 
 	def prepare_sizes(self):
 		alpha = 0
@@ -320,6 +319,7 @@ class ApproachCircle(Images):
 class CircleOverlay(Images):
 	def __init__(self, filename):
 		Images.__init__(self, filename)
+
 
 class Circles(Images):
 	def __init__(self, filename, overlay_filename, path, diff, scale, approachfile, maxcombo, gap):
@@ -367,12 +367,20 @@ class Circles(Images):
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
 		self.opacity_interval = int(self.fade_in / 100)
 
+	def add_color(self):
+		red = 255.0/255.0
+		green = 0.0/255.0
+		blue = 0.0/255.0
+		self.img[:, :, 0] = np.multiply(self.img[:, :, 0], blue, casting='unsafe')
+		self.img[:, :, 1] = np.multiply(self.img[:, :, 1], green, casting='unsafe')
+		self.img[:, :, 2] = np.multiply(self.img[:, :, 2], red, casting='unsafe')
+		self.img[self.img > 255] = 255
+
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename)
-		self.overlay_alpha(self.overlay.img, int(self.overlay.orig_cols / 2), int(self.overlay.orig_rows / 2))
-		self.orig_img = self.overlay.img
-		self.orig_rows = self.overlay.orig_rows
-		self.orig_cols = self.overlay.orig_cols
+		self.add_color()
+		self.overlayhitcircle(self.img, int(self.overlay.orig_cols / 2), int(self.overlay.orig_rows / 2), self.overlay.img)
+		self.orig_img = self.img
 
 		cur_radius = self.orig_cols / 2
 		self.radius_scale = self.cs / cur_radius
@@ -382,9 +390,22 @@ class Circles(Images):
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
 		self.img = np.copy(self.orig_img)
-		cv2.imwrite("test1.png", self.img)
 
-	def overlay_alpha(self, background, x_offset, y_offset):
+	def overlayhitcircle(self, background, x_offset, y_offset, overlay_image):
+		# still ned 4 channels so cannot do to_3channel before.
+		y1, y2 = y_offset - int(overlay_image.shape[0] / 2), y_offset + int(overlay_image.shape[0] / 2)
+		x1, x2 = x_offset - int(overlay_image.shape[1] / 2), x_offset + int(overlay_image.shape[1] / 2)
+
+		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
+		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
+
+		alpha_s = overlay_image[ystart:yend, xstart:xend, 3] / 255.0
+		alpha_l = 1 - alpha_s
+		for c in range(4):
+			background[y1:y2, x1:x2, c] = overlay_image[ystart:yend, xstart:xend, c] * alpha_s + \
+			                              alpha_l * background[y1:y2, x1:x2, c]
+
+	def overlay_approach(self, background, x_offset, y_offset):
 		# still ned 4 channels so cannot do to_3channel before.
 		y1, y2 = y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2)
 		x1, x2 = x_offset - int(self.img.shape[1] / 2), x_offset + int(self.img.shape[1] / 2)
@@ -417,7 +438,7 @@ class Circles(Images):
 
 				x_offset = int(approach_circle.shape[1] / 2)
 				y_offset = int(approach_circle.shape[0] / 2)
-				self.overlay_alpha(approach_circle, x_offset, y_offset)
+				self.overlay_approach(approach_circle, x_offset, y_offset)
 				self.to_3channel(approach_circle)
 				approach_circle[:, :, 0:3] = approach_circle[:, :, 0:3] * (alpha / 100)
 
@@ -425,7 +446,7 @@ class Circles(Images):
 				alpha = min(100, alpha + self.opacity_interval)
 
 			self.img = np.copy(self.orig_img)
-		cv2.imwrite("test2.png", self.circle_frames[0][5])
+		print("done")
 		del self.approachCircle
 
 	def add_circle(self, x, y, combo_number):
