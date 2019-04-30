@@ -12,7 +12,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin1/"
+PATH = "../res/skin2/"
 WIDTH = 1920
 HEIGHT = 1080
 
@@ -111,8 +111,6 @@ def main():
 			skin.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			skin.key1.clicked()
-		skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-		skin.cursor.add_to_frame(img, cursor_x, cursor_y)
 		skin.key1.add_to_frame(img, 1800, 450)
 		skin.key2.add_to_frame(img, 1800, 500)
 
@@ -127,7 +125,8 @@ def main():
 			index_hitobject += 1
 		skin.circles.add_to_frame(img)
 
-
+		skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
+		skin.cursor.add_to_frame(img, cursor_x, cursor_y)
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 		writer.write(img)

@@ -35,7 +35,7 @@ class Images:
 			pos2 = limit - 1
 		return pos1, pos2, start, end
 
-	def add_to_frame(self, background, x_offset, y_offset):
+	def add_to_frame(self, background, x_offset, y_offset, channel=3):
 		# need to do to_3channel first.
 		y1, y2 = y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2)
 		x1, x2 = x_offset - int(self.img.shape[1] / 2), x_offset + int(self.img.shape[1] / 2)
@@ -45,9 +45,10 @@ class Images:
 		alpha_s = self.img[ystart:yend, xstart:xend, 3] / 255.0
 		alpha_l = 1.0 - alpha_s
 
-		for c in range(3):
+		for c in range(channel):
 			background[y1:y2, x1:x2, c] = (
 					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+
 
 	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA):
 		n_rows = int(new_row * self.orig_rows)
