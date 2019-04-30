@@ -439,8 +439,8 @@ class Circles(Images):
 				x_offset = int(approach_circle.shape[1] / 2)
 				y_offset = int(approach_circle.shape[0] / 2)
 				self.overlay_approach(approach_circle, x_offset, y_offset)
+				approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha / 100)
 				self.to_3channel(approach_circle)
-				approach_circle[:, :, 0:3] = approach_circle[:, :, 0:3] * (alpha / 100)
 
 				self.circle_frames[-1].append(approach_circle)
 				alpha = min(100, alpha + self.opacity_interval)
