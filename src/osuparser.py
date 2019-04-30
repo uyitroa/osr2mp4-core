@@ -127,7 +127,8 @@ class Beatmap:
 			if int(bin_info[1]):
 				object_type.append("slider")
 				self.slider_combo.add(cur_combo_number)
-				#my_dict["slider_img"] = self.gs.get_slider_img(item)
+				my_dict["slider_img"], my_dict["x_offset"], my_dict["y_offset"] = self.gs.get_slider_img(item)
+				my_dict["pixel_length"] = float(osuobject[7])
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]
@@ -152,6 +153,8 @@ class Beatmap:
 			if cur_combo_number > self.max_combo:
 				self.max_combo = cur_combo_number
 			index += 1
+			if index > 1010:
+				break
 		self.start_time = self.hitobjects[0]["time"]
 		self.end_time = self.hitobjects[-1]["time"]
 
