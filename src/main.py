@@ -18,15 +18,15 @@ HEIGHT = 1080
 
 
 class Skin:
-	def __init__(self, path, cursor_x, cursor_y, diff, scale, maxcombo, gap):
+	def __init__(self, path, cursor_x, cursor_y, diff, scale, maxcombo, gap, slider_combo):
 		self.cursor = Cursor(path + "cursor.png")
 		self.key1 = InputOverlay(path + "inputoverlay-key.png")
 		self.key2 = InputOverlay(path + "inputoverlay-key.png")
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png", path,
-		                       diff, scale, path + "approachcircle.png", maxcombo, gap)
+		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png",
+		                       slider_combo, path, diff, scale, path + "approachcircle.png", maxcombo, gap)
 
 
 def setupReplay(replay_info, start_time, end_time):
@@ -64,12 +64,13 @@ def setupReplay(replay_info, start_time, end_time):
 
 
 def nearer(cur_time, replay, index):
+	# decide the next replay_data index, by finding the closest to the cur_time
 	time0 = abs(replay[index][TIMES] - cur_time)
 	time1 = abs(replay[index + 1][TIMES] - cur_time)
 	time2 = abs(replay[index + 2][TIMES] - cur_time)
 	time3 = abs(replay[index + 3][TIMES] - cur_time)
 	values = [time0, time1, time2, time3]
-	return min(range(len(values)), key=values.__getitem__)
+	return min(range(len(values)), key=values.__getitem__)  # get index of the min item
 
 
 def main():
@@ -95,7 +96,7 @@ def main():
 	old_cursor_x = int(replay_event[0][CURSOR_X] * scale) + move_to_right
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * scale) + move_to_right
 
-	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38)
+	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38, beatmap.slider_combo)
 
 	index_hitobject = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
@@ -118,7 +119,11 @@ def main():
 		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
 		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
 		if cur_time + skin.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
-			skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"])
+			isSlider = 0
+			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
+				isSlider = 1
+
+			skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"], isSlider)
 			index_hitobject += 1
 		skin.circles.add_to_frame(img)
 
