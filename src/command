@@ -1,0 +1,1 @@
+ffmpeg -y -i output.mp4 -i output2.mp4 -filter_complex "[1:v][0:v]scale2ref[ua][b];[ua]setsar=1,format=yuva444p,colorchannelmixer=aa=1[u];[b][u]overlay=eof_action=pass[v] -map [v] test.mp4

@@ -69,7 +69,7 @@ class InputOverlay(Images):
 		Images.__init__(self, filename)
 
 		self.cur_blue = 0
-		self.blue_step = 30
+		self.blue_step = 35
 
 		self.frame_index = 0
 		self.font_scale = 0.5
@@ -89,7 +89,7 @@ class InputOverlay(Images):
 		self.prepare_buttons()
 
 	def addcolor(self, n, color=0):
-		self.img[:, :, color] = np.add(self.img[:, :, color], n)
+		self.img[:, :, color] = self.img[:, :, color] + n * self.img[:, :, 3]
 
 	def prepare_buttons(self):
 		blue = 0
@@ -320,11 +320,6 @@ class ApproachCircle(Images):
 class CircleOverlay(Images):
 	def __init__(self, filename):
 		Images.__init__(self, filename)
-		self.change_size(1.13, 1.13, inter_type=cv2.INTER_LINEAR)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
-
 
 class Circles(Images):
 	def __init__(self, filename, overlay_filename, path, diff, scale, approachfile, maxcombo, gap):
@@ -387,6 +382,7 @@ class Circles(Images):
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
 		self.img = np.copy(self.orig_img)
+		cv2.imwrite("test1.png", self.img)
 
 	def overlay_alpha(self, background, x_offset, y_offset):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -399,8 +395,8 @@ class Circles(Images):
 		alpha_s = background[y1:y2, x1:x2, 3] / 255.0
 		alpha_l = 1 - alpha_s
 		for c in range(4):
-			background[y1:y2, x1:x2, c] = self.img[ystart:yend, xstart:xend, c] * alpha_l + alpha_s * background[y1:y2,
-			                                                                                          x1:x2, c]
+			background[y1:y2, x1:x2, c] = self.img[ystart:yend, xstart:xend, c] * alpha_l + \
+			                              alpha_s * background[y1:y2, x1:x2, c]
 
 	def to_3channel(self, image):
 		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
@@ -429,6 +425,7 @@ class Circles(Images):
 				alpha = min(100, alpha + self.opacity_interval)
 
 			self.img = np.copy(self.orig_img)
+		cv2.imwrite("test2.png", self.circle_frames[0][5])
 		del self.approachCircle
 
 	def add_circle(self, x, y, combo_number):

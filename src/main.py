@@ -2,6 +2,7 @@ import osrparse
 import os
 from Components import *
 from osuparser import *
+import numpy as np
 
 # index for replay_event
 CURSOR_X = 0
@@ -56,26 +57,23 @@ def setupReplay(replay_info, start_time, end_time):
 
 	replay_data = replay_data[start_index:end_index]
 	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
-	intervals = 1000/60
 	start_time = replay_data[0][TIMES]
-	for index2 in range(len(replay_data) - 1):
-		delta = replay_data[index2 + 1][TIMES] - replay_data[index2][TIMES]
-
-		# quick maths
-		ratio = delta / intervals
-		round_ratio = round(ratio)
-
-		replay_data[index2][TIMES] = round_ratio
-		replay_data[index2 + 1][TIMES] += ratio - round_ratio
-	replay_data[-1][TIMES] = int(intervals)
-	replay_data[0][TIMES] = 0
 	return replay_data, start_time
+
+
+def nearer(cur_time, replay, index):
+	time0 = abs(replay[index][TIMES] - cur_time)
+	time1 = abs(replay[index + 1][TIMES] - cur_time)
+	time2 = abs(replay[index + 2][TIMES] - cur_time)
+	time3 = abs(replay[index + 3][TIMES] - cur_time)
+	values = [time0, time1, time2, time3]
+	return min(range(len(values)), key=values.__getitem__)
 
 
 def main():
 	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 	scale = playfield_width/512
-	move_to_right = int(WIDTH * 0.2) # center the playfield
+	move_to_right = int(WIDTH * 0.2)  # center the playfield
 	move_down = int(HEIGHT * 0.2)
 	fps = 60
 
@@ -89,7 +87,8 @@ def main():
 	beatmap = read_file("../res/futurecider.osu", scale)
 
 	replay_info = osrparse.parse_replay_file("../res/future.osr")
-	replay_event, start_time = setupReplay(replay_info, beatmap.start_time, beatmap.end_time)
+	replay_event, cur_time = setupReplay(replay_info, beatmap.start_time, beatmap.end_time)
+	osr_index = 0
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * scale) + move_to_right
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * scale) + move_to_right
@@ -97,36 +96,37 @@ def main():
 	skin = Skin(PATH, old_cursor_x, old_cursor_y, beatmap.diff, scale, beatmap.max_combo, 38)
 
 	index_hitobject = 0
-	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
-	for i in range(1000): #len(replay_event)
-		for n in range(replay_event[i][TIMES]):
-			img = np.copy(orig_img)  # reset background
 
-			cursor_x = int(replay_event[i][CURSOR_X] * scale) + move_to_right
-			cursor_y = int(replay_event[i][CURSOR_Y] * scale) + move_down
+	while osr_index < len(replay_event) - 3: #len(replay_event)
+		img = np.copy(orig_img)  # reset background
 
-			if replay_event[i][KEYS_PRESSED] == 10 or replay_event[i][KEYS_PRESSED] == 15:
-				skin.key2.clicked()
-			if replay_event[i][KEYS_PRESSED] == 5 or replay_event[i][KEYS_PRESSED] == 15:
-				skin.key1.clicked()
-			skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-			skin.cursor.add_to_frame(img, cursor_x, cursor_y)
-			skin.key1.add_to_frame(img, 1800, 450)
-			skin.key2.add_to_frame(img, 1800, 500)
+		cursor_x = int(replay_event[osr_index][CURSOR_X] * scale) + move_to_right
+		cursor_y = int(replay_event[osr_index][CURSOR_Y] * scale) + move_down
 
-			x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
-			y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
-			if start_time + skin.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
-				skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"])
-				index_hitobject += 1
-			skin.circles.add_to_frame(img)
+		if replay_event[osr_index][KEYS_PRESSED] == 10 or replay_event[osr_index][KEYS_PRESSED] == 15:
+			skin.key2.clicked()
+		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
+			skin.key1.clicked()
+		skin.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
+		skin.cursor.add_to_frame(img, cursor_x, cursor_y)
+		skin.key1.add_to_frame(img, 1800, 450)
+		skin.key2.add_to_frame(img, 1800, 500)
+
+		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
+		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
+		if cur_time + skin.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
+			skin.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_number"])
+			index_hitobject += 1
+		skin.circles.add_to_frame(img)
 
 
-			old_cursor_x = cursor_x
-			old_cursor_y = cursor_y
-			writer.write(img)
-			start_time += 1000/60
+		old_cursor_x = cursor_x
+		old_cursor_y = cursor_y
+		writer.write(img)
+
+		cur_time += 1000/fps
+		osr_index += nearer(cur_time, replay_event, osr_index)
 
 	writer.release()
 

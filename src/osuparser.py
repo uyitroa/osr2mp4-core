@@ -125,7 +125,7 @@ class Beatmap:
 
 			if int(bin_info[1]):
 				object_type.append("slider")
-				my_dict["slider_img"] = self.gs.get_slider_img(item)
+				#my_dict["slider_img"] = self.gs.get_slider_img(item)
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]
