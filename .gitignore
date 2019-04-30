@@ -1,0 +1,6 @@
+*.png
+*.mp4
+*.mkv
+res/
+venv/
+.DS_Store
