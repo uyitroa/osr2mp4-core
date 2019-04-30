@@ -65,7 +65,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((math.ceil(384 * self.scale + self.extended*2), math.ceil(512 * self.scale + self.extended*2), 4))
+		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4))
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -99,27 +99,33 @@ class GenerateSlider:
 
 		# drew the slider at high res first, then scale down to get smoother slider
 		img = cv2.resize(img, (int(img.shape[1] / self.scale), int(img.shape[0] / self.scale)), interpolation=cv2.INTER_AREA)
-		img = cv2.blur(img, (5, 5))  # blur to smooth out the slider
-		# x_offset =
+		img = cv2.blur(img, (3, 3))  # blur to smooth out the slider
+
+		x_offset = int((ps[0].x - left_x_corner) / self.scale)
+		y_offset = int((ps[0].y - left_y_corner) / self.scale)
+
 		# to_3channel
-		# alpha_s = img[:, :, 3] / 255.0
-		# for c in range(3):
-		# 	img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
-		return img
+		alpha_s = img[:, :, 3] / 255.0
+		for c in range(3):
+			img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
+		return img, x_offset, y_offset
 
 
 if __name__ == "__main__":
 	# slidercode = "96,180,0,2,0,B|286:44|286:44|416:201|416:201|251:340|251:340|95:179|95:179,1,875"
 	# slidercode = "130,77,0,2,0,B|414:155|98:307,1,375"
 	# slidercode = "105,194,0,2,0,L|407:190,1,300"
-	# slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
+	slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
 	# slidercode = "142,314,0,2,0,B|267:54|267:54|387:330|387:330|95:128|95:128|417:124|417:124|141:314,1,1600"
 	# slidercode = "182,326,3923,2,0,P|99:174|394:243,1,700"
 	# slidercode = "485,360,99863,2,0,P|483:342|470:225,1,135.8307"
-	slidercode = "446,22,11863,2,0,L|442:57,1,36.0000013732911"
+	# slidercode = "446,22,11863,2,0,L|442:57,1,36.0000013732911"
 	WIDTH = 1920
 	HEIGHT = 1080
 	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
 	scale = playfield_width/512
 	gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48, scale)
-	cv2.imwrite("test.png", gs.get_slider_img(slidercode))
+	img, x, y = gs.get_slider_img(slidercode)
+	square = np.full((2, 2, 4), 255)
+	img[y-1:y+1, x-1:x+1] = square
+	cv2.imwrite("test.png", img)
