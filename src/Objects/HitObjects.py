@@ -6,10 +6,10 @@ class HitCircleNumber(Images):
 		Images.__init__(self, filename)
 		self.scale = circle_radius * 2 / default_circle_size
 		self.change_size(self.scale, self.scale)
+		self.img[:, :, 3][self.img[:, :, 3] > 0] = 255
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
-
 		self.to_3channel()
 
 
@@ -31,7 +31,7 @@ class Number:
 		y_pos = int(circle.shape[0] / 2)
 
 		for digit in number:
-			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos)
+			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, 4)
 			x_pos += gap
 
 
@@ -106,6 +106,8 @@ class Circles(Images):
 
 		self.slider_combo = slider_combo
 		self.slider_circle = CircleSlider(slidercircle_filename, self.radius_scale)
+		self.add_color(self.slider_circle.orig_img)
+		self.slider_circle.img = np.copy(self.slider_circle.orig_img)
 
 		self.number_drawer = Number(self.orig_rows / 2, path, self.default_circle_size)
 		self.approachCircle = ApproachCircle(approachfile, scale, self.cs, self.time_preempt, self.interval,
@@ -127,18 +129,18 @@ class Circles(Images):
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
 		self.opacity_interval = int(self.fade_in / 100)
 
-	def add_color(self):
-		red = 255.0/255.0
-		green = 0.0/255.0
-		blue = 0.0/255.0
-		self.img[:, :, 0] = np.multiply(self.img[:, :, 0], blue, casting='unsafe')
-		self.img[:, :, 1] = np.multiply(self.img[:, :, 1], green, casting='unsafe')
-		self.img[:, :, 2] = np.multiply(self.img[:, :, 2], red, casting='unsafe')
-		self.img[self.img > 255] = 255
+	def add_color(self, image):
+		red = 221.0/255.0
+		green = 81.0/255.0
+		blue = 81.0/255.0
+		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
+		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
+		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
+		image[self.img > 255] = 255
 
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename)
-		self.add_color()
+		self.add_color(self.img)
 		self.overlayhitcircle(self.img, int(self.overlay.orig_cols / 2), int(self.overlay.orig_rows / 2), self.overlay.img)
 		self.orig_img = self.img
 
@@ -220,7 +222,7 @@ class Circles(Images):
 
 			self.img = np.copy(self.orig_img)
 			self.slider_circle.img = np.copy(self.slider_circle.orig_img)
-
+		print("done")
 		del self.approachCircle
 
 	def add_circle(self, x, y, combo_number, isSlider=0):
@@ -242,3 +244,46 @@ class Circles(Images):
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 
 			i -= 1
+
+
+class Slider:
+	def __init__(self, slidermultiplier):
+		self.sliders = []
+		self.slidermutiplier = slidermultiplier
+
+	def add_slider(self, image, x_offset, y_offset, pixel_legnth, beat_duration):
+		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
+		self.sliders.append([image, x_offset, y_offset, slider_duration])
+
+	# crop everything that goes outside the screen
+	def checkOverdisplay(self, pos1, pos2, limit):
+		start = 0
+		end = pos2 - pos1
+		if pos1 < 0:
+			start = -pos1
+			pos1 = 0
+		if pos2 >= limit:
+			end -= pos2 - limit + 1
+			pos2 = limit - 1
+		return pos1, pos2, start, end
+
+	def to_frame(self, img, background, x_offset, y_offset):
+		# need to do to_3channel first.
+		y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
+		x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
+
+		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
+		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
+		alpha_s = img[ystart:yend, xstart:xend, 3] / 255.0
+		alpha_l = 1.0 - alpha_s
+
+		for c in range(3):
+			background[y1:y2, x1:x2, c] = (
+					img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+
+	def add_to_frame(self, background):
+		i = len(self.sliders - 1)
+		while i > - 1:
+			i -= 1
+
+
