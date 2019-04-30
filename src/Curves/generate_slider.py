@@ -1,5 +1,8 @@
 import cv2
-from Curves.curve import *
+try:
+	from Curves.curve import *
+except Exception:
+	from curve import *
 
 
 class GenerateSlider:
@@ -20,10 +23,11 @@ class GenerateSlider:
 
 		self.radius = radius
 		self.scale = scale
+		self.extended = math.sqrt(2) * self.radius * self.scale
 
 	def convert(self, slider_code):
 		string = slider_code.split(",")
-		ps = [Position(int(string[0]) * self.scale, int(string[1]) * self.scale)]
+		ps = [Position(int(string[0]) * self.scale + self.extended, int(string[1]) * self.scale + self.extended)]
 		slider_path = string[5]
 		slider_path = slider_path.split("|")
 		slider_type = slider_path[0]
@@ -31,7 +35,7 @@ class GenerateSlider:
 
 		for pos in slider_path:
 			pos = pos.split(":")
-			ps.append(Position(int(pos[0]) * self.scale, int(pos[1]) * self.scale))
+			ps.append(Position(int(pos[0]) * self.scale + self.extended, int(pos[1]) * self.scale + self.extended))
 
 		pixel_length = float(string[7])
 		return ps, pixel_length * self.scale, slider_type
@@ -61,7 +65,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((math.ceil(384 * self.scale), math.ceil(512 * self.scale), 4))
+		im = np.zeros((math.ceil(384 * self.scale + self.extended*2), math.ceil(512 * self.scale + self.extended*2), 4))
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -86,17 +90,21 @@ class GenerateSlider:
 		img = self.draw(curve_pos)
 
 		# crop useless part of image
-		extended = math.sqrt(2 * ((self.radius * self.scale) ** 2))
-		left_y_corner = int(min_y - extended) if int(min_y - extended) >= 0 else 0
-		left_x_corner = int(min_x - extended) if int(min_x - extended) >= 0 else 0
-		right_y_corner = math.ceil(max_y + extended) if math.ceil(max_y + extended) < img.shape[0] else img.shape[0]
-		right_x_corner = math.ceil(max_x + extended) if math.ceil(max_x + extended) < img.shape[1] else img.shape[1]
+		left_y_corner = int(min_y - self.extended) if int(min_y - self.extended) >= 0 else 0
+		left_x_corner = int(min_x - self.extended) if int(min_x - self.extended) >= 0 else 0
+		right_y_corner = int(max_y + self.extended) if int(max_y + self.extended) < img.shape[0] else img.shape[0]
+		right_x_corner = int(max_x + self.extended) if int(max_x + self.extended) < img.shape[1] else img.shape[1]
 
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
 		# drew the slider at high res first, then scale down to get smoother slider
 		img = cv2.resize(img, (int(img.shape[1] / self.scale), int(img.shape[0] / self.scale)), interpolation=cv2.INTER_AREA)
 		img = cv2.blur(img, (5, 5))  # blur to smooth out the slider
+		# x_offset =
+		# to_3channel
+		# alpha_s = img[:, :, 3] / 255.0
+		# for c in range(3):
+		# 	img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
 		return img
 
 
@@ -107,7 +115,8 @@ if __name__ == "__main__":
 	# slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
 	# slidercode = "142,314,0,2,0,B|267:54|267:54|387:330|387:330|95:128|95:128|417:124|417:124|141:314,1,1600"
 	# slidercode = "182,326,3923,2,0,P|99:174|394:243,1,700"
-	slidercode = "485,360,99863,2,0,P|483:342|470:225,1,135.8307"
+	# slidercode = "485,360,99863,2,0,P|483:342|470:225,1,135.8307"
+	slidercode = "446,22,11863,2,0,L|442:57,1,36.0000013732911"
 	WIDTH = 1920
 	HEIGHT = 1080
 	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
