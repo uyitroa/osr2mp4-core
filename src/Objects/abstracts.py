@@ -30,9 +30,13 @@ class Images:
 		if pos1 < 0:
 			start = -pos1
 			pos1 = 0
+		if pos1 >= limit:  # werid but still
+			pos1 -= pos2 - limit
+			pos2 = limit
+			end = pos2 - pos1
 		if pos2 >= limit:
-			end -= pos2 - limit + 1
-			pos2 = limit - 1
+			end -= pos2 - limit
+			pos2 = limit
 		return pos1, pos2, start, end
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
@@ -44,10 +48,14 @@ class Images:
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 		alpha_s = self.img[ystart:yend, xstart:xend, 3] / 255.0
 		alpha_l = 1.0 - alpha_s
-
-		for c in range(channel):
-			background[y1:y2, x1:x2, c] = (
-					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+		try:
+			for c in range(channel):
+				background[y1:y2, x1:x2, c] = (
+						self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+		except Exception:
+			print(y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2))
+			print(y1, y2, ystart, yend)
+			x1.kys
 
 	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA):
 		n_rows = int(new_row * self.orig_rows)
