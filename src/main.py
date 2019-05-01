@@ -79,8 +79,8 @@ def main():
 			component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key1.clicked()
-			component.key1.add_to_frame(img, 1800, 450)
-			component.key2.add_to_frame(img, 1800, 500)
+		component.key1.add_to_frame(img, 1800, 450)
+		component.key2.add_to_frame(img, 1800, 500)
 
 		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * scale) + move_to_right
 		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * scale) + move_down
