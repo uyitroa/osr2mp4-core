@@ -164,8 +164,6 @@ class Beatmap:
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
 			index += 1
-			if index > 1010:
-				break
 		self.start_time = self.hitobjects[0]["time"]
 		self.end_time = self.hitobjects[-1]["time"]
 

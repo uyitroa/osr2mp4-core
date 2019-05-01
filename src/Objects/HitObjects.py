@@ -134,9 +134,9 @@ class Circles(Images):
 		red = color[0]/255.0
 		green = color[1]/255.0
 		blue = color[2]/255.0
-		image[:, :, 0] = np.multiply(image[:, :, 0], red, casting='unsafe')
+		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
 		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], blue, casting='unsafe')
+		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
 		image[image > 255] = 255
 
 	def load_circle(self):
@@ -189,11 +189,14 @@ class Circles(Images):
 
 			self.orig_color_img = np.copy(self.orig_img)
 			self.add_color(self.orig_color_img, color)
+			cv2.imwrite(str(c) + "test.png", self.orig_color_img)
 			self.overlayhitcircle(self.orig_color_img, int(self.overlay.orig_cols / 2), int(self.overlay.orig_rows / 2),
 			                      self.overlay.img)
+			tmp = self.orig_img
 			self.orig_img = self.orig_color_img
 			self.change_size(self.radius_scale * 1.13, self.radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
 			self.orig_color_img = np.copy(self.img)
+			self.orig_img = tmp
 			self.circle_frames.append([])
 
 			self.orig_color_slider = np.copy(self.slider_circle.orig_img)
