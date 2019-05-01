@@ -30,9 +30,13 @@ class Images:
 		if pos1 < 0:
 			start = -pos1
 			pos1 = 0
+		if pos1 >= limit:  # werid but still
+			pos1 -= pos2 - limit
+			pos2 = limit
+			end = pos2 - pos1
 		if pos2 >= limit:
-			end -= pos2 - limit + 1
-			pos2 = limit - 1
+			end -= pos2 - limit
+			pos2 = limit
 		return pos1, pos2, start, end
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):

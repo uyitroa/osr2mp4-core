@@ -82,6 +82,7 @@ class Beatmap:
 			my_dict["Volume"] = float(items[5])
 			my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
+		self.timing_point.append({"Offset": float('inf')})
 
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
