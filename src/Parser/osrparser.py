@@ -18,7 +18,6 @@ def setupReplay(osrfile, start_time, end_time):
 
 	start_osr = max(0, start_time - 3000)
 	end_osr = end_time + 1000
-
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
 		total_time += times
@@ -36,7 +35,6 @@ def setupReplay(osrfile, start_time, end_time):
 		replay_data[index][CURSOR_Y] = replay_info.play_data[index].y
 		replay_data[index][KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
 		replay_data[index][TIMES] = total_time
-
 	replay_data = replay_data[start_index:end_index]
 	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
 	start_time = replay_data[0][TIMES]

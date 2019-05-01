@@ -1,3 +1,4 @@
+import time
 import os
 from Objects.Components import *
 from Objects.HitObjects import Circles, Slider
@@ -20,7 +21,7 @@ FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
-MOVE_DOWN = int(HEIGHT * 0.2)
+MOVE_DOWN = int(HEIGHT * 0.1)
 BEATMAP_FILE = "../res/katayoku.osu"
 REPLAY_FILE = "../res/tori.osr"
 
@@ -58,7 +59,7 @@ def setupBackground():
 
 
 def main():
-
+	start_time = time.time()
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 
 	orig_img = setupBackground()
@@ -68,7 +69,7 @@ def main():
 	beatmap = read_file(BEATMAP_FILE, SCALE, skin.colours)
 
 	replay_event, cur_time = setupReplay(REPLAY_FILE, beatmap.start_time, beatmap.end_time)
-	osr_index = 0
+	osr_index = 1
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * SCALE) + MOVE_TO_RIGHT
@@ -77,10 +78,14 @@ def main():
 	                   beatmap.slider_combo, skin.colours)
 
 	index_hitobject = 0
+	cur_time = 0
 	cur_offset = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	print("setup done")
 	while osr_index < len(replay_event) - 3:  # len(replay_event) - 3
+		if int(cur_time) % 60000 == 0:
+			print("Current time:", cur_time)
+			print("Running for:", time.time() - start_time)
 		img = np.copy(orig_img)  # reset background
 
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
@@ -121,7 +126,7 @@ def main():
 
 		cur_time += 1000 / FPS
 		osr_index += nearer(cur_time, replay_event, osr_index)
-		if cur_time > beatmap.timing_point[cur_offset]["Offset"]:
+		if cur_time > beatmap.timing_point[cur_offset + 1]["Offset"]:
 			cur_offset += 1
 
 	writer.release()
