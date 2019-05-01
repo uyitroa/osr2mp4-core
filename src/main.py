@@ -1,3 +1,4 @@
+import time
 import os
 from Objects.Components import *
 from Objects.HitObjects import Circles, Slider
@@ -20,10 +21,10 @@ FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
-MOVE_DOWN = int(HEIGHT * 0.2)
-BEATMAP_FILE = "../res/katayoku.osu"
-REPLAY_FILE = "../res/tori.osr"
-
+MOVE_DOWN = int(HEIGHT * 0.1)
+BEATMAP_FILE = "../res/freedomdive.osu"
+REPLAY_FILE = "../res/fd.osr"
+start_time = time.time()
 
 class Object:
 	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, gap, slider_combo, colors):
@@ -81,6 +82,12 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	print("setup done")
 	while osr_index < len(replay_event) - 3:  # len(replay_event) - 3
+		if int(cur_time) % int(1000 / FPS * 100) < 10:
+			print("\n\nCurrent time:", cur_time)
+			print("Running for:", time.time() - start_time)
+			print("Osr index:", osr_index)
+			print("hit object index:", index_hitobject)
+			print("Offset index:", cur_offset)
 		img = np.copy(orig_img)  # reset background
 
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
@@ -95,6 +102,7 @@ def main():
 
 		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * SCALE) + MOVE_TO_RIGHT
 		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * SCALE) + MOVE_DOWN
+
 		if cur_time + component.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
 			isSlider = 0
 			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
@@ -121,8 +129,10 @@ def main():
 
 		cur_time += 1000 / FPS
 		osr_index += nearer(cur_time, replay_event, osr_index)
-		if cur_time > beatmap.timing_point[cur_offset]["Offset"]:
+		if cur_time + component.circles.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
 			cur_offset += 1
+			if cur_time + component.circles.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
+				cur_offset += 1
 
 	writer.release()
 
