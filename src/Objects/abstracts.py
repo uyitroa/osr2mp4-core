@@ -27,13 +27,15 @@ class Images:
 	def checkOverdisplay(self, pos1, pos2, limit):
 		start = 0
 		end = pos2 - pos1
+
+		if pos1 >= limit:
+			return 0, 0, 0, 0
+		if pos2 <= 0:
+			return 0, 0, 0, 0
+
 		if pos1 < 0:
 			start = -pos1
 			pos1 = 0
-		if pos1 >= limit:  # werid but still
-			pos1 -= pos2 - limit
-			pos2 = limit
-			end = pos2 - pos1
 		if pos2 >= limit:
 			end -= pos2 - limit
 			pos2 = limit
@@ -48,7 +50,6 @@ class Images:
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 		alpha_s = self.img[ystart:yend, xstart:xend, 3] / 255.0
 		alpha_l = 1.0 - alpha_s
-
 		for c in range(channel):
 			background[y1:y2, x1:x2, c] = (
 					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
