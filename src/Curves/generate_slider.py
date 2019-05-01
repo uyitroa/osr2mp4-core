@@ -44,7 +44,8 @@ class GenerateSlider:
 		# get pos from t = 0 to t = 1
 		cur_pos = baiser_class(0)
 		t = 0.02
-		curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
+		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
+		curve_pos = []
 		while t <= 1:
 			cur_pos = baiser_class(t)
 			curve_pos.append([int(cur_pos.x), int(cur_pos.y)])
