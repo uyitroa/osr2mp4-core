@@ -82,7 +82,6 @@ class Beatmap:
 			my_dict["Volume"] = float(items[5])
 			my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
-		self.timing_point.append({"Offset": float('inf')})
 
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
@@ -165,8 +164,6 @@ class Beatmap:
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
 			index += 1
-			# if index > 1005:
-			# 	break
 		self.start_time = self.hitobjects[0]["time"]
 		self.end_time = self.hitobjects[-1]["time"]
 
