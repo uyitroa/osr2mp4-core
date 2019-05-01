@@ -88,10 +88,10 @@ class Cursortrail(Images):
 		self.prepare_trails()
 
 	def prepare_trails(self):
-		for x in [0.8, 0.82, 0.85, 0.89, 0.94, 0.99, 1, 0]:
+		for x in [0.45, 0.5, 0.6, 0.65, 0.75, 0.9, 1, 0]:
+			self.img = np.copy(self.orig_img)
 			self.img[:, :, 0:3] = self.orig_img[:, :, 0:3] * x
 			self.trail_frames.append(self.img)
-			self.img = np.copy(self.orig_img)
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		# snake algorithm, previous takes the next's one place, etc... the first one takes (x_offset, y_offset) pos.
@@ -199,3 +199,13 @@ class Playfield:
 
 		for c in range(0, 3):
 			background[y1:y2, x1:x2, c] = (alpha_s * self.img[:, :, c] + alpha_l * background[y1:y2, x1:x2, c])
+
+
+class InputOverlayBG(Images):
+	def __init__(self, filename):
+		Images.__init__(self, filename)
+		self.to_3channel()
+		self.orig_img = np.rot90(self.orig_img, 3)
+		self.orig_rows = self.orig_img.shape[0]
+		self.orig_cols = self.orig_img.shape[1]
+		self.img = np.copy(self.orig_img)

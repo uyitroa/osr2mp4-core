@@ -3,7 +3,7 @@ from Curves.generate_slider import *
 
 
 class Beatmap:
-	def __init__(self, info, scale):
+	def __init__(self, info, scale, colors):
 		self.info = info
 		self.general = {}
 		self.diff = {}
@@ -11,11 +11,14 @@ class Beatmap:
 		self.breakperiods = []
 		self.timing_point = []
 		self.hitobjects = []
-		self.max_combo = 0
-		self.slider_combo = set()  # array of combo that are sliders. to prepare slider frames with those combo
+		self.max_combo = {}
+		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
-		self.gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48, self.scale)
+		self.sliderborder = colors["SliderBorder"]
+		self.slideroverride = colors["SliderTrackOverride"]
+		self.ncombo = colors["ComboNumber"]
+		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, 36.48, self.scale)
 
 		self.parse_general()
 		self.parse_diff()
@@ -84,6 +87,7 @@ class Beatmap:
 		hitobject = self.info[-1]
 		hitobject = hitobject.split("\n")
 		cur_combo_number = 1
+		cur_combo_color = 1
 
 		index = 0
 		stacking = False
@@ -126,7 +130,11 @@ class Beatmap:
 
 			if int(bin_info[1]):
 				object_type.append("slider")
-				self.slider_combo.add(cur_combo_number)
+				if cur_combo_number in self.slider_combo:
+					self.slider_combo[cur_combo_number].add(cur_combo_color)
+				else:
+					self.slider_combo[cur_combo_number] = {cur_combo_color}
+
 				my_dict["slider_img"], my_dict["x_offset"], my_dict["y_offset"] = self.gs.get_slider_img(item)
 				my_dict["pixel_length"] = float(osuobject[7])
 				if len(osuobject) > 9:
@@ -135,23 +143,26 @@ class Beatmap:
 
 			if int(bin_info[2]):
 				object_type.append("new combo")
+				if cur_combo_color not in self.max_combo or cur_combo_number > self.max_combo[cur_combo_color]:
+					self.max_combo[cur_combo_color] = cur_combo_number
 				cur_combo_number = 1
 				skip = 1
 				n_combo = bin_info[4:7]
 				n_combo = int(n_combo[::-1], 2)
 				skip += n_combo
+				cur_combo_color += skip
+				if cur_combo_color > self.ncombo:
+					cur_combo_color = cur_combo_color - self.ncombo
 
 			if int(bin_info[3]):
 				object_type.append("spinner")
-
+			my_dict["combo_color"] = cur_combo_color
 			my_dict["combo_number"] = cur_combo_number
 			my_dict["type"] = object_type
 			my_dict["skip"] = skip
 			my_dict["sound"] = int(osuobject[4])
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
-			if cur_combo_number > self.max_combo:
-				self.max_combo = cur_combo_number
 			index += 1
 			if index > 1010:
 				break
@@ -172,12 +183,12 @@ def split(delimiters, string):
 	return re.split(regrex_pattern, string)
 
 
-def read_file(filename, scale):
+def read_file(filename, scale, colors):
 	content = open(filename, "r").read()
 	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
 	              "[HitObjects]"]
 	info = split(delimiters, content)
-	return Beatmap(info, scale)
+	return Beatmap(info, scale, colors)
 
 
 if __name__ == "__main__":
