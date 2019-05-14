@@ -81,7 +81,7 @@ def main():
 	cur_offset = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	print("setup done")
-	while osr_index < len(replay_event) - 3:  # len(replay_event) - 3
+	while osr_index < 1000:  # len(replay_event) - 3
 		if int(cur_time) % int(1000 / FPS * 100) < 10:
 			print("\n\nCurrent time:", cur_time)
 			print("Running for:", time.time() - start_time)
