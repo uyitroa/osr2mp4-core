@@ -116,7 +116,7 @@ class Frames:
 
 	def prepare_frame(self, frame_queue):
 		queue_index = 0
-		while self.osr_index < len(self.replay_event) - 3:  # len(replay_event) - 3
+		while self.osr_index < 1000:  # len(replay_event) - 3
 			self.img = np.copy(self.orig_img)  # reset background
 
 			self.cursor_x = int(self.replay_event[self.osr_index][CURSOR_X] * SCALE) + self.MOVE_TO_RIGHT

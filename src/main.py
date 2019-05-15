@@ -9,9 +9,11 @@ WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
 
+
 def prepare_frame(frame_queue):
 	my_frame = Frames()
 	my_frame.prepare_frame(frame_queue)
+
 
 def prepare_write(frame_queue, process):
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
@@ -23,12 +25,14 @@ def prepare_write(frame_queue, process):
 		writer.write(img)
 	writer.release()
 
+
 def main():
 	queue = Queue()
 	process = Process(target=prepare_frame, args=(queue,))
 	process.start()
 	prepare_write(queue, process)
 	process.join()
+
 
 if __name__ == "__main__":
 	main()
