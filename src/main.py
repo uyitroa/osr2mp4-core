@@ -6,6 +6,9 @@ from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
 import numpy as np
+import ray
+
+ray.init()
 
 # index for replay_event
 CURSOR_X = 0
