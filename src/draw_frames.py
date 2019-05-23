@@ -5,6 +5,9 @@ from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
 import numpy as np
+import multiprocessing
+import ctypes
+
 
 # const
 WIDTH = 1920
@@ -62,7 +65,14 @@ class Frames:
 		self.cur_offset = 0
 		self.beatmap.hitobjects.append(
 			{"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
-		self.img = np.copy(self.orig_img)
+
+		shared_array_base = multiprocessing.Array(ctypes.c_double, self.orig_img.shape[0] * self.orig_img.shape[1] * 3)
+		self.img = np.ctypeslib.as_array(shared_array_base.get_obj())
+		self.img = self.img.reshape(*self.orig_img.shape)
+		self.img[...] = self.orig_img[...]
+		
+		self.next_frame = np.empty(self.orig_img.shape, dtype=np.uint8)
+		self.writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), self.FPS, (WIDTH, HEIGHT))
 		print("setup done")
 
 	def nearer(self, cur_time, replay, index):
@@ -114,18 +124,37 @@ class Frames:
 		self.component.cursor_trail.add_to_frame(self.img, self.old_cursor_x, self.old_cursor_y)
 		self.component.cursor.add_to_frame(self.img, self.cursor_x, self.cursor_y)
 
-	def prepare_frame(self, frame_queue):
+	def prepare_frame(self):
 		queue_index = 0
-		while self.osr_index < len(self.replay_event) - 3:  # len(replay_event) - 3
-			self.img = np.copy(self.orig_img)  # reset background
+		self.cursor_x = int(self.replay_event[self.osr_index][CURSOR_X] * SCALE) + self.MOVE_TO_RIGHT
+		self.cursor_y = int(self.replay_event[self.osr_index][CURSOR_Y] * SCALE) + self.MOVE_DOWN
+
+		self.edit_frame()
+		self.next_frame[...] = self.img[...]
+
+		self.old_cursor_x = self.cursor_x
+		self.old_cursor_y = self.cursor_y
+
+		self.cur_time += 1000 / self.FPS
+		self.osr_index += self.nearer(self.cur_time, self.replay_event, self.osr_index)
+		if self.cur_time + self.component.circles.time_preempt > self.beatmap.timing_point[self.cur_offset + 1]["Offset"]:
+			self.cur_offset += 1
+			if self.cur_time + self.component.circles.time_preempt > self.beatmap.timing_point[self.cur_offset + 1]["Offset"]:
+				self.cur_offset += 1
+		while self.osr_index < 1000:  # len(replay_event) - 3
+			self.img[...] = self.orig_img[...]
 
 			self.cursor_x = int(self.replay_event[self.osr_index][CURSOR_X] * SCALE) + self.MOVE_TO_RIGHT
 			self.cursor_y = int(self.replay_event[self.osr_index][CURSOR_Y] * SCALE) + self.MOVE_DOWN
-
-			self.edit_frame()
-			frame_queue.put(self.img)
-			queue_index += 1
-			print(queue_index)
+			start = time.time()
+			p = multiprocessing.Process(target=self.edit_frame)
+			p.start()
+			self.writer.write(self.next_frame)
+			#print(time.time() - start)
+			p.join()
+			#start = time.time()
+			#self.edit_frame()
+			self.next_frame[...] = self.img[...]
 
 			self.old_cursor_x = self.cursor_x
 			self.old_cursor_y = self.cursor_y
