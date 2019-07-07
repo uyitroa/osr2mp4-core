@@ -64,20 +64,18 @@ class CircleOverlay(Images):
 		Images.__init__(self, filename)
 
 
+class SliderCircleOverlay(Images):
+	def __init__(self, filename):
+		Images.__init__(self, filename)
+
+
 class CircleSlider(Images):
 	def __init__(self, filename, radius_scale):
 		Images.__init__(self, filename)
-		# cuz overlay hitcircle
-		self.change_size(radius_scale * 1.13, radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
-		max_scale = 255/np.max(self.img[:, :, 3])
-		self.img[:, :, 3] = self.img[:, :, 3] * max_scale
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
 
 
 class Circles(Images):
-	def __init__(self, filename, overlay_filename, slidercircle_filename, slider_combo,
+	def __init__(self, filename, overlay_filename, slideroverlay_filename, slidercircle_filename, slider_combo,
 	             path, diff, scale, approachfile, maxcombo, gap, colors):
 		"""
 		:param filename: str hitcircle file
@@ -92,6 +90,7 @@ class Circles(Images):
 		"""
 		Images.__init__(self, filename)
 		self.overlay_filename = overlay_filename
+		self.slideroverlay_filename = slideroverlay_filename
 		self.diff = diff
 		self.circles = []
 		self.interval = 1000 / 60  # ms between 2 frames
@@ -141,7 +140,7 @@ class Circles(Images):
 
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename)
-
+		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename)
 		cur_radius = self.orig_cols / 2
 		self.radius_scale = self.cs / cur_radius
 		self.default_circle_size = self.orig_rows  # save for number class
@@ -189,8 +188,7 @@ class Circles(Images):
 
 			self.orig_color_img = np.copy(self.orig_img)
 			self.add_color(self.orig_color_img, color)
-			cv2.imwrite(str(c) + "test.png", self.orig_color_img)
-			self.overlayhitcircle(self.orig_color_img, int(self.overlay.orig_cols / 2), int(self.overlay.orig_rows / 2),
+			self.overlayhitcircle(self.orig_color_img, int(self.overlay.orig_cols/2), int(self.overlay.orig_rows/2),
 			                      self.overlay.img)
 			tmp = self.orig_img
 			self.orig_img = self.orig_color_img
@@ -200,8 +198,18 @@ class Circles(Images):
 			self.circle_frames.append([])
 
 			self.orig_color_slider = np.copy(self.slider_circle.orig_img)
+			tmp = self.slider_circle.orig_img
 			self.add_color(self.orig_color_slider, color)
-			self.slider_circle.img = np.copy(self.orig_color_slider)
+			self.overlayhitcircle(self.orig_color_slider, int(self.slidercircleoverlay.orig_cols/2), int(self.slidercircleoverlay.orig_rows/2),
+			                      self.slidercircleoverlay.img)
+
+			self.slider_circle.orig_img = self.orig_color_slider
+			self.slider_circle.change_size(self.radius_scale * 1.13, self.radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
+			self.slider_circle.orig_rows = self.slider_circle.orig_img.shape[0]
+			self.slider_circle.orig_cols = self.slider_circle.orig_img.shape[1]
+			self.orig_color_slider = np.copy(self.slider_circle.img)
+			self.slider_circle.orig_img = tmp
+
 			self.slidercircle_frames.append({})   # so to find the right combo will be faster
 
 			for x in range(1, self.maxcombo[c] + 1):
