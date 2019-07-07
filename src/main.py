@@ -22,8 +22,8 @@ PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual 
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/freedomdive.osu"
-REPLAY_FILE = "../res/fd.osr"
+BEATMAP_FILE = "../res/katayoku.osu"
+REPLAY_FILE = "../res/tori.osr"
 start_time = time.time()
 
 class Object:
@@ -34,7 +34,8 @@ class Object:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircle.png",
+		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircleoverlay.png",
+		                       path + "sliderstartcircle.png",
 		                       slider_combo, path, diff, SCALE, path + "approachcircle.png", maxcombo, gap, colors)
 		self.sliders = Slider(diff["SliderMultiplier"], self.circles.time_preempt, self.circles.opacity_interval, SCALE)
 
@@ -82,12 +83,12 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	print("setup done")
 	while osr_index < 1000:  # len(replay_event) - 3
-		if int(cur_time) % int(1000 / FPS * 100) < 10:
-			print("\n\nCurrent time:", cur_time)
-			print("Running for:", time.time() - start_time)
-			print("Osr index:", osr_index)
-			print("hit object index:", index_hitobject)
-			print("Offset index:", cur_offset)
+		# if int(cur_time) % int(1000 / FPS * 100) < 10:
+		# 	print("\n\nCurrent time:", cur_time)
+		# 	print("Running for:", time.time() - start_time)
+		# 	print("Osr index:", osr_index)
+		# 	print("hit object index:", index_hitobject)
+		# 	print("Offset index:", cur_offset)
 		img = np.copy(orig_img)  # reset background
 
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
