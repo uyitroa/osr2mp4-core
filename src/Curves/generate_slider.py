@@ -99,8 +99,9 @@ class GenerateSlider:
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
 		# drew the slider at high res first, then scale down to get smoother slider
+		img = cv2.blur(img, (5, 5))  # blur to smooth out the slider
 		img = cv2.resize(img, (int(img.shape[1] / self.scale), int(img.shape[0] / self.scale)), interpolation=cv2.INTER_AREA)
-		img = cv2.blur(img, (3, 3))  # blur to smooth out the slider
+		# img = cv2.blur(img, (2, 2))  # blur to smooth out the slider
 
 		x_offset = int((ps[0].x - left_x_corner) / self.scale)
 		y_offset = int((ps[0].y - left_y_corner) / self.scale)
