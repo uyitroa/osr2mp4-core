@@ -1,0 +1,4 @@
+fix size if default size of circle is not 128
+fix position of input overlay
+fix quality of slider
+fix slidercircle position not sync with sliderbody
