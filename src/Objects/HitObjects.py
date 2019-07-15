@@ -155,9 +155,10 @@ class Circles(Images):
 
 		alpha_s = overlay_image[ystart:yend, xstart:xend, 3] / 255.0
 		alpha_l = 1 - alpha_s
-		for c in range(4):
+		for c in range(3):
 			background[y1:y2, x1:x2, c] = overlay_image[ystart:yend, xstart:xend, c] * alpha_s + \
 			                              alpha_l * background[y1:y2, x1:x2, c]
+			background[y1:y2, x1:x2, 3] = overlay_image[ystart:yend, xstart:xend, 3] + alpha_l * background[y1:y2, x1:x2, 3]
 
 	def overlay_approach(self, background, x_offset, y_offset, circle_img):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -192,7 +193,7 @@ class Circles(Images):
 			                      self.overlay.img)
 			tmp = self.orig_img
 			self.orig_img = self.orig_color_img
-			self.change_size(self.radius_scale * 1.13, self.radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
+			self.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
 			self.orig_color_img = np.copy(self.img)
 			self.orig_img = tmp
 			self.circle_frames.append([])
@@ -204,7 +205,7 @@ class Circles(Images):
 			                      self.slidercircleoverlay.img)
 
 			self.slider_circle.orig_img = self.orig_color_slider
-			self.slider_circle.change_size(self.radius_scale * 1.13, self.radius_scale * 1.13, inter_type=cv2.INTER_LINEAR)
+			self.slider_circle.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
 			self.slider_circle.orig_rows = self.slider_circle.orig_img.shape[0]
 			self.slider_circle.orig_cols = self.slider_circle.orig_img.shape[1]
 			self.orig_color_slider = np.copy(self.slider_circle.img)
