@@ -1,7 +1,7 @@
 import time
 import os
 from Objects.Components import *
-from Objects.HitObjects import Circles, Slider
+from Objects.HitObjects import HitObjectManager
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
@@ -14,7 +14,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin2/"
+PATH = "../res/skin3/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -35,10 +35,7 @@ class Object:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.circles = Circles(path + "hitcircle.png", path + "hitcircleoverlay.png", path + "sliderstartcircleoverlay.png",
-		                       path + "sliderstartcircle.png",
-		                       slider_combo, path, diff, SCALE, path + "approachcircle.png", maxcombo, gap, colors)
-		self.sliders = Slider(diff["SliderMultiplier"], self.circles.time_preempt, self.circles.opacity_interval, SCALE)
+		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors)
 
 
 def nearer(cur_time, replay, index):
@@ -56,12 +53,11 @@ def setupBackground():
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
 	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background.png")
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols/2), int(HEIGHT/2))
+	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(HEIGHT / 2))
 	return img
 
 
 def main():
-
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 
 	orig_img = setupBackground()
@@ -84,12 +80,6 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	print("setup done")
 	while osr_index < 1000:  # len(replay_event) - 3
-		# if int(cur_time) % int(1000 / FPS * 100) < 10:
-		# 	print("\n\nCurrent time:", cur_time)
-		# 	print("Running for:", time.time() - start_time)
-		# 	print("Osr index:", osr_index)
-		# 	print("hit object index:", index_hitobject)
-		# 	print("Offset index:", cur_offset)
 		img = np.copy(orig_img)  # reset background
 
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
@@ -99,29 +89,29 @@ def main():
 			component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key1.clicked()
-		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols/2), int(HEIGHT/2) - 80)
-		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols/2), int(HEIGHT/2) - 30)
+		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2) - 80)
+		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2) - 30)
 
 		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * SCALE) + MOVE_TO_RIGHT
 		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * SCALE) + MOVE_DOWN
 
-		if cur_time + component.circles.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
+		if cur_time + component.hitobjectmanager.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
 			isSlider = 0
 			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
 				isSlider = 1
-				component.sliders.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
-				                             beatmap.hitobjects[index_hitobject]["x_offset"],
-				                             beatmap.hitobjects[index_hitobject]["y_offset"],
-				                             x_circle, y_circle,
-				                             beatmap.hitobjects[index_hitobject]["pixel_length"],
-				                             beatmap.timing_point[cur_offset]["BeatDuration"])
-
-			component.circles.add_circle(x_circle, y_circle, beatmap.hitobjects[index_hitobject]["combo_color"],
-			                             beatmap.hitobjects[index_hitobject]["combo_number"],
-			                             isSlider)
+			component.hitobjectmanager.add_circle(x_circle, y_circle,
+			                                      beatmap.hitobjects[index_hitobject]["combo_color"],
+			                                      beatmap.hitobjects[index_hitobject]["combo_number"],
+			                                      isSlider)
+			if isSlider:
+				component.hitobjectmanager.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
+				                                      beatmap.hitobjects[index_hitobject]["x_offset"],
+				                                      beatmap.hitobjects[index_hitobject]["y_offset"],
+				                                      x_circle, y_circle,
+				                                      beatmap.hitobjects[index_hitobject]["pixel_length"],
+				                                      beatmap.timing_point[cur_offset]["BeatDuration"])
 			index_hitobject += 1
-		component.sliders.add_to_frame(img)
-		component.circles.add_to_frame(img)
+		component.hitobjectmanager.add_to_frame(img)
 
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
@@ -131,9 +121,9 @@ def main():
 
 		cur_time += 1000 / FPS
 		osr_index += nearer(cur_time, replay_event, osr_index)
-		if cur_time + component.circles.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
+		if cur_time + component.hitobjectmanager.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
 			cur_offset += 1
-			if cur_time + component.circles.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
+			if cur_time + component.hitobjectmanager.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
 
 	writer.release()
@@ -143,6 +133,7 @@ if __name__ == "__main__":
 	main()
 	print("Done Converting..")
 	os.system("ffmpeg -i output.mkv -c copy output.mp4 -y")
+	os.system("rm output.mkv")
 # replay_info = osrparse.parse_replay_file("../res/imaginedragons.osr")
 # replay_event = setupReplay(replay_info)
 # print(replay_event)
