@@ -74,7 +74,7 @@ class InputOverlay(Images):
 		super().add_to_frame(background, x_offset, y_offset)
 		center_x = int(x_offset - self.font_width / 2)
 		center_y = int(self.font_height / 2 + y_offset)
-		cv2.putText(background, self.n, (center_x, center_y), cv2.FONT_HERSHEY_DUPLEX, self.font_scale, self.color, 1)
+		cv2.putText(background, self.n, (center_x, center_y), cv2.FONT_HERSHEY_DUPLEX, self.font_scale, self.color, 1, lineType=cv2.LINE_AA)
 		self.clicked_called = False
 
 
