@@ -1,6 +1,13 @@
 from Objects.abstracts import *
 
 
+hitcircle = "hitcircle.png"
+hitcircleoverlay = "hitcircleoverlay.png"
+sliderstartcircleoverlay = "sliderstartcircleoverlay.png"
+sliderstartcircle = "sliderstartcircle.png"
+approachcircle = "approachcircle.png"
+
+
 class HitCircleNumber(Images):
 	def __init__(self, filename, circle_radius, default_circle_size):
 		Images.__init__(self, filename)
@@ -74,23 +81,18 @@ class CircleSlider(Images):
 		Images.__init__(self, filename)
 
 
-class Circles(Images):
-	def __init__(self, filename, overlay_filename, slideroverlay_filename, slidercircle_filename, slider_combo,
-	             path, diff, scale, approachfile, maxcombo, gap, colors):
+class PrepareCircles(Images):
+	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors):
 		"""
-		:param filename: str hitcircle file
-		:param overlay_filename: str circle overlay file
-		:param slidercircle_filename: str slidercircle file name
 		:param path: str where is the skin folder
 		:param diff: dict, contains ApproachRate, CircleSize, OverallDifficulty, HPDrain
 		:param scale: float scale of current screen res with 512x384
-		:param approachfile: str approach circle file
 		:param maxcombo: dict, biggest number we need to overlap, for preparing_circle, where we overlap every number with every circle
 		:param gap: int, gap between 2 digits
 		"""
-		Images.__init__(self, filename)
-		self.overlay_filename = overlay_filename
-		self.slideroverlay_filename = slideroverlay_filename
+		Images.__init__(self, path + hitcircle)
+		self.overlay_filename = path + hitcircleoverlay
+		self.slideroverlay_filename = path + sliderstartcircleoverlay
 		self.diff = diff
 		self.circles = []
 		self.interval = 1000 / 60  # ms between 2 frames
@@ -107,10 +109,10 @@ class Circles(Images):
 		self.gap = gap
 
 		self.slider_combo = slider_combo
-		self.slider_circle = CircleSlider(slidercircle_filename, self.radius_scale)
+		self.slider_circle = CircleSlider(path + sliderstartcircle, self.radius_scale)
 
 		self.number_drawer = Number(self.orig_rows / 2, path, self.default_circle_size)
-		self.approachCircle = ApproachCircle(approachfile, scale, self.cs, self.time_preempt, self.interval,
+		self.approachCircle = ApproachCircle(path + approachcircle, scale, self.cs, self.time_preempt, self.interval,
 		                                     self.opacity_interval)
 
 		self.circle_frames = []
@@ -158,7 +160,7 @@ class Circles(Images):
 		for c in range(3):
 			background[y1:y2, x1:x2, c] = overlay_image[ystart:yend, xstart:xend, c] * alpha_s + \
 			                              alpha_l * background[y1:y2, x1:x2, c]
-			background[y1:y2, x1:x2, 3] = overlay_image[ystart:yend, xstart:xend, 3] + alpha_l * background[y1:y2, x1:x2, 3]
+		background[y1:y2, x1:x2, 3] = overlay_image[ystart:yend, xstart:xend, 3] + alpha_l * background[y1:y2, x1:x2, 3]
 
 	def overlay_approach(self, background, x_offset, y_offset, circle_img):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -203,7 +205,6 @@ class Circles(Images):
 			self.add_color(self.orig_color_slider, color)
 			self.overlayhitcircle(self.orig_color_slider, int(self.slidercircleoverlay.orig_cols/2), int(self.slidercircleoverlay.orig_rows/2),
 			                      self.slidercircleoverlay.img)
-
 			self.slider_circle.orig_img = self.orig_color_slider
 			self.slider_circle.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
 			self.slider_circle.orig_rows = self.slider_circle.orig_img.shape[0]
@@ -246,36 +247,23 @@ class Circles(Images):
 		print("done")
 		del self.approachCircle
 
-	def add_circle(self, x, y, combo_color, combo_number,  isSlider=0):
-		self.circles.append([x, y, self.time_preempt, -1, combo_color, combo_number, isSlider])
+	def add_circle(self, x, y, combo_color, combo_number,  object_type=0):
+		self.circles.append([x, y, self.time_preempt, -1, combo_color, combo_number, object_type])
 
-	def add_to_frame(self, background):
-		i = len(self.circles) - 1
-		while i > -1:
-			self.circles[i][2] -= self.interval
-			self.circles[i][3] += 1
-			if self.circles[i][2] <= 0:
-				del self.circles[i]
-				break  # break right after since self.circles[i][2] < 0 means i reached 0 so no need to continue the loop
-
-			color = self.circles[i][4] - 1
-			number = self.circles[i][5]
-			opacity_index = self.circles[i][3]
-			if self.circles[i][6]:
-				try:
-					self.img = self.slidercircle_frames[color][number][opacity_index]
-				except Exception:
-					print("color:", len(self.circle_frames), color)
-					print("number", len(self.circle_frames[color]), number)
-					print("opacity_index", len(self.circle_frames[color][number]), opacity_index)
-			else:
-				self.img = self.circle_frames[color][number - 1][opacity_index]
-			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
-
-			i -= 1
+	def add_to_frame(self, background, i):
+		self.circles[i][2] -= self.interval
+		self.circles[i][3] += 1
+		color = self.circles[i][4] - 1
+		number = self.circles[i][5]
+		opacity_index = self.circles[i][3]
+		if self.circles[i][6]:
+			self.img = self.slidercircle_frames[color][number][opacity_index]
+		else:
+			self.img = self.circle_frames[color][number - 1][opacity_index]
+		super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 
 
-class Slider:
+class PrepareSlider:
 	def __init__(self, slidermultiplier, time_preempt, opacity_interval, scale):
 		self.sliders = []
 		self.slidermutiplier = slidermultiplier
@@ -283,14 +271,6 @@ class Slider:
 		self.interval = 1000/60
 		self.opacity_interval = opacity_interval
 		self.scale = scale
-
-	def change_size(self, new_row, new_col, image, inter_type=cv2.INTER_AREA):
-		n_rows = int(new_row * image.shape[0])
-		n_rows -= int(n_rows % 2 == 1)  # need to be even
-		n_cols = int(new_col * image.shape[1])
-		n_cols -= int(n_cols % 2 == 1)  # need to be even
-		image = cv2.resize(image, (n_cols, n_rows), interpolation=inter_type)
-		return image
 
 	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
 		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
@@ -323,17 +303,60 @@ class Slider:
 			background[y1:y2, x1:x2, c] = (
 					img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
+	def add_to_frame(self, background, i):
+		self.sliders[i][3] -= self.interval
+		self.sliders[i][4] = min(100, self.sliders[i][4] + self.opacity_interval)
+		cur_img = np.copy(self.sliders[i][0])
+		cur_img[:, :, 0:3] = cur_img[:, :, 0:3] * (self.sliders[i][4]/100)
+		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
+
+
+class HitObjectManager:
+	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors):
+		self.preparecircle = PrepareCircles(slider_combo, path, diff, scale, maxcombo, gap, colors)
+		self.time_preempt = self.preparecircle.time_preempt
+		self.prepareslider = PrepareSlider(diff["SliderMultiplier"], self.time_preempt, self.preparecircle.opacity_interval, scale)
+		self.hitobject = []
+		self.interval = 1000 / 60
+		self.IS_CIRCLE = 0
+		self.IS_CIRCLESLIDER = 1
+		self.IS_SLIDER = 2
+
+	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
+		self.prepareslider.add_slider(image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration)
+		sliderduration = self.prepareslider.sliders[-1][3]
+		self.hitobject.append([self.IS_SLIDER, sliderduration])
+
+	def add_circle(self, x, y, combo_color, combo_number,  object_type=0):
+		self.preparecircle.add_circle(x, y, combo_color, combo_number,  object_type)
+		circleduration = self.time_preempt
+		self.hitobject.append([object_type, circleduration])
+
 	def add_to_frame(self, background):
-		i = len(self.sliders) - 1
-		while i > - 1:
-			self.sliders[i][3] -= self.interval
-			self.sliders[i][4] = min(100, self.sliders[i][4] + self.opacity_interval)
-			if self.sliders[i][3] <= 0:
-				del self.sliders[i]
-				break  # same as circle add_to_frame reason
-			cur_img = np.copy(self.sliders[i][0])
-			cur_img[:, :, 0:3] = cur_img[:, :, 0:3] * (self.sliders[i][4]/100)
-			self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
+		slider_index = len(self.prepareslider.sliders)
+		circle_index = len(self.preparecircle.circles)
+		i = len(self.hitobject) - 1
+
+		while i > -1:
+			self.hitobject[i][1] -= self.interval
+			if self.hitobject[i][0] == self.IS_CIRCLE or self.hitobject[i][0] == self.IS_CIRCLESLIDER:
+				circle_index -= 1
+				if self.hitobject[i][1] <= 0:
+					del self.preparecircle.circles[circle_index]
+					del self.hitobject[i]
+					circle_index -= 1
+					i -= 1
+					continue
+				self.preparecircle.add_to_frame(background, circle_index)
+			else:
+				slider_index -= 1
+				if self.hitobject[i][1] <= 0:
+					del self.prepareslider.sliders[slider_index]
+					del self.hitobject[i]
+					slider_index -= 1
+					i -= 1
+					continue
+				self.prepareslider.add_to_frame(background, slider_index)
 			i -= 1
 
 
