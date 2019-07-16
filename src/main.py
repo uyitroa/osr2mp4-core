@@ -26,6 +26,7 @@ BEATMAP_FILE = "../res/katayoku.osu"
 REPLAY_FILE = "../res/tori.osr"
 start_time = time.time()
 
+
 class Object:
 	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, gap, slider_combo, colors):
 		self.cursor = Cursor(path + "cursor.png")
