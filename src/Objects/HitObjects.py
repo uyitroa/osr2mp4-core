@@ -295,10 +295,6 @@ class Slider:
 	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
 		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
 
-		image = self.change_size(self.scale, self.scale, image)
-		# to_frame always draw from the top left corner of the image, meanwhile we want it to draw from the slider's start pos
-		x_offset = int(x_offset * self.scale)
-		y_offset = int(y_offset * self.scale)
 		self.sliders.append([image, x_pos - x_offset, y_pos - y_offset, slider_duration + self.time_preempt, 0])
 
 	# crop everything that goes outside the screen
@@ -336,7 +332,7 @@ class Slider:
 				del self.sliders[i]
 				break  # same as circle add_to_frame reason
 			cur_img = np.copy(self.sliders[i][0])
-			cur_img[:, :, 0:3] *= self.sliders[i][4]/100
+			cur_img[:, :, 0:3] = cur_img[:, :, 0:3] * (self.sliders[i][4]/100)
 			self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 			i -= 1
 

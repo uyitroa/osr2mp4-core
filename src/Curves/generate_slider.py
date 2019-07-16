@@ -66,7 +66,8 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4))
+		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4), dtype=np.uint8
+		              )
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -98,13 +99,8 @@ class GenerateSlider:
 
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
-		# drew the slider at high res first, then scale down to get smoother slider
-		img = cv2.blur(img, (5, 5))  # blur to smooth out the slider
-		img = cv2.resize(img, (int(img.shape[1] / self.scale), int(img.shape[0] / self.scale)), interpolation=cv2.INTER_AREA)
-		# img = cv2.blur(img, (2, 2))  # blur to smooth out the slider
-
-		x_offset = int((ps[0].x - left_x_corner) / self.scale)
-		y_offset = int((ps[0].y - left_y_corner) / self.scale)
+		x_offset = int((ps[0].x - left_x_corner))
+		y_offset = int((ps[0].y - left_y_corner))
 
 		# to_3channel
 		alpha_s = img[:, :, 3] / 255.0
