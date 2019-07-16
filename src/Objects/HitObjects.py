@@ -223,7 +223,7 @@ class Circles(Images):
 				self.circle_frames[-1].append([])
 				for i in range(len(self.approachCircle.approach_frames)):
 					approach_circle = np.copy(self.approachCircle.approach_frames[i])
-
+					self.add_color(approach_circle, color)
 					x_offset = int(approach_circle.shape[1] / 2)
 					y_offset = int(approach_circle.shape[0] / 2)
 
