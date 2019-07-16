@@ -1,3 +1,4 @@
+# done by Kysan the gay pp farmer thanks
 
 # return pos of the first char of the  comment or -1 if there is no comment
 def detect_comments(line):
