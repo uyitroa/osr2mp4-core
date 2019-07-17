@@ -14,7 +14,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin3/"
+PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -78,10 +78,13 @@ def main():
 	index_hitobject = 0
 	cur_offset = 0
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
+	start_time = time.time()
 	print("setup done")
-	while osr_index < 1000:  # len(replay_event) - 3
+	while osr_index < 1000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
-
+		if time.time() - start_time > 60:
+			print(time.time() - start_time)
+			start_time = time.time()
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
 		cursor_y = int(replay_event[osr_index][CURSOR_Y] * SCALE) + MOVE_DOWN
 
