@@ -42,21 +42,19 @@ class Number:
 
 
 class ApproachCircle(ACircle):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows, scale, cs, time_preempt, interval, opacity_interval):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows, scale, time_preempt, interval):
 		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 		self.scale = scale
-		self.cs = cs
 		self.time_preempt = round(time_preempt)
 		self.interval = round(interval)
-		self.opacity_interval = opacity_interval
 		self.approach_frames = []
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
+		scale = 3
 		for time_left in range(self.time_preempt, 0, -self.interval):
-			approach_size = self.cs + (time_left / self.time_preempt) * self.scale * self.cs
-			scale = approach_size * 2 / self.orig_cols
-			self.change_size(scale, scale)
+			scale -= 2 * self.interval / self.time_preempt
+			self.change_size(scale * self.scale, scale * self.scale)
 			self.approach_frames.append(self.img)
 
 	def add_to_frame(self, background, x_offset, y_offset, time_left):
@@ -104,14 +102,15 @@ class PrepareCircles(Images):
 		self.maxcolors = colors["ComboNumber"]
 		self.colors = colors
 		self.maxcombo = maxcombo
-		self.gap = gap
+		self.gap = int(gap * self.radius_scale)
 
 		self.slider_combo = slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
-		self.number_drawer = Number(self.orig_rows / 2, path, self.default_circle_size)
-		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, scale, self.cs, self.time_preempt, self.interval,
-		                                     self.opacity_interval)
+		self.number_drawer = Number(self.cs * 0.9, path, self.default_circle_size)
+		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, self.radius_scale,
+		                                     self.time_preempt, self.interval)
+
 		self.create_black_circle()
 
 		self.circle_frames = []
@@ -213,6 +212,7 @@ class PrepareCircles(Images):
 			self.add_color(orig_color_img, color)
 			self.overlayhitcircle(orig_overlay_img, orig_color_img)
 			orig_overlay_img = self.change_size2(orig_overlay_img, self.radius_scale, self.radius_scale)
+			self.img = np.copy(orig_overlay_img)
 			self.circle_frames.append([])
 
 			orig_color_slider = np.copy(self.slider_circle.orig_img)
@@ -220,6 +220,7 @@ class PrepareCircles(Images):
 			self.add_color(orig_color_slider, color)
 			self.overlayhitcircle(orig_overlay_slider, orig_color_slider)
 			orig_overlay_slider = self.change_size2(orig_overlay_slider, self.radius_scale, self.radius_scale)
+			self.slider_circle.img = np.copy(orig_overlay_slider)
 			self.slidercircle_frames.append({})   # so to find the right combo will be faster
 
 			for x in range(1, self.maxcombo[c] + 1):
