@@ -40,16 +40,17 @@ class GenerateSlider:
 		pixel_length = float(string[7])
 		return ps, pixel_length * self.scale, slider_type
 
-	def get_pos_from_class(self, baiser_class):
+	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
+		tolerance = {"L": 1, "B": 0.25, "P": 0.1}
 		cur_pos = baiser_class(0)
-		t = 0.02
+		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
 		curve_pos = []
 		while t <= 1:
 			cur_pos = baiser_class(t)
 			curve_pos.append([int(cur_pos.x), int(cur_pos.y)])
-			t += 0.02
+			t += tolerance[slider_type]
 		return curve_pos
 
 	def get_min_max(self, curve_pos):
@@ -86,7 +87,7 @@ class GenerateSlider:
 	def get_slider_img(self, slider_code):
 		ps, pixel_length, slider_type = self.convert(slider_code)
 		baiser = Curve.from_kind_and_points(slider_type, ps, pixel_length)  # get the right curve class
-		curve_pos = self.get_pos_from_class(baiser)
+		curve_pos = self.get_pos_from_class(baiser, slider_type)
 
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 		img = self.draw(curve_pos)
@@ -112,8 +113,8 @@ class GenerateSlider:
 if __name__ == "__main__":
 	# slidercode = "96,180,0,2,0,B|286:44|286:44|416:201|416:201|251:340|251:340|95:179|95:179,1,875"
 	# slidercode = "130,77,0,2,0,B|414:155|98:307,1,375"
-	# slidercode = "105,194,0,2,0,L|407:190,1,300"
-	slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
+	slidercode = "105,194,0,2,0,L|407:190,1,300"
+	#slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
 	# slidercode = "142,314,0,2,0,B|267:54|267:54|387:330|387:330|95:128|95:128|417:124|417:124|141:314,1,1600"
 	# slidercode = "182,326,3923,2,0,P|99:174|394:243,1,700"
 	# slidercode = "485,360,99863,2,0,P|483:342|470:225,1,135.8307"
