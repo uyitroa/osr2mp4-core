@@ -53,9 +53,7 @@ class ApproachCircle(Images):
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
-		alpha = 0
 		for time_left in range(self.time_preempt, 0, -self.interval):
-			alpha = min(100, alpha + self.opacity_interval)
 			approach_size = self.cs + (time_left / self.time_preempt) * self.scale * self.cs
 			scale = approach_size * 2 / self.orig_cols
 			self.change_size(scale, scale)
@@ -115,6 +113,17 @@ class PrepareCircles(Images):
 		self.approachCircle = ApproachCircle(path + approachcircle, scale, self.cs, self.time_preempt, self.interval,
 		                                     self.opacity_interval)
 
+		# black support so that slider color won't affect hitcircleslider color cuz alpha when it begins to appear
+		self.circle_supporter = np.copy(self.orig_img)
+		self.add_color(self.circle_supporter, (0, 0, 0))
+		tmp = self.orig_img
+		self.orig_img = self.circle_supporter
+		self.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
+		self.circle_supporter = self.img
+		self.orig_img = tmp
+		cv2.addWeighted(self.circle_supporter, 1, self.circle_supporter, 1, 1, self.circle_supporter)  # increase opacity
+		cv2.addWeighted(self.circle_supporter, 1, self.circle_supporter, 1, 1, self.circle_supporter)
+
 		self.circle_frames = []
 		self.slidercircle_frames = []
 		self.prepare_circle()
@@ -129,7 +138,7 @@ class PrepareCircles(Images):
 		else:
 			self.time_preempt = 1200 - 750 * (self.ar - 5) / 5
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
-		self.opacity_interval = int(self.fade_in / 100)
+		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
 	def add_color(self, image, color):
 		red = color[0]/255.0
@@ -211,7 +220,6 @@ class PrepareCircles(Images):
 			self.slider_circle.orig_cols = self.slider_circle.orig_img.shape[1]
 			self.orig_color_slider = np.copy(self.slider_circle.img)
 			self.slider_circle.orig_img = tmp
-
 			self.slidercircle_frames.append({})   # so to find the right combo will be faster
 
 			for x in range(1, self.maxcombo[c] + 1):
@@ -257,6 +265,8 @@ class PrepareCircles(Images):
 		number = self.circles[i][5]
 		opacity_index = self.circles[i][3]
 		if self.circles[i][6]:
+			self.img = self.circle_supporter
+			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 			self.img = self.slidercircle_frames[color][number][opacity_index]
 		else:
 			self.img = self.circle_frames[color][number - 1][opacity_index]
