@@ -61,3 +61,16 @@ class Images:
 		n_cols -= int(n_cols % 2 == 1)  # need to be even
 		self.img = cv2.resize(self.orig_img, (n_cols, n_rows), interpolation=inter_type)
 
+
+class ACircle(Images):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
+		Images.__init__(self, filename)
+		if self.orig_cols != hitcircle_cols or self.orig_rows != hitcircle_rows:
+			cols_scale = hitcircle_cols/self.orig_cols
+			rows_scale = hitcircle_rows/self.orig_rows
+			self.change_size(rows_scale, cols_scale, inter_type=cv2.INTER_LINEAR)
+			self.orig_cols = hitcircle_cols
+			self.orig_rows = hitcircle_rows
+			self.orig_img = np.copy(self.img)
+			print(filename)
+		print(self.orig_img.shape, self.img.shape, self.orig_cols, self.orig_rows)
