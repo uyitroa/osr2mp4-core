@@ -18,10 +18,11 @@ class Beatmap:
 		self.sliderborder = colors["SliderBorder"]
 		self.slideroverride = colors["SliderTrackOverride"]
 		self.ncombo = colors["ComboNumber"]
-		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, 36.48, self.scale)
 
 		self.parse_general()
 		self.parse_diff()
+		cs = (54.4 - 4.48 * self.diff["CircleSize"])
+		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, cs, self.scale)
 		self.parse_event()
 		self.parse_timingpoints()
 		self.parse_hitobject()
