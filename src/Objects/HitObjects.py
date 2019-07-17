@@ -41,9 +41,9 @@ class Number:
 			x_pos += gap
 
 
-class ApproachCircle(Images):
-	def __init__(self, filename, scale, cs, time_preempt, interval, opacity_interval):
-		Images.__init__(self, filename)
+class ApproachCircle(ACircle):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows, scale, cs, time_preempt, interval, opacity_interval):
+		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 		self.scale = scale
 		self.cs = cs
 		self.time_preempt = round(time_preempt)
@@ -64,19 +64,19 @@ class ApproachCircle(Images):
 		super().add_to_frame(background, x_offset, y_offset)
 
 
-class CircleOverlay(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+class CircleOverlay(ACircle):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
+		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 
 
-class SliderCircleOverlay(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+class SliderCircleOverlay(ACircle):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
+		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 
 
-class CircleSlider(Images):
-	def __init__(self, filename, radius_scale):
-		Images.__init__(self, filename)
+class CircleSlider(ACircle):
+	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
+		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 
 
 class PrepareCircles(Images):
@@ -94,7 +94,7 @@ class PrepareCircles(Images):
 		self.diff = diff
 		self.circles = []
 		self.interval = 1000 / 60  # ms between 2 frames
-
+		self.overlay_scale = 1.05
 		self.ar = diff["ApproachRate"]
 		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 
@@ -107,10 +107,10 @@ class PrepareCircles(Images):
 		self.gap = gap
 
 		self.slider_combo = slider_combo
-		self.slider_circle = CircleSlider(path + sliderstartcircle, self.radius_scale)
+		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
 		self.number_drawer = Number(self.orig_rows / 2, path, self.default_circle_size)
-		self.approachCircle = ApproachCircle(path + approachcircle, scale, self.cs, self.time_preempt, self.interval,
+		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, scale, self.cs, self.time_preempt, self.interval,
 		                                     self.opacity_interval)
 
 		# black support so that slider color won't affect hitcircleslider color cuz alpha when it begins to appear
@@ -118,7 +118,7 @@ class PrepareCircles(Images):
 		self.add_color(self.circle_supporter, (0, 0, 0))
 		tmp = self.orig_img
 		self.orig_img = self.circle_supporter
-		self.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
+		self.change_size(self.radius_scale, self.radius_scale, inter_type=cv2.INTER_LINEAR)
 		self.circle_supporter = self.img
 		self.orig_img = tmp
 		cv2.addWeighted(self.circle_supporter, 1, self.circle_supporter, 1, 1, self.circle_supporter)  # increase opacity
@@ -150,10 +150,10 @@ class PrepareCircles(Images):
 		image[image > 255] = 255
 
 	def load_circle(self):
-		self.overlay = CircleOverlay(self.overlay_filename)
-		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename)
+		self.overlay = CircleOverlay(self.overlay_filename, self.orig_cols, self.orig_rows)
+		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename, self.orig_cols, self.orig_rows)
 		cur_radius = self.orig_cols / 2
-		self.radius_scale = self.cs / cur_radius
+		self.radius_scale = self.cs * self.overlay_scale / cur_radius
 		self.default_circle_size = self.orig_rows  # save for number class
 
 	def overlayhitcircle(self, background, x_offset, y_offset, overlay_image):
@@ -204,7 +204,7 @@ class PrepareCircles(Images):
 			                      self.overlay.img)
 			tmp = self.orig_img
 			self.orig_img = self.orig_color_img
-			self.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
+			self.change_size(self.radius_scale, self.radius_scale, inter_type=cv2.INTER_LINEAR)
 			self.orig_color_img = np.copy(self.img)
 			self.orig_img = tmp
 			self.circle_frames.append([])
@@ -215,7 +215,7 @@ class PrepareCircles(Images):
 			self.overlayhitcircle(self.orig_color_slider, int(self.slidercircleoverlay.orig_cols/2), int(self.slidercircleoverlay.orig_rows/2),
 			                      self.slidercircleoverlay.img)
 			self.slider_circle.orig_img = self.orig_color_slider
-			self.slider_circle.change_size(self.radius_scale * 1.05, self.radius_scale * 1.05, inter_type=cv2.INTER_LINEAR)
+			self.slider_circle.change_size(self.radius_scale, self.radius_scale, inter_type=cv2.INTER_LINEAR)
 			self.slider_circle.orig_rows = self.slider_circle.orig_img.shape[0]
 			self.slider_circle.orig_cols = self.slider_circle.orig_img.shape[1]
 			self.orig_color_slider = np.copy(self.slider_circle.img)
