@@ -138,6 +138,17 @@ class Beatmap:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
 				my_dict["slider_img"], my_dict["x_offset"], my_dict["y_offset"] = self.gs.get_slider_img(item)
+
+				ps = [Position(my_dict["x"], my_dict["y"])]
+				slider_path = osuobject[5]
+				slider_path = slider_path.split("|")
+				slider_type = slider_path[0]
+				slider_path = slider_path[1:]
+				for pos in slider_path:
+					pos = pos.split(":")
+					ps.append(Position(int(pos[0]), int(pos[1])))
+				my_dict["ps"] = ps
+				my_dict["slider_type"] = slider_type
 				my_dict["pixel_length"] = float(osuobject[7])
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]

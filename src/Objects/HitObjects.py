@@ -1,4 +1,5 @@
 from Objects.abstracts import *
+from Curves.curve import *
 
 
 hitcircle = "hitcircle.png"
@@ -6,6 +7,10 @@ hitcircleoverlay = "hitcircleoverlay.png"
 sliderstartcircleoverlay = "sliderstartcircleoverlay.png"
 sliderstartcircle = "sliderstartcircle.png"
 approachcircle = "approachcircle.png"
+sliderb = "sliderb.png"
+sliderfollowcircle = "sliderfollowcircle.png"
+sliderscorepiont = "sliderscorepoint.png"
+default_size = 128
 
 
 class HitCircleNumber(Images):
@@ -108,7 +113,7 @@ class PrepareCircles(Images):
 		self.slider_combo = slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
-		self.number_drawer = Number(self.cs * 0.9, path, self.default_circle_size)
+		self.number_drawer = Number(self.cs * 0.9, path, default_size)
 		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, self.radius_scale,
 		                                     self.time_preempt, self.interval)
 
@@ -155,24 +160,20 @@ class PrepareCircles(Images):
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename, self.orig_cols, self.orig_rows)
 		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename, self.orig_cols, self.orig_rows)
-		cur_radius = self.orig_cols / 2
-		self.radius_scale = self.cs * self.overlay_scale / cur_radius
-		self.default_circle_size = self.orig_rows  # save for number class
+		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
 
 	def overlayhitcircle(self, overlay, hitcircle_image):
 		# still ned 4 channels so cannot do to_3channel before.
 		y1, y2 = int(overlay.shape[0]/2 - hitcircle_image.shape[0]/2), int(overlay.shape[0]/2 + hitcircle_image.shape[0]/2)
 		x1, x2 = int(overlay.shape[1]/2 - hitcircle_image.shape[1]/2), int(overlay.shape[1]/2 + hitcircle_image.shape[1]/2)
-		ystart, yend = 0, hitcircle_image.shape[0]
-		xstart, xend = 0, hitcircle_image.shape[1]
 
 		alpha_s = overlay[y1:y2, x1:x2, 3] * self.divide_by_255
 		alpha_l = 1 - alpha_s
 
 		for c in range(3):
-			overlay[y1:y2, x1:x2, c] = hitcircle_image[ystart:yend, xstart:xend, c] * alpha_l + \
+			overlay[y1:y2, x1:x2, c] = hitcircle_image[:, :, c] * alpha_l + \
 			                              alpha_s * overlay[y1:y2, x1:x2, c]
-		overlay[y1:y2, x1:x2, 3] = overlay[y1:y2, x1:x2, 3] + alpha_l * hitcircle_image[ystart:yend, xstart:xend, 3]
+		overlay[y1:y2, x1:x2, 3] = overlay[y1:y2, x1:x2, 3] + alpha_l * hitcircle_image[:, :, 3]
 
 	def overlay_approach(self, background, x_offset, y_offset, circle_img, alpha):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -195,7 +196,7 @@ class PrepareCircles(Images):
 		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
 		alpha_s = image[:, :, 3] * self.divide_by_255
 		for c in range(3):
-			image[:, :, c] = (image[:, :, c] * alpha_s).astype(self.orig_img.dtype)
+			image[:, :, c] = image[:, :, c] * alpha_s
 
 	def change_size2(self, img, new_col, new_row):
 		n_rows = int(new_row * img.shape[1])
@@ -283,19 +284,98 @@ class PrepareCircles(Images):
 
 
 class PrepareSlider:
-	def __init__(self, slidermultiplier, time_preempt, opacity_interval, scale):
+	def __init__(self, path, diff, time_preempt, opacity_interval, scale, colors, movedown, moveright):
+		self.path = path
 		self.sliders = []
-		self.slidermutiplier = slidermultiplier
+		self.movedown = movedown
+		self.moveright = moveright
+		self.maxcolors = colors["ComboNumber"]
+		self.colors = colors
+		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
+		self.slidermutiplier = diff["SliderMultiplier"]
 		self.time_preempt = time_preempt
 		self.interval = 1000/60
 		self.opacity_interval = opacity_interval
 		self.scale = scale
 		self.divide_by_255 = 1/255.0
+		self.sliderb_frames = []
+		self.load_sliderballs()
+		self.prepare_sliderball()
+		self.slidermax_index = len(self.sliderb_frames[0]) - 1
 
-	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
+	def load_sliderballs(self):
+		self.sliderb = cv2.imread(self.path + sliderb, -1)
+		self.sliderfollowcircle = cv2.imread(self.path + sliderfollowcircle, -1)
+		self.followscale = default_size/self.sliderfollowcircle.shape[0]
+		self.radius_scale = self.cs * 2 / default_size
+		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
+		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
+
+	def add_color(self, image, color):
+		red = color[0]*self.divide_by_255
+		green = color[1]*self.divide_by_255
+		blue = color[2]*self.divide_by_255
+		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
+		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
+		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
+
+	def to_3channel(self, image):
+		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
+		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
+		alpha_s = image[:, :, 3] * self.divide_by_255
+		for c in range(3):
+			image[:, :, c] = image[:, :, c] * alpha_s
+
+	def change_size2(self, img, new_col, new_row):
+		n_rows = int(new_row * img.shape[1])
+		n_rows -= int(n_rows % 2 == 1)  # need to be even
+		n_cols = int(new_col * img.shape[0])
+		n_cols -= int(n_cols % 2 == 1)  # need to be even
+		return cv2.resize(img, (n_cols, n_rows), interpolation=cv2.INTER_LINEAR)
+
+	def ballinhole(self, follow, sliderball):
+		# still ned 4 channels so cannot do to_3channel before.
+		if sliderball.shape[0] > follow.shape[0]:
+			new_img = np.zeros(sliderball.shape)
+			y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
+			x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
+			new_img[y1:y2, x1:x2, :] = follow[:, :, :]
+			follow = new_img
+		y1, y2 = int(follow.shape[0]/2 - sliderball.shape[0]/2), int(follow.shape[0]/2 + sliderball.shape[0]/2)
+		x1, x2 = int(follow.shape[1]/2 - sliderball.shape[1]/2), int(follow.shape[1]/2 + sliderball.shape[1]/2)
+
+		alpha_s = sliderball[:, :, 3] * self.divide_by_255
+		alpha_l = 1 - alpha_s
+		for c in range(3):
+			follow[y1:y2, x1:x2, c] = sliderball[:, :, c] * alpha_s + alpha_l * follow[y1:y2, x1:x2, c]
+		follow[y1:y2, x1:x2, 3] = follow[y1:y2, x1:x2, 3] * alpha_l + sliderball[:, :, 3]
+
+	def prepare_sliderball(self):
+		follow_fadein = 100
+		for c in range(1, self.maxcolors + 1):
+			color = self.colors["Combo" + str(c)]
+			orig_color_sb = np.copy(self.sliderb)
+			self.add_color(orig_color_sb, color)
+			self.sliderb_frames.append([])
+
+			scale_interval = round((1 - self.followscale) * self.interval / follow_fadein, 2)
+			cur_scale = 1
+			alpha_interval = round(self.interval / follow_fadein, 2)
+			cur_alpha = 1
+			for x in range(follow_fadein, 0, -int(self.interval)):
+				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
+				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
+				self.ballinhole(orig_sfollow, orig_color_sb)
+				self.to_3channel(orig_sfollow)
+				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
+				cur_scale -= scale_interval
+				cur_alpha -= alpha_interval
+
+	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, b_info):
 		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
-
-		self.sliders.append([image, x_pos - x_offset, y_pos - y_offset, slider_duration + self.time_preempt, 0])
+		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info]
+		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
+		                     0, color, self.slidermax_index, slider_duration, b_info])
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
@@ -323,6 +403,20 @@ class PrepareSlider:
 			background[y1:y2, x1:x2, c] = (
 					img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
+	def to_frame2(self, img, background, x_offset, y_offset):
+		# need to do to_3channel first.
+		y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
+		x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
+
+		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
+		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
+
+		alpha_s = img[ystart:yend, xstart:xend, 3] * self.divide_by_255
+		alpha_l = 1.0 - alpha_s
+		for c in range(3):
+			background[y1:y2, x1:x2, c] = (
+					img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+
 	def add_to_frame(self, background, i):
 		self.sliders[i][3] -= self.interval
 		self.sliders[i][4] = min(100, self.sliders[i][4] + self.opacity_interval)
@@ -330,20 +424,32 @@ class PrepareSlider:
 		cur_img[:, :, 0:3] = cur_img[:, :, 0:3] * (self.sliders[i][4]/100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
+		if self.sliders[i][3] <= self.sliders[i][7]:
+			baiser = Curve.from_kind_and_points(*self.sliders[i][8])
+			t = 1 - self.sliders[i][3]/self.sliders[i][7]
+			cur_pos = baiser(t)
+			x = int(cur_pos.x * self.scale) + self.moveright
+			y = int(cur_pos.y * self.scale) + self.movedown
+			color = self.sliders[i][5]-1
+			index = self.sliders[i][6]
+			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
+			self.sliders[i][6] = max(0, self.sliders[i][6] - 1)
+
 
 class HitObjectManager:
-	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors):
+	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors, movedown, moveright):
 		self.preparecircle = PrepareCircles(slider_combo, path, diff, scale, maxcombo, gap, colors)
 		self.time_preempt = self.preparecircle.time_preempt
-		self.prepareslider = PrepareSlider(diff["SliderMultiplier"], self.time_preempt, self.preparecircle.opacity_interval, scale)
+		opacity = self.preparecircle.opacity_interval
+		self.prepareslider = PrepareSlider(path, diff, self.time_preempt, opacity, scale, colors, movedown, moveright)
 		self.hitobject = []
 		self.interval = 1000 / 60
 		self.IS_CIRCLE = 0
 		self.IS_CIRCLESLIDER = 1
 		self.IS_SLIDER = 2
 
-	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
-		self.prepareslider.add_slider(image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration)
+	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, bezier_info):
+		self.prepareslider.add_slider(image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, bezier_info)
 		sliderduration = self.prepareslider.sliders[-1][3]
 		self.hitobject.append([self.IS_SLIDER, sliderduration])
 
@@ -370,7 +476,7 @@ class HitObjectManager:
 				self.preparecircle.add_to_frame(background, circle_index)
 			else:
 				slider_index -= 1
-				if self.hitobject[i][1] < -self.interval * 4:
+				if self.hitobject[i][1] < 0:
 					del self.prepareslider.sliders[slider_index]
 					del self.hitobject[i]
 					slider_index -= 1
