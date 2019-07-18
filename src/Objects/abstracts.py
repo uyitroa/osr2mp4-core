@@ -16,9 +16,10 @@ class Images:
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
+		self.divide_by_255 = 1/255.0
 
 	def to_3channel(self):
-		alpha_s = self.orig_img[:, :, 3] / 255.0
+		alpha_s = self.orig_img[:, :, 3] * self.divide_by_255
 		for c in range(3):
 			self.orig_img[:, :, c] = (self.orig_img[:, :, c] * alpha_s).astype(self.orig_img.dtype)
 		self.img = np.copy(self.orig_img)
@@ -48,7 +49,7 @@ class Images:
 
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-		alpha_s = self.img[ystart:yend, xstart:xend, 3] / 255.0
+		alpha_s = self.img[ystart:yend, xstart:xend, 3] * self.divide_by_255
 		alpha_l = 1.0 - alpha_s
 		for c in range(channel):
 			background[y1:y2, x1:x2, c] = (

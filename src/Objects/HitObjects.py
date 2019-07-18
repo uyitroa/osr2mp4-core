@@ -144,13 +144,13 @@ class PrepareCircles(Images):
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
 	def add_color(self, image, color):
-		red = color[0]/255.0
-		green = color[1]/255.0
-		blue = color[2]/255.0
+		red = color[0]*self.divide_by_255
+		green = color[1]*self.divide_by_255
+		blue = color[2]*self.divide_by_255
 		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
 		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
 		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-		image[image > 255] = 255
+		# image[image > 255] = 255
 
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename, self.orig_cols, self.orig_rows)
@@ -166,7 +166,7 @@ class PrepareCircles(Images):
 		ystart, yend = 0, hitcircle_image.shape[0]
 		xstart, xend = 0, hitcircle_image.shape[1]
 
-		alpha_s = overlay[y1:y2, x1:x2, 3] / 255.0
+		alpha_s = overlay[y1:y2, x1:x2, 3] * self.divide_by_255
 		alpha_l = 1 - alpha_s
 
 		for c in range(3):
@@ -182,7 +182,7 @@ class PrepareCircles(Images):
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 
-		alpha_s = background[y1:y2, x1:x2, 3] / 255.0
+		alpha_s = background[y1:y2, x1:x2, 3] * self.divide_by_255
 		alpha_l = 1 - alpha_s
 		for c in range(3):
 			background[y1:y2, x1:x2, c] = circle_img[ystart:yend, xstart:xend, c] * alpha_l + \
@@ -193,7 +193,7 @@ class PrepareCircles(Images):
 	def to_3channel(self, image):
 		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
 		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] / 255.0
+		alpha_s = image[:, :, 3] * self.divide_by_255
 		for c in range(3):
 			image[:, :, c] = (image[:, :, c] * alpha_s).astype(self.orig_img.dtype)
 
@@ -255,6 +255,9 @@ class PrepareCircles(Images):
 
 					self.circle_frames[-1][-1].append(approach_circle)
 					alpha = min(100, alpha + self.opacity_interval)
+				if x in self.slider_combo:
+					self.slidercircle_frames[-1][x].append(self.slider_circle.img)
+				self.circle_frames[-1][-1].append(self.img)  # for late tapping
 
 				self.img = np.copy(orig_overlay_img)
 				self.slider_circle.img = np.copy(orig_overlay_slider)
@@ -287,6 +290,7 @@ class PrepareSlider:
 		self.interval = 1000/60
 		self.opacity_interval = opacity_interval
 		self.scale = scale
+		self.divide_by_255 = 1/255.0
 
 	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration):
 		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
@@ -312,7 +316,7 @@ class PrepareSlider:
 
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-		alpha_s = img[ystart:yend, xstart:xend, 3] / 255.0
+		alpha_s = img[ystart:yend, xstart:xend, 3] * self.divide_by_255
 		alpha_l = 1.0 - alpha_s
 
 		for c in range(3):
@@ -357,7 +361,7 @@ class HitObjectManager:
 			self.hitobject[i][1] -= self.interval
 			if self.hitobject[i][0] == self.IS_CIRCLE or self.hitobject[i][0] == self.IS_CIRCLESLIDER:
 				circle_index -= 1
-				if self.hitobject[i][1] < 0:
+				if self.hitobject[i][1] < -self.interval * 2:
 					del self.preparecircle.circles[circle_index]
 					del self.hitobject[i]
 					circle_index -= 1
@@ -366,7 +370,7 @@ class HitObjectManager:
 				self.preparecircle.add_to_frame(background, circle_index)
 			else:
 				slider_index -= 1
-				if self.hitobject[i][1] < 0:
+				if self.hitobject[i][1] < -self.interval * 2:
 					del self.prepareslider.sliders[slider_index]
 					del self.hitobject[i]
 					slider_index -= 1
