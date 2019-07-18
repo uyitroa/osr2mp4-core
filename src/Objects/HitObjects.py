@@ -46,7 +46,7 @@ class ApproachCircle(ACircle):
 		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
 		self.scale = scale
 		self.time_preempt = round(time_preempt)
-		self.interval = round(interval)
+		self.interval = int(interval)
 		self.approach_frames = []
 		self.to_3channel()
 		self.prepare_sizes()
