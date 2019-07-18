@@ -48,6 +48,7 @@ class ApproachCircle(ACircle):
 		self.time_preempt = round(time_preempt)
 		self.interval = round(interval)
 		self.approach_frames = []
+		self.to_3channel()
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
@@ -173,7 +174,7 @@ class PrepareCircles(Images):
 			                              alpha_s * overlay[y1:y2, x1:x2, c]
 		overlay[y1:y2, x1:x2, 3] = overlay[y1:y2, x1:x2, 3] + alpha_l * hitcircle_image[ystart:yend, xstart:xend, 3]
 
-	def overlay_approach(self, background, x_offset, y_offset, circle_img):
+	def overlay_approach(self, background, x_offset, y_offset, circle_img, alpha):
 		# still ned 4 channels so cannot do to_3channel before.
 		y1, y2 = y_offset - int(circle_img.shape[0] / 2), y_offset + int(circle_img.shape[0] / 2)
 		x1, x2 = x_offset - int(circle_img.shape[1] / 2), x_offset + int(circle_img.shape[1] / 2)
@@ -183,9 +184,11 @@ class PrepareCircles(Images):
 
 		alpha_s = background[y1:y2, x1:x2, 3] / 255.0
 		alpha_l = 1 - alpha_s
-		for c in range(4):
+		for c in range(3):
 			background[y1:y2, x1:x2, c] = circle_img[ystart:yend, xstart:xend, c] * alpha_l + \
-			                              alpha_s * background[y1:y2, x1:x2, c]
+			                              background[y1:y2, x1:x2, c]
+		background[y1:y2, x1:x2, 3] = background[y1:y2, x1:x2, 3] + circle_img[ystart:yend, xstart:xend, 3] * alpha_l
+		background[:, :, :] = background[:, :, :] * (alpha/100)
 
 	def to_3channel(self, image):
 		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
@@ -212,6 +215,7 @@ class PrepareCircles(Images):
 			self.add_color(orig_color_img, color)
 			self.overlayhitcircle(orig_overlay_img, orig_color_img)
 			orig_overlay_img = self.change_size2(orig_overlay_img, self.radius_scale, self.radius_scale)
+			self.to_3channel(orig_overlay_img)
 			self.img = np.copy(orig_overlay_img)
 			self.circle_frames.append([])
 
@@ -220,6 +224,7 @@ class PrepareCircles(Images):
 			self.add_color(orig_color_slider, color)
 			self.overlayhitcircle(orig_overlay_slider, orig_color_slider)
 			orig_overlay_slider = self.change_size2(orig_overlay_slider, self.radius_scale, self.radius_scale)
+			self.to_3channel(orig_overlay_slider)
 			self.slider_circle.img = np.copy(orig_overlay_slider)
 			self.slidercircle_frames.append({})   # so to find the right combo will be faster
 
@@ -239,14 +244,14 @@ class PrepareCircles(Images):
 
 					if x in self.slider_combo:
 						approach_slider = np.copy(approach_circle)
-						self.overlay_approach(approach_slider, x_offset, y_offset, self.slider_circle.img)
-						approach_slider[:, :, 3] = approach_slider[:, :, 3] * (alpha / 100)
-						self.to_3channel(approach_slider)
+						self.overlay_approach(approach_slider, x_offset, y_offset, self.slider_circle.img, alpha)
+						# approach_slider[:, :, 3] = approach_slider[:, :, 3] * (alpha / 100)
+						# self.to_3channel(approach_slider)
 						self.slidercircle_frames[-1][x].append(approach_slider)
 
-					self.overlay_approach(approach_circle, x_offset, y_offset, self.img)
-					approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha / 100)
-					self.to_3channel(approach_circle)
+					self.overlay_approach(approach_circle, x_offset, y_offset, self.img, alpha)
+					# approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha / 100)
+					# self.to_3channel(approach_circle)
 
 					self.circle_frames[-1][-1].append(approach_circle)
 					alpha = min(100, alpha + self.opacity_interval)
@@ -352,7 +357,7 @@ class HitObjectManager:
 			self.hitobject[i][1] -= self.interval
 			if self.hitobject[i][0] == self.IS_CIRCLE or self.hitobject[i][0] == self.IS_CIRCLESLIDER:
 				circle_index -= 1
-				if self.hitobject[i][1] <= 0:
+				if self.hitobject[i][1] < 0:
 					del self.preparecircle.circles[circle_index]
 					del self.hitobject[i]
 					circle_index -= 1
@@ -361,7 +366,7 @@ class HitObjectManager:
 				self.preparecircle.add_to_frame(background, circle_index)
 			else:
 				slider_index -= 1
-				if self.hitobject[i][1] <= 0:
+				if self.hitobject[i][1] < 0:
 					del self.prepareslider.sliders[slider_index]
 					del self.hitobject[i]
 					slider_index -= 1
