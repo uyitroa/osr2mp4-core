@@ -22,8 +22,8 @@ PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual 
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/katayoku.osu"
-REPLAY_FILE = "../res/tori.osr"
+BEATMAP_FILE = "../res/imaginedragons.osu"
+REPLAY_FILE = "../res/imaginedragons.osr"
 start_time = time.time()
 
 
@@ -35,7 +35,7 @@ class Object:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors)
+		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors, MOVE_DOWN, MOVE_TO_RIGHT)
 
 
 def nearer(cur_time, replay, index):
@@ -80,7 +80,7 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	start_time = time.time()
 	print("setup done")
-	while osr_index < 1000: #osr_index < len(replay_event) - 3:
+	while osr_index < 2000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 		if time.time() - start_time > 60:
 			print(time.time() - start_time)
@@ -95,24 +95,27 @@ def main():
 		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2) - 80)
 		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2) - 30)
 
-		x_circle = int(beatmap.hitobjects[index_hitobject]["x"] * SCALE) + MOVE_TO_RIGHT
-		y_circle = int(beatmap.hitobjects[index_hitobject]["y"] * SCALE) + MOVE_DOWN
+		osu_d = beatmap.hitobjects[index_hitobject]
+		x_circle = int(osu_d["x"] * SCALE) + MOVE_TO_RIGHT
+		y_circle = int(osu_d["y"] * SCALE) + MOVE_DOWN
 
-		if cur_time + component.hitobjectmanager.time_preempt >= beatmap.hitobjects[index_hitobject]["time"]:
+		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"]:
 			isSlider = 0
-			if "slider" in beatmap.hitobjects[index_hitobject]["type"]:
+			if "slider" in osu_d["type"]:
 				isSlider = 1
 			component.hitobjectmanager.add_circle(x_circle, y_circle,
-			                                      beatmap.hitobjects[index_hitobject]["combo_color"],
-			                                      beatmap.hitobjects[index_hitobject]["combo_number"],
+			                                      osu_d["combo_color"],
+			                                      osu_d["combo_number"],
 			                                      isSlider)
 			if isSlider:
-				component.hitobjectmanager.add_slider(beatmap.hitobjects[index_hitobject]["slider_img"],
-				                                      beatmap.hitobjects[index_hitobject]["x_offset"],
-				                                      beatmap.hitobjects[index_hitobject]["y_offset"],
+				bezier_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"])
+				component.hitobjectmanager.add_slider(osu_d["slider_img"],
+				                                      osu_d["x_offset"],
+				                                      osu_d["y_offset"],
 				                                      x_circle, y_circle,
-				                                      beatmap.hitobjects[index_hitobject]["pixel_length"],
-				                                      beatmap.timing_point[cur_offset]["BeatDuration"])
+				                                      osu_d["pixel_length"],
+				                                      beatmap.timing_point[cur_offset]["BeatDuration"],
+				                                      osu_d["combo_color"], bezier_info)
 			index_hitobject += 1
 		component.hitobjectmanager.add_to_frame(img)
 
