@@ -361,7 +361,7 @@ class HitObjectManager:
 			self.hitobject[i][1] -= self.interval
 			if self.hitobject[i][0] == self.IS_CIRCLE or self.hitobject[i][0] == self.IS_CIRCLESLIDER:
 				circle_index -= 1
-				if self.hitobject[i][1] < -self.interval * 2:
+				if self.hitobject[i][1] < -self.interval * 4:  # for late click
 					del self.preparecircle.circles[circle_index]
 					del self.hitobject[i]
 					circle_index -= 1
@@ -370,7 +370,7 @@ class HitObjectManager:
 				self.preparecircle.add_to_frame(background, circle_index)
 			else:
 				slider_index -= 1
-				if self.hitobject[i][1] < -self.interval * 2:
+				if self.hitobject[i][1] < -self.interval * 4:
 					del self.prepareslider.sliders[slider_index]
 					del self.hitobject[i]
 					slider_index -= 1
