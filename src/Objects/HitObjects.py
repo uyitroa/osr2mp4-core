@@ -280,7 +280,7 @@ class PrepareCircles(Images):
 		color = self.circles[i][4] - 1
 		self.circles[i][2] -= self.interval
 		if self.circles[i][2] <= -self.interval * 4:
-			if self.circles[i][6]:
+			if self.circles[i][6] or self.circles[i][7] > len(self.circle_fadeout[color]) - 1:
 				return
 			self.img = self.circle_fadeout[color][self.circles[i][7]]
 			self.circles[i][7] += 1
@@ -454,7 +454,7 @@ class PrepareSlider:
 			self.sliders[i][6] = min(self.slidermax_index, self.sliders[i][6] + 0.65)
 			self.sliders[i][4] = max(0, self.sliders[i][4] - 4*self.opacity_interval)
 
-		self.sliders[i][4] = min(100, self.sliders[i][4] + self.opacity_interval)
+		self.sliders[i][4] = min(90, self.sliders[i][4] + self.opacity_interval)
 		cur_img = np.copy(self.sliders[i][0])
 		cur_img[:, :, :] = cur_img[:, :, :] * (self.sliders[i][4]/100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
@@ -462,7 +462,7 @@ class PrepareSlider:
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
 			baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
 			t = 1 - self.sliders[i][3]/self.sliders[i][7]
-			cur_pos = baiser(t)
+			cur_pos = baiser(round(t, 2))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			color = self.sliders[i][5]-1
