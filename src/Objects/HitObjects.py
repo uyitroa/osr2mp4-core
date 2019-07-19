@@ -392,8 +392,12 @@ class PrepareSlider:
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
 
-	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, b_info):
-		slider_duration = beat_duration * pixel_legnth / (100 * self.slidermutiplier)
+	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
+		image = osu_d["slider_img"]
+		x_offset, y_offset = osu_d["x_offset"], osu_d["y_offset"]
+		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
+		slider_duration = beat_duration * pixel_length / (100 * self.slidermutiplier)
+		b_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"], osu_d["stacking"])
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info]
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
 		                     0, color, self.slidermax_index, slider_duration, b_info])
@@ -441,10 +445,10 @@ class PrepareSlider:
 	def add_to_frame(self, background, i):
 		self.sliders[i][3] -= self.interval
 		if self.sliders[i][3] <= 0:
-			baiser = Curve.from_kind_and_points(*self.sliders[i][8])
+			baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
 			cur_pos = baiser(1)
-			x = int(cur_pos.x * self.scale) + self.moveright
-			y = int(cur_pos.y * self.scale) + self.movedown
+			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
+			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			index = int(self.sliders[i][6])
 			self.to_frame2(self.sliderfollow_fadeout[index], background, x, y)
 			self.sliders[i][6] = min(self.slidermax_index, self.sliders[i][6] + 0.65)
@@ -456,11 +460,11 @@ class PrepareSlider:
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
-			baiser = Curve.from_kind_and_points(*self.sliders[i][8])
+			baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
 			t = 1 - self.sliders[i][3]/self.sliders[i][7]
 			cur_pos = baiser(t)
-			x = int(cur_pos.x * self.scale) + self.moveright
-			y = int(cur_pos.y * self.scale) + self.movedown
+			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
+			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			color = self.sliders[i][5]-1
 			index = self.sliders[i][6]
 			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
@@ -479,8 +483,8 @@ class HitObjectManager:
 		self.IS_CIRCLESLIDER = 1
 		self.IS_SLIDER = 2
 
-	def add_slider(self, image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, bezier_info):
-		self.prepareslider.add_slider(image, x_offset, y_offset, x_pos, y_pos, pixel_legnth, beat_duration, color, bezier_info)
+	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
+		self.prepareslider.add_slider(osu_d, x_pos, y_pos, beat_duration)
 		sliderduration = self.prepareslider.sliders[-1][3]
 		self.hitobject.append([self.IS_SLIDER, sliderduration])
 
