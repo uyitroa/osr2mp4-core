@@ -14,7 +14,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin4/"
+PATH = "../res/skin3/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -22,8 +22,8 @@ PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual 
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/imaginedragons.osu"
-REPLAY_FILE = "../res/imaginedragons.osr"
+BEATMAP_FILE = "../res/katayoku.osu"
+REPLAY_FILE = "../res/tori.osr"
 start_time = time.time()
 
 
@@ -80,7 +80,7 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	start_time = time.time()
 	print("setup done")
-	while osr_index < 2000: #osr_index < len(replay_event) - 3:
+	while osr_index < 1500: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 		if time.time() - start_time > 60:
 			print(time.time() - start_time)
@@ -108,14 +108,8 @@ def main():
 			                                      osu_d["combo_number"],
 			                                      isSlider)
 			if isSlider:
-				bezier_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"])
-				component.hitobjectmanager.add_slider(osu_d["slider_img"],
-				                                      osu_d["x_offset"],
-				                                      osu_d["y_offset"],
-				                                      x_circle, y_circle,
-				                                      osu_d["pixel_length"],
-				                                      beatmap.timing_point[cur_offset]["BeatDuration"],
-				                                      osu_d["combo_color"], bezier_info)
+				component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, beatmap.timing_point[cur_offset]["BeatDuration"])
+
 			index_hitobject += 1
 		component.hitobjectmanager.add_to_frame(img)
 

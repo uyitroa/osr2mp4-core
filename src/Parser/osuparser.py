@@ -150,6 +150,7 @@ class Beatmap:
 				my_dict["ps"] = ps
 				my_dict["slider_type"] = slider_type
 				my_dict["pixel_length"] = float(osuobject[7])
+				my_dict["stacking"] = 0
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]
@@ -186,6 +187,8 @@ class Beatmap:
 			for i in range(info["start"] + 1, info["end"] + 1):
 				self.hitobjects[i]["x"] += space
 				self.hitobjects[i]["y"] += space
+				if "slider" in self.hitobjects[i]["type"]:
+					self.hitobjects[i]["stacking"] = space
 				space *= 2
 
 
