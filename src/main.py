@@ -80,7 +80,7 @@ def main():
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	start_time = time.time()
 	print("setup done")
-	while osr_index < 1500: #osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 		if time.time() - start_time > 60:
 			print(time.time() - start_time)
