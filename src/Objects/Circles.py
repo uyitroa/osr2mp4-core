@@ -300,8 +300,8 @@ class PrepareCircles(Images):
 		if self.circles[i][6]:
 			# add black circle so the slidercircle color won't be affected by slider color since slidercircle is a bit
 			# trasnparent
-			self.img = self.circle_supporter
-			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
+			# self.img = self.circle_supporter
+			# super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 
 			# in case opacity_index exceed list range because of the creator shitty algorithm
 			# the creator is me btw
