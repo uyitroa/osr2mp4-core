@@ -130,6 +130,19 @@ class Beatmap:
 			if int(bin_info[0]):
 				object_type.append("circle")
 
+			if int(bin_info[2]):
+				object_type.append("new combo")
+				if cur_combo_color not in self.max_combo or cur_combo_number > self.max_combo[cur_combo_color]:
+					self.max_combo[cur_combo_color] = cur_combo_number
+				cur_combo_number = 1
+				skip = 1
+				n_combo = bin_info[4:7]
+				n_combo = int(n_combo[::-1], 2)
+				skip += n_combo
+				cur_combo_color += skip
+				if cur_combo_color > self.ncombo:
+					cur_combo_color = cur_combo_color - self.ncombo
+
 			if int(bin_info[1]):
 				object_type.append("slider")
 				if cur_combo_number in self.slider_combo:
@@ -151,22 +164,10 @@ class Beatmap:
 				my_dict["slider_type"] = slider_type
 				my_dict["pixel_length"] = float(osuobject[7])
 				my_dict["stacking"] = 0
+				my_dict["repeated"] = int(osuobject[6])
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]
-
-			if int(bin_info[2]):
-				object_type.append("new combo")
-				if cur_combo_color not in self.max_combo or cur_combo_number > self.max_combo[cur_combo_color]:
-					self.max_combo[cur_combo_color] = cur_combo_number
-				cur_combo_number = 1
-				skip = 1
-				n_combo = bin_info[4:7]
-				n_combo = int(n_combo[::-1], 2)
-				skip += n_combo
-				cur_combo_color += skip
-				if cur_combo_color > self.ncombo:
-					cur_combo_color = cur_combo_color - self.ncombo
 
 			if int(bin_info[3]):
 				object_type.append("spinner")
