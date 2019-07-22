@@ -1,5 +1,4 @@
 import time
-import os
 from Objects.Components import *
 from Objects.HitObjects import HitObjectManager
 from Parser.osuparser import *
@@ -22,8 +21,8 @@ PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual 
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/katayoku.osu"
-REPLAY_FILE = "../res/tori.osr"
+BEATMAP_FILE = "../res/imaginedragons.osu"
+REPLAY_FILE = "../res/imaginedragons.osr"
 start_time = time.time()
 
 
@@ -34,7 +33,7 @@ class Object:
 		self.key2 = InputOverlay(path + "inputoverlay-key.png")
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
-
+		self.followpoints = FollowPointsManager(path + "followpoint", SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
 		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors, MOVE_DOWN, MOVE_TO_RIGHT)
 
 
@@ -57,6 +56,31 @@ def setupBackground():
 	return img
 
 
+def find_followp_target(beatmap, cur_offset, index=0):
+	# reminder: index means the previous circle. the followpoints will point to the circle of index+1
+	while "spinner" in beatmap.hitobjects[index]["type"] or "new combo" in beatmap.hitobjects[index+1]["type"]:
+		index += 1
+
+	osu_d = beatmap.hitobjects[index]
+	x_end = osu_d["x"]
+	y_end = osu_d["y"]
+
+	object_endtime = 0
+	if "slider" in osu_d["type"]:
+		beat_duration = beatmap.timing_point[cur_offset]["BeatDuration"]
+		pixel_length = osu_d["pixel_length"]
+		smp = beatmap.diff["SliderMultiplier"]
+		object_endtime = beat_duration*pixel_length*osu_d["repeated"] / (100 * smp)
+
+		baiser = Curve.from_kind_and_points(osu_d["slider_type"], osu_d["ps"], pixel_length)
+		pos = baiser(1)
+		x_end = pos.x
+		y_end = pos.y
+
+	object_endtime += osu_d["time"]
+	return index, object_endtime, x_end, y_end
+
+
 def main():
 	writer = cv2.VideoWriter("output.mkv", cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 
@@ -76,17 +100,20 @@ def main():
 	                   beatmap.slider_combo, skin.colours)
 
 	index_hitobject = 0
+	preempt_followpoint = 1000
 	cur_offset = 0
+	index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset)
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
 	start_time = time.time()
 	print("setup done")
-	while osr_index < len(replay_event) - 3:
+	while osr_index < 1500:  # osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 		if time.time() - start_time > 60:
 			print(time.time() - start_time)
 			start_time = time.time()
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
 		cursor_y = int(replay_event[osr_index][CURSOR_Y] * SCALE) + MOVE_DOWN
+
 
 		if replay_event[osr_index][KEYS_PRESSED] == 10 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key2.clicked()
@@ -95,9 +122,17 @@ def main():
 		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2) - 80)
 		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2) - 30)
 
+
 		osu_d = beatmap.hitobjects[index_hitobject]
 		x_circle = int(osu_d["x"] * SCALE) + MOVE_TO_RIGHT
 		y_circle = int(osu_d["y"] * SCALE) + MOVE_DOWN
+
+
+		if cur_time + preempt_followpoint >= object_endtime:
+			index_followpoint += 1
+			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
+			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset, index_followpoint)
+
 
 		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"]:
 			isSlider = 0
@@ -109,8 +144,10 @@ def main():
 			                                      isSlider)
 			if isSlider:
 				component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, beatmap.timing_point[cur_offset]["BeatDuration"])
-
 			index_hitobject += 1
+
+
+		component.followpoints.add_to_frame(img, cur_time)
 		component.hitobjectmanager.add_to_frame(img)
 
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
