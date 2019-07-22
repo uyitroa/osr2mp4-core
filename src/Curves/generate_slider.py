@@ -42,7 +42,7 @@ class GenerateSlider:
 
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tolerance = {"L": 1, "B": 0.025, "P": 0.05}
+		tolerance = {"L": 1, "B": 0.02, "P": 0.05}
 		cur_pos = baiser_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
