@@ -6,7 +6,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 class Images:
-	def __init__(self, filename):
+	def __init__(self, filename, scale = 1):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
 		if self.img.shape[0] == 1 or self.img.shape[1] == 1:
@@ -14,7 +14,7 @@ class Images:
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
-		self.change_size(1, 1) # make rows and cols even amount
+		self.change_size(scale, scale) # make rows and cols even amount
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
