@@ -209,9 +209,12 @@ class PrepareCircles(Images):
 	def prepare_circle(self):
 		# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 		# to overlap number, circle overlay and approach circle every single time.
+
+		# add color to circles
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
 
+			# add overlay to hitcircle
 			orig_overlay_img = np.copy(self.overlay.img)
 			orig_color_img = np.copy(self.orig_img)
 			self.add_color(orig_color_img, color)
@@ -221,12 +224,15 @@ class PrepareCircles(Images):
 			self.img = np.copy(orig_overlay_img)
 			self.circle_frames.append([])
 
+
+			# prepare fadeout frames
 			self.circle_fadeout.append([])
 			for x in range(100, 140, 4):
 				size = x/100
 				im = np.copy(self.img)
 				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
 				self.circle_fadeout[-1].append(self.change_size2(im, size, size))
+
 
 			orig_color_slider = np.copy(self.slider_circle.orig_img)
 			orig_overlay_slider = np.copy(self.slidercircleoverlay.img)
@@ -235,35 +241,38 @@ class PrepareCircles(Images):
 			orig_overlay_slider = self.change_size2(orig_overlay_slider, self.radius_scale, self.radius_scale)
 			self.to_3channel(orig_overlay_slider)
 			self.slider_circle.img = np.copy(orig_overlay_slider)
-			self.slidercircle_frames.append({})   # so to find the right combo will be faster
+			self.slidercircle_frames.append({})   # use dict to find the right combo will be faster
 
+			# add number to circles
 			for x in range(1, self.maxcombo[c] + 1):
 				self.number_drawer.draw(self.img, x, self.gap)
 
+				# check if there is any slider with that number, so we can optimize the space by avoiding adding useless
+				# slider frames
 				if x in self.slider_combo:
 					self.number_drawer.draw(self.slider_circle.img, x, self.gap)
 					self.slidercircle_frames[-1][x] = []
-				alpha = 0
+
+				alpha = 0 # alpha for fadein
 				self.circle_frames[-1].append([])
+				# we also overlay approach circle to circle to avoid multiple add_to_frame call
 				for i in range(len(self.approachCircle.approach_frames)):
 					approach_circle = np.copy(self.approachCircle.approach_frames[i])
 					self.add_color(approach_circle, color)
 					x_offset = int(approach_circle.shape[1] / 2)
 					y_offset = int(approach_circle.shape[0] / 2)
 
+					# avoid useless slider frames
 					if x in self.slider_combo:
 						approach_slider = np.copy(approach_circle)
 						self.overlay_approach(approach_slider, x_offset, y_offset, self.slider_circle.img, alpha)
-						# approach_slider[:, :, 3] = approach_slider[:, :, 3] * (alpha / 100)
-						# self.to_3channel(approach_slider)
 						self.slidercircle_frames[-1][x].append(approach_slider)
 
 					self.overlay_approach(approach_circle, x_offset, y_offset, self.img, alpha)
-					# approach_circle[:, :, 3] = approach_circle[:, :, 3] * (alpha / 100)
-					# self.to_3channel(approach_circle)
-
 					self.circle_frames[-1][-1].append(approach_circle)
+
 					alpha = min(100, alpha + self.opacity_interval)
+
 				if x in self.slider_combo:
 					self.slidercircle_frames[-1][x].append(self.slider_circle.img)
 				self.circle_frames[-1][-1].append(self.img)  # for late tapping
@@ -279,6 +288,8 @@ class PrepareCircles(Images):
 	def add_to_frame(self, background, i):
 		color = self.circles[i][4] - 1
 		self.circles[i][2] -= self.interval
+
+		# timeout for circle, if self.interval*4 is the time for circle fadeout effect
 		if self.circles[i][2] <= -self.interval * 4:
 			if self.circles[i][6] or self.circles[i][7] > len(self.circle_fadeout[color]) - 1:
 				return
@@ -286,12 +297,19 @@ class PrepareCircles(Images):
 			self.circles[i][7] += 1
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 			return
+
 		self.circles[i][3] += 1
 		number = self.circles[i][5]
+
 		if self.circles[i][6]:
-			opacity_index = min(self.circles[i][3], len(self.slidercircle_frames[color][number]) - 1)
+			# add black circle so the slidercircle color won't be affected by slider color since slidercircle is a bit
+			# trasnparent
 			self.img = self.circle_supporter
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
+
+			# in case opacity_index exceed list range because of the creator shitty algorithm
+			# the creator is me btw
+			opacity_index = min(self.circles[i][3], len(self.slidercircle_frames[color][number]) - 1)
 			self.img = self.slidercircle_frames[color][number][opacity_index]
 		else:
 			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number - 1]) - 1)
@@ -352,12 +370,17 @@ class PrepareSlider:
 
 	def ballinhole(self, follow, sliderball):
 		# still ned 4 channels so cannot do to_3channel before.
+
+		# if sliderfollowcircle is smaller than sliderball ( possible when fading in the sliderfollowcircle), then create
+		# a blank image with sliderball shape and put sliderfollowcircle at the center of that image.
 		if sliderball.shape[0] > follow.shape[0]:
 			new_img = np.zeros(sliderball.shape)
 			y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
 			x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
 			new_img[y1:y2, x1:x2, :] = follow[:, :, :]
 			follow = new_img
+
+		#  find center
 		y1, y2 = int(follow.shape[0]/2 - sliderball.shape[0]/2), int(follow.shape[0]/2 + sliderball.shape[0]/2)
 		x1, x2 = int(follow.shape[1]/2 - sliderball.shape[1]/2), int(follow.shape[1]/2 + sliderball.shape[1]/2)
 
@@ -368,7 +391,8 @@ class PrepareSlider:
 		follow[y1:y2, x1:x2, 3] = follow[y1:y2, x1:x2, 3] * alpha_l + sliderball[:, :, 3]
 
 	def prepare_sliderball(self):
-		follow_fadein = 125
+		follow_fadein = 125  # sliderfollowcircle zoom out zoom in time
+
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
 			orig_color_sb = np.copy(self.sliderb)
@@ -379,13 +403,19 @@ class PrepareSlider:
 			cur_scale = 1
 			alpha_interval = round(self.interval / follow_fadein, 2)
 			cur_alpha = 1
+
 			for x in range(follow_fadein, 0, -int(self.interval)):
 				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
 				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
+
+				# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
 				if c == 1:
 					follow_img = np.copy(orig_sfollow)
 					self.to_3channel(follow_img)
 					self.sliderfollow_fadeout.append(follow_img)
+
+				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
+				# add to frame twice
 				self.ballinhole(orig_sfollow, orig_color_sb)
 				self.to_3channel(orig_sfollow)
 				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
@@ -396,11 +426,15 @@ class PrepareSlider:
 		image = osu_d["slider_img"]
 		x_offset, y_offset = osu_d["x_offset"], osu_d["y_offset"]
 		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
-		slider_duration = beat_duration * pixel_length * osu_d["repeated"] / (100 * self.slidermutiplier)
+		slider_duration = beat_duration * pixel_length / (100 * self.slidermutiplier)
+
+		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
+		# function, but we add stack to reduce sliders list size
 		b_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"], osu_d["stacking"])
-		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info]
+
+		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated]
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
-		                     0, color, self.slidermax_index, slider_duration, b_info])
+		                     0, color, self.slidermax_index, slider_duration, b_info, 1, osu_d["repeated"]])
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
@@ -444,25 +478,48 @@ class PrepareSlider:
 
 	def add_to_frame(self, background, i):
 		self.sliders[i][3] -= self.interval
+		baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
+
+		# if sliderball is going forward
+		going_forward = self.sliders[i][9] % 2 == 1
+
 		if self.sliders[i][3] <= 0:
-			baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
-			cur_pos = baiser(1)
-			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
-			index = int(self.sliders[i][6])
-			self.to_frame2(self.sliderfollow_fadeout[index], background, x, y)
-			self.sliders[i][6] = min(self.slidermax_index, self.sliders[i][6] + 0.65)
-			self.sliders[i][4] = max(0, self.sliders[i][4] - 4*self.opacity_interval)
+			# if the slider is repeated
+			if self.sliders[i][9] < self.sliders[i][10]:
+				self.sliders[i][3] = self.sliders[i][7]  # reset
+				self.sliders[i][9] += 1
+				going_forward = not going_forward
+
+			else:
+				cur_pos = baiser(int(going_forward))  # if going_foward is true then t = 1 otherwise it's 0
+				x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
+				y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
+
+				index = int(self.sliders[i][6])
+				self.to_frame2(self.sliderfollow_fadeout[index], background, x, y)
+
+				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
+				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
+				self.sliders[i][6] = min(self.slidermax_index, self.sliders[i][6] + 0.65)
+
+				# reduce opacity of slider
+				self.sliders[i][4] = max(0, self.sliders[i][4] - 4*self.opacity_interval)
+
 
 		self.sliders[i][4] = min(90, self.sliders[i][4] + self.opacity_interval)
 		cur_img = np.copy(self.sliders[i][0])
 		cur_img[:, :, :] = cur_img[:, :, :] * (self.sliders[i][4]/100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
+
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
-			baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
-			t = 1 - self.sliders[i][3]/self.sliders[i][7]
-			cur_pos = baiser(round(t, 2))
+			t = self.sliders[i][3]/self.sliders[i][7]
+
+			# if sliderball is going forward
+			if going_forward:
+				t = 1 - t
+
+			cur_pos = baiser(round(t, 3))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			color = self.sliders[i][5]-1
@@ -480,19 +537,20 @@ class HitObjectManager:
 		self.hitobject = []
 		self.interval = 1000 / 60
 		self.IS_CIRCLE = 0
-		self.IS_CIRCLESLIDER = 1
+		# self.IS_CIRCLESLIDER = 1
 		self.IS_SLIDER = 2
 
 	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
 		self.prepareslider.add_slider(osu_d, x_pos, y_pos, beat_duration)
-		sliderduration = self.prepareslider.sliders[-1][3]
+		sliderduration = self.prepareslider.sliders[-1][3] * self.prepareslider.sliders[-1][10]
 		self.hitobject.append([self.IS_SLIDER, sliderduration])
 
 	def add_circle(self, x, y, combo_color, combo_number,  object_type=0):
 		self.preparecircle.add_circle(x, y, combo_color, combo_number,  object_type)
 		circleduration = self.time_preempt
-		self.hitobject.append([object_type, circleduration])
+		self.hitobject.append([self.IS_CIRCLE, circleduration])
 
+	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):
 		slider_index = len(self.prepareslider.sliders)
 		circle_index = len(self.preparecircle.circles)
@@ -500,7 +558,7 @@ class HitObjectManager:
 
 		while i > -1:
 			self.hitobject[i][1] -= self.interval
-			if self.hitobject[i][0] == self.IS_CIRCLE or self.hitobject[i][0] == self.IS_CIRCLESLIDER:
+			if self.hitobject[i][0] == self.IS_CIRCLE:
 				circle_index -= 1
 				if self.hitobject[i][1] < -self.interval * 14:  # for late click
 					del self.preparecircle.circles[circle_index]
