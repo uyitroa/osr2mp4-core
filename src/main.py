@@ -21,8 +21,8 @@ PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual 
 SCALE = PLAYFIELD_WIDTH / 512
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/imaginedragons.osu"
-REPLAY_FILE = "../res/imaginedragons.osr"
+BEATMAP_FILE = "../res/freedomdive.osu"
+REPLAY_FILE = "../res/fd.osr"
 start_time = time.time()
 
 
@@ -58,6 +58,11 @@ def setupBackground():
 
 def find_followp_target(beatmap, cur_offset, index=0):
 	# reminder: index means the previous circle. the followpoints will point to the circle of index+1
+	if index >= len(beatmap.hitobjects) - 1:
+		print("still index out of range smh")
+		index = len(beatmap.hitobjects) - 1
+		return index, beatmap.hitobjects[index]["time"]*2, 0, 0
+
 	while "spinner" in beatmap.hitobjects[index]["type"] or "new combo" in beatmap.hitobjects[index+1]["type"]:
 		index += 1
 
@@ -65,19 +70,20 @@ def find_followp_target(beatmap, cur_offset, index=0):
 	x_end = osu_d["x"]
 	y_end = osu_d["y"]
 
-	object_endtime = 0
+
+	object_endtime = osu_d["time"]
+
 	if "slider" in osu_d["type"]:
 		beat_duration = beatmap.timing_point[cur_offset]["BeatDuration"]
 		pixel_length = osu_d["pixel_length"]
 		smp = beatmap.diff["SliderMultiplier"]
-		object_endtime = beat_duration*pixel_length*osu_d["repeated"] / (100 * smp)
+		object_endtime += beat_duration*pixel_length*osu_d["repeated"] / (100 * smp)
 
 		baiser = Curve.from_kind_and_points(osu_d["slider_type"], osu_d["ps"], pixel_length)
 		pos = baiser(1)
 		x_end = pos.x
 		y_end = pos.y
 
-	object_endtime += osu_d["time"]
 	return index, object_endtime, x_end, y_end
 
 
@@ -103,14 +109,21 @@ def main():
 	preempt_followpoint = 1000
 	cur_offset = 0
 	index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset)
-	beatmap.hitobjects.append({"x": 0, "y": 0, "time": float('inf'), "combo_number": 0})  # to avoid index out of range
+	endtime_fp = beatmap.hitobjects[-1]["time"] + preempt_followpoint * 2
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
+
 	start_time = time.time()
 	print("setup done")
-	while osr_index < 1500:  # osr_index < len(replay_event) - 3:
+
+
+	while osr_index < 1000: # osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
+
 		if time.time() - start_time > 60:
-			print(time.time() - start_time)
+			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)))
 			start_time = time.time()
+
+
 		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
 		cursor_y = int(replay_event[osr_index][CURSOR_Y] * SCALE) + MOVE_DOWN
 
@@ -127,13 +140,13 @@ def main():
 		x_circle = int(osu_d["x"] * SCALE) + MOVE_TO_RIGHT
 		y_circle = int(osu_d["y"] * SCALE) + MOVE_DOWN
 
-
-		if cur_time + preempt_followpoint >= object_endtime:
+		# check if it's time to draw followpoints
+		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 1 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset, index_followpoint)
 
-
+		# check if it's time to draw circles
 		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"]:
 			isSlider = 0
 			if "slider" in osu_d["type"]:
@@ -157,7 +170,11 @@ def main():
 		writer.write(img)
 
 		cur_time += 1000 / FPS
+
+		# choose correct osr index for the current time because in osr file there might be some lag
 		osr_index += nearer(cur_time, replay_event, osr_index)
+
+		# use next off_set or not
 		if cur_time + component.hitobjectmanager.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
 			cur_offset += 1
 			if cur_time + component.hitobjectmanager.time_preempt > beatmap.timing_point[cur_offset + 1]["Offset"]:
