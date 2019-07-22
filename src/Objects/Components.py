@@ -8,14 +8,14 @@ class Cursor(Images):
 
 
 class InputOverlay(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
-
+	def __init__(self, filename, scale):
+		print(scale)
+		Images.__init__(self, filename, scale * 0.5)
 		self.cur_blue = 0
-		self.blue_step = 35
+		self.blue_step = 50
 
 		self.frame_index = 0
-		self.font_scale = 0.5
+		self.font_scale = 0.5 * 0.5 * scale
 		self.font_step = 0.02
 		self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 		self.one_digit_size = self.font_width
@@ -31,18 +31,26 @@ class InputOverlay(Images):
 		self.to_3channel()
 		self.prepare_buttons()
 
-	def addcolor(self, n, color=0):
-		self.img[:, :, color] = self.img[:, :, color] + n * self.img[:, :, 3]
+	def add_color(self, image, color):
+		red = color[0]*self.divide_by_255
+		green = color[1]*self.divide_by_255
+		blue = color[2]*self.divide_by_255
+		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
+		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
+		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
 
 	def prepare_buttons(self):
-		blue = 0
-		for size in range(100, 90, -2):
+		color = [255, 255, 0]
+		self.button_frames.append(self.img)
+		self.change_size(0.98, 0.98)
+		self.button_frames.append(self.img)
+		for size in range(96, 90, -2):
+			self.img = np.copy(self.orig_img)
 			size /= 100
 			self.change_size(size, size)
-			self.addcolor(blue)
+			self.add_color(self.img, color)
 
 			self.button_frames.append(self.img)
-			blue -= self.blue_step
 
 	def clicked(self):
 		if not self.going_down_frame:
@@ -202,8 +210,8 @@ class Playfield:
 
 
 class InputOverlayBG(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale):
+		Images.__init__(self, filename, scale * 0.5)
 		self.to_3channel()
 		self.orig_img = np.rot90(self.orig_img, 3)
 		self.orig_rows = self.orig_img.shape[0]
