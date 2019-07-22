@@ -9,6 +9,8 @@ class Images:
 	def __init__(self, filename):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
+		if self.img.shape[0] == 1 or self.img.shape[1] == 1:
+			self.img = np.zeros((2, 2, 4))
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
