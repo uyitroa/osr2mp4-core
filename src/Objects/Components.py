@@ -9,7 +9,6 @@ class Cursor(Images):
 
 class InputOverlay(Images):
 	def __init__(self, filename, scale):
-		print(scale)
 		Images.__init__(self, filename, scale * 0.5)
 		self.cur_blue = 0
 		self.blue_step = 50
@@ -211,9 +210,14 @@ class Playfield:
 
 class InputOverlayBG(Images):
 	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale * 0.5)
+		Images.__init__(self, filename, scale * 0.51)
 		self.to_3channel()
 		self.orig_img = np.rot90(self.orig_img, 3)
 		self.orig_rows = self.orig_img.shape[0]
 		self.orig_cols = self.orig_img.shape[1]
 		self.img = np.copy(self.orig_img)
+
+	def add_to_frame(self, background, x_offset, y_offset):
+		# special y_offset
+		y_offset = y_offset + int(self.orig_rows/2)
+		super().add_to_frame(background, x_offset, y_offset)

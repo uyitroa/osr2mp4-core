@@ -1,5 +1,7 @@
 import time
+import os
 from Objects.Components import *
+from Objects.Followpoints import FollowPointsManager
 from Objects.HitObjects import HitObjectManager
 from Parser.osuparser import *
 from Parser.osrparser import *
@@ -13,7 +15,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin3/"
+PATH = "../res/skin1/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -23,14 +25,17 @@ MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
 BEATMAP_FILE = "../res/freedomdive.osu"
 REPLAY_FILE = "../res/fd.osr"
+INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
 
 class Object:
 	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, gap, slider_combo, colors):
 		self.cursor = Cursor(path + "cursor.png")
-		self.key1 = InputOverlay(path + "inputoverlay-key.png")
-		self.key2 = InputOverlay(path + "inputoverlay-key.png")
+		self.key1 = InputOverlay(path + "inputoverlay-key.png", SCALE)
+		self.key2 = InputOverlay(path + "inputoverlay-key.png", SCALE)
+		self.key3 = InputOverlay(path + "inputoverlay-key.png", SCALE)
+		self.key4 = InputOverlay(path + "inputoverlay-key.png", SCALE)
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 		self.followpoints = FollowPointsManager(path + "followpoint", SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
@@ -51,8 +56,8 @@ def setupBackground():
 	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8')  # setup background
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
-	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background.png")
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(HEIGHT / 2))
+	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background.png", SCALE)
+	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(HEIGHT / 2 - 65 * SCALE))
 	return img
 
 
@@ -102,7 +107,7 @@ def main():
 	old_cursor_x = int(replay_event[0][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * SCALE) + MOVE_TO_RIGHT
 
-	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 38,
+	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 28,
 	                   beatmap.slider_combo, skin.colours)
 
 	index_hitobject = 0
@@ -116,7 +121,7 @@ def main():
 	print("setup done")
 
 
-	while osr_index < 1000: # osr_index < len(replay_event) - 3:
+	while osr_index < 1500:  # osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -132,8 +137,10 @@ def main():
 			component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key1.clicked()
-		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2) - 80)
-		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2) - 30)
+		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2 - 50 * SCALE))
+		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2 - 27.5 * SCALE))
+		component.key3.add_to_frame(img, WIDTH - int(component.key3.orig_cols / 2), int(HEIGHT / 2 - 5 * SCALE))
+		component.key4.add_to_frame(img, WIDTH - int(component.key4.orig_cols / 2), int(HEIGHT / 2 + 17.5 * SCALE))
 
 
 		osu_d = beatmap.hitobjects[index_hitobject]
