@@ -267,10 +267,6 @@ class FollowPointsManager(Images):
 		if spacing - self.pointdistance < self.pointdistance * 1.5:  # basically if spacing < 81
 			return
 		x_vector, y_vector = x2 - x1, y2 - y1
-		# x_horizontal, y_horizontal = 1, 0
-		# angle = np.rad2deg(np.arccos((x_vector*x_horizontal + y_horizontal*y_vector)/spacing))  # dot product
-		# if y_vector >= 0:
-		# 	angle *= -1
 		angle = -np.arctan2(y_vector, x_vector) * 180 / np.pi
 		self.followpoints.append([[], x1, y1, x_vector, y_vector, t1, t2, int(spacing)])
 
@@ -289,9 +285,9 @@ class FollowPointsManager(Images):
 				fadeouttime = self.followpoints[i][5] + fraction * duration + alpha_tdelta
 				fadeintime = fadeouttime - self.preempt
 
-				if cur_time < fadeintime:
+				if cur_time < fadeintime:  # too early to draw followpoint
 					break
-				if cur_time > fadeouttime:
+				if cur_time > fadeouttime:  # timeout
 					d += self.pointdistance
 					to_delete = d >= self.followpoints[i][7] - self.pointdistance
 					continue
