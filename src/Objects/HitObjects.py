@@ -294,7 +294,7 @@ class PrepareCircles(Images):
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 			self.img = self.slidercircle_frames[color][number][opacity_index]
 		else:
-			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number]) - 1)
+			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number - 1]) - 1)
 			self.img = self.circle_frames[color][number - 1][opacity_index]
 		super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 
@@ -396,7 +396,7 @@ class PrepareSlider:
 		image = osu_d["slider_img"]
 		x_offset, y_offset = osu_d["x_offset"], osu_d["y_offset"]
 		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
-		slider_duration = beat_duration * pixel_length / (100 * self.slidermutiplier)
+		slider_duration = beat_duration * pixel_length * osu_d["repeated"] / (100 * self.slidermutiplier)
 		b_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"], osu_d["stacking"])
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info]
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
