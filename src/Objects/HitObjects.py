@@ -15,7 +15,7 @@ class HitObjectManager:
 
 	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
 		self.prepareslider.add_slider(osu_d, x_pos, y_pos, beat_duration)
-		sliderduration = self.prepareslider.sliders[-1][3] * self.prepareslider.sliders[-1][10]
+		sliderduration = (self.prepareslider.sliders[-1][3]-self.time_preempt) * self.prepareslider.sliders[-1][10] + self.time_preempt  # cause slidersduration would have self.time_preempt * repeated
 		self.hitobject.append([self.SLIDER, sliderduration])
 
 	def add_circle(self, x, y, combo_color, combo_number,  object_type=0):

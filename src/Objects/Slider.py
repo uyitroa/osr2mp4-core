@@ -112,7 +112,7 @@ class PrepareSlider:
 				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
-		self.sliderfollow_fadeout.append(np.zeros((2, 2, 4)))
+		#self.sliderfollow_fadeout.append(np.zeros((2, 2, 4)))
 
 
 	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
@@ -127,7 +127,7 @@ class PrepareSlider:
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated]
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
-		                     0, color, self.slidermax_index-1, slider_duration, b_info, 1, osu_d["repeated"]])
+		                     0, color, self.slidermax_index, slider_duration, b_info, 1, osu_d["repeated"]])
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
