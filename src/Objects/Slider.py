@@ -112,7 +112,6 @@ class PrepareSlider:
 				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
-		#self.sliderfollow_fadeout.append(np.zeros((2, 2, 4)))
 
 
 	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
@@ -216,6 +215,6 @@ class PrepareSlider:
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			color = self.sliders[i][5]-1
-			index = self.sliders[i][6]
+			index = int(self.sliders[i][6])
 			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
-			self.sliders[i][6] = max(0, self.sliders[i][6] - 1)
+			self.sliders[i][6] = max(0, self.sliders[i][6] - 0.7)
