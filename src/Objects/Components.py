@@ -22,7 +22,9 @@ class InputOverlay(Images):
 		self.clicked_called = False
 		self.going_down_frame = False
 		self.going_up_frame = False
+		self.already_down = False
 
+		self.scale = scale
 		self.n = '0'
 		self.color = (0, 0, 0)
 
@@ -41,9 +43,9 @@ class InputOverlay(Images):
 	def prepare_buttons(self):
 		color = [255, 255, 0]
 		self.button_frames.append(self.img)
-		self.change_size(0.98, 0.98)
+		self.change_size(0.97, 0.97)
 		self.button_frames.append(self.img)
-		for size in range(96, 90, -2):
+		for size in range(94, 82, -3):
 			self.img = np.copy(self.orig_img)
 			size /= 100
 			self.change_size(size, size)
@@ -53,8 +55,13 @@ class InputOverlay(Images):
 
 	def clicked(self):
 		if not self.going_down_frame:
+			self.frame_index = 0
+			self.font_scale = 0.5 * 0.5 * self.scale
+			self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 			self.n = str(int(self.n) + 1)
 			self.font_width = self.one_digit_size * len(self.n)
+			self.already_down = False
+
 		self.clicked_called = True
 		self.going_down_frame = True
 		if self.frame_index < len(self.button_frames) - 1:
@@ -64,10 +71,22 @@ class InputOverlay(Images):
 			self.font_height *= self.font_scale / (self.font_scale + self.font_step)
 
 	def add_to_frame(self, background, x_offset, y_offset):
-		if not self.clicked_called and self.going_down_frame:
-			self.going_down_frame = False
-			self.already_down = False
-			self.going_up_frame = True
+		if self.going_down_frame:
+			if not self.already_down:
+				self.frame_index += 1
+				self.font_scale -= self.font_step
+				self.font_width *= self.font_scale / (self.font_scale + self.font_step)
+				self.font_height *= self.font_scale / (self.font_scale + self.font_step)
+
+				if self.frame_index >= len(self.button_frames) - 2:
+					self.already_down = True
+
+			else:
+				if not self.clicked_called:
+					self.going_down_frame = False
+					self.already_down = False
+					self.going_up_frame = True
+
 		if self.going_up_frame:
 			self.frame_index -= 1
 			self.font_scale += self.font_step
