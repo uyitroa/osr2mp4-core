@@ -171,6 +171,9 @@ class Beatmap:
 
 			if int(bin_info[3]):
 				object_type.append("spinner")
+				endtime = osuobject[5].split(":")[0]
+				my_dict["end time"] = int(endtime)
+
 			my_dict["combo_color"] = cur_combo_color
 			my_dict["combo_number"] = cur_combo_number
 			my_dict["type"] = object_type
@@ -180,7 +183,17 @@ class Beatmap:
 			cur_combo_number += 1
 			index += 1
 		self.start_time = self.hitobjects[0]["time"]
-		self.end_time = self.hitobjects[-1]["time"]
+
+		lastobj = self.hitobjects[-1]
+		if "circle" in lastobj["type"]:
+			self.end_time = lastobj["time"]
+		elif "slider" in lastobj["type"]:
+			smp = self.diff["SliderMultiplier"]
+			beat_duration = self.timing_point[-1]["BeatDuration"]
+			sliderduration = beat_duration*lastobj["pixel_length"]*lastobj["repeated"]/(100*smp)
+			self.end_time = lastobj["time"] + sliderduration
+		else:
+			self.end_time = lastobj["time"] + lastobj["end time"]
 
 	def stack_position(self):
 		for info in self.to_stack:

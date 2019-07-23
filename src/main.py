@@ -3,6 +3,7 @@ import os
 from Objects.Components import *
 from Objects.Followpoints import FollowPointsManager
 from Objects.HitObjects import HitObjectManager
+from Objects.Spinner import SpinnerManager
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
@@ -15,7 +16,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin1/"
+PATH = "../res/skin2/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -38,8 +39,10 @@ class Object:
 		self.key4 = InputOverlay(path + "inputoverlay-key.png", SCALE)
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
+
 		self.followpoints = FollowPointsManager(path + "followpoint", SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
 		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors, MOVE_DOWN, MOVE_TO_RIGHT)
+		self.spinner = SpinnerManager(diff["OverallDifficulty"], SCALE, path)
 
 
 def nearer(cur_time, replay, index):
@@ -63,17 +66,23 @@ def setupBackground():
 
 def find_followp_target(beatmap, cur_offset, index=0):
 	# reminder: index means the previous circle. the followpoints will point to the circle of index+1
-	if index >= len(beatmap.hitobjects) - 1:
+	if index >= len(beatmap.hitobjects) - 2:
 		print("still index out of range smh")
 		index = len(beatmap.hitobjects) - 1
 		return index, beatmap.hitobjects[index]["time"]*2, 0, 0
 
-	while "spinner" in beatmap.hitobjects[index]["type"] or "new combo" in beatmap.hitobjects[index+1]["type"]:
+	while "spinner" in beatmap.hitobjects[index+1]["type"] or "new combo" in beatmap.hitobjects[index+1]["type"]:
 		index += 1
 
 	osu_d = beatmap.hitobjects[index]
 	x_end = osu_d["x"]
 	y_end = osu_d["y"]
+
+	cur_time = osu_d["time"]
+	if cur_time > beatmap.timing_point[cur_offset + 1]["Offset"]:
+		cur_offset += 1
+		if cur_time > beatmap.timing_point[cur_offset + 1]["Offset"]:
+			cur_offset += 1
 
 
 	object_endtime = osu_d["time"]
@@ -89,7 +98,7 @@ def find_followp_target(beatmap, cur_offset, index=0):
 		x_end = pos.x
 		y_end = pos.y
 
-	return index, object_endtime, x_end, y_end
+	return index, object_endtime, cur_offset, x_end, y_end
 
 
 def main():
@@ -113,15 +122,18 @@ def main():
 	index_hitobject = 0
 	preempt_followpoint = 1000
 	cur_offset = 0
-	index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset)
-	endtime_fp = beatmap.hitobjects[-1]["time"] + preempt_followpoint * 2
+	index_followpoint, object_endtime, fp_offset, x_end, y_end = find_followp_target(beatmap, cur_offset)
+	endtime_fp = beatmap.hitobjects[-1]["time"] + preempt_followpoint * 10
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
+
+	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
+	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
 
 	start_time = time.time()
 	print("setup done")
 
 
-	while osr_index < 1500:  # osr_index < len(replay_event) - 3:
+	while osr_index < 1000: # osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -148,27 +160,34 @@ def main():
 		y_circle = int(osu_d["y"] * SCALE) + MOVE_DOWN
 
 		# check if it's time to draw followpoints
-		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 1 < len(beatmap.hitobjects):
+		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 3 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
-			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, cur_offset, index_followpoint)
+			index_followpoint, object_endtime, fp_offset, x_end, y_end = find_followp_target(beatmap, fp_offset, index_followpoint)
 
 		# check if it's time to draw circles
-		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"]:
-			isSlider = 0
-			if "slider" in osu_d["type"]:
-				isSlider = 1
-			component.hitobjectmanager.add_circle(x_circle, y_circle,
-			                                      osu_d["combo_color"],
-			                                      osu_d["combo_number"],
-			                                      isSlider)
-			if isSlider:
-				component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, beatmap.timing_point[cur_offset]["BeatDuration"])
-			index_hitobject += 1
+		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
+			if "spinner" in osu_d["type"]:
+				if cur_time > osu_d["time"]:
+					component.spinner.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
+					index_hitobject += 1
+			else:
+				isSlider = 0
+				if "slider" in osu_d["type"]:
+					isSlider = 1
+
+				component.hitobjectmanager.add_circle(x_circle, y_circle,
+				                                      osu_d["combo_color"],
+				                                      osu_d["combo_number"],
+				                                      isSlider)
+				if isSlider:
+					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, beatmap.timing_point[cur_offset]["BeatDuration"])
+				index_hitobject += 1
 
 
 		component.followpoints.add_to_frame(img, cur_time)
 		component.hitobjectmanager.add_to_frame(img)
+		component.spinner.add_to_frame(img)
 
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
