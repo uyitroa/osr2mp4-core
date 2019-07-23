@@ -42,6 +42,8 @@ class HitObjectManager:
 			index = hitobj[0] = hitobj[0] - 1
 			if self.hitobject[i][1] < -self.interval * hitobj[3]:  # for late click and effect instead of < 0
 				del hitobj[2][index]
+				if self.hitobject[i][0] == self.SLIDER:
+					del self.prepareslider.arrows[index]
 				del self.hitobject[i]
 				continue
 			hitobj[1].add_to_frame(background, index)

@@ -5,13 +5,41 @@ from Curves.curve import *
 sliderb = "sliderb.png"
 sliderfollowcircle = "sliderfollowcircle.png"
 sliderscorepiont = "sliderscorepoint.png"
+reversearrow = "reversearrow.png"
 default_size = 128
+
+
+class ReverseArrow(Images):
+	def __init__(self, path, scale):
+		Images.__init__(self, path + reversearrow)
+		self.to_square()
+		self.change_size(scale, scale)
+		self.orig_img = np.copy(self.img)
+		self.orig_rows = self.orig_img.shape[0]
+		self.orig_cols = self.orig_img.shape[1]
+		self.to_3channel()
+
+	def to_square(self):
+		max_length = int(np.sqrt(self.img.shape[0] ** 2 + self.img.shape[1] ** 2))
+		square = np.zeros((max_length, max_length, self.img.shape[2]))
+		y1, y2 = int(max_length / 2 - self.orig_rows / 2), int(max_length / 2 + self.orig_rows / 2)
+		x1, x2 = int(max_length / 2 - self.orig_cols / 2), int(max_length / 2 + self.orig_cols / 2)
+		square[y1:y2, x1:x2, :] = self.img[:, :, :]
+		self.orig_img = square
+		self.orig_rows, self.orig_cols = max_length, max_length
+
+	def rotate_image(self, angle):
+		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
+		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
+		return result
 
 
 class PrepareSlider:
 	def __init__(self, path, diff, time_preempt, opacity_interval, scale, colors, movedown, moveright):
 		self.path = path
 		self.sliders = []
+		self.arrows = []
 		self.movedown = movedown
 		self.moveright = moveright
 		self.maxcolors = colors["ComboNumber"]
@@ -34,6 +62,7 @@ class PrepareSlider:
 		self.sliderfollowcircle = cv2.imread(self.path + sliderfollowcircle, -1)
 		self.followscale = default_size/self.sliderfollowcircle.shape[0]
 		self.radius_scale = self.cs * 2 / default_size
+		self.reversearrow = ReverseArrow(self.path, self.radius_scale)
 		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
 		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
 
@@ -128,6 +157,24 @@ class PrepareSlider:
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
 		                     0, color, self.slidermax_index, slider_duration, b_info, 1, osu_d["repeated"]])
 
+		baiser = Curve.from_kind_and_points(*b_info[0:3])
+		pos1 = baiser(1)
+		pos2 = baiser(0.95)
+
+		pos3 = baiser(0)
+		pos4 = baiser(0.05)
+
+		vector_x1, vector_y1 = pos2.x-pos1.x, pos2.y-pos1.y
+		vector_x2, vector_y2 = pos4.x-pos3.x, pos4.y-pos3.y
+
+		angle1 = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
+		angle2 = -np.arctan2(vector_y2, vector_x2) * 180 / np.pi
+
+		img1 = self.reversearrow.rotate_image(angle1)
+		img2 = self.reversearrow.rotate_image(angle2)
+
+		self.arrows.append([img2, img1])
+
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
 		start = 0
@@ -203,7 +250,6 @@ class PrepareSlider:
 		cur_img[:, :, :] = cur_img[:, :, :] * (self.sliders[i][4]/100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
-
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
 			t = self.sliders[i][3]/self.sliders[i][7]
 
@@ -218,3 +264,12 @@ class PrepareSlider:
 			index = int(self.sliders[i][6])
 			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
 			self.sliders[i][6] = max(0, self.sliders[i][6] - 0.7)
+
+		if self.sliders[i][9] < self.sliders[i][10]:
+			cur_pos = baiser(int(going_forward))
+			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
+			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale + self.movedown *0.95)
+			arrow_img = np.copy(self.arrows[i][int(going_forward)])
+			arrow_img[:, :, :] = arrow_img[:, :, :] * (self.sliders[i][4]/100)
+			self.to_frame2(arrow_img, background, x, y)
+

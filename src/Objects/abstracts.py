@@ -9,7 +9,8 @@ class Images:
 	def __init__(self, filename, scale = 1):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
-		if self.img.shape[0] == 1 or self.img.shape[1] == 1:
+		if self.img is None or self.img.shape[0] == 1 or self.img.shape[1] == 1:
+			print(filename, "exists:", self.img is not None)
 			self.img = np.zeros((2, 2, 4))
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
@@ -58,10 +59,10 @@ class Images:
 					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA):
-		n_rows = int(new_row * self.orig_rows)
-		n_rows -= int(n_rows % 2 == 1)  # need to be even
-		n_cols = int(new_col * self.orig_cols)
-		n_cols -= int(n_cols % 2 == 1)  # need to be even
+		n_rows = max(2, int(new_row * self.orig_rows))
+		n_rows += int(n_rows % 2 == 1)  # need to be even
+		n_cols = max(2, int(new_col * self.orig_cols))
+		n_cols += int(n_cols % 2 == 1)  # need to be even
 		self.img = cv2.resize(self.orig_img, (n_cols, n_rows), interpolation=inter_type)
 
 
