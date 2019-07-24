@@ -9,12 +9,12 @@ class Cursor(Images):
 
 class InputOverlay(Images):
 	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale * 0.5)
+		Images.__init__(self, filename, scale)
 		self.cur_blue = 0
 		self.blue_step = 50
 
 		self.frame_index = 0
-		self.font_scale = 0.5 * 0.5 * scale
+		self.font_scale = 0.5 * scale
 		self.font_step = 0.02
 		self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 		self.one_digit_size = self.font_width
@@ -56,7 +56,7 @@ class InputOverlay(Images):
 	def clicked(self):
 		if not self.going_down_frame:
 			self.frame_index = 0
-			self.font_scale = 0.5 * 0.5 * self.scale
+			self.font_scale = 0.5 * self.scale
 			self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 			self.n = str(int(self.n) + 1)
 			self.font_width = self.one_digit_size * len(self.n)
@@ -229,7 +229,7 @@ class Playfield:
 
 class InputOverlayBG(Images):
 	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale * 0.51)
+		Images.__init__(self, filename, scale * 1.05)
 		self.to_3channel()
 		self.orig_img = np.rot90(self.orig_img, 3)
 		self.orig_rows = self.orig_img.shape[0]
