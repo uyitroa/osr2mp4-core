@@ -13,7 +13,7 @@ class ReverseArrow(Images):
 	def __init__(self, path, scale):
 		Images.__init__(self, path + reversearrow)
 		self.to_square()
-		self.change_size(scale, scale)
+		self.change_size(scale*1.1, scale*1.1)
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.orig_img.shape[0]
 		self.orig_cols = self.orig_img.shape[1]
@@ -157,12 +157,11 @@ class PrepareSlider:
 		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
 		                     0, color, self.slidermax_index, slider_duration, b_info, 1, osu_d["repeated"]])
 
-		baiser = Curve.from_kind_and_points(*b_info[0:3])
-		pos1 = baiser(1)
-		pos2 = baiser(0.95)
+		pos1 = osu_d["ps"][-1]
+		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
 
-		pos3 = baiser(0)
-		pos4 = baiser(0.05)
+		pos3 = osu_d["ps"][0]
+		pos4 = osu_d["ps"][1] if osu_d["ps"][1].x != pos3.x or osu_d["ps"][1].y != pos3.y else osu_d["ps"][2]
 
 		vector_x1, vector_y1 = pos2.x-pos1.x, pos2.y-pos1.y
 		vector_x2, vector_y2 = pos4.x-pos3.x, pos4.y-pos3.y
@@ -246,8 +245,7 @@ class PrepareSlider:
 
 
 		self.sliders[i][4] = min(90, self.sliders[i][4] + self.opacity_interval)
-		cur_img = np.copy(self.sliders[i][0])
-		cur_img[:, :, :] = cur_img[:, :, :] * (self.sliders[i][4]/100)
+		cur_img = self.sliders[i][0][:, :, :] * (self.sliders[i][4]/100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
@@ -263,13 +261,12 @@ class PrepareSlider:
 			color = self.sliders[i][5]-1
 			index = int(self.sliders[i][6])
 			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
-			self.sliders[i][6] = max(0, self.sliders[i][6] - 0.7)
+			self.sliders[i][6] = max(0, self.sliders[i][6] - 1.3)
 
 		if self.sliders[i][9] < self.sliders[i][10]:
 			cur_pos = baiser(int(going_forward))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale + self.movedown *0.95)
-			arrow_img = np.copy(self.arrows[i][int(going_forward)])
-			arrow_img[:, :, :] = arrow_img[:, :, :] * (self.sliders[i][4]/100)
+			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
+			arrow_img = self.arrows[i][int(going_forward)][:, :, :] * (self.sliders[i][4]/100)
 			self.to_frame2(arrow_img, background, x, y)
 
