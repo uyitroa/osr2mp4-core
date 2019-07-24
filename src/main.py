@@ -21,11 +21,12 @@ WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
-SCALE = PLAYFIELD_WIDTH / 512
+PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
+SCALE = HEIGHT/768
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/freedomdive.osu"
-REPLAY_FILE = "../res/fd.osr"
+BEATMAP_FILE = "../res/boku.osu"
+REPLAY_FILE = "../res/boku.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -40,9 +41,9 @@ class Object:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.followpoints = FollowPointsManager(path + "followpoint", SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
-		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, SCALE, maxcombo, gap, colors, MOVE_DOWN, MOVE_TO_RIGHT)
-		self.spinner = SpinnerManager(diff["OverallDifficulty"], SCALE, path)
+		self.followpoints = FollowPointsManager(path + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
+		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, PLAYFIELD_SCALE, maxcombo, gap, colors, MOVE_DOWN, MOVE_TO_RIGHT)
+		self.spinner = SpinnerManager(diff["OverallDifficulty"], PLAYFIELD_SCALE, path)
 
 
 def nearer(cur_time, replay, index):
@@ -60,7 +61,7 @@ def setupBackground():
 	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
 	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background.png", SCALE)
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(HEIGHT / 2 - 65 * SCALE))
+	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
 	return img
 
 
@@ -108,13 +109,13 @@ def main():
 
 	skin = Skin(PATH)
 
-	beatmap = read_file(BEATMAP_FILE, SCALE, skin.colours)
+	beatmap = read_file(BEATMAP_FILE, PLAYFIELD_SCALE, skin.colours)
 
 	replay_event, cur_time = setupReplay(REPLAY_FILE, beatmap.start_time, beatmap.end_time)
 	osr_index = 0
 
-	old_cursor_x = int(replay_event[0][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
-	old_cursor_y = int(replay_event[0][CURSOR_Y] * SCALE) + MOVE_TO_RIGHT
+	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
 
 	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 28,
 	                   beatmap.slider_combo, skin.colours)
@@ -141,23 +142,23 @@ def main():
 			start_time = time.time()
 
 
-		cursor_x = int(replay_event[osr_index][CURSOR_X] * SCALE) + MOVE_TO_RIGHT
-		cursor_y = int(replay_event[osr_index][CURSOR_Y] * SCALE) + MOVE_DOWN
+		cursor_x = int(replay_event[osr_index][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+		cursor_y = int(replay_event[osr_index][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 
 
 		if replay_event[osr_index][KEYS_PRESSED] == 10 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			component.key1.clicked()
-		component.key1.add_to_frame(img, WIDTH - int(component.key1.orig_cols / 2), int(HEIGHT / 2 - 50 * SCALE))
-		component.key2.add_to_frame(img, WIDTH - int(component.key2.orig_cols / 2), int(HEIGHT / 2 - 27.5 * SCALE))
-		component.key3.add_to_frame(img, WIDTH - int(component.key3.orig_cols / 2), int(HEIGHT / 2 - 5 * SCALE))
-		component.key4.add_to_frame(img, WIDTH - int(component.key4.orig_cols / 2), int(HEIGHT / 2 + 17.5 * SCALE))
+		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
+		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
+		component.key3.add_to_frame(img, WIDTH - int(24 * SCALE), int(446* SCALE))
+		component.key4.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
 
 
 		osu_d = beatmap.hitobjects[index_hitobject]
-		x_circle = int(osu_d["x"] * SCALE) + MOVE_TO_RIGHT
-		y_circle = int(osu_d["y"] * SCALE) + MOVE_DOWN
+		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 3 < len(beatmap.hitobjects):
