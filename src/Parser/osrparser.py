@@ -16,7 +16,7 @@ def setupReplay(osrfile, start_time, end_time):
 	start_index = 0
 	end_index = 0
 
-	start_osr = max(0, start_time - 3000)
+	start_osr = max(0, start_time - 5000)
 	end_osr = end_time + 1000
 
 	for index in range(len(replay_data)):

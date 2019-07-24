@@ -278,15 +278,16 @@ class PrepareCircles(Images):
 		print("done")
 		del self.approachCircle
 
-	def add_circle(self, x, y, combo_color, combo_number,  object_type=0):
-		self.circles.append([x, y, self.time_preempt, -1, combo_color, combo_number, object_type, 0])
+	def add_circle(self, x, y, combo_color, combo_number, duration, object_type=0):
+		start_index = int((self.time_preempt - duration)/self.interval + 0.5) - 1
+		self.circles.append([x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0])
 
 	def add_to_frame(self, background, i):
 		color = self.circles[i][4] - 1
 		self.circles[i][2] -= self.interval
 
 		# timeout for circle, if self.interval*4 is the time for circle fadeout effect
-		if self.circles[i][2] <= -self.interval * 4:
+		if self.circles[i][8]:
 			if self.circles[i][6] or self.circles[i][7] > len(self.circle_fadeout[color]) - 1:
 				return
 			self.img = self.circle_fadeout[color][self.circles[i][7]]
@@ -298,11 +299,6 @@ class PrepareCircles(Images):
 		number = self.circles[i][5]
 
 		if self.circles[i][6]:
-			# add black circle so the slidercircle color won't be affected by slider color since slidercircle is a bit
-			# trasnparent
-			# self.img = self.circle_supporter
-			# super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
-
 			# in case opacity_index exceed list range because of the creator shitty algorithm
 			# the creator is me btw
 			opacity_index = min(self.circles[i][3], len(self.slidercircle_frames[color][number]) - 1)
