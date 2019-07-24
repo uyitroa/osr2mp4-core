@@ -54,8 +54,9 @@ class InputOverlay(Images):
 			self.button_frames.append(self.img)
 
 	def clicked(self):
+		is_new_click = not self.going_down_frame
 		if not self.going_down_frame:
-			self.frame_index = 0
+			self.frame_index = 2
 			self.font_scale = 0.5 * self.scale
 			self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
 			self.n = str(int(self.n) + 1)
@@ -69,6 +70,7 @@ class InputOverlay(Images):
 			self.font_scale -= self.font_step
 			self.font_width *= self.font_scale / (self.font_scale + self.font_step)
 			self.font_height *= self.font_scale / (self.font_scale + self.font_step)
+		return is_new_click
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		if self.going_down_frame:
