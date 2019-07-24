@@ -102,6 +102,8 @@ class Beatmap:
 		else:
 			preempt = 1200 - 750 * (ar - 5) / 5
 
+		cur_offset = 0
+
 		for item in hitobject:
 			if item == '':
 				continue
@@ -111,6 +113,10 @@ class Beatmap:
 			my_dict["y"] = int(osuobject[1])
 			my_dict["time"] = int(osuobject[2])
 
+			# use next off_set or not
+			while my_dict["time"] + preempt > self.timing_point[cur_offset + 1]["Offset"]:
+				cur_offset += 1
+			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
 			if index != 0:
 				if my_dict["x"] == self.hitobjects[-1]["x"] and my_dict["y"] == self.hitobjects[-1]["y"] and \
 						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"]:
@@ -129,6 +135,9 @@ class Beatmap:
 
 			if int(bin_info[0]):
 				object_type.append("circle")
+				my_dict["end time"] = my_dict["time"]
+				my_dict["end x"] = my_dict["x"]
+				my_dict["end y"] = my_dict["y"]
 
 			if int(bin_info[2]):
 				object_type.append("new combo")
@@ -163,8 +172,19 @@ class Beatmap:
 				my_dict["ps"] = ps
 				my_dict["slider_type"] = slider_type
 				my_dict["pixel_length"] = float(osuobject[7])
+
 				my_dict["stacking"] = 0
+
 				my_dict["repeated"] = int(osuobject[6])
+				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel_length"] / (100 * self.diff["SliderMultiplier"])
+				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
+
+				baiser = Curve.from_kind_and_points(my_dict["slider_type"], ps, my_dict["pixel_length"])
+				end_goingforward = my_dict["repeated"] % 2 == 1
+				endpos = baiser(int(end_goingforward))
+				my_dict["end x"] = endpos.x
+				my_dict["end y"] = endpos.y
+
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
 					my_dict["edgeAdditions"] = osuobject[9]

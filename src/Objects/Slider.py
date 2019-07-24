@@ -143,7 +143,7 @@ class PrepareSlider:
 				cur_alpha -= alpha_interval
 
 
-	def add_slider(self, osu_d, x_pos, y_pos, beat_duration):
+	def add_slider(self, osu_d, x_pos, y_pos, beat_duration, duration):
 		image = osu_d["slider_img"]
 		x_offset, y_offset = osu_d["x_offset"], osu_d["y_offset"]
 		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
@@ -154,7 +154,7 @@ class PrepareSlider:
 		b_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"], osu_d["stacking"])
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated]
-		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + self.time_preempt,
+		self.sliders.append([image, x_pos-x_offset, y_pos-y_offset, slider_duration + duration,
 		                     0, color, self.slidermax_index, slider_duration, b_info, 1, osu_d["repeated"]])
 
 		pos1 = osu_d["ps"][-1]
