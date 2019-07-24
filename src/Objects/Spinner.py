@@ -14,7 +14,7 @@ spinnertop = "spinner-top.png"
 class SpinnerManager(Images):
 	def __init__(self, od, scale, path):
 		self.divide_by_255 = 1/255.0
-		self.scale = scale
+		self.scale = scale * 1.3 * 0.5
 		self.path = path
 		self.spinners = []
 		self.spinner_frames = []
@@ -29,7 +29,7 @@ class SpinnerManager(Images):
 	def load_spinner(self):
 		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle, spinnertop]
 		for img in n:
-			self.spinner_images[img] = Images(self.path + img, self.scale*0.5)
+			self.spinner_images[img] = Images(self.path + img, self.scale)
 
 		max_width = 0
 		max_height = 0
@@ -55,6 +55,7 @@ class SpinnerManager(Images):
 		bg[y1:y2, x1:x2, 3] = bg[y1:y2, x1:x2, 3] * alpha_l + alpha_s * img[:, :, 3]
 
 	def prepare_spinner(self):
+		self.spinner_images[spinnercircle].to_3channel()
 		for x in range(10, -1, -1):
 			height, width, a = self.spinner_images[spinnermetre].img.shape
 			height = int(height * x/10)
@@ -63,7 +64,7 @@ class SpinnerManager(Images):
 
 			new_img = np.copy(self.blank)
 			self.to_frame(new_img, partial_metre)
-			self.to_frame(new_img, self.spinner_images[spinnercircle].img)
+			#self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
 			self.orig_img = new_img
 			self.to_3channel()
 			self.spinner_frames.append(self.orig_img)
@@ -91,11 +92,13 @@ class SpinnerManager(Images):
 				self.spinners[i][2] = min(1, self.spinners[i][2] + self.interval / 100)
 
 			else:
-				if self.spinners[i][2] < -200:
+				if self.spinners[i][1] < -200:
 					del self.spinners[i]
 					break
 				else:
 					self.spinners[i][2] = max(0, self.spinners[i][2] - self.interval / 200)
 
-			self.img = self.spinner_frames[9][:, :, :] * self.spinners[i][2]
+			self.img = self.spinner_frames[10][:, :, :] * self.spinners[i][2]
 			super().add_to_frame(background, int(background.shape[1] / 2), int(background.shape[0] / 2))
+			self.img = self.spinner_images[spinnercircle].img[:, :, :] * self.spinners[i][2]
+			super().add_to_frame(background, int(background.shape[1]/2), int(background.shape[0]/2))
