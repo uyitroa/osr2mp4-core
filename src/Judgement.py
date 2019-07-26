@@ -44,32 +44,13 @@ class Check:
 		self.hitobjects = hitobjects
 		self.index = 0
 
-		self.CIRCLE = 0
-		self.SLIDER = 1
+		self.sliders_memory = {}
 
-		self.circlesliderclicked = False
-		self.repeatedslider = 1
-		self.sliderfollow_prevstate = False
-		self.score = 0
 
-	def cursorstate(self, clicked, osr):
-		if self.index >= len(self.hitobjects):
-			return False, None, None, None, None, None, None
-		osu_d = self.hitobjects[self.index]
-		followappear = False
-		if "circle" in osu_d["type"]:
-			return (*self.checkcircle(osu_d, osr, clicked), followappear)
-
-		elif "slider" in osu_d["type"]:
-			return (*self.checkslider(osu_d, osr, clicked),)
-
-		self.index += 1
-		return False, None, None, None, None, None, None
-
-	def checkcircle(self, osu_d, osr, clicked):
+	def checkcircle(self, index, osr, clicked):
 		update_hitobj = False
 		score = None
-
+		osu_d = self.hitobjects[index]
 		time_difference = osr[3] - osu_d["time"]
 		dist = math.sqrt((osr[0] - osu_d["x"])**2 + (osr[1] - osu_d["y"])**2)
 		if dist <= self.diff.max_distance and clicked:
@@ -81,59 +62,45 @@ class Check:
 				if delta_time <= self.diff.scorewindow[x]:
 					score = self.diff.score[x]
 					break
-			if "circle" in osu_d["type"] or osr[3] > osu_d["end time"]:
-				self.index += 1
-				self.circlesliderclicked = False
-				self.repeatedslider = 1
-				self.sliderfollow_prevstate = False
-				self.score = 0
 
 		else:
 			if time_difference > self.diff.scorewindow[2]:
 				update_hitobj = True
-				if "circle" in osu_d["type"] or osr[3] > osu_d["end time"]:
-					self.index += 1
-					self.circlesliderclicked = False
-					self.repeatedslider = 1
-					self.sliderfollow_prevstate = False
-					self.score = 0
-					score = 0
+				score = 0
 
-		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"], self.CIRCLE
+		if "slider" in osu_d["type"]:
+			self.sliders_memory[osu_d["time"]] = {"score": 300 if score != 0 else 0, "follow state": 0, "repeated slider": 1}
 
-	def checkslider(self, osu_d, osr, clicked):
+		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"]
+
+	def checkslider(self, index, osr):
+		osu_d = self.hitobjects[index]
+		if osu_d["time"] not in self.sliders_memory:
+			self.sliders_memory[osu_d["time"]] = {"score": 0, "follow state": 0, "repeated slider": 1}
+
 		followappear = False
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
 			followappear = self.checkcursor_incurve(osu_d, osr)
 		if osr[3] > osu_d["end time"]:
-			self.index += 1
-			self.circlesliderclicked = False
-			self.repeatedslider = 1
-			self.sliderfollow_prevstate = False
-			score_toreturn = self.score
-			self.score = 0
-			return True, score_toreturn, osu_d["time"], osu_d["end x"], osu_d["end y"], self.SLIDER, followappear
-		if not self.circlesliderclicked:
-			return_tuple = self.checkcircle(osu_d, osr, clicked)
-			if return_tuple[1] != 0 and return_tuple[1] is not None:
-				self.score = 300
-			self.circlesliderclicked = return_tuple[0]
-			return return_tuple[0], None, osu_d["time"], 0, 0, self.CIRCLE, followappear
-		elif followappear != self.sliderfollow_prevstate:
-			self.sliderfollow_prevstate = followappear
-			return True, None, osu_d["time"], 0, 0, self.SLIDER, followappear
+			score = self.sliders_memory[osu_d["time"]]["score"]
+			del self.sliders_memory[osu_d["time"]]
+			return True, score, osu_d["time"], osu_d["end x"], osu_d["end y"], followappear
 
-		return False, None, None, None, None, None, None
+		if followappear != self.sliders_memory[osu_d["time"]]["follow state"]:
+			self.sliders_memory[osu_d["time"]]["follow state"] = followappear
+			return True, None, osu_d["time"], 0, 0, followappear
+
+		return False, None, None, None, None, None
 
 	def checkcursor_incurve(self, osu_d, osr):
 		slider_leniency = 36 if osu_d["duration"] > 72 else osu_d["duration"] / 2
 
-		if (osr[3] - osu_d["time"]) / self.repeatedslider > osu_d["duration"]:
-			self.repeatedslider += 1
+		if (osr[3] - osu_d["time"]) / self.sliders_memory[osu_d["time"]]["repeated slider"] > osu_d["duration"]:
+			self.sliders_memory[osu_d["time"]]["repeated slider"] += 1
 
-		going_forward = self.repeatedslider % 2 == 1
+		going_forward = self.sliders_memory[osu_d["time"]]["repeated slider"] % 2 == 1
 
-		time_difference = (osr[3] - osu_d["time"]) / self.repeatedslider
+		time_difference = (osr[3] - osu_d["time"]) / self.sliders_memory[osu_d["time"]]["repeated slider"]
 		t = time_difference / osu_d["duration"]
 		if not going_forward:
 			t = 1 - t
@@ -143,10 +110,13 @@ class Check:
 		dist = math.sqrt((osr[0] - pos.x + osu_d["stacking"])**2 + (osr[1] - pos.y + osu_d["stacking"])**2)
 
 		if dist <= self.diff.slidermax_distance and osr[2] != 0:
-			if self.score == 0:
-				self.score = 100
+			if self.sliders_memory[osu_d["time"]]["score"] == 0:
+				self.sliders_memory[osu_d["time"]]["score"] = 100
 			return True
 		elif osr[3] < osu_d["end time"] - slider_leniency:
-			if self.score == 300:
-				self.score = 100
+			if self.sliders_memory[osu_d["time"]]["score"] == 300:
+				self.sliders_memory[osu_d["time"]]["score"] = 100
 			return False
+
+	def checkspinner(self, osu_d, osr):
+		pass

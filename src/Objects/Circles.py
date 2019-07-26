@@ -290,7 +290,8 @@ class PrepareCircles(Images):
 	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, object_type=0):
 		start_index = int((self.time_preempt - duration)/self.interval + 0.5) - 1
 		timestamp = str(timestamp) + "c"
-		self.circles[timestamp] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0]
+		# x, y, duration, frame index, color, combo number, obj type, fade out index, fadeout bool, x step, max step
+		self.circles[timestamp] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0]
 
 	def add_to_frame(self, background, i):
 		color = self.circles[i][4] - 1
@@ -311,6 +312,16 @@ class PrepareCircles(Images):
 		self.circles[i][3] += 1
 		number = self.circles[i][5]
 
+		# notelock
+		if self.circles[i][9]:
+			step = 1 if self.circles[i][10] % 2 == 0 else -1
+			self.circles[i][9] += step * 5
+			if self.circles[i][9] == 1 and self.circles[i][10] == 5:
+				self.circles[i][9] = 0
+			elif self.circles[i][9]-1 == step * 10:
+				self.circles[i][10] += 1
+
+
 		if self.circles[i][6]:
 			# in case opacity_index exceed list range because of the creator shitty algorithm
 			# the creator is me btw
@@ -323,4 +334,4 @@ class PrepareCircles(Images):
 		if self.circles[i][6] and self.circles[i][2] <= 0:
 			self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i][2]/50)
 
-		super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
+		super().add_to_frame(background, self.circles[i][0]+self.circles[i][9], self.circles[i][1])
