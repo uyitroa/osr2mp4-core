@@ -75,6 +75,7 @@ class Beatmap:
 			if int(items[6]) == 1:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
+				print(inherited)
 			else:
 				my_dict["BeatDuration"] = - float(items[1]) * inherited / 100
 			my_dict["Meter"] = int(items[2])
@@ -103,6 +104,7 @@ class Beatmap:
 			preempt = 1200 - 750 * (ar - 5) / 5
 
 		cur_offset = 0
+		offset = self.timing_point[0]["Offset"]
 
 		for item in hitobject:
 			if item == '':
@@ -114,7 +116,7 @@ class Beatmap:
 			my_dict["time"] = int(osuobject[2])
 
 			# use next off_set or not
-			while my_dict["time"] + preempt > self.timing_point[cur_offset + 1]["Offset"]:
+			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
 			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
 			if index != 0:

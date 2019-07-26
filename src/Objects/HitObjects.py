@@ -10,84 +10,75 @@ class HitObjectManager:
 		self.diff = diff
 		self.maxtimewindow = 150 + 50 * (5 - diff["OverallDifficulty"]) / 5
 		self.prepareslider = PrepareSlider(path, diff, self.time_preempt, opacity, scale, colors, movedown, moveright)
-		self.hitobjects = []
-		self.fadeoutobjects = []
+		self.hitobjects = {}
+		self.objtime = []
 		self.interval = 1000 / 60
 		self.CIRCLE = 0
 		self.SLIDER = 1
 
-		self.circleindices = []
-		self.sliderindices = []
-		self.hitobj_size = 0
-		self.deleted = 0
+	def add_slider(self, osu_d, x_pos, y_pos, cur_time, timestamp):
+		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time, timestamp)
 
-	def add_slider(self, osu_d, x_pos, y_pos, beat_duration, duration):
-		self.sliderindices.append(self.hitobj_size)
-		self.hitobj_size += 1
-		self.prepareslider.add_slider(osu_d, x_pos, y_pos, beat_duration, duration)
-		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
-		sliderduration = beat_duration * pixel_length / (100 * self.diff["SliderMultiplier"]) * osu_d["repeated"]
-		self.hitobjects.append([self.SLIDER, sliderduration + duration])
+		timestamp = str(timestamp) + "s"
+		self.hitobjects[timestamp] = [self.SLIDER, osu_d["end time"] - cur_time, len(self.objtime)]
+		self.objtime.append(timestamp)
 
-	def add_circle(self, x, y, combo_color, combo_number,  duration, object_type=0):
-		self.circleindices.append(self.hitobj_size)
-		self.hitobj_size += 1
-		self.preparecircle.add_circle(x, y, combo_color, combo_number, duration, object_type)
+	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, object_type=0):
+		self.preparecircle.add_circle(x, y, combo_color, combo_number, duration, timestamp, object_type)
 		circleduration = duration
-		self.hitobjects.append([self.CIRCLE, circleduration])
 
-	def circleclicked(self, score):
-		if len(self.circleindices) == 0:
-			return
-		poop = self.hitobjects.pop(self.circleindices[0]-self.deleted)
-		print(poop[1])
-		if score > 0:
-			self.fadeoutobjects.append(poop)
-			self.fadeoutobjects[-1][1] = 0
-			self.preparecircle.circles[0][8] = 1
+		timestamp = str(timestamp) + "c"
+		self.hitobjects[timestamp] = [self.CIRCLE, circleduration, len(self.objtime)]
+		self.objtime.append(timestamp)
+
+	def circleclicked(self, score, timestamp, followappear):
+		key = str(timestamp) + "c"
+		if self.preparecircle.circles[key][6]:
+			self.preparecircle.circles[key][8] = 1
+			self.sliderchangestate(followappear, timestamp)
+			# del self.objtime[self.hitobjects[key][2]]
+			# del self.preparecircle.circles[key]
+			# del self.hitobjects[key]
 		else:
-			del self.preparecircle.circles[0]
-		del self.circleindices[0]
-		self.deleted += 1
+			if score > 0:
+				self.preparecircle.circles[key][8] = 1
+			# else:
+			# 	del self.objtime[self.hitobjects[key][2]]
+			# 	del self.preparecircle.circles[key]
+			# 	del self.hitobjects[key]
+
+	def sliderchangestate(self, followappear, timestamp):
+		key = str(timestamp) + "s"
+		index_interval = 0.65
+
+		if self.prepareslider.sliders[key][6] != self.prepareslider.slidermax_index:
+			self.prepareslider.sliders[key][6] = 0
+
+		if followappear:
+			index_interval = -0.75
+			self.prepareslider.sliders[key][6] = self.prepareslider.slidermax_index - 3
+
+		self.prepareslider.sliders[key][11] = index_interval
 
 	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):
-		# print(self.circleindices, self.deleted, self.hitobj_size)
-		slider_index = len(self.prepareslider.sliders)
-		circle_index = len(self.preparecircle.circles)
-		i = len(self.hitobjects)
+		i = len(self.objtime)
 
-		sliderwait_multiplier = 10
-		circlewait_multiplier = 10
-
-		objecttype = {self.CIRCLE: [circle_index, self.preparecircle, self.preparecircle.circles, circlewait_multiplier],
-		              self.SLIDER: [slider_index, self.prepareslider, self.prepareslider.sliders, sliderwait_multiplier]}
-
+		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles],
+		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders]}
 		while i > 0:  # > 0 because we do i-=1 at the beginning so if it's > -1 it would be "out of range"
 			i -= 1
-			self.hitobjects[i][1] -= self.interval
-			hitobj = objecttype[self.hitobjects[i][0]]
-			index = hitobj[0] = hitobj[0] - 1
-			if self.hitobjects[i][0] == self.SLIDER:
-				if self.hitobjects[i][1] <= 0:
-					self.fadeoutobjects.append(self.hitobjects.pop(i))
-					del self.sliderindices[0]
-					self.deleted += 1
-					continue
-			hitobj[1].add_to_frame(background, index)
-
-
-		i = len(self.fadeoutobjects)
-		while i > 0:
-			i -= 1
-			self.fadeoutobjects[i][1] -= self.interval
-			hitobj = objecttype[self.fadeoutobjects[i][0]]
-			index = hitobj[0] = hitobj[0] - 1
-			if self.fadeoutobjects[i][1] <= -self.interval * 10:  # hitobj[3]:
-				del hitobj[2][index]
-				if self.fadeoutobjects[i][0] == self.SLIDER:
-					del self.prepareslider.arrows[index]
-				del self.fadeoutobjects[i]
+			key = self.objtime[i]
+			self.hitobjects[key][1] -= self.interval
+			hitobj = objecttype[self.hitobjects[key][0]]
+			if self.hitobjects[key][1] <= -self.interval * 10: # and self.hitobjects[key][0] == self.SLIDER:  # hitobj[3]:
+				del hitobj[1][key]
+				if self.hitobjects[key][0] == self.SLIDER:
+					del self.prepareslider.arrows[key]
+				del self.hitobjects[key]
+				del self.objtime[i]
 				continue
-			hitobj[1].add_to_frame(background, index)
+			hitobj[0].add_to_frame(background, key)
 
+		for i in range(len(self.objtime)):
+			self.hitobjects[self.objtime[i]][2] = i

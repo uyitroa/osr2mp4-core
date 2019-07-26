@@ -92,7 +92,7 @@ class PrepareCircles(Images):
 		self.overlay_filename = path + hitcircleoverlay
 		self.slideroverlay_filename = path + sliderstartcircleoverlay
 		self.diff = diff
-		self.circles = []
+		self.circles = {}
 		self.interval = 1000 / 60  # ms between 2 frames
 		self.overlay_scale = 1.05
 		self.ar = diff["ApproachRate"]
@@ -117,7 +117,7 @@ class PrepareCircles(Images):
 
 		self.circle_frames = []
 		self.slidercircle_frames = []
-		self.circle_fadeout = []
+		self.circle_fadeout = [[], []]
 		self.prepare_circle()
 
 	def create_black_circle(self):
@@ -222,12 +222,12 @@ class PrepareCircles(Images):
 
 
 			# prepare fadeout frames
-			self.circle_fadeout.append([])
+			self.circle_fadeout[0].append([])
 			for x in range(100, 140, 4):
 				size = x/100
 				im = np.copy(self.img)
 				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
-				self.circle_fadeout[-1].append(self.change_size2(im, size, size))
+				self.circle_fadeout[0][-1].append(self.change_size2(im, size, size))
 
 
 			orig_color_slider = np.copy(self.slider_circle.orig_img)
@@ -238,6 +238,15 @@ class PrepareCircles(Images):
 			self.to_3channel(orig_overlay_slider)
 			self.slider_circle.img = np.copy(orig_overlay_slider)
 			self.slidercircle_frames.append({})   # use dict to find the right combo will be faster
+
+
+			# prepare fadeout frames
+			self.circle_fadeout[1].append([])
+			for x in range(100, 140, 4):
+				size = x/100
+				im = np.copy(orig_overlay_slider)
+				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
+				self.circle_fadeout[1][-1].append(self.change_size2(im, size, size))
 
 			# add number to circles
 			for x in range(1, self.maxcombo[c] + 1):
@@ -278,9 +287,10 @@ class PrepareCircles(Images):
 		print("done")
 		del self.approachCircle
 
-	def add_circle(self, x, y, combo_color, combo_number, duration, object_type=0):
+	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, object_type=0):
 		start_index = int((self.time_preempt - duration)/self.interval + 0.5) - 1
-		self.circles.append([x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0])
+		timestamp = str(timestamp) + "c"
+		self.circles[timestamp] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0]
 
 	def add_to_frame(self, background, i):
 		color = self.circles[i][4] - 1
@@ -288,9 +298,12 @@ class PrepareCircles(Images):
 
 		# timeout for circle, if self.interval*4 is the time for circle fadeout effect
 		if self.circles[i][8]:
-			if self.circles[i][6] or self.circles[i][7] > len(self.circle_fadeout[color]) - 1:
+			isslider = self.circles[i][6]
+			if self.circles[i][7] > len(self.circle_fadeout[isslider][color]) - 1:
 				return
-			self.img = self.circle_fadeout[color][self.circles[i][7]]
+			if self.circles[i][6] and self.circles[i][2] <= -50:
+				return
+			self.img = self.circle_fadeout[isslider][color][self.circles[i][7]]
 			self.circles[i][7] += 1
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 			return
@@ -306,4 +319,8 @@ class PrepareCircles(Images):
 		else:
 			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number - 1]) - 1)
 			self.img = self.circle_frames[color][number - 1][opacity_index]
+
+		if self.circles[i][6] and self.circles[i][2] <= 0:
+			self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i][2]/50)
+
 		super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
