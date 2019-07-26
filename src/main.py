@@ -19,7 +19,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin2/"
+PATH = "../res/skin3/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -28,8 +28,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT/768
 MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/bluezenith.osu"
-REPLAY_FILE = "../res/bluezenith.osr"
+BEATMAP_FILE = "../res/smiling.osu"
+REPLAY_FILE = "../res/smiling.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -54,6 +54,7 @@ class Object:
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the cur_time
 	min_time = orig_time = abs(replay[index][TIMES] - cur_time)
+
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
 	for x in range(1, 4):
@@ -78,13 +79,12 @@ def setupBackground():
 
 def find_followp_target(beatmap, index=0):
 	# reminder: index means the previous circle. the followpoints will point to the circle of index+1
-	if index >= len(beatmap.hitobjects) - 2:
-		print("still index out of range smh")
-		index = len(beatmap.hitobjects) - 1
-		return index, beatmap.hitobjects[index]["time"]*2, 0, 0
 
 	while "spinner" in beatmap.hitobjects[index+1]["type"] or "new combo" in beatmap.hitobjects[index+1]["type"]:
 		index += 1
+
+	if "end" in beatmap.hitobjects[index+1]["type"]:
+		return index*10, beatmap.hitobjects[index]["end time"]*10, 0, 0
 
 	osu_d = beatmap.hitobjects[index]
 	x_end = osu_d["end x"]
@@ -128,7 +128,7 @@ def main():
 	print("setup done")
 
 
-	while osr_index < 483: # osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -144,33 +144,43 @@ def main():
 			new_click += component.key2.clicked()
 		if replay_event[osr_index][KEYS_PRESSED] == 5 or replay_event[osr_index][KEYS_PRESSED] == 15:
 			new_click += component.key1.clicked()
+
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
-		component.key3.add_to_frame(img, WIDTH - int(24 * SCALE), int(446* SCALE))
+		component.key3.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
 		component.key4.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
 
-		circle_clicked, score, x, y = check.cursorstate(replay_event[osr_index][KEYS_PRESSED] == 10, replay_event[osr_index])
-		if score is not None:
-			component.hitobjectmanager.circleclicked(score)
+
+		need_update, score, timestamp, x, y, objtype, followappear = check.cursorstate(new_click!=0, replay_event[osr_index])
+		if need_update:
+			if objtype == 0:
+				component.hitobjectmanager.circleclicked(score, timestamp, followappear)
+			elif objtype == 1:
+				component.hitobjectmanager.sliderchangestate(followappear, timestamp)
 			x = int(x * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
 			y = int(y * PLAYFIELD_SCALE) + MOVE_DOWN
-			component.timingscores.add_timingscores(score, x, y)
+			if score is not None:
+				component.timingscores.add_timingscores(score, x, y)
+
 
 		osu_d = beatmap.hitobjects[index_hitobject]
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
+
+		osr_time = replay_event[osr_index][TIMES]
 		# check if it's time to draw followpoints
-		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 3 < len(beatmap.hitobjects):
+		if osr_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
 
+
 		# check if it's time to draw circles
-		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
+		if osr_time + component.hitobjectmanager.time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
 			if "spinner" in osu_d["type"]:
-				if cur_time > osu_d["time"]:
-					component.spinner.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
+				if osr_time > osu_d["time"]:
+					component.spinner.add_spinner(osu_d["time"], osu_d["end time"], osr_time)
 					index_hitobject += 1
 			else:
 				isSlider = 0
@@ -180,9 +190,9 @@ def main():
 				component.hitobjectmanager.add_circle(x_circle, y_circle,
 				                                      osu_d["combo_color"],
 				                                      osu_d["combo_number"],
-				                                      osu_d["time"] - cur_time, isSlider)
+				                                      osu_d["time"] - osr_time, osu_d["time"], isSlider)
 				if isSlider:
-					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, osu_d["BeatDuration"], osu_d["time"] - cur_time)
+					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, cur_time, osu_d["time"])
 				index_hitobject += 1
 
 
@@ -201,7 +211,7 @@ def main():
 
 		# choose correct osr index for the current time because in osr file there might be some lag
 		osr_index += nearer(cur_time, replay_event, osr_index)
-
+	print(beatmap.hitobjects[index_hitobject]["time"])
 	writer.release()
 
 
