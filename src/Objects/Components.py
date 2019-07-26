@@ -8,7 +8,7 @@ class Cursor(Images):
 
 
 class InputOverlay(Images):
-	def __init__(self, filename, scale):
+	def __init__(self, filename, scale, color):
 		Images.__init__(self, filename, scale)
 		self.cur_blue = 0
 		self.blue_step = 50
@@ -30,7 +30,7 @@ class InputOverlay(Images):
 
 		self.button_frames = []
 		self.to_3channel()
-		self.prepare_buttons()
+		self.prepare_buttons(color)
 
 	def add_color(self, image, color):
 		red = color[0]*self.divide_by_255
@@ -40,8 +40,7 @@ class InputOverlay(Images):
 		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
 		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
 
-	def prepare_buttons(self):
-		color = [255, 255, 0]
+	def prepare_buttons(self, color):
 		self.button_frames.append(self.img)
 		self.change_size(0.97, 0.97)
 		self.button_frames.append(self.img)

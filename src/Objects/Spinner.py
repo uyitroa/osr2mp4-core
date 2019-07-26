@@ -11,7 +11,7 @@ spinnerapproachcircle = "spinner-approachcircle.png"
 spinnertop = "spinner-top.png"
 
 
-class SpinnerManager(Images):
+class PrepareSpinner(Images):
 	def __init__(self, od, scale, path):
 		self.divide_by_255 = 1/255.0
 		self.scale = scale * 1.3 * 0.5
@@ -74,7 +74,7 @@ class SpinnerManager(Images):
 		duration = endtime - starttime
 		spinrequired = int(duration * self.diff_multiplier * 0.6 / 1000)
 		spinrequired = max(1, spinrequired)
-		self.spinners.append([spinrequired, endtime - curtime, 0])
+		self.spinners.append([spinrequired, duration, starttime - curtime, 0])
 
 	def diffrange(self, diff, mini, mid, maxi):
 		if diff > 5:
@@ -83,22 +83,18 @@ class SpinnerManager(Images):
 			return mid - (mid - mini) * (5 - diff) / 5
 		return mid
 
-	def add_to_frame(self, background):
-		i = len(self.spinners)
-		while i > 0:
-			i -= 1
+	def add_to_frame(self, background, i):
+		if self.spinners[i][2] > 0:
+			self.spinners[i][2] -= self.interval
+			self.spinners[i][3] = min(1, self.spinners[i][3] + self.interval / 400)
+		else:
 			self.spinners[i][1] -= self.interval
-			if self.spinners[i][1] > 0:
-				self.spinners[i][2] = min(1, self.spinners[i][2] + self.interval / 100)
+			self.spinners[i][3] = 100
 
-			else:
-				if self.spinners[i][1] < -200:
-					del self.spinners[i]
-					break
-				else:
-					self.spinners[i][2] = max(0, self.spinners[i][2] - self.interval / 200)
+		if 0 > self.spinners[i][1] > -200:
+			self.spinners[i][2] = max(0, self.spinners[i][2] - self.interval / 200)
 
-			self.img = self.spinner_frames[10][:, :, :] * self.spinners[i][2]
-			super().add_to_frame(background, int(background.shape[1] / 2), int(background.shape[0] / 2))
-			self.img = self.spinner_images[spinnercircle].img[:, :, :] * self.spinners[i][2]
-			super().add_to_frame(background, int(background.shape[1]/2), int(background.shape[0]/2))
+		self.img = self.spinner_frames[10][:, :, :] * self.spinners[i][2]
+		super().add_to_frame(background, int(background.shape[1] / 2), int(background.shape[0] / 2))
+		self.img = self.spinner_images[spinnercircle].img[:, :, :] * self.spinners[i][2]
+		super().add_to_frame(background, int(background.shape[1]/2), int(background.shape[0]/2))
