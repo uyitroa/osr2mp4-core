@@ -4,7 +4,8 @@ from Objects.Spinner import PrepareSpinner
 
 
 class HitObjectManager:
-	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors, movedown, moveright, check, timingscore):
+	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors, movedown, moveright,
+	             check, hitresult_manager, spinbonus_manager, combocounter, scorecounter):
 
 		self.preparecircle = PrepareCircles(slider_combo, path, diff, scale, maxcombo, gap, colors)
 		self.time_preempt = self.preparecircle.time_preempt
@@ -24,7 +25,11 @@ class HitObjectManager:
 		self.moveright = moveright
 		self.scale = scale
 		self.check = check
-		self.timingscore = timingscore
+
+		self.hitresult_manager = hitresult_manager
+		self.spinbonus_manager = spinbonus_manager
+		self.combocounter = combocounter
+		self.scorecounter = scorecounter
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time, timestamp, hitobjindex):
 		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time, timestamp)
@@ -77,7 +82,7 @@ class HitObjectManager:
 		self.prepareslider.sliders[key][11] = index_interval
 
 	# manager of circle add_to_frame and slider add_to_frame
-	def add_to_frame(self, background, osr, new_click):
+	def add_to_frame(self, background):
 		i = len(self.objtime)
 
 		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles],
@@ -97,10 +102,10 @@ class HitObjectManager:
 				continue
 			hitobj[0].add_to_frame(background, key)
 
+	def checkcursor(self, osr, new_click):
 		note_lock = False
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
-			self.hitobjects[key][2] = 1
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
 				update, hitresult, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], osr, new_click)
 				if update:
@@ -116,10 +121,17 @@ class HitObjectManager:
 					if hitresult > 0:
 						self.preparecircle.circles[key][8] = 1
 						followappear = True
+						self.combocounter.add_combo()
+					else:
+						self.combocounter.breakcombo()
+
+					self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
+
 					if self.preparecircle.circles[key][6]:
 						self.sliderchangestate(followappear, timestamp)
 					else:
-						self.timingscore.add_timingscores(hitresult, x, y)
+						self.hitresult_manager.add_result(hitresult, x, y)
+
 				else:
 					note_lock = True
 			elif self.hitobjects[key][0] == self.SLIDER and self.hitobjects[key][4]:
@@ -129,18 +141,20 @@ class HitObjectManager:
 						self.hitobjects[key][4] = 0
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
-						self.timingscore.add_timingscores(hitresult, x, y)
+						self.hitresult_manager.add_result(hitresult, x, y)
 					self.sliderchangestate(followappear, timestamp)
 
 			elif self.hitobjects[key][0] == self.SPINNER and self.hitobjects[key][4]:
-				update, cur_rot, progress, hitresult = self.check.checkspinner(self.hitobjects[key][3], osr)
+				update, cur_rot, progress, hitresult, bonusscore = self.check.checkspinner(self.hitobjects[key][3], osr)
 				if update:
 					self.preparespinner.update_spinner(key, cur_rot, progress)
+					middle_height = int(384 / 2 * self.scale + self.movedown)
+					middle_width = int(512 / 2 * self.scale + self.moveright)
 					if hitresult is not None:
-						print(progress)
 						self.hitobjects[key][4] = 0
-						middle_height = int(384/2 * self.scale + self.movedown)
-						middle_width = int(512/2 * self.scale + self.moveright)
-						self.timingscore.add_timingscores(hitresult, middle_width, middle_height)
+						self.hitresult_manager.add_result(hitresult, middle_width, middle_height)
+					if bonusscore >= 1:
+						height = int(384 * 2/3 * self.scale + self.movedown)
+						self.spinbonus_manager.set_bonusscore(bonusscore, middle_width, height)
 
 
