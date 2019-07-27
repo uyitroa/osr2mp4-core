@@ -37,7 +37,8 @@ class DiffCalculator:
 			multiplier = 5 + (7.5 - 5) * (od - 5) / 5
 		if od < 5:
 			multiplier = 5 - (5 - 3) * (5 - od) / 5
-		return duration * multiplier / 1000
+		multiplier *= 0.6
+		return max(1, round(duration * multiplier / 1000))
 
 
 class Check:
@@ -126,38 +127,49 @@ class Check:
 	def checkspinner(self, index, osr):
 		osu_d = self.hitobjects[index]
 		if osr[3] < osu_d["time"]:
-			return False, None, None, None
-		if osr[3] > osu_d["end time"]:
-			progress = self.spinners_memory[osu_d["time"]]["progress"]/360/self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
-			if progress >= 1:
+			return False, None, None, None, None
+
+		if osr[3] >= osu_d["end time"]:
+			spin_d = self.spinners_memory[osu_d["time"]]
+			progress = spin_d["progress"]/360/self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+			print(progress)
+			if progress > 0.9:
 				hitresult = 300
-			elif progress > 0.9:
-				hitresult = 100
 			elif progress > 0.75:
+				hitresult = 100
+			elif progress > 0.1:
 				hitresult = 50
 			else:
 				hitresult = 0
-			return True, self.spinners_memory[osu_d["time"]]["cur rotation"], progress, hitresult
+			return True, spin_d["cur rotation"], progress, hitresult, 0
 
 		spinning = osr[2] != 0
 		angle = -np.rad2deg(np.arctan2(osr[1] - self.height/2, osr[0] - self.width/2))
 
 		if osu_d["time"] not in self.spinners_memory:
-			self.spinners_memory[osu_d["time"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0, "progress": 0}
-		if not self.spinners_memory[osu_d["time"]]["spinning"] and spinning:
-			self.spinners_memory[osu_d["time"]]["angle"] = angle
-		self.spinners_memory[osu_d["time"]]["spinning"] = spinning
+			self.spinners_memory[osu_d["time"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0, "progress": 0, "extra": 0}
 
-		lastangle = self.spinners_memory[osu_d["time"]]["angle"]
+		spin_d = self.spinners_memory[osu_d["time"]]
+		if not spin_d["spinning"] and spinning:
+			spin_d["angle"] = angle
+		spin_d["spinning"] = spinning
+
+		lastangle = spin_d["angle"]
 		if angle - lastangle > 180:
 			lastangle += 360
 		elif lastangle - angle > 180:
 			lastangle -= 360
 
-		self.spinners_memory[osu_d["time"]]["cur rotation"] += angle - lastangle
-		if self.spinners_memory[osu_d["time"]]["cur rotation"] > 360:
-			self.spinners_memory[osu_d["time"]]["cur rotation"] -= 360
-		self.spinners_memory[osu_d["time"]]["progress"] += abs(angle - lastangle)
-		self.spinners_memory[osu_d["time"]]["angle"] = angle
-		progress = self.spinners_memory[osu_d["time"]]["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
-		return spinning, self.spinners_memory[osu_d["time"]]["cur rotation"], progress, None
+		spin_d["cur rotation"] += angle - lastangle
+		if spin_d["cur rotation"] > 360:
+			spin_d["cur rotation"] -= 360
+		spin_d["progress"] += abs(angle - lastangle)
+		spin_d["angle"] = angle
+		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+
+		if progress > 1:
+			spin_d["extra"] += abs(angle - lastangle)
+			print(spin_d["extra"])
+		extra = int(spin_d["extra"]/360) - 1
+
+		return spinning, spin_d["cur rotation"], progress, None, extra
