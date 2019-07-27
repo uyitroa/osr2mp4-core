@@ -42,11 +42,12 @@ class HitObjectManager:
 		self.objtime.append(timestamp)
 
 	def add_spinner(self, starttime, endtime, curtime, hitobjindex):
-		self.preparespinner.add_spinner(starttime, endtime, curtime)
 		timestamp = str(starttime) + "o"
+		self.preparespinner.add_spinner(starttime, endtime, curtime, timestamp)
 		self.hitobjects[timestamp] = [self.SPINNER, endtime - curtime, len(self.objtime), hitobjindex, 1]
+		self.objtime.append(timestamp)
 
-	def circleclicked(self, score, timestamp, followappear):
+	def circleclicked(self, hitresult, timestamp, followappear):
 		key = str(timestamp) + "c"
 		if self.preparecircle.circles[key][6]:
 			self.preparecircle.circles[key][8] = 1
@@ -55,7 +56,7 @@ class HitObjectManager:
 			# del self.preparecircle.circles[key]
 			# del self.hitobjects[key]
 		else:
-			if score > 0:
+			if hitresult > 0:
 				self.preparecircle.circles[key][8] = 1
 			# else:
 			# 	del self.objtime[self.hitobjects[key][2]]
@@ -80,7 +81,8 @@ class HitObjectManager:
 		i = len(self.objtime)
 
 		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles],
-		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders]}
+		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders],
+		              self.SPINNER: [self.preparespinner, self.preparespinner.spinners]}
 		while i > 0:  # > 0 because we do i-=1 at the beginning so if it's > -1 it would be "out of range"
 			i -= 1
 			key = self.objtime[i]
@@ -100,37 +102,45 @@ class HitObjectManager:
 			key = str(self.objtime[i])
 			self.hitobjects[key][2] = 1
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
-				update, score, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], osr, new_click)
+				update, hitresult, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], osr, new_click)
 				if update:
 					new_click = max(0, new_click - 1)
 					if note_lock:
 						self.preparecircle.circles[key][9] = 1
-						if score != 0:
+						if hitresult != 0:
 							continue
 					self.hitobjects[key][4] = 0
 					x = int((x * self.scale) + self.moveright)
 					y = int((y * self.scale) + self.movedown)
 					followappear = False
-					if score > 0:
+					if hitresult > 0:
 						self.preparecircle.circles[key][8] = 1
 						followappear = True
 					if self.preparecircle.circles[key][6]:
 						self.sliderchangestate(followappear, timestamp)
 					else:
-						self.timingscore.add_timingscores(score, x, y)
+						self.timingscore.add_timingscores(hitresult, x, y)
 				else:
 					note_lock = True
 			elif self.hitobjects[key][0] == self.SLIDER and self.hitobjects[key][4]:
-				update, score, timestamp, x, y, followappear = self.check.checkslider(self.hitobjects[key][3], osr)
+				update, hitresult, timestamp, x, y, followappear = self.check.checkslider(self.hitobjects[key][3], osr)
 				if update:
-					if score is not None:
+					if hitresult is not None:
 						self.hitobjects[key][4] = 0
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
-						self.timingscore.add_timingscores(score, x, y)
+						self.timingscore.add_timingscores(hitresult, x, y)
 					self.sliderchangestate(followappear, timestamp)
 
 			elif self.hitobjects[key][0] == self.SPINNER and self.hitobjects[key][4]:
-				pass
+				update, cur_rot, progress, hitresult = self.check.checkspinner(self.hitobjects[key][3], osr)
+				if update:
+					self.preparespinner.update_spinner(key, cur_rot, progress)
+					if hitresult is not None:
+						print(progress)
+						self.hitobjects[key][4] = 0
+						middle_height = int(384/2 * self.scale + self.movedown)
+						middle_width = int(512/2 * self.scale + self.moveright)
+						self.timingscore.add_timingscores(hitresult, middle_width, middle_height)
 
 

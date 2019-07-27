@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 from Curves.curve import Curve
 
 
@@ -8,7 +8,7 @@ class DiffCalculator:
 		self.diff = diff
 		self.max_distance = self.cs()
 		self.slidermax_distance = self.max_distance * 3
-		self.spinrequired, self.score, self.scorewindow = self.od()
+		self.score, self.scorewindow = self.od()
 		self.time_preempt = self.ar()
 
 	def cs(self):
@@ -16,16 +16,9 @@ class DiffCalculator:
 
 	def od(self):
 		o = self.diff["OverallDifficulty"]
-		if o < 5:
-			spins_per_second = 5 - 2 * (5 - o) / 5
-		elif o == 5:
-			spins_per_second = 5
-		else:
-			spins_per_second = 5 + 2.5 * (o - 5) / 5
-
 		scorewindow = [50 + 30 * (5 - o) / 5, 100 + 40 * (5 - o) / 5,  150 + 50 * (5 - o) / 5]
 		score = [300, 100, 50]
-		return spins_per_second, score, scorewindow
+		return score, scorewindow
 
 	def ar(self):
 		a = self.diff["ApproachRate"]
@@ -37,14 +30,26 @@ class DiffCalculator:
 			time_preempt = 1200 - 750 * (a - 5) / 5
 		return time_preempt
 
+	def spinrequired(self, duration):
+		od = self.diff["OverallDifficulty"]
+		multiplier = 5
+		if od > 5:
+			multiplier = 5 + (7.5 - 5) * (od - 5) / 5
+		if od < 5:
+			multiplier = 5 - (5 - 3) * (5 - od) / 5
+		return duration * multiplier / 1000
+
 
 class Check:
 	def __init__(self, diff, hitobjects):
 		self.diff = DiffCalculator(diff)
 		self.hitobjects = hitobjects
 		self.index = 0
+		self.height = 384
+		self.width = 512
 
 		self.sliders_memory = {}
+		self.spinners_memory = {}
 
 
 	def checkcircle(self, index, osr, clicked):
@@ -118,5 +123,41 @@ class Check:
 				self.sliders_memory[osu_d["time"]]["score"] = 100
 			return False
 
-	def checkspinner(self, osu_d, osr):
-		pass
+	def checkspinner(self, index, osr):
+		osu_d = self.hitobjects[index]
+		if osr[3] < osu_d["time"]:
+			return False, None, None, None
+		if osr[3] > osu_d["end time"]:
+			progress = self.spinners_memory[osu_d["time"]]["progress"]/360/self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+			if progress >= 1:
+				hitresult = 300
+			elif progress > 0.9:
+				hitresult = 100
+			elif progress > 0.75:
+				hitresult = 50
+			else:
+				hitresult = 0
+			return True, self.spinners_memory[osu_d["time"]]["cur rotation"], progress, hitresult
+
+		spinning = osr[2] != 0
+		angle = -np.rad2deg(np.arctan2(osr[1] - self.height/2, osr[0] - self.width/2))
+
+		if osu_d["time"] not in self.spinners_memory:
+			self.spinners_memory[osu_d["time"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0, "progress": 0}
+		if not self.spinners_memory[osu_d["time"]]["spinning"] and spinning:
+			self.spinners_memory[osu_d["time"]]["angle"] = angle
+		self.spinners_memory[osu_d["time"]]["spinning"] = spinning
+
+		lastangle = self.spinners_memory[osu_d["time"]]["angle"]
+		if angle - lastangle > 180:
+			lastangle += 360
+		elif lastangle - angle > 180:
+			lastangle -= 360
+
+		self.spinners_memory[osu_d["time"]]["cur rotation"] += angle - lastangle
+		if self.spinners_memory[osu_d["time"]]["cur rotation"] > 360:
+			self.spinners_memory[osu_d["time"]]["cur rotation"] -= 360
+		self.spinners_memory[osu_d["time"]]["progress"] += abs(angle - lastangle)
+		self.spinners_memory[osu_d["time"]]["angle"] = angle
+		progress = self.spinners_memory[osu_d["time"]]["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+		return spinning, self.spinners_memory[osu_d["time"]]["cur rotation"], progress, None
