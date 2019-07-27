@@ -4,7 +4,7 @@ from Objects.abstracts import *
 hitprefix = "hit"
 
 
-class TimingScore(Images):
+class HitResult(Images):
 	def __init__(self, path, scale):
 		self.scores_images = {}
 		self.scores_frames = {}
