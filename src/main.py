@@ -1,11 +1,10 @@
 import time
 import os
-
 from Judgement import Check
 from Objects.Components import *
 from Objects.Followpoints import FollowPointsManager
 from Objects.HitObjects import HitObjectManager
-from Objects.Scores import TimingScore
+from Objects.Scores import HitResult, SpinBonusScore, ScoreNumbers, ComboCounter, ScoreCounter
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
@@ -18,23 +17,23 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin3/"
+PATH = "../res/skin7/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
-MOVE_TO_RIGHT = int(WIDTH * 0.2)  # center the playfield
+MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/imaginedragons.osu"
-REPLAY_FILE = "../res/imaginedragons.osr"
+BEATMAP_FILE = "../res/boku.osu"
+REPLAY_FILE = "../res/boku.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
 
 class Object:
-	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, gap, slider_combo, colors, check):
+	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, hitcircleoverlap, scoreoverlap, slider_combo, colors, check):
 		self.cursor = Cursor(path + "cursor.png")
 		self.key1 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
 		self.key2 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
@@ -43,10 +42,17 @@ class Object:
 		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.timingscores = TimingScore(path, SCALE)
-		self.followpoints = FollowPointsManager(path + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_TO_RIGHT)
-		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, PLAYFIELD_SCALE, maxcombo, gap, colors,
-		                                         MOVE_DOWN, MOVE_TO_RIGHT, check, self.timingscores)
+		self.hitresult = HitResult(path, SCALE)
+
+		self.scorenumbers = ScoreNumbers(path, SCALE)
+		self.spinbonus = SpinBonusScore(SCALE, scoreoverlap, self.scorenumbers)
+		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, scoreoverlap)
+		self.scorecounter = ScoreCounter(self.scorenumbers, diff, WIDTH, HEIGHT, scoreoverlap)
+
+		self.followpoints = FollowPointsManager(path + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, PLAYFIELD_SCALE, maxcombo, hitcircleoverlap, colors,
+		                                         MOVE_DOWN, MOVE_RIGHT, check,
+		                                         self.hitresult, self.spinbonus, self.combocounter, self.scorecounter)
 
 
 def nearer(cur_time, replay, index):
@@ -113,12 +119,12 @@ def main():
 	replay_event, cur_time = setupReplay(REPLAY_FILE, beatmap.start_time, beatmap.end_time)
 	osr_index = 0
 
-	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
-	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
 
 	check = Check(beatmap.diff, beatmap.hitobjects)
 
-	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 28,
+	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 28, 0,
 	                   beatmap.slider_combo, skin.colours, check)
 
 	index_hitobject = 0
@@ -134,7 +140,7 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 4500: #osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 		next_index = nearer(cur_time + 1000 / 60, replay_event, osr_index)
 
@@ -142,7 +148,7 @@ def main():
 			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)))
 			start_time = time.time()
 
-		cursor_x = int(replay_event[osr_index][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+		cursor_x = int(replay_event[osr_index][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		cursor_y = int(replay_event[osr_index][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 
 		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
@@ -160,9 +166,11 @@ def main():
 		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
 		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
 
+
 		osu_d = beatmap.hitobjects[index_hitobject]
-		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_TO_RIGHT
+		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
+
 
 		osr_time = replay_event[osr_index][TIMES]
 		# check if it's time to draw followpoints
@@ -170,6 +178,7 @@ def main():
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
+
 
 		# check if it's time to draw circles
 		if osr_time + component.hitobjectmanager.time_preempt >= osu_d["time"] and index_hitobject + 1 < len(
@@ -179,19 +188,25 @@ def main():
 					component.hitobjectmanager.add_spinner(osu_d["time"], osu_d["end time"], osr_time, index_hitobject)
 					index_hitobject += 1
 			else:
-				isSlider = 0
-				if "slider" in osu_d["type"]:
-					isSlider = 1
 
 				component.hitobjectmanager.add_circle(x_circle, y_circle,
 				                                      osu_d["combo_color"],
 				                                      osu_d["combo_number"],
 				                                      osu_d["time"] - osr_time, osu_d["time"],
-				                                      index_hitobject, isSlider)
-				if isSlider:
+				                                      index_hitobject, "slider" in osu_d["type"])
+
+				if "slider" in osu_d["type"]:
 					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, cur_time, osu_d["time"],
 					                                      index_hitobject)
 				index_hitobject += 1
+
+
+		component.followpoints.add_to_frame(img, cur_time)
+		component.hitobjectmanager.add_to_frame(img)
+		component.hitresult.add_to_frame(img)
+		component.spinbonus.add_to_frame(img)
+		component.combocounter.add_to_frame(img)
+		component.scorecounter.add_to_frame(img)
 
 		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + next_index][KEYS_PRESSED])
 		new_click = 0
@@ -199,9 +214,7 @@ def main():
 		new_click += int(f_k2 and not k2)
 		new_click += int(f_m1 and not m1)
 		new_click += int(f_m2 and not m2)
-		component.followpoints.add_to_frame(img, cur_time)
-		component.hitobjectmanager.add_to_frame(img, replay_event[osr_index + next_index], new_click)
-		component.timingscores.add_to_frame(img)
+		component.hitobjectmanager.checkcursor(replay_event[osr_index + next_index], new_click)
 
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
