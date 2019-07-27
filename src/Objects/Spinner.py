@@ -34,17 +34,6 @@ class PrepareSpinner(Images):
 
 		# self.to_square(self.spinner_images[spinnercircle])
 
-		max_width = 0
-		max_height = 0
-		for name in self.spinner_images:
-			img = self.spinner_images[name].img
-			if img.shape[0] > max_height:
-				max_height = img.shape[0]
-			if img.shape[1] > max_width:
-				max_width = img.shape[1]
-		self.blank = np.zeros((max_height, max_width, 4))
-		self.spinner_images[spinnerbackground].add_to_frame(self.blank, int(max_width/2), int(max_height/2), 4)
-
 	def prepare_spinner(self):
 		self.spinner_images[spinnercircle].to_3channel()
 		self.spinner_images[spinnerbackground].to_3channel()
@@ -76,10 +65,10 @@ class PrepareSpinner(Images):
 
 		self.spinners[timestamp][0] = np.rot90(self.spinnermetre[index], n_rot)
 		progress = progress * 10
-		if 0.42 < progress - int(progress) < 0.45:
+		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
 			progress -= 1
 
-		self.spinners[timestamp][4] = int(progress)
+		self.spinners[timestamp][4] = min(10, int(progress))
 
 	def add_to_frame(self, background, i):
 		if self.spinners[i][2] > 0:
@@ -99,4 +88,4 @@ class PrepareSpinner(Images):
 		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
 
 		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+		super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
