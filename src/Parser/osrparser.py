@@ -14,18 +14,16 @@ def setupReplay(osrfile, start_time, end_time):
 
 	total_time = 0
 	start_index = 0
-	end_index = 0
 
 	start_osr = max(0, start_time - 5000)
-	end_osr = end_time + 1000
 
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
 		total_time += times
 
-		if total_time >= end_osr:
-			break
-		end_index += 1
+		# if total_time >= end_osr:
+		# 	break
+		# end_index += 1
 
 		if total_time < start_osr:
 			start_index = index + 1  # to crop later, everything before we can ignore
@@ -37,7 +35,7 @@ def setupReplay(osrfile, start_time, end_time):
 		replay_data[index][KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
 		replay_data[index][TIMES] = total_time
 
-	replay_data = replay_data[start_index:end_index]
+	replay_data = replay_data[start_index:-1]
 	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
 	start_time = replay_data[0][TIMES]
 	return replay_data, start_time
