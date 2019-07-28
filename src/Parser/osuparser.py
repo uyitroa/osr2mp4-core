@@ -75,9 +75,9 @@ class Beatmap:
 			if int(items[6]) == 1:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
-				print(inherited)
 			else:
 				my_dict["BeatDuration"] = - float(items[1]) * inherited / 100
+			my_dict["Base"] = inherited
 			my_dict["Meter"] = int(items[2])
 			my_dict["SampleSet"] = int(items[3])
 			my_dict["SampleIndex"] = int(items[4])
@@ -161,7 +161,7 @@ class Beatmap:
 				else:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
-				my_dict["slider_img"], my_dict["x_offset"], my_dict["y_offset"] = self.gs.get_slider_img(item)
+				my_dict["slider_img"], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
 
 				ps = [Position(my_dict["x"], my_dict["y"])]
 				slider_path = osuobject[5]
@@ -172,20 +172,27 @@ class Beatmap:
 					pos = pos.split(":")
 					ps.append(Position(int(pos[0]), int(pos[1])))
 				my_dict["ps"] = ps
-				my_dict["slider_type"] = slider_type
-				my_dict["pixel_length"] = float(osuobject[7])
+				my_dict["slider type"] = slider_type
+				my_dict["pixel length"] = float(osuobject[7])
 
 				my_dict["stacking"] = 0
 
 				my_dict["repeated"] = int(osuobject[6])
-				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel_length"] / (100 * self.diff["SliderMultiplier"])
+				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (100 * self.diff["SliderMultiplier"])
 				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
 
-				baiser = Curve.from_kind_and_points(my_dict["slider_type"], ps, my_dict["pixel_length"])
+				baiser = Curve.from_kind_and_points(my_dict["slider type"], ps, my_dict["pixel length"])
 				end_goingforward = my_dict["repeated"] % 2 == 1
 				endpos = baiser(int(end_goingforward))
 				my_dict["end x"] = endpos.x
 				my_dict["end y"] = endpos.y
+
+				my_dict["slider ticks"] = []
+				speedmultiplier = my_dict["BeatDuration"]/self.timing_point[cur_offset]["Base"]
+				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
+				tickcount = int(my_dict["pixel length"] / tickdiv + 0.9)
+				for x in range(tickcount-1):
+					my_dict["slider ticks"].append(1/tickcount * (x+1))
 
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
@@ -215,6 +222,8 @@ class Beatmap:
 				self.hitobjects[i]["y"] += space
 				if "slider" in self.hitobjects[i]["type"]:
 					self.hitobjects[i]["stacking"] = space
+					self.hitobjects[i]["end x"] += space
+					self.hitobjects[i]["end y"] += space
 				space *= 2
 
 
@@ -231,5 +240,3 @@ def read_file(filename, scale, colors):
 	return Beatmap(info, scale, colors)
 
 
-if __name__ == "__main__":
-	read_file("../res/katayoku.osu")

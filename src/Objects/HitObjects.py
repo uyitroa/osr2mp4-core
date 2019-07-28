@@ -125,17 +125,18 @@ class HitObjectManager:
 					else:
 						self.combocounter.breakcombo()
 
-					self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
-
 					if self.preparecircle.circles[key][6]:
 						self.sliderchangestate(followappear, timestamp)
+						hitresult = 300
 					else:
 						self.hitresult_manager.add_result(hitresult, x, y)
+
+					self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
 
 				else:
 					note_lock = True
 			elif self.hitobjects[key][0] == self.SLIDER and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y, followappear = self.check.checkslider(self.hitobjects[key][3], osr)
+				update, hitresult, timestamp, x, y, followappear, hitvalue, combostatus = self.check.checkslider(self.hitobjects[key][3], osr)
 				if update:
 					if hitresult is not None:
 						self.hitobjects[key][4] = 0
@@ -143,9 +144,16 @@ class HitObjectManager:
 						y = int((y * self.scale) + self.movedown)
 						self.hitresult_manager.add_result(hitresult, x, y)
 					self.sliderchangestate(followappear, timestamp)
+				self.scorecounter.update_score(1, hitvalue)
+
+				if combostatus == 1:
+					self.combocounter.add_combo()
+				if combostatus == -1:
+					self.combocounter.breakcombo()
+
 
 			elif self.hitobjects[key][0] == self.SPINNER and self.hitobjects[key][4]:
-				update, cur_rot, progress, hitresult, bonusscore = self.check.checkspinner(self.hitobjects[key][3], osr)
+				update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(self.hitobjects[key][3], osr)
 				if update:
 					self.preparespinner.update_spinner(key, cur_rot, progress)
 					middle_height = int(384 / 2 * self.scale + self.movedown)
@@ -157,4 +165,6 @@ class HitObjectManager:
 						height = int(384 * 2/3 * self.scale + self.movedown)
 						self.spinbonus_manager.set_bonusscore(bonusscore, middle_width, height)
 
+				self.scorecounter.update_score(1, hitvalue)
+				self.scorecounter.update_score(1, bonusscore*1000)
 

@@ -59,11 +59,16 @@ class PrepareSlider:
 	def load_sliderballs(self):
 		self.sliderb = cv2.imread(self.path + sliderb, -1)
 		self.sliderfollowcircle = cv2.imread(self.path + sliderfollowcircle, -1)
+
 		self.followscale = default_size / self.sliderfollowcircle.shape[0]
 		self.radius_scale = self.cs * 2 / default_size
+
 		self.reversearrow = ReverseArrow(self.path, self.radius_scale)
 		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
 		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
+
+		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale)
+		self.slidertick.to_3channel()
 
 	def add_color(self, image, color):
 		red = color[0] * self.divide_by_255
@@ -144,16 +149,16 @@ class PrepareSlider:
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time, timestamp):
 		image = osu_d["slider_img"]
-		x_offset, y_offset = osu_d["x_offset"], osu_d["y_offset"]
-		pixel_length, color = osu_d["pixel_length"], osu_d["combo_color"]
+		x_offset, y_offset = osu_d["x offset"], osu_d["y offset"]
+		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
 	
 		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
 		# function, but we add stack to reduce sliders list size
-		b_info = (osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"], osu_d["stacking"])
+		b_info = (osu_d["slider type"], osu_d["ps"], osu_d["pixel length"], osu_d["stacking"], osu_d["slider ticks"])
 		timestamp = str(timestamp) + "s"
-		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated, appear followcircle]
+		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated, appear followcircle, tick alpha]
 		self.sliders[timestamp] = [image, x_pos - x_offset, y_pos - y_offset, osu_d["duration"] + osu_d["time"] - cur_time,
-		                           0, color, self.slidermax_index, osu_d["duration"], b_info, 1, osu_d["repeated"], 0]
+		                           0, color, self.slidermax_index, osu_d["duration"], b_info, 1, osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
 
 		pos1 = osu_d["ps"][-1]
 		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
@@ -246,13 +251,30 @@ class PrepareSlider:
 		cur_img = self.sliders[i][0][:, :, :] * (self.sliders[i][4] / 100)
 		self.to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
+		t = self.sliders[i][3] / self.sliders[i][7]
+
+		# if sliderball is going forward
+		if going_forward:
+			t = 1 - t
+
+		for count, tick_t in enumerate(self.sliders[i][8][4]):
+			if self.sliders[i][9] == self.sliders[i][10]:
+				if (going_forward and t > tick_t) or (not going_forward and t < tick_t):
+						continue
+
+			if self.sliders[i][3] < self.sliders[i][7] + 100:
+				if count == 0 or self.sliders[i][12][count-1] >= 0.75:
+					self.sliders[i][12][count] = min(1, self.sliders[i][12][count] + 0.1)
+			tick_pos = baiser(round(tick_t, 3))
+			x = int((tick_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
+			y = int((tick_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
+
+			self.slidertick.img[:, :, :] = self.slidertick.orig_img[:, :, :] * (self.sliders[i][4] / 100 * self.sliders[i][12][count])
+			self.slidertick.add_to_frame(background, x, y)
+
+
+
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
-			t = self.sliders[i][3] / self.sliders[i][7]
-
-			# if sliderball is going forward
-			if going_forward:
-				t = 1 - t
-
 			cur_pos = baiser(round(t, 3))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
