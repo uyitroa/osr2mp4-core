@@ -38,7 +38,7 @@ class DiffCalculator:
 		if od < 5:
 			multiplier = 5 - (5 - 3) * (5 - od) / 5
 		multiplier *= 0.6
-		return max(1, round(duration * multiplier / 1000))
+		return max(1, round(duration * multiplier / 1000 / 0.9))
 
 
 class Check:
@@ -133,9 +133,11 @@ class Check:
 			spin_d = self.spinners_memory[osu_d["time"]]
 			progress = spin_d["progress"]/360/self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 			print(progress)
-			if progress > 0.9:
+			if progress > 1:
 				hitresult = 300
-			elif progress > 0.75:
+			elif progress > 0.9:
+				hitresult = 100
+			elif progress > 0.5:
 				hitresult = 100
 			elif progress > 0.1:
 				hitresult = 50
