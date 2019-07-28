@@ -75,31 +75,39 @@ class Check:
 				score = 0
 
 		if "slider" in osu_d["type"]:
-			self.sliders_memory[osu_d["time"]] = {"score": 300 if score != 0 else 0, "follow state": 0, "repeated slider": 1}
+			self.sliders_memory[osu_d["time"]] = {"score": 300 if score != 0 else 0, "follow state": 0, "repeated slider": 1,
+			                                      "ticks index": 0, "lastdir": True, "done": False}
 
 		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"]
+
+
 
 	def checkslider(self, index, osr):
 		osu_d = self.hitobjects[index]
 		if osu_d["time"] not in self.sliders_memory:
-			self.sliders_memory[osu_d["time"]] = {"score": 0, "follow state": 0, "repeated slider": 1}
+			self.sliders_memory[osu_d["time"]] = {"score": 0, "follow state": 0, "repeated slider": 1,
+			                                      "ticks index": 0, "lastdir": True, "done": False}
 
 		followappear = False
+		hitvalue = combostatus = 0
+		if self.sliders_memory[osu_d["time"]]["done"]:
+			return False, None, None, None, None, None, hitvalue, combostatus
+
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
-			followappear = self.checkcursor_incurve(osu_d, osr)
+			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, osr)
 		if osr[3] > osu_d["end time"]:
 			score = self.sliders_memory[osu_d["time"]]["score"]
 			del self.sliders_memory[osu_d["time"]]
-			return True, score, osu_d["time"], osu_d["end x"], osu_d["end y"], followappear
+			return True, score, osu_d["time"], osu_d["end x"], osu_d["end y"], followappear, hitvalue, combostatus
 
 		if followappear != self.sliders_memory[osu_d["time"]]["follow state"]:
 			self.sliders_memory[osu_d["time"]]["follow state"] = followappear
-			return True, None, osu_d["time"], 0, 0, followappear
+			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus
 
-		return False, None, None, None, None, None
+		return False, None, None, None, None, None, hitvalue, combostatus
 
 	def checkcursor_incurve(self, osu_d, osr):
-		slider_leniency = 36 if osu_d["duration"] > 72 else osu_d["duration"] / 2
+		slider_leniency = min(36, osu_d["duration"] / 2)
 
 		if (osr[3] - osu_d["time"]) / self.sliders_memory[osu_d["time"]]["repeated slider"] > osu_d["duration"]:
 			self.sliders_memory[osu_d["time"]]["repeated slider"] += 1
@@ -111,23 +119,61 @@ class Check:
 		if not going_forward:
 			t = 1 - t
 
-		baiser = Curve.from_kind_and_points(osu_d["slider_type"], osu_d["ps"], osu_d["pixel_length"])
+		tickdone, tickadd = self.tickover(going_forward, t, osu_d)
+		self.sliders_memory[osu_d["time"]]["ticks index"] += tickadd
+
+		reversearrow = going_forward != self.sliders_memory[osu_d["time"]]["lastdir"]
+		self.sliders_memory[osu_d["time"]]["lastdir"] = going_forward
+
+		baiser = Curve.from_kind_and_points(osu_d["slider type"], osu_d["ps"], osu_d["pixel length"])
 		pos = baiser(t)
 		dist = math.sqrt((osr[0] - pos.x + osu_d["stacking"])**2 + (osr[1] - pos.y + osu_d["stacking"])**2)
 
 		if dist <= self.diff.slidermax_distance and osr[2] != 0:
-			if self.sliders_memory[osu_d["time"]]["score"] == 0:
-				self.sliders_memory[osu_d["time"]]["score"] = 100
-			return True
-		elif osr[3] < osu_d["end time"] - slider_leniency:
-			if self.sliders_memory[osu_d["time"]]["score"] == 300:
-				self.sliders_memory[osu_d["time"]]["score"] = 100
-			return False
+			self.sliders_memory[osu_d["time"]]["score"] = max(self.sliders_memory[osu_d["time"]]["score"], 100)
+			hitvalue = tickdone * 10
+			hitvalue += (reversearrow or osr[3] > osu_d["end time"] - slider_leniency) * 30
+			self.sliders_memory[osu_d["time"]]["done"] = osr[3] > osu_d["end time"] - slider_leniency
+			return True, hitvalue, int(tickdone or reversearrow or osr[3] > osu_d["end time"] - slider_leniency)
+
+		elif osr[3] > osu_d["end time"] - slider_leniency:
+			print("yes")
+			return False, 30, 1
+
+		elif osr[3] > osu_d["end time"] - 40:
+			self.sliders_memory[osu_d["time"]]["score"] = min(self.sliders_memory[osu_d["time"]]["score"], 100)
+			return False, 0, 0
+
+		elif tickdone or reversearrow:
+			self.sliders_memory[osu_d["time"]]["score"] = min(self.sliders_memory[osu_d["time"]]["score"], 100)
+			return False, 0, -1
+
+		return False, 0, 0
+
+	def tickover(self, goingforward, t, osu_d):
+		repeat = osu_d["repeated"] - self.sliders_memory[osu_d["time"]]["repeated slider"] > 0
+		ticks_index = self.sliders_memory[osu_d["time"]]["ticks index"]
+		if ticks_index < 0:
+			return False, 1 * repeat
+		if ticks_index >= len(osu_d["slider ticks"]):
+			return False, -1 * repeat
+
+		if goingforward:
+			if t >= osu_d["slider ticks"][ticks_index]:
+				return True, 1
+			else:
+				return False, 0
+		if t <= osu_d["slider ticks"][ticks_index]:
+			return True, -1
+		return False, 0
+
+
+
 
 	def checkspinner(self, index, osr):
 		osu_d = self.hitobjects[index]
 		if osr[3] < osu_d["time"]:
-			return False, None, None, None, None
+			return False, None, None, None, 0, 0
 
 		if osr[3] >= osu_d["end time"]:
 			spin_d = self.spinners_memory[osu_d["time"]]
@@ -143,7 +189,7 @@ class Check:
 				hitresult = 50
 			else:
 				hitresult = 0
-			return True, spin_d["cur rotation"], progress, hitresult, 0
+			return True, spin_d["cur rotation"], progress, hitresult, 0, 0
 
 		spinning = osr[2] != 0
 		angle = -np.rad2deg(np.arctan2(osr[1] - self.height/2, osr[0] - self.width/2))
@@ -166,12 +212,17 @@ class Check:
 		if spin_d["cur rotation"] > 360:
 			spin_d["cur rotation"] -= 360
 		spin_d["progress"] += abs(angle - lastangle)
+		spin_d["extra"] += abs(angle - lastangle)
 		spin_d["angle"] = angle
 		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 
-		if progress > 1:
-			spin_d["extra"] += abs(angle - lastangle)
-			print(spin_d["extra"])
-		extra = int(spin_d["extra"]/360) - 1
 
-		return spinning, spin_d["cur rotation"], progress, None, extra
+		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"])) - 1
+		bonus = max(0, bonus)
+
+		hitvalue = 0
+		if spin_d["extra"] >= 360:
+			spin_d["extra"] -= 360
+			hitvalue = 100
+
+		return spinning, spin_d["cur rotation"], progress, None, bonus, hitvalue
