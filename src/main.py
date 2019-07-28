@@ -17,7 +17,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin7/"
+PATH = "../res/skin3/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -26,8 +26,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/boku.osu"
-REPLAY_FILE = "../res/boku.osr"
+BEATMAP_FILE = "../res/tengaku.osu"
+REPLAY_FILE = "../res/ten.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -61,13 +61,16 @@ def nearer(cur_time, replay, index):
 
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
+	possible_nextindex = None  # for smoothing out the cursor
 	for x in range(1, 4):
 		delta_t = abs(replay[index + x][TIMES] - cur_time)
-		if key_state != replay[index + x][KEYS_PRESSED] and delta_t < orig_time:
-			return x
+		if key_state != replay[index + x][KEYS_PRESSED]:
+			if delta_t < orig_time and x == 1:
+				return x
 		if delta_t < min_time:
 			min_time = delta_t
 			returnindex = x
+
 	return returnindex
 
 
@@ -136,22 +139,19 @@ def main():
 
 	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
 	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
+	cursor_event = replay_event[osr_index]
 
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < len(replay_event) - 3:
+	while osr_index < 1000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
-		next_index = nearer(cur_time + 1000 / 60, replay_event, osr_index)
 
 		if time.time() - start_time > 60:
 			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)))
 			start_time = time.time()
 
-		cursor_x = int(replay_event[osr_index][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		cursor_y = int(replay_event[osr_index][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
-
-		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
+		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
 			component.key1.clicked()
 		if k2:
@@ -208,6 +208,15 @@ def main():
 		component.combocounter.add_to_frame(img)
 		component.scorecounter.add_to_frame(img)
 
+
+		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
+		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
+		component.cursor.add_to_frame(img, cursor_x, cursor_y)
+		old_cursor_x = cursor_x
+		old_cursor_y = cursor_y
+
+		next_index = nearer(cur_time + 1000 / 60, replay_event, osr_index)
 		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + next_index][KEYS_PRESSED])
 		new_click = 0
 		new_click += int(f_k1 and not k1)
@@ -216,16 +225,19 @@ def main():
 		new_click += int(f_m2 and not m2)
 		component.hitobjectmanager.checkcursor(replay_event[osr_index + next_index], new_click)
 
-		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-		component.cursor.add_to_frame(img, cursor_x, cursor_y)
-		old_cursor_x = cursor_x
-		old_cursor_y = cursor_y
 		writer.write(img)
 
 		cur_time += 1000 / FPS
 
 		# choose correct osr index for the current time because in osr file there might be some lag
 		osr_index += next_index
+		# if next_index == 0:
+		# 	# trying to smooth out cursor
+		# 	cursor_event[CURSOR_X] += (replay_event[osr_index+possible_nextindex][CURSOR_X] - cursor_event[CURSOR_X])//2
+		# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
+		# else:
+		cursor_event = replay_event[osr_index]
+
 	print(beatmap.hitobjects[index_hitobject]["time"])
 	writer.release()
 
