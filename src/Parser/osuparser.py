@@ -130,31 +130,6 @@ class Beatmap:
 			object_type = []
 			skip = 0
 
-			if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
-				if self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["x"], self.hitobjects[-1]["y"]) and \
-						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"] and not reverse:
-					if stacking:
-						self.to_stack[-1]["end"] = index
-					else:
-						self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
-						stacking = True
-
-				elif self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["end x"], self.hitobjects[-1]["end y"]) and \
-						my_dict["time"] - self.hitobjects[-1]["end time"] <= preempt * self.general["StackLeniency"]:
-					if stacking:
-						self.to_stack[-1]["end"] = index
-					else:
-						self.to_stack.append({"start": index, "end": index, "reverse": True})
-						stacking = True
-						reverse = True
-
-				else:
-					stacking = False
-					reverse = False
-			else:
-				stacking = False
-				reverse = False
-
 			if int(bin_info[0]):
 				object_type.append("circle")
 				my_dict["end time"] = my_dict["time"]
@@ -224,7 +199,33 @@ class Beatmap:
 				endtime = osuobject[5].split(":")[0]
 				my_dict["end time"] = int(endtime)
 				my_dict["end x"] = -1
-				my_dict["end x"] = -1
+				my_dict["end y"] = -1
+
+			if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
+				if self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["x"], self.hitobjects[-1]["y"]) and \
+						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"] and not reverse:
+					if stacking:
+						self.to_stack[-1]["end"] = index
+					else:
+						self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
+						stacking = True
+
+				elif self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["end x"], self.hitobjects[-1]["end y"]) and \
+						my_dict["time"] - self.hitobjects[-1]["end time"] <= preempt * self.general["StackLeniency"]:
+					if stacking:
+						self.to_stack[-1]["end"] = index
+					else:
+						self.to_stack.append({"start": index, "end": index, "reverse": True})
+						stacking = True
+						reverse = True
+
+				else:
+					stacking = False
+					reverse = False
+			else:
+				stacking = False
+				reverse = False
+
 
 			my_dict["combo_color"] = cur_combo_color
 			my_dict["combo_number"] = cur_combo_number
@@ -240,8 +241,6 @@ class Beatmap:
 	def stack_position(self):
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		for info in self.to_stack:
-			xbase = self.hitobjects[info["start"]]["end x"]
-			ybase = self.hitobjects[info["start"]]["end y"]
 			for i in range(info["end"] - info["start"] + 1):
 				if info["reverse"]:
 					space = (i+1) * scale * 6.4
@@ -251,14 +250,11 @@ class Beatmap:
 
 				if "slider" in self.hitobjects[index]["type"]:
 					self.hitobjects[index]["stacking"] = space
-					self.hitobjects[index]["end x"] -= self.hitobjects[index]["x"]
-					self.hitobjects[index]["end x"] += xbase + space
+					self.hitobjects[index]["end x"] += space
+					self.hitobjects[index]["end y"] += space
 
-					self.hitobjects[index]["end y"] -= self.hitobjects[index]["y"]
-					self.hitobjects[index]["end y"] += ybase + space
-
-				self.hitobjects[index]["x"] = xbase + space
-				self.hitobjects[index]["y"] = ybase + space
+				self.hitobjects[index]["x"] += space
+				self.hitobjects[index]["y"] += space
 
 
 def split(delimiters, string):
