@@ -302,8 +302,6 @@ class PrepareCircles(Images):
 			isslider = self.circles[i][6]
 			if self.circles[i][7] > len(self.circle_fadeout[isslider][color]) - 1:
 				return
-			if self.circles[i][6] and self.circles[i][2] <= -50:
-				return
 			self.img = self.circle_fadeout[isslider][color][self.circles[i][7]]
 			self.circles[i][7] += 1
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
@@ -331,7 +329,7 @@ class PrepareCircles(Images):
 			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number - 1]) - 1)
 			self.img = self.circle_frames[color][number - 1][opacity_index]
 
-		if self.circles[i][6] and self.circles[i][2] <= 0:
-			self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i][2]/50)
+		# if self.circles[i][6] and self.circles[i][2] <= 0:
+		# 	self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i][2]/50)
 
 		super().add_to_frame(background, self.circles[i][0]+self.circles[i][9], self.circles[i][1])
