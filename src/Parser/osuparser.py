@@ -27,6 +27,7 @@ class Beatmap:
 		self.parse_timingpoints()
 		self.parse_hitobject()
 		self.stack_position()
+
 	# print("General:", self.general)
 	# print("\n\nDiff:", self.diff)
 	# print("\n\nBreak Periods:", self.breakperiods)
@@ -86,6 +87,9 @@ class Beatmap:
 			self.timing_point.append(my_dict)
 		self.timing_point.append({"Offset": float('inf')})
 
+	def istacked(self, x1, y1, x2, y2):
+		return math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < 3
+
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
 		hitobject = hitobject.split("\n")
@@ -94,6 +98,7 @@ class Beatmap:
 
 		index = 0
 		stacking = False
+		reverse = False
 
 		ar = self.diff["ApproachRate"]  # for stacks
 		if ar < 5:
@@ -119,21 +124,36 @@ class Beatmap:
 			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
 			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
-			if index != 0:
-				if my_dict["x"] == self.hitobjects[-1]["x"] and my_dict["y"] == self.hitobjects[-1]["y"] and \
-						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"]:
-					if stacking:
-						self.to_stack[-1]["end"] = index
-					else:
-						self.to_stack.append({"start": index - 1, "end": index})
-						stacking = True
-				else:
-					stacking = False
 
 			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
 			bin_info = bin_info[::-1]  # reverse the binary
 			object_type = []
 			skip = 0
+
+			if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
+				if self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["x"], self.hitobjects[-1]["y"]) and \
+						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"] and not reverse:
+					if stacking:
+						self.to_stack[-1]["end"] = index
+					else:
+						self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
+						stacking = True
+
+				elif self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["end x"], self.hitobjects[-1]["end y"]) and \
+						my_dict["time"] - self.hitobjects[-1]["end time"] <= preempt * self.general["StackLeniency"]:
+					if stacking:
+						self.to_stack[-1]["end"] = index
+					else:
+						self.to_stack.append({"start": index, "end": index, "reverse": True})
+						stacking = True
+						reverse = True
+
+				else:
+					stacking = False
+					reverse = False
+			else:
+				stacking = False
+				reverse = False
 
 			if int(bin_info[0]):
 				object_type.append("circle")
@@ -178,21 +198,22 @@ class Beatmap:
 				my_dict["stacking"] = 0
 
 				my_dict["repeated"] = int(osuobject[6])
-				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (100 * self.diff["SliderMultiplier"])
+				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (
+						100 * self.diff["SliderMultiplier"])
 				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
 
 				baiser = Curve.from_kind_and_points(my_dict["slider type"], ps, my_dict["pixel length"])
 				end_goingforward = my_dict["repeated"] % 2 == 1
 				endpos = baiser(int(end_goingforward))
-				my_dict["end x"] = endpos.x
-				my_dict["end y"] = endpos.y
+				my_dict["end x"] = int(endpos.x)
+				my_dict["end y"] = int(endpos.y)
 
 				my_dict["slider ticks"] = []
-				speedmultiplier = my_dict["BeatDuration"]/self.timing_point[cur_offset]["Base"]
+				speedmultiplier = my_dict["BeatDuration"] / self.timing_point[cur_offset]["Base"]
 				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
 				tickcount = int(my_dict["pixel length"] / tickdiv + 0.9)
-				for x in range(tickcount-1):
-					my_dict["slider ticks"].append(1/tickcount * (x+1))
+				for x in range(tickcount - 1):
+					my_dict["slider ticks"].append(1 / tickcount * (x + 1))
 
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
@@ -202,6 +223,8 @@ class Beatmap:
 				object_type.append("spinner")
 				endtime = osuobject[5].split(":")[0]
 				my_dict["end time"] = int(endtime)
+				my_dict["end x"] = -1
+				my_dict["end x"] = -1
 
 			my_dict["combo_color"] = cur_combo_color
 			my_dict["combo_number"] = cur_combo_number
@@ -217,16 +240,25 @@ class Beatmap:
 	def stack_position(self):
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		for info in self.to_stack:
+			xbase = self.hitobjects[info["start"]]["end x"]
+			ybase = self.hitobjects[info["start"]]["end y"]
 			for i in range(info["end"] - info["start"] + 1):
-				space = (info["end"] - info["start"] - i) * scale * -6.4
+				if info["reverse"]:
+					space = (i+1) * scale * 6.4
+				else:
+					space = (info["end"] - info["start"] - i) * scale * -6.4
 				index = info["start"] + i
-				self.hitobjects[index]["x"] += space
-				self.hitobjects[index]["y"] += space
+
 				if "slider" in self.hitobjects[index]["type"]:
 					self.hitobjects[index]["stacking"] = space
-					self.hitobjects[index]["end x"] += space
-					self.hitobjects[index]["end y"] += space
-				# space *= 2
+					self.hitobjects[index]["end x"] -= self.hitobjects[index]["x"]
+					self.hitobjects[index]["end x"] += xbase + space
+
+					self.hitobjects[index]["end y"] -= self.hitobjects[index]["y"]
+					self.hitobjects[index]["end y"] += ybase + space
+
+				self.hitobjects[index]["x"] = xbase + space
+				self.hitobjects[index]["y"] = ybase + space
 
 
 def split(delimiters, string):
@@ -240,5 +272,3 @@ def read_file(filename, scale, colors):
 	              "[HitObjects]"]
 	info = split(delimiters, content)
 	return Beatmap(info, scale, colors)
-
-
