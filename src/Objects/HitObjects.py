@@ -38,7 +38,7 @@ class HitObjectManager:
 		self.hitobjects[timestamp] = [self.SLIDER, osu_d["end time"] - cur_time, len(self.objtime), hitobjindex, 1]
 		self.objtime.append(timestamp)
 
-	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, hitobjindex, object_type=0):
+	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, hitobjindex, object_type):
 		self.preparecircle.add_circle(x, y, combo_color, combo_number, duration, timestamp, object_type)
 		circleduration = duration
 
@@ -85,15 +85,15 @@ class HitObjectManager:
 	def add_to_frame(self, background):
 		i = len(self.objtime)
 
-		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles],
-		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders],
-		              self.SPINNER: [self.preparespinner, self.preparespinner.spinners]}
+		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles, -self.maxtimewindow - self.interval*2],
+		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders, -175],
+		              self.SPINNER: [self.preparespinner, self.preparespinner.spinners, -200]}
 		while i > 0:  # > 0 because we do i-=1 at the beginning so if it's > -1 it would be "out of range"
 			i -= 1
 			key = self.objtime[i]
 			self.hitobjects[key][1] -= self.interval
 			hitobj = objecttype[self.hitobjects[key][0]]
-			if self.hitobjects[key][1] <= -self.interval * 10: # and self.hitobjects[key][0] == self.SLIDER:  # hitobj[3]:
+			if self.hitobjects[key][1] <= hitobj[2]:
 				del hitobj[1][key]
 				if self.hitobjects[key][0] == self.SLIDER:
 					del self.prepareslider.arrows[key]
@@ -120,6 +120,7 @@ class HitObjectManager:
 					followappear = False
 					if hitresult > 0:
 						self.preparecircle.circles[key][8] = 1
+						self.hitobjects[key][1] = -self.maxtimewindow - self.interval*2 + 175
 						followappear = True
 						self.combocounter.add_combo()
 					else:
