@@ -27,7 +27,7 @@ SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
 BEATMAP_FILE = "../res/tengaku.osu"
-REPLAY_FILE = "../res/ten.osr"
+REPLAY_FILE = "../res/tengaku.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -57,15 +57,15 @@ class Object:
 
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the cur_time
-	min_time = orig_time = abs(replay[index][TIMES] - cur_time)
+	min_time = abs(replay[index][TIMES] - cur_time)
+	min_time_toskip = abs(replay[index+1][TIMES] - cur_time)
 
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
-	possible_nextindex = None  # for smoothing out the cursor
 	for x in range(1, 4):
 		delta_t = abs(replay[index + x][TIMES] - cur_time)
 		if key_state != replay[index + x][KEYS_PRESSED]:
-			if delta_t < orig_time and x == 1:
+			if delta_t <= min_time_toskip:
 				return x
 		if delta_t < min_time:
 			min_time = delta_t
@@ -137,14 +137,20 @@ def main():
 	beatmap.hitobjects.append(
 		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
+	replay_event.append([replay_event[-1][CURSOR_X], replay_event[-1][CURSOR_Y], 0, int(replay_event[-1][TIMES]+1000/FPS)])
+	replay_event.append([replay_event[-1][CURSOR_X], replay_event[-1][CURSOR_Y], 0, int(replay_event[-1][TIMES]+1000/FPS)])
+	replay_event.append([replay_event[-1][CURSOR_X], replay_event[-1][CURSOR_Y], 0, int(replay_event[-1][TIMES]+1000/FPS)])
+	replay_event.append([replay_event[-1][CURSOR_X], replay_event[-1][CURSOR_Y], 0, int(replay_event[-1][TIMES]+1000/FPS)])
+
 	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
 	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
 	cursor_event = replay_event[osr_index]
+	new_k1, new_k2, new_m1, new_m2 = 0, 0, 0, 0
 
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 1000: #osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -196,12 +202,12 @@ def main():
 				                                      index_hitobject, "slider" in osu_d["type"])
 
 				if "slider" in osu_d["type"]:
-					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, cur_time, osu_d["time"],
+					component.hitobjectmanager.add_slider(osu_d, x_circle, y_circle, osr_time, osu_d["time"],
 					                                      index_hitobject)
 				index_hitobject += 1
 
 
-		component.followpoints.add_to_frame(img, cur_time)
+		component.followpoints.add_to_frame(img, osr_time)
 		component.hitobjectmanager.add_to_frame(img)
 		component.hitresult.add_to_frame(img)
 		component.spinbonus.add_to_frame(img)
@@ -218,11 +224,9 @@ def main():
 
 		next_index = nearer(cur_time + 1000 / 60, replay_event, osr_index)
 		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + next_index][KEYS_PRESSED])
-		new_click = 0
-		new_click += int(f_k1 and not k1)
-		new_click += int(f_k2 and not k2)
-		new_click += int(f_m1 and not m1)
-		new_click += int(f_m2 and not m2)
+		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
+		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
+		new_click = new_k1 + new_k2 + new_m1 + new_m2
 		component.hitobjectmanager.checkcursor(replay_event[osr_index + next_index], new_click)
 
 		writer.write(img)
