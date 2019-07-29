@@ -53,7 +53,6 @@ class InputOverlay(Images):
 			self.button_frames.append(self.img)
 
 	def clicked(self):
-		is_new_click = not self.going_down_frame
 		if not self.going_down_frame:
 			self.frame_index = 2
 			self.font_scale = 0.5 * self.scale
@@ -69,7 +68,6 @@ class InputOverlay(Images):
 			self.font_scale -= self.font_step
 			self.font_width *= self.font_scale / (self.font_scale + self.font_step)
 			self.font_height *= self.font_scale / (self.font_scale + self.font_step)
-		return is_new_click
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		if self.going_down_frame:
@@ -93,9 +91,15 @@ class InputOverlay(Images):
 			self.font_scale += self.font_step
 			self.font_width *= self.font_scale / (self.font_scale - self.font_step)
 			self.font_height *= self.font_scale / (self.font_scale - self.font_step)
-			if self.frame_index == 0:
+
+			self.frame_index -= 1
+			self.font_scale += self.font_step
+			self.font_width *= self.font_scale / (self.font_scale - self.font_step)
+			self.font_height *= self.font_scale / (self.font_scale - self.font_step)
+			if self.frame_index <= 0:
 				self.going_up_frame = False
 				self.cur_blue = 0
+				self.frame_index = 0
 
 		self.img = self.button_frames[self.frame_index]
 		super().add_to_frame(background, x_offset, y_offset)
