@@ -90,17 +90,21 @@ class Check:
 
 		followappear = False
 		hitvalue = combostatus = 0
-		if self.sliders_memory[osu_d["time"]]["done"]:
-			return False, None, None, None, None, None, hitvalue, combostatus
-
+		prev_state = self.sliders_memory[osu_d["time"]]["follow state"]
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, osr)
+
+		if self.sliders_memory[osu_d["time"]]["done"]:
+			state = prev_state
+			self.sliders_memory[osu_d["time"]]["follow state"] = False
+			return state, None, osu_d["time"], None, None, False, 0, 0
+
 		if osr[3] > osu_d["end time"]:
 			score = self.sliders_memory[osu_d["time"]]["score"]
 			del self.sliders_memory[osu_d["time"]]
-			return True, score, osu_d["time"], osu_d["end x"], osu_d["end y"], followappear, hitvalue, combostatus
+			return prev_state, score, osu_d["time"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus
 
-		if followappear != self.sliders_memory[osu_d["time"]]["follow state"]:
+		if followappear != prev_state:
 			self.sliders_memory[osu_d["time"]]["follow state"] = followappear
 			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus
 
