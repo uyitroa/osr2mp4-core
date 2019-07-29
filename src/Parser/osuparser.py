@@ -215,16 +215,18 @@ class Beatmap:
 		self.end_time = self.hitobjects[-1]["end time"]
 
 	def stack_position(self):
+		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		for info in self.to_stack:
-			space = -0.4 * self.diff["CircleSize"] + 4.9  # lol my own formula
-			for i in range(info["start"] + 1, info["end"] + 1):
-				self.hitobjects[i]["x"] += space
-				self.hitobjects[i]["y"] += space
-				if "slider" in self.hitobjects[i]["type"]:
-					self.hitobjects[i]["stacking"] = space
-					self.hitobjects[i]["end x"] += space
-					self.hitobjects[i]["end y"] += space
-				space *= 2
+			for i in range(info["end"] - info["start"] + 1):
+				space = (info["end"] - info["start"] - i) * scale * -6.4
+				index = info["start"] + i
+				self.hitobjects[index]["x"] += space
+				self.hitobjects[index]["y"] += space
+				if "slider" in self.hitobjects[index]["type"]:
+					self.hitobjects[index]["stacking"] = space
+					self.hitobjects[index]["end x"] += space
+					self.hitobjects[index]["end y"] += space
+				# space *= 2
 
 
 def split(delimiters, string):
