@@ -53,9 +53,9 @@ class ApproachCircle(ACircle):
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
-		scale = 3
+		scale = 3.5
 		for time_left in range(self.time_preempt, 0, -self.interval):
-			scale -= 2 * self.interval / self.time_preempt
+			scale -= 2.5 * self.interval / self.time_preempt
 			self.change_size(scale * self.scale, scale * self.scale)
 			self.approach_frames.append(self.img)
 

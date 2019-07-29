@@ -87,75 +87,79 @@ class Check:
 		if osu_d["time"] not in self.sliders_memory:
 			self.sliders_memory[osu_d["time"]] = {"score": 0, "follow state": 0, "repeated slider": 1,
 			                                      "ticks index": 0, "lastdir": True, "done": False}
-
+		slider_d = self.sliders_memory[osu_d["time"]]
 		followappear = False
 		hitvalue = combostatus = 0
-		prev_state = self.sliders_memory[osu_d["time"]]["follow state"]
+		prev_state = slider_d["follow state"]
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
-			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, osr)
+			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, osr, slider_d)
 
-		if self.sliders_memory[osu_d["time"]]["done"]:
+		if slider_d["done"]:
 			state = prev_state
-			self.sliders_memory[osu_d["time"]]["follow state"] = False
-			return state, None, osu_d["time"], None, None, False, 0, 0
+			slider_d["follow state"] = False
+			return state, None, osu_d["time"], None, None, False, hitvalue, combostatus
 
 		if osr[3] > osu_d["end time"]:
-			score = self.sliders_memory[osu_d["time"]]["score"]
-			del self.sliders_memory[osu_d["time"]]
+			score = slider_d["score"]
+			del slider_d
 			return prev_state, score, osu_d["time"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus
 
 		if followappear != prev_state:
-			self.sliders_memory[osu_d["time"]]["follow state"] = followappear
+			slider_d["follow state"] = followappear
 			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus
 
 		return False, None, None, None, None, None, hitvalue, combostatus
 
-	def checkcursor_incurve(self, osu_d, osr):
+	def checkcursor_incurve(self, osu_d, osr, slider_d):
+
+		if slider_d["done"]:
+			return False, 0, 0
+
 		slider_leniency = min(36, osu_d["duration"] / 2)
 
-		if (osr[3] - osu_d["time"]) / self.sliders_memory[osu_d["time"]]["repeated slider"] > osu_d["duration"]:
-			self.sliders_memory[osu_d["time"]]["repeated slider"] += 1
+		if (osr[3] - osu_d["time"]) / slider_d["repeated slider"] > osu_d["duration"]:
+			slider_d["repeated slider"] += 1
 
-		going_forward = self.sliders_memory[osu_d["time"]]["repeated slider"] % 2 == 1
+		going_forward = slider_d["repeated slider"] % 2 == 1
 
-		time_difference = (osr[3] - osu_d["time"]) / self.sliders_memory[osu_d["time"]]["repeated slider"]
+		time_difference = (osr[3] - osu_d["time"]) / slider_d["repeated slider"]
 		t = time_difference / osu_d["duration"]
 		if not going_forward:
 			t = 1 - t
 
-		tickdone, tickadd = self.tickover(going_forward, t, osu_d)
-		self.sliders_memory[osu_d["time"]]["ticks index"] += tickadd
+		tickdone, tickadd = self.tickover(going_forward, t, osu_d, slider_d)
+		slider_d["ticks index"] += tickadd
 
-		reversearrow = going_forward != self.sliders_memory[osu_d["time"]]["lastdir"]
-		self.sliders_memory[osu_d["time"]]["lastdir"] = going_forward
+		reversearrow = going_forward != slider_d["lastdir"]
+		slider_d["lastdir"] = going_forward
 
 		baiser = Curve.from_kind_and_points(osu_d["slider type"], osu_d["ps"], osu_d["pixel length"])
 		pos = baiser(t)
 		dist = math.sqrt((osr[0] - pos.x + osu_d["stacking"])**2 + (osr[1] - pos.y + osu_d["stacking"])**2)
 
 		if dist <= self.diff.slidermax_distance and osr[2] != 0:
-			self.sliders_memory[osu_d["time"]]["score"] = max(self.sliders_memory[osu_d["time"]]["score"], 100)
+			slider_d["score"] = max(slider_d["score"], 100)
 			hitvalue = tickdone * 10
 			hitvalue += (reversearrow or osr[3] > osu_d["end time"] - slider_leniency) * 30
-			self.sliders_memory[osu_d["time"]]["done"] = osr[3] > osu_d["end time"] - slider_leniency
+			slider_d["done"] = osr[3] > osu_d["end time"] - slider_leniency
 			return True, hitvalue, int(tickdone or reversearrow or osr[3] > osu_d["end time"] - slider_leniency)
 
 		elif osr[3] > osu_d["end time"] - slider_leniency:
 			return False, 30, 1
 
 		elif osr[3] > osu_d["end time"] - 40:
-			self.sliders_memory[osu_d["time"]]["score"] = min(self.sliders_memory[osu_d["time"]]["score"], 100)
+			slider_d["score"] = min(slider_d["score"], 100)
 			return False, 0, 0
 
 		elif tickdone or reversearrow:
-			self.sliders_memory[osu_d["time"]]["score"] = min(self.sliders_memory[osu_d["time"]]["score"], 100)
+			slider_d["score"] = min(slider_d["score"], 100)
 			return False, 0, -1
 
 		return False, 0, 0
 
-	def tickover(self, goingforward, t, osu_d):
-		repeat = osu_d["repeated"] - self.sliders_memory[osu_d["time"]]["repeated slider"] > 0
-		ticks_index = self.sliders_memory[osu_d["time"]]["ticks index"]
+	def tickover(self, goingforward, t, osu_d, slider_d):
+		repeat = osu_d["repeated"] - slider_d["repeated slider"] > 0
+		ticks_index = slider_d["ticks index"]
 		if ticks_index < 0:
 			return False, 1 * repeat
 		if ticks_index >= len(osu_d["slider ticks"]):
