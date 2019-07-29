@@ -141,7 +141,6 @@ class Check:
 			return True, hitvalue, int(tickdone or reversearrow or osr[3] > osu_d["end time"] - slider_leniency)
 
 		elif osr[3] > osu_d["end time"] - slider_leniency:
-			print("yes")
 			return False, 30, 1
 
 		elif osr[3] > osu_d["end time"] - 40:

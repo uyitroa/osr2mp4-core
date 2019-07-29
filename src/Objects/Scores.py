@@ -321,7 +321,7 @@ class ScoreCounter(Images):
 			x += self.gap
 
 
-		add_up = max(47.27, (self.score - self.showscore)/7.27)
+		add_up = max(27.27, (self.score - self.showscore)/17.27)
 		if self.showscore + add_up > self.score:
 			self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
 		else:
