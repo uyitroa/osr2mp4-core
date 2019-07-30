@@ -52,22 +52,6 @@ class HitObjectManager:
 		self.hitobjects[timestamp] = [self.SPINNER, endtime - curtime, len(self.objtime), hitobjindex, 1]
 		self.objtime.append(timestamp)
 
-	def circleclicked(self, hitresult, timestamp, followappear):
-		key = str(timestamp) + "c"
-		if self.preparecircle.circles[key][6]:
-			self.preparecircle.circles[key][8] = 1
-			self.sliderchangestate(followappear, timestamp)
-			# del self.objtime[self.hitobjects[key][2]]
-			# del self.preparecircle.circles[key]
-			# del self.hitobjects[key]
-		else:
-			if hitresult > 0:
-				self.preparecircle.circles[key][8] = 1
-			# else:
-			# 	del self.objtime[self.hitobjects[key][2]]
-			# 	del self.preparecircle.circles[key]
-			# 	del self.hitobjects[key]
-
 	def sliderchangestate(self, followappear, timestamp):
 		key = str(timestamp) + "s"
 		index_interval = 0.65
@@ -144,6 +128,7 @@ class HitObjectManager:
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
 						self.hitresult_manager.add_result(hitresult, x, y)
+						del self.check.sliders_memory[timestamp]
 					self.sliderchangestate(followappear, timestamp)
 				self.scorecounter.update_score(1, hitvalue)
 
