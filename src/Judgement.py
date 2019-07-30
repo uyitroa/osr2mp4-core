@@ -118,7 +118,7 @@ class Check:
 		slider_leniency = min(36, osu_d["duration"] / 2)
 
 		if (osr[3] - osu_d["time"]) / slider_d["repeated slider"] > osu_d["duration"]:
-			slider_d["repeated slider"] += 1
+			slider_d["repeated slider"] = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 
 		going_forward = slider_d["repeated slider"] % 2 == 1
 
@@ -145,6 +145,7 @@ class Check:
 			return True, hitvalue, int(tickdone or reversearrow or osr[3] > osu_d["end time"] - slider_leniency)
 
 		elif osr[3] > osu_d["end time"] - slider_leniency:
+			slider_d["done"] = True
 			return False, 30, 1
 
 		elif osr[3] > osu_d["end time"] - 40:
@@ -224,11 +225,11 @@ class Check:
 		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 
 
-		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"])) - 1
+		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"]))
 		bonus = max(0, bonus)
 
 		hitvalue = 0
-		if spin_d["extra"] >= 360:
+		if spin_d["extra"] >= 360 and progress <= 1:
 			spin_d["extra"] -= 360
 			hitvalue = 100
 
