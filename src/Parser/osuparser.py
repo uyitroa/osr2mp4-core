@@ -87,8 +87,11 @@ class Beatmap:
 			self.timing_point.append(my_dict)
 		self.timing_point.append({"Offset": float('inf')})
 
-	def istacked(self, x1, y1, x2, y2):
-		return math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < 3
+	def istacked(self, curobj, prevobj, t_min, end=""):
+		x1, y1 = curobj["x"], curobj["y"]
+		x2, y2 = prevobj[end+"x"], prevobj[end+"y"]
+		t1, t2 = curobj["time"], prevobj[end+"time"]
+		return math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < 3 and t1 - t2 < t_min
 
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
@@ -110,6 +113,7 @@ class Beatmap:
 
 		cur_offset = 0
 		offset = self.timing_point[0]["Offset"]
+		min_stacktime = preempt * self.general["StackLeniency"]
 
 		for item in hitobject:
 			if item == '':
@@ -186,7 +190,7 @@ class Beatmap:
 				my_dict["slider ticks"] = []
 				speedmultiplier = my_dict["BeatDuration"] / self.timing_point[cur_offset]["Base"]
 				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
-				tickcount = int(my_dict["pixel length"] / tickdiv + 0.9)
+				tickcount = math.ceil(my_dict["pixel length"] / tickdiv)
 				for x in range(tickcount - 1):
 					my_dict["slider ticks"].append(1 / tickcount * (x + 1))
 
@@ -201,17 +205,24 @@ class Beatmap:
 				my_dict["end x"] = -1
 				my_dict["end y"] = -1
 
+
+			my_dict["combo_color"] = cur_combo_color
+			my_dict["combo_number"] = cur_combo_number
+			my_dict["type"] = object_type
+			my_dict["skip"] = skip
+			my_dict["sound"] = int(osuobject[4])
+
+
 			if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
-				if self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["x"], self.hitobjects[-1]["y"]) and \
-						my_dict["time"] - self.hitobjects[-1]["time"] <= preempt * self.general["StackLeniency"] and not reverse:
+				prevobj = self.hitobjects[-1]
+				if self.istacked(my_dict, prevobj, min_stacktime) and "slider" not in prevobj["type"] and not reverse:
 					if stacking:
 						self.to_stack[-1]["end"] = index
 					else:
 						self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
 						stacking = True
 
-				elif self.istacked(my_dict["x"], my_dict["y"], self.hitobjects[-1]["end x"], self.hitobjects[-1]["end y"]) and \
-						my_dict["time"] - self.hitobjects[-1]["end time"] <= preempt * self.general["StackLeniency"]:
+				elif self.istacked(my_dict, prevobj, min_stacktime, "end ") and "slider" not in my_dict["type"]:
 					if stacking:
 						self.to_stack[-1]["end"] = index
 					else:
@@ -226,12 +237,6 @@ class Beatmap:
 				stacking = False
 				reverse = False
 
-
-			my_dict["combo_color"] = cur_combo_color
-			my_dict["combo_number"] = cur_combo_number
-			my_dict["type"] = object_type
-			my_dict["skip"] = skip
-			my_dict["sound"] = int(osuobject[4])
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
 			index += 1
