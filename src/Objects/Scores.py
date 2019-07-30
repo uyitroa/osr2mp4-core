@@ -12,6 +12,7 @@ class HitResult(Images):
 		self.scores_frames = {}
 		self.divide_by_255 = 1/255.0
 		self.hitresults = []
+		self.total = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.interval = 1000/60
 		self.time = 600
 		for x in [0, 50, 100]:
@@ -63,6 +64,7 @@ class HitResult(Images):
 				self.scores_frames[x].append(img)
 
 	def add_result(self, scores, x, y):
+		self.total[scores] += 1
 		if scores == 300:
 			return
 		# [score, x, y, index, alpha, time, go down]
