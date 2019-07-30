@@ -7,7 +7,7 @@ class DiffCalculator:
 	def __init__(self, diff):
 		self.diff = diff
 		self.max_distance = self.cs()
-		self.slidermax_distance = self.max_distance * 3
+		self.slidermax_distance = self.max_distance * 2.4
 		self.score, self.scorewindow = self.od()
 		self.time_preempt = self.ar()
 
@@ -94,8 +94,8 @@ class Check:
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, osr, slider_d)
 
 		if osr[3] > osu_d["end time"]:
-			return prev_state != followappear, slider_d["score"], osu_d["time"], osu_d["end x"], osu_d[
-				"end y"], False, hitvalue, combostatus
+			return True, slider_d["score"], osu_d["time"], osu_d["end x"], osu_d["end y"], \
+			       False, hitvalue, combostatus
 
 		if followappear != prev_state:
 			slider_d["follow state"] = followappear
@@ -108,52 +108,54 @@ class Check:
 		if slider_d["done"]:
 			return False, 0, 0
 
-		slider_leniency = min(36, osu_d["duration"] / 2)
-
 		if (osr[3] - osu_d["time"]) / slider_d["repeated slider"] > osu_d["duration"]:
 			slider_d["repeated slider"] = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 
 		going_forward = slider_d["repeated slider"] % 2 == 1
 
 		time_difference = (osr[3] - osu_d["time"]) / slider_d["repeated slider"]
-		t = time_difference / osu_d["duration"]
+
+		slider_leniency = 36#min(36, osu_d["duration"] / 2)
+		touchend = time_difference >= osu_d["duration"] - slider_leniency
+		reversenotdone = touchend and slider_d["repeat checked"] < slider_d["repeated slider"]
+		if reversenotdone:
+			t = (osu_d["duration"] - slider_leniency)/osu_d["duration"]
+		else:
+			t = time_difference / osu_d["duration"]
 		if not going_forward:
 			t = 1 - t
 
 		tickdone, tickadd = self.tickover(going_forward, t, osu_d, slider_d)
 		slider_d["ticks index"] += tickadd
 
-		reverse = slider_d["repeated slider"] < osu_d["repeated"]
+		hasreverse = slider_d["repeated slider"] < osu_d["repeated"]
 
 		baiser = Curve.from_kind_and_points(osu_d["slider type"], osu_d["ps"], osu_d["pixel length"])
 		pos = baiser(t)
 		dist = math.sqrt((osr[0] - pos.x + osu_d["stacking"]) ** 2 + (osr[1] - pos.y + osu_d["stacking"]) ** 2)
 
-		endpos = baiser(int(going_forward))
-		distend = math.sqrt((endpos.x - pos.x + osu_d["stacking"]) ** 2 + (endpos.y - pos.y + osu_d["stacking"]) ** 2)
-		touchend = distend <= self.diff.max_distance
-
 		if dist <= self.diff.slidermax_distance and osr[2] != 0:
 			slider_d["score"] = max(slider_d["score"], 100)
 			hitvalue = tickdone * 10
-			hitvalue += touchend * 30
+			hitvalue += reversenotdone * 30
 			hitvalue *= not slider_d["done"]
-			slider_d["done"] = touchend and not reverse
-			reversedone = touchend and slider_d["repeat checked"] < slider_d["repeated slider"]
-			slider_d["repeat checked"] += reversedone
-			return True, hitvalue, int(tickdone or reversedone)
+			slider_d["done"] = touchend and not hasreverse
+			slider_d["repeat checked"] += reversenotdone
+			return True, hitvalue, int(tickdone or reversenotdone)
 
 		# elif osr[3] > osu_d["end time"] - slider_leniency:
 		# 	slider_d["done"] = True
 		# 	return False, 30, 1
 
-		elif tickdone or (reverse and touchend):
+		elif tickdone or (hasreverse and reversenotdone):
 			slider_d["score"] = min(slider_d["score"], 100)
+			slider_d["repeat checked"] += 1
 			return False, 0, -1
 
-		elif touchend:
+		elif reversenotdone:
 			slider_d["score"] = min(slider_d["score"], 100)
 			slider_d["done"] = True
+			# print(slider_leniency, time_difference, osu_d["duration"], slider_d["repeat checked"], slider_d["repeated slider"])
 			return False, 0, 0
 
 		return False, 0, 0
