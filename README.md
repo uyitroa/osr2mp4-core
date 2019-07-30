@@ -1,3 +1,3 @@
 yes.
 
-need opencv and numpy bye
+need opencv and numpy sci-kit bye
