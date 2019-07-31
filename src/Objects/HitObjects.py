@@ -86,12 +86,12 @@ class HitObjectManager:
 				continue
 			hitobj[0].add_to_frame(background, key)
 
-	def checkcursor(self, osr, new_click):
+	def checkcursor(self, replay, new_click, osr_index, cur_time):
 		note_lock = False
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], osr, new_click)
+				update, hitresult, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click)
 				if update:
 					new_click = max(0, new_click - 1)
 					if note_lock:
@@ -114,20 +114,20 @@ class HitObjectManager:
 						self.sliderchangestate(followappear, timestamp)
 						hitresult = 300
 					else:
-						self.hitresult_manager.add_result(hitresult, x, y)
+						self.hitresult_manager.add_result(hitresult, x, y, timestamp, osr_index, cur_time)
 
 					self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
 
 				else:
 					note_lock = True
 			elif self.hitobjects[key][0] == self.SLIDER and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y, followappear, hitvalue, combostatus = self.check.checkslider(self.hitobjects[key][3], osr)
+				update, hitresult, timestamp, x, y, followappear, hitvalue, combostatus = self.check.checkslider(self.hitobjects[key][3], replay, osr_index)
 				if update:
 					if hitresult is not None:
 						self.hitobjects[key][4] = 0
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
-						self.hitresult_manager.add_result(hitresult, x, y)
+						self.hitresult_manager.add_result(hitresult, x, y, timestamp, osr_index, cur_time)
 						del self.check.sliders_memory[timestamp]
 					self.sliderchangestate(followappear, timestamp)
 				self.scorecounter.update_score(1, hitvalue)
@@ -139,7 +139,7 @@ class HitObjectManager:
 
 
 			elif self.hitobjects[key][0] == self.SPINNER and self.hitobjects[key][4]:
-				update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(self.hitobjects[key][3], osr)
+				update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(self.hitobjects[key][3], replay[osr_index])
 				if update:
 					self.preparespinner.update_spinner(key, cur_rot, progress)
 					middle_height = int(384 / 2 * self.scale + self.movedown)
