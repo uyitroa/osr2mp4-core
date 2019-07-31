@@ -86,7 +86,7 @@ class HitObjectManager:
 				continue
 			hitobj[0].add_to_frame(background, key)
 
-	def checkcursor(self, replay, new_click, osr_index, cur_time):
+	def checkcursor(self, replay, new_click, osr_index):
 		note_lock = False
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
@@ -114,7 +114,7 @@ class HitObjectManager:
 						self.sliderchangestate(followappear, timestamp)
 						hitresult = 300
 					else:
-						self.hitresult_manager.add_result(hitresult, x, y, timestamp, osr_index, cur_time)
+						self.hitresult_manager.add_result(hitresult, x, y)
 
 					self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
 
@@ -127,7 +127,7 @@ class HitObjectManager:
 						self.hitobjects[key][4] = 0
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
-						self.hitresult_manager.add_result(hitresult, x, y, timestamp, osr_index, cur_time)
+						self.hitresult_manager.add_result(hitresult, x, y)
 						del self.check.sliders_memory[timestamp]
 					self.sliderchangestate(followappear, timestamp)
 				self.scorecounter.update_score(1, hitvalue)
