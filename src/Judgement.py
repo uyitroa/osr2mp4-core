@@ -16,7 +16,7 @@ class DiffCalculator:
 
 	def od(self):
 		o = self.diff["OverallDifficulty"]
-		scorewindow = [50 + 30 * (5 - o) / 5, 100 + 40 * (5 - o) / 5, 150 + 50 * (5 - o) / 5]
+		scorewindow = [int(50 + 30 * (5 - o) / 5), int(100 + 40 * (5 - o) / 5), int(150 + 50 * (5 - o) / 5)]
 		score = [300, 100, 50]
 		return score, scorewindow
 
@@ -65,7 +65,7 @@ class Check:
 			delta_time = abs(time_difference)
 
 			for x in range(3):
-				if delta_time <= self.diff.scorewindow[x]:
+				if delta_time < self.diff.scorewindow[x]:
 					score = self.diff.score[x]
 					break
 
