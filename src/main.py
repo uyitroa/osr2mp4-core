@@ -26,8 +26,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/freeze.osu"
-REPLAY_FILE = "../res/freeze.osr"
+BEATMAP_FILE = "../res/boku.osu"
+REPLAY_FILE = "../res/boku.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -131,8 +131,9 @@ def main():
 	                   beatmap.slider_combo, skin.colours, check)
 
 	index_hitobject = 0
-	preempt_followpoint = 1000
+	preempt_followpoint = 800
 	index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap)
+
 	endtime_fp = beatmap.hitobjects[-1]["time"] + preempt_followpoint * 10
 	beatmap.hitobjects.append(
 		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
@@ -147,7 +148,7 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < len(replay_event) - 3:
+	while osr_index < 1000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -223,7 +224,7 @@ def main():
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = new_k1 + new_k2 + new_m1 + new_m2
-		component.hitobjectmanager.checkcursor(replay_event[osr_index + next_index], new_click)
+		component.hitobjectmanager.checkcursor(replay_event, new_click, osr_index + next_index)
 
 		writer.write(img)
 
