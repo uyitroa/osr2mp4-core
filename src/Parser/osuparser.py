@@ -1,5 +1,6 @@
 import re
 from Curves.generate_slider import *
+import numpy as np
 
 
 class Beatmap:
@@ -128,7 +129,6 @@ class Beatmap:
 			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
 			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
-
 			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
 			bin_info = bin_info[::-1]  # reverse the binary
 			object_type = []
@@ -190,7 +190,9 @@ class Beatmap:
 				my_dict["slider ticks"] = []
 				speedmultiplier = my_dict["BeatDuration"] / self.timing_point[cur_offset]["Base"]
 				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
-				tickcount = math.ceil(my_dict["pixel length"] / tickdiv)
+				tickcount = int(my_dict["pixel length"] / tickdiv + 0.5)
+				"""if tickcount == 2:
+					print(speedmultiplier, tickdiv, my_dict["pixel length"])"""
 				for x in range(tickcount - 1):
 					my_dict["slider ticks"].append(1 / tickcount * (x + 1))
 
