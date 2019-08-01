@@ -107,15 +107,19 @@ class Check:
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 		osr = replay[osr_index]
+
 		if slider_d["done"]:
 			return False, 0, 0
 
 		if (osr[3] - osu_d["time"]) / slider_d["repeated slider"] > osu_d["duration"]:
 			slider_d["repeated slider"] = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 
+		if len(osu_d["slider ticks"]) > 0 and osu_d["repeated"] > 1:
+			print(slider_d, osu_d["slider ticks"], osu_d["repeated"])
+
 		going_forward = slider_d["repeated slider"] % 2 == 1
 
-		time_difference = (osr[3] - osu_d["time"]) / slider_d["repeated slider"]
+		time_difference = (osr[3] - osu_d["time"]) - (slider_d["repeated slider"] - 1) * osu_d["duration"]
 
 
 		slider_leniency = min(36, osu_d["duration"] / 2)
@@ -128,8 +132,14 @@ class Check:
 		if not going_forward:
 			t = 1 - t
 
-		hastick, tickadd, t = self.tickover(going_forward, t, osu_d, slider_d)
+		if len(osu_d["slider ticks"]) > 0 and osu_d["repeated"] > 1:
+			print(t, hasendtick, osu_d["duration"], int(osr[3]), time_difference, osu_d["time"])
+
+		hastick, tickadd, t = self.tickover(t, osu_d, slider_d)
 		slider_d["ticks index"] += tickadd
+
+		if len(osu_d["slider ticks"]) > 0 and osu_d["repeated"] > 1:
+			print(t, "\n\n")
 
 		hasreverse = slider_d["repeated slider"] < osu_d["repeated"]
 
@@ -154,18 +164,20 @@ class Check:
 			hitvalue += touchend * 30
 			hitvalue *= not slider_d["done"]
 			slider_d["done"] = touchend and not hasreverse
-			slider_d["repeat checked"] += touchend or touchtick
+			slider_d["repeat checked"] += touchend
 			return in_ball, hitvalue, int(touchend or touchtick)
 
 		if (hastick and not touchtick) or (hasendtick and not touchend):
 			slider_d["score"] = min(slider_d["score"], 100)
 		slider_d["repeat checked"] += hasendtick and hasreverse and not touchend
-		slider_d["done"] = hasendtick and not touchend and not hasreverse
+		slider_d["done"] = hasendtick and not hasreverse
 		return in_ball, 0, -((hastick and not touchtick) or (hasendtick and hasreverse and not touchend))
 
 
-	def tickover(self, goingforward, t, osu_d, slider_d):
-		repeat = osu_d["repeated"] - slider_d["repeated slider"] > 0
+	def tickover(self, t, osu_d, slider_d):
+		repeat = slider_d["repeat checked"] == slider_d["repeated slider"]
+		goingforward = slider_d["repeat checked"] % 2 == 0
+
 		ticks_index = slider_d["ticks index"]
 		if ticks_index < 0:
 			return False, 1 * repeat, t
@@ -176,7 +188,7 @@ class Check:
 			if t > osu_d["slider ticks"][ticks_index]:
 				return True, 1, osu_d["slider ticks"][ticks_index]
 			else:
-				return False, 0
+				return False, 0, t
 		if t < osu_d["slider ticks"][ticks_index]:
 			return True, -1, osu_d["slider ticks"][ticks_index]
 		return False, 0, t
