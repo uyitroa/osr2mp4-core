@@ -112,7 +112,7 @@ class HitObjectManager:
 
 					if self.preparecircle.circles[key][6]:
 						self.sliderchangestate(followappear, timestamp)
-						hitresult = 300
+						hitresult = 300 if hitresult != 0 else 0
 					else:
 						self.hitresult_manager.add_result(hitresult, x, y)
 
@@ -130,7 +130,7 @@ class HitObjectManager:
 						self.hitresult_manager.add_result(hitresult, x, y)
 						del self.check.sliders_memory[timestamp]
 					self.sliderchangestate(followappear, timestamp)
-				self.scorecounter.update_score(1, hitvalue)
+				self.scorecounter.update_score(self.combocounter.get_combo(), hitvalue)
 
 				if combostatus == 1:
 					self.combocounter.add_combo()
@@ -147,10 +147,14 @@ class HitObjectManager:
 					if hitresult is not None:
 						self.hitobjects[key][4] = 0
 						self.hitresult_manager.add_result(hitresult, middle_width, middle_height)
+						if hitresult > 0:
+							self.combocounter.add_combo()
+						else:
+							self.combocounter.breakcombo()
 					if bonusscore >= 1:
 						height = int(384 * 2/3 * self.scale + self.movedown)
 						self.spinbonus_manager.set_bonusscore(bonusscore, middle_width, height)
 
-				self.scorecounter.update_score(1, hitvalue)
+				self.scorecounter.update_score(self.combocounter.get_combo(), hitvalue)
 				self.scorecounter.update_score(1, bonusscore*1000)
 
