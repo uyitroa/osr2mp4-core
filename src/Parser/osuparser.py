@@ -150,7 +150,7 @@ class Beatmap:
 				n_combo = int(n_combo[::-1], 2)
 				skip += n_combo
 				cur_combo_color += skip
-				if cur_combo_color > self.ncombo:
+				while cur_combo_color > self.ncombo:
 					cur_combo_color = cur_combo_color - self.ncombo
 
 			if int(bin_info[1]):
@@ -191,8 +191,7 @@ class Beatmap:
 				speedmultiplier = my_dict["BeatDuration"] / self.timing_point[cur_offset]["Base"]
 				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
 				tickcount = int(my_dict["pixel length"] / tickdiv + 0.5)
-				"""if tickcount == 2:
-					print(speedmultiplier, tickdiv, my_dict["pixel length"])"""
+
 				for x in range(tickcount - 1):
 					my_dict["slider ticks"].append(1 / tickcount * (x + 1))
 
