@@ -98,11 +98,12 @@ class PrepareSlider:
 		# if sliderfollowcircle is smaller than sliderball ( possible when fading in the sliderfollowcircle), then create
 		# a blank image with sliderball shape and put sliderfollowcircle at the center of that image.
 		if sliderball.shape[0] > follow.shape[0]:
-			new_img = np.zeros(sliderball.shape)
-			y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
-			new_img[y1:y2, x1:x2, :] = follow[:, :, :]
-			follow = new_img
+			# new_img = np.zeros(sliderball.shape)
+			# y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
+			# x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
+			# new_img[y1:y2, x1:x2, :] = follow[:, :, :]
+			# follow = new_img
+			return False
 
 		#  find center
 		y1, y2 = int(follow.shape[0] / 2 - sliderball.shape[0] / 2), int(follow.shape[0] / 2 + sliderball.shape[0] / 2)
@@ -113,6 +114,7 @@ class PrepareSlider:
 		for c in range(3):
 			follow[y1:y2, x1:x2, c] = sliderball[:, :, c] * alpha_s + alpha_l * follow[y1:y2, x1:x2, c]
 		follow[y1:y2, x1:x2, 3] = follow[y1:y2, x1:x2, 3] * alpha_l + sliderball[:, :, 3]
+		return True
 
 	def prepare_sliderball(self):
 		follow_fadein = 125  # sliderfollowcircle zoom out zoom in time
@@ -133,19 +135,29 @@ class PrepareSlider:
 				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
 				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
 
-				# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
-				if c == 1:
-					follow_img = np.copy(orig_sfollow)
-					self.to_3channel(follow_img)
-					self.sliderfollow_fadeout.append(follow_img)
-
 				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
 				# add to frame twice
-				self.ballinhole(orig_sfollow, orig_color_sb)
-				self.to_3channel(orig_sfollow)
-				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
+				if c == 1:
+					follow_img = np.copy(orig_sfollow)
+				added = self.ballinhole(orig_sfollow, orig_color_sb)
+				if added:
+					self.to_3channel(orig_sfollow)
+					self.sliderb_frames[-1].append(np.copy(orig_sfollow))
+					# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
+					if c == 1:
+						self.to_3channel(follow_img)
+						self.sliderfollow_fadeout.append(follow_img)
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
+			self.to_3channel(orig_color_sb)
+			self.sliderb_frames[-1].append(orig_color_sb)
+
+			if c == 1:
+				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
+				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
+				self.to_3channel(follow_img)
+				self.sliderfollow_fadeout.append(follow_img)
+
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time, timestamp):
 		image = osu_d["slider_img"]
