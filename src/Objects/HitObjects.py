@@ -1,3 +1,5 @@
+import cv2
+
 from Objects.Circles import PrepareCircles
 from Objects.Slider import PrepareSlider
 from Objects.Spinner import PrepareSpinner
@@ -60,13 +62,13 @@ class HitObjectManager:
 			self.prepareslider.sliders[key][6] = 0
 
 		if followappear:
-			index_interval = -0.75
-			self.prepareslider.sliders[key][6] = self.prepareslider.slidermax_index - 3
+			index_interval = -0.65
+			self.prepareslider.sliders[key][6] = self.prepareslider.slidermax_index - 1
 
 		self.prepareslider.sliders[key][11] = index_interval
 
 	# manager of circle add_to_frame and slider add_to_frame
-	def add_to_frame(self, background):
+	def add_to_frame(self, background, osr_index):
 		i = len(self.objtime)
 
 		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles, -self.maxtimewindow - self.interval*2],
@@ -85,15 +87,23 @@ class HitObjectManager:
 				del self.objtime[i]
 				continue
 			hitobj[0].add_to_frame(background, key)
+		# try:
+		# 	firstobject = self.objtime[0]
+		# except Exception as e:
+		# 	firstobject = "none"
+		# cv2.putText(background, firstobject, (100, 50), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1,
+		#             lineType=cv2.LINE_AA)
+		# cv2.putText(background, str(osr_index), (100, 100), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1,
+		#             lineType=cv2.LINE_AA)
 
 	def checkcursor(self, replay, new_click, osr_index):
 		note_lock = False
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click)
+				update, hitresult, timestamp, x, y, reduceclick = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click)
 				if update:
-					new_click = max(0, new_click - 1)
+					new_click = max(0, new_click - reduceclick)
 					if note_lock:
 						self.preparecircle.circles[key][9] = 1
 						if hitresult != 0:
@@ -112,6 +122,10 @@ class HitObjectManager:
 
 					if self.preparecircle.circles[key][6]:
 						self.sliderchangestate(followappear, timestamp)
+						if hitresult != 0:
+							self.check.sliders_memory[timestamp]["score"] += 1
+							if replay[osr_index][3] <= timestamp:
+								self.check.sliders_memory[timestamp]["dist"] = self.check.diff.slidermax_distance
 						hitresult = 300 if hitresult != 0 else 0
 					else:
 						self.hitresult_manager.add_result(hitresult, x, y)

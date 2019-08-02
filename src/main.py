@@ -17,7 +17,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin3/"
+PATH = "../res/skin7/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -26,23 +26,23 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/boku.osu"
-REPLAY_FILE = "../res/boku.osr"
+BEATMAP_FILE = "../res/tool.osu"
+REPLAY_FILE = "../res/tool.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
 
 class Object:
 	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, hitcircleoverlap, scoreoverlap, slider_combo, colors, check):
-		self.cursor = Cursor(path + "cursor.png")
+		self.cursor = Cursor(path + "cursor.png", SCALE)
 		self.key1 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
 		self.key2 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
 		self.mouse1 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 0, 255])
 		self.mouse2 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 0, 255])
-		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y)
+		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y, SCALE)
 		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
 
-		self.hitresult = HitResult(path, SCALE)
+		self.hitresult = HitResult(path, SCALE, PLAYFIELD_SCALE)
 
 		self.scorenumbers = ScoreNumbers(path, SCALE)
 		self.spinbonus = SpinBonusScore(SCALE, scoreoverlap, self.scorenumbers)
@@ -148,11 +148,11 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 1000: #osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
-			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)))
+			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)), cur_time, index_hitobject, index_followpoint)
 			start_time = time.time()
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
@@ -205,7 +205,7 @@ def main():
 
 
 		component.followpoints.add_to_frame(img,cur_time)
-		component.hitobjectmanager.add_to_frame(img)
+		component.hitobjectmanager.add_to_frame(img, osr_index)
 		component.hitresult.add_to_frame(img)
 		component.spinbonus.add_to_frame(img)
 		component.combocounter.add_to_frame(img)
