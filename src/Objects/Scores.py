@@ -7,14 +7,15 @@ score_x = "score-x.png"
 
 
 class HitResult(Images):
-	def __init__(self, path, scale):
+	def __init__(self, path, scale, playfieldscale):
 		self.scores_images = {}
 		self.scores_frames = {}
 		self.divide_by_255 = 1/255.0
 		self.hitresults = []
-		self.total = {300: 0, 100: 0, 50: 0, 0: 0}
+		self.total = {100: 0, 50: 0, 0: 0}
 		self.interval = 1000/60
 		self.time = 600
+		self.playfieldscale = playfieldscale
 		for x in [0, 50, 100]:
 			self.scores_images[x] = Images(path+hitprefix+str(x)+".png", scale)
 			if x == 0:
@@ -50,8 +51,8 @@ class HitResult(Images):
 			end = 150
 			start = 100
 			if x != 0:
-				end = 90
-				start = 70
+				end = 70
+				start = 50
 				for y in range(start, end, -5):
 					self.scores_images[x].change_size(y/100, y/100)
 					self.scores_frames[x].append(self.scores_images[x].img)
@@ -64,11 +65,11 @@ class HitResult(Images):
 				self.scores_frames[x].append(img)
 
 	def add_result(self, scores, x, y):
-		self.total[scores] += 1
 		if scores == 300:
 			return
+		self.total[scores] += 1
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y, 0, 20, 0, 7])
+		self.hitresults.append([scores, x, y, 0, 20, 0, 3])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
@@ -85,14 +86,16 @@ class HitResult(Images):
 			super().add_to_frame(background, x, y)
 
 			if score == 0:
-				self.hitresults[i][2] += int(self.hitresults[i][6])
-				self.hitresults[i][6] = max(2, self.hitresults[i][6] - 0.5)
+				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
+				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2)
 			self.hitresults[i][3] = min(len(self.scores_frames[score]) - 1, self.hitresults[i][3] + 1)
 			self.hitresults[i][5] += self.interval
 			if self.hitresults[i][5] >= self.time - self.interval * 10:
 				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10)
 			else:
 				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20)
+		# cv2.putText(background, str(self.total), (200, 100), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 1,
+		#             lineType=cv2.LINE_AA)
 
 
 class ScoreNumbers:
@@ -308,8 +311,7 @@ class ScoreCounter(Images):
 		return 6
 
 	def update_score(self, combo, hitvalue, mod=1):
-		self.score += int(hitvalue + (hitvalue * ((combo * self.diff_multiplier * mod) / 25))+0.5)
-		self.showscore += hitvalue * ((combo * self.diff_multiplier * mod) / 25)
+		self.score += int(hitvalue + (hitvalue * ((combo * self.diff_multiplier * mod) / 25)))
 
 	def add_to_frame(self, background):
 		score_string = str(int(self.showscore))

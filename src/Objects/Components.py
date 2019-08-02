@@ -2,8 +2,8 @@ from Objects.abstracts import *
 
 
 class Cursor(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale):
+		Images.__init__(self, filename, scale)
 		self.to_3channel()
 
 
@@ -111,8 +111,8 @@ class InputOverlay(Images):
 
 class Cursortrail(Images):
 	# todo: cursormiddle
-	def __init__(self, filename, cursor_x, cursor_y):
-		Images.__init__(self, filename)
+	def __init__(self, filename, cursor_x, cursor_y, scale):
+		Images.__init__(self, filename, scale)
 		self.trail = [[cursor_x, cursor_y] for _ in range(8)]
 		self.trail_frames = []
 		self.to_3channel()
