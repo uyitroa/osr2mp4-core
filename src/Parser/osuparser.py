@@ -113,7 +113,6 @@ class Beatmap:
 			preempt = 1200 - 750 * (ar - 5) / 5
 
 		cur_offset = 0
-		offset = self.timing_point[0]["Offset"]
 		min_stacktime = preempt * self.general["StackLeniency"]
 
 		for item in hitobject:
@@ -188,12 +187,16 @@ class Beatmap:
 				my_dict["end y"] = int(endpos.y)
 
 				my_dict["slider ticks"] = []
-				speedmultiplier = my_dict["BeatDuration"] / self.timing_point[cur_offset]["Base"]
-				tickdiv = 100 * self.diff["SliderMultiplier"] / self.diff["SliderTickRate"] / speedmultiplier
-				tickcount = int(my_dict["pixel length"] / tickdiv + 0.5)
+				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
+				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
+				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
+				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
 
-				for x in range(tickcount - 1):
-					my_dict["slider ticks"].append(1 / tickcount * (x + 1))
+				d = tickdistance
+				while d < my_dict["pixel length"] - mindist_fromend:
+					pathprogress = d / my_dict["pixel length"]
+					my_dict["slider ticks"].append(pathprogress)
+					d += tickdistance
 
 				if len(osuobject) > 9:
 					my_dict["edgeHitsound"] = osuobject[8]
