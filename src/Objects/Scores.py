@@ -4,10 +4,13 @@ from Objects.abstracts import *
 hitprefix = "hit"
 scoreprefix = "score-"
 score_x = "score-x.png"
+score_percent = "score-percent.png"
+score_dot = "score-dot.png"
 
 
 class HitResult(Images):
-	def __init__(self, path, scale, playfieldscale):
+	def __init__(self, path, scale, playfieldscale, accuracy):
+		self.accuracy = accuracy
 		self.scores_images = {}
 		self.scores_frames = {}
 		self.divide_by_255 = 1/255.0
@@ -65,6 +68,7 @@ class HitResult(Images):
 				self.scores_frames[x].append(img)
 
 	def add_result(self, scores, x, y):
+		self.accuracy.update_acc(scores)
 		if scores == 300:
 			return
 		self.total[scores] += 1
@@ -107,14 +111,19 @@ class ScoreNumbers:
 		self.score_x = Images(path + score_x, scale)
 		self.score_x.to_3channel()
 
+		self.score_percent = Images(path + score_percent, scale)
+		self.score_percent.to_3channel()
+
+		self.score_dot = Images(path + score_dot, scale)
+		self.score_dot.to_3channel()
+
 
 class SpinBonusScore(Images):
 	def __init__(self, scale, gap, scorenumbers):
 		self.score_frames = []
 		self.spinbonuses = ["0", None, None, 10]
 		self.score_images = scorenumbers.score_images
-		self.gap = gap * scale
-		self.gap += self.score_images[0].orig_cols
+		self.gap = int(gap * scale)
 		self.divide_by_255 = 1 / 255.0
 
 		self.prepare_scores()
@@ -145,20 +154,20 @@ class SpinBonusScore(Images):
 			return
 
 		index = int(self.spinbonuses[3])
-		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.gap * (2.5 - index/10))
+		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].shape[1]-self.gap * (2.5 - index/10))
 		y = self.spinbonuses[2]
 
 		for digit in self.spinbonuses[0]:
 			digit = int(digit)
 			self.img = self.score_frames[digit][index]
 			super().add_to_frame(background, x, y)
-			x += int(self.gap * (2.5 - index/10))
+			x += int(self.score_frames[digit][index].shape[1] - self.gap * (2.5 - index/10))
 
 		self.spinbonuses[3] += 0.75
 
 
 class ComboCounter(Images):
-	def __init__(self, scorenumbers, width, height, gap):
+	def __init__(self, scorenumbers, width, height, gap, scale):
 		self.height = height
 		self.width = width
 		self.score_images = scorenumbers.score_images
@@ -177,7 +186,7 @@ class ComboCounter(Images):
 		self.adding = False
 		self.animate = False
 
-		self.gap = gap
+		self.gap = int(gap * scale)
 
 		self.divide_by_255 = 1/255
 
@@ -187,14 +196,14 @@ class ComboCounter(Images):
 		for digit in range(len(self.score_images)):
 			self.score_frames.append([])
 			self.score_fadeout.append([])
-			for x in range(10, 15):
-				self.score_images[digit].change_size(x/10, x/10)
+			for x in range(100, 111, 2):
+				self.score_images[digit].change_size(x/100, x/100)
 				normal = self.score_images[digit].img
 				self.score_frames[-1].append(normal)
 
-			for x in range(20, 10, -1):
-				self.score_images[digit].change_size(x/10, x/10)
-				fadeout = self.score_images[digit].img[:, :, :] * (x/60)
+			for x in range(150, 129, -4):
+				self.score_images[digit].change_size(x/100, x/100)
+				fadeout = self.score_images[digit].img[:, :, :] * (x/300)
 				self.score_fadeout[-1].append(fadeout)
 
 	def breakcombo(self):
@@ -223,7 +232,7 @@ class ComboCounter(Images):
 
 	def add_to_frame(self, background):
 
-		if self.fadeout_index == 10:
+		if self.fadeout_index == 5:
 			self.combo = self.combofadeout
 			self.score_index = 0
 			self.index_step = 1
@@ -234,7 +243,7 @@ class ComboCounter(Images):
 		if self.breaking:
 			self.combo = max(0, self.combo - 1)
 
-		if self.score_index == 4:
+		if self.score_index == 5:
 			self.index_step = -1
 
 		if self.score_index == 0 and self.animate and self.index_step == -1:
@@ -246,14 +255,14 @@ class ComboCounter(Images):
 			for digit in str(self.combofadeout):
 				digit = int(digit)
 				self.img = self.score_fadeout[digit][self.fadeout_index]
-				x += self.img.shape[1] + self.gap
+				x += self.img.shape[1] - self.gap
 				x_offset = x - self.img.shape[1]//2
 				y_offset = y + self.img.shape[0]//2
 				super().add_to_frame(background, x_offset, y_offset)
 
 
 			self.img = self.score_fadeout[10][self.fadeout_index]
-			x += self.img.shape[1] + self.gap
+			x += self.img.shape[1] - self.gap
 			x_offset = x - self.img.shape[1] // 2
 			y_offset = y + self.img.shape[0] // 2
 			super().add_to_frame(background, x_offset, y_offset)
@@ -265,14 +274,14 @@ class ComboCounter(Images):
 		for digit in str(self.combo):
 			digit = int(digit)
 			self.img = self.score_frames[digit][self.score_index]
-			x += self.img.shape[1] + self.gap
+			x += self.img.shape[1] - self.gap
 			x_offset = x - self.img.shape[1]//2
 			y_offset = y + self.img.shape[0]//2
 			super().add_to_frame(background, x_offset, y_offset)
 
 
 		self.img = self.score_frames[10][self.score_index]
-		x += self.img.shape[1] + self.gap
+		x += self.img.shape[1] - self.gap
 		x_offset = x - self.img.shape[1] // 2
 		y_offset = y + self.img.shape[0] // 2
 		super().add_to_frame(background, x_offset, y_offset)
@@ -282,7 +291,7 @@ class ComboCounter(Images):
 
 
 class ScoreCounter(Images):
-	def __init__(self, scorenumbers, diff, width, height, gap):
+	def __init__(self, scorenumbers, diff, width, height, gap, scale):
 		self.score_images = scorenumbers.score_images
 		self.prepare_number()
 		self.diff = diff
@@ -291,7 +300,7 @@ class ScoreCounter(Images):
 		self.score = 0
 		self.width = width
 		self.height = height
-		self.gap = gap + self.score_images[0].img.shape[1]
+		self.gap = int(gap * scale * 0.75)
 		self.divide_by_255 = 1 / 255.0
 
 	def prepare_number(self):
@@ -316,17 +325,74 @@ class ScoreCounter(Images):
 	def add_to_frame(self, background):
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
-		x = self.width - self.gap * len(score_string) - self.score_images[0].img.shape[1]//2
+		x = self.width - (-self.gap + self.score_images[0].img.shape[1]) * len(score_string)
 		y = self.score_images[0].img.shape[0]//2
 		for digit in score_string:
 			digit = int(digit)
 			self.img = self.score_images[digit].img
 			super().add_to_frame(background, x, y)
-			x += self.gap
+			x += -self.gap + self.score_images[0].img.shape[1]
 
 
-		add_up = max(17.27, (self.score - self.showscore)/27.27)
+		add_up = max(7.27, (self.score - self.showscore)/12.72)
 		if self.showscore + add_up > self.score:
 			self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
 		else:
 			self.showscore += add_up
+
+
+class Accuracy(Images):
+	def __init__(self, scorenumbers, width, height, gap, scale):
+		self.divide_by_255 = 1 / 255.0
+		self.scorenumbers = scorenumbers
+		self.score_images = [None] * 10
+		self.score_percent = None
+		self.score_dot = None
+		self.width = width
+		self.height = height
+		self.maxscore = 0
+		self.curscore = 0
+		self.gap = int(gap * scale * 0.5)
+		self.y = int(self.scorenumbers.score_images[0].img.shape[0] * 0.75)
+		self.prepare_numbers()
+
+	def prepare_numbers(self):
+		for index, img in enumerate(self.scorenumbers.score_images):
+			img.change_size(0.5, 0.5)
+			self.score_images[index] = img.img
+		self.scorenumbers.score_percent.change_size(0.5, 0.5)
+		self.score_percent = self.scorenumbers.score_percent.img
+
+		self.scorenumbers.score_dot.change_size(0.5, 0.5)
+		self.score_dot = self.scorenumbers.score_dot.img
+
+	def update_acc(self, hitresult):
+		self.maxscore += 300
+		self.curscore += hitresult
+
+	def add_to_frame(self, background):
+		if self.maxscore == 0:
+			acc = '100.00'
+		else:
+			acc = "{:.2f}".format(self.curscore/self.maxscore * 100)
+		startx = int(self.width * 0.99)
+
+		self.img = self.score_percent
+		x, y = startx - self.img.shape[1]//2, self.y + self.img.shape[0]//2
+		super().add_to_frame(background, x, y)
+
+		numberwidth = int(self.score_images[0].shape[1])
+		x = startx - self.img.shape[0] - (-self.gap + numberwidth) * (len(acc)-1)
+		y = self.y + self.score_images[0].shape[0]//2
+		for digit in acc:
+			if digit == '.':
+				self.img = self.score_dot
+				super().add_to_frame(background, x-self.img.shape[1]+self.gap, y)
+				x += self.img.shape[1] - self.gap
+				continue
+			self.img = self.score_images[int(digit)]
+			super().add_to_frame(background, x, y)
+			x += -self.gap + numberwidth
+
+
+
