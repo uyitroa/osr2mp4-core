@@ -160,6 +160,7 @@ class PrepareCircles(Images):
 		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
 
 	def overlayhitcircle(self, overlay, hitcircle_image):
+		overlay = self.ensureBGsize(overlay, hitcircle_image)
 		# still ned 4 channels so cannot do to_3channel before.
 		y1, y2 = int(overlay.shape[0]/2 - hitcircle_image.shape[0]/2), int(overlay.shape[0]/2 + hitcircle_image.shape[0]/2)
 		x1, x2 = int(overlay.shape[1]/2 - hitcircle_image.shape[1]/2), int(overlay.shape[1]/2 + hitcircle_image.shape[1]/2)
@@ -171,6 +172,7 @@ class PrepareCircles(Images):
 			overlay[y1:y2, x1:x2, c] = hitcircle_image[:, :, c] * alpha_l + \
 			                              alpha_s * overlay[y1:y2, x1:x2, c]
 		overlay[y1:y2, x1:x2, 3] = overlay[y1:y2, x1:x2, 3] + alpha_l * hitcircle_image[:, :, 3]
+		return overlay
 
 	def overlay_approach(self, background, x_offset, y_offset, circle_img, alpha):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -211,10 +213,9 @@ class PrepareCircles(Images):
 			color = self.colors["Combo" + str(c)]
 
 			# add overlay to hitcircle
-			orig_overlay_img = np.copy(self.overlay.img)
 			orig_color_img = np.copy(self.orig_img)
 			self.add_color(orig_color_img, color)
-			self.overlayhitcircle(orig_overlay_img, orig_color_img)
+			orig_overlay_img = self.overlayhitcircle(np.copy(self.overlay.img), orig_color_img)
 			orig_overlay_img = self.change_size2(orig_overlay_img, self.radius_scale, self.radius_scale)
 			self.to_3channel(orig_overlay_img)
 			self.img = np.copy(orig_overlay_img)
