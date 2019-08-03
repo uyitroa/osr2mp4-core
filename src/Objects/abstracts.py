@@ -45,6 +45,20 @@ class Images:
 			pos2 = limit
 		return pos1, pos2, start, end
 
+	def ensureBGsize(self, background, overlay_image):
+		if overlay_image.shape[0] > background.shape[0] or overlay_image.shape[1] > background.shape[1]:
+			max_height = max(overlay_image.shape[0], background.shape[0])
+			max_width = max(overlay_image.shape[1], background.shape[1])
+			new_img = np.zeros((max_height, max_width, 4), dtype=overlay_image.dtype)
+			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(new_img.shape[0] / 2 + background.shape[0] / 2)
+			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(new_img.shape[1] / 2 + background.shape[1] / 2)
+			new_img[y1:y2, x1:x2, :] = background[:, :, :]
+			cv2.imwrite("test.png", new_img[:, :, 3])
+			cv2.imwrite("test1.png", background[:, :, 3])
+			return new_img
+		return background
+
+
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
 		# need to do to_3channel first.
 		y1, y2 = y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2)

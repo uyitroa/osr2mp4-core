@@ -1,6 +1,5 @@
 wrong score
 wrong hitresult, most likely because of slider 100s. watch dadada at 22th 100s
-fix when hitcircleoverlay size is smaller than hitcircle.png
 fix slider distance is actually expected distance, not real distance
 abstract animated image class
 optimize code by reduce the amount of calculation (alpha) by preparing some alpha calculation before the big loop
