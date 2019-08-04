@@ -1,10 +1,11 @@
 import time
 import os
 from Judgement import Check
+from Objects.Button import InputOverlay, InputOverlayBG, ScoreEntry
 from Objects.Components import *
 from Objects.Followpoints import FollowPointsManager
 from Objects.HitObjects import HitObjectManager
-from Objects.Scores import HitResult, SpinBonusScore, ScoreNumbers, ComboCounter, ScoreCounter, Accuracy
+from Objects.Scores import HitResult, SpinBonusScore, ScoreNumbers, ComboCounter, ScoreCounter, Accuracy, URBar
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
@@ -26,33 +27,38 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/tengaku.osu"
-REPLAY_FILE = "../res/ten.osr"
+BEATMAP_FILE = "../res/thegame.osu"
+REPLAY_FILE = "../res/thegame.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
 
 class Object:
-	def __init__(self, path, cursor_x, cursor_y, diff, maxcombo, hitcircleoverlap, scoreoverlap, slider_combo, colors, check):
-		self.cursor = Cursor(path + "cursor.png", SCALE)
-		self.key1 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
-		self.key2 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 255, 0])
-		self.mouse1 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 0, 255])
-		self.mouse2 = InputOverlay(path + "inputoverlay-key.png", SCALE, [255, 0, 255])
-		self.cursor_trail = Cursortrail(path + "cursortrail.png", cursor_x, cursor_y, SCALE)
-		self.lifegraph = LifeGraph(path + "scorebar-colour.png")
+	def __init__(self, cursor_x, cursor_y, beatmap, skin, check):
+		self.cursor = Cursor(PATH + "cursor.png", SCALE)
+		self.cursor_trail = Cursortrail(PATH + "cursortrail.png", cursor_x, cursor_y, SCALE)
+		self.lifegraph = LifeGraph(PATH + "scorebar-colour.png")
 
-		self.scorenumbers = ScoreNumbers(path, SCALE)
-		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, scoreoverlap, SCALE)
+		self.scoreentry = ScoreEntry(PATH, SCALE, skin.colours["InputOverlayText"])
+
+		self.key1 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
+		self.key2 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
+		self.mouse1 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
+		self.mouse2 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
+
+		self.scorenumbers = ScoreNumbers(PATH, SCALE)
+		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 		self.timepie = TimePie(SCALE, self.accuracy)
-		self.hitresult = HitResult(path, SCALE, PLAYFIELD_SCALE, self.accuracy)
-		self.spinbonus = SpinBonusScore(SCALE, scoreoverlap, self.scorenumbers)
-		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, scoreoverlap, SCALE)
-		self.scorecounter = ScoreCounter(self.scorenumbers, diff, WIDTH, HEIGHT, scoreoverlap, SCALE)
+		self.hitresult = HitResult(PATH, SCALE, PLAYFIELD_SCALE, self.accuracy)
+		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers)
+		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
+		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 
-		self.followpoints = FollowPointsManager(path + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
-		self.hitobjectmanager = HitObjectManager(slider_combo, path, diff, PLAYFIELD_SCALE, maxcombo, hitcircleoverlap, colors,
-		                                         MOVE_DOWN, MOVE_RIGHT, check,
+		self.urbar = URBar(SCALE, check.diff.scorewindow, WIDTH, HEIGHT)
+
+		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.hitobjectmanager = HitObjectManager(beatmap, PATH, PLAYFIELD_SCALE, skin,
+		                                         MOVE_DOWN, MOVE_RIGHT, check, self.urbar,
 		                                         self.hitresult, self.spinbonus, self.combocounter, self.scorecounter)
 
 
@@ -128,8 +134,7 @@ def main():
 
 	check = Check(beatmap.diff, beatmap.hitobjects)
 
-	component = Object(PATH, old_cursor_x, old_cursor_y, beatmap.diff, beatmap.max_combo, 28, skin.fonts["ScoreOverlap"],
-	                   beatmap.slider_combo, skin.colours, check)
+	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, check)
 
 	index_hitobject = 0
 	preempt_followpoint = 800
@@ -149,7 +154,7 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < len(replay_event) - 3:
+	while osr_index < 3000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -213,7 +218,7 @@ def main():
 		component.scorecounter.add_to_frame(img)
 		component.accuracy.add_to_frame(img)
 		component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
-
+		component.urbar.add_to_frame(img)
 
 		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN

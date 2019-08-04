@@ -6,9 +6,13 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 class Images:
-	def __init__(self, filename, scale = 1):
+	def __init__(self, filename, scale=1, needconversion=False):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
+		if needconversion:
+			cv2.normalize(self.img, self.img, 0, 255, cv2.NORM_MINMAX)
+			self.img = np.uint8(self.img)
+			print(self.img.dtype)
 		if self.img is None or self.img.shape[0] == 1 or self.img.shape[1] == 1:
 			print(filename, "exists:", self.img is not None)
 			self.img = np.zeros((2, 2, 4))
@@ -24,7 +28,7 @@ class Images:
 	def to_3channel(self):
 		alpha_s = self.orig_img[:, :, 3] * self.divide_by_255
 		for c in range(3):
-			self.orig_img[:, :, c] = (self.orig_img[:, :, c] * alpha_s).astype(self.orig_img.dtype)
+			self.orig_img[:, :, c] = self.orig_img[:, :, c] * alpha_s
 		self.img = np.copy(self.orig_img)
 
 	# crop everything that goes outside the screen
