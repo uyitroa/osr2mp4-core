@@ -52,7 +52,7 @@ class Check:
 		self.sliders_memory = {}
 		self.spinners_memory = {}
 
-	def checkcircle(self, index, replay, osrindex, clicked):
+	def checkcircle(self, index, replay, osrindex, clicked, urbar):
 		osr = replay[osrindex]
 		update_hitobj = False
 		use_click = False
@@ -74,6 +74,7 @@ class Check:
 			for x in range(3):
 				if delta_time < self.diff.scorewindow[x]:
 					score = self.diff.score[x]
+					urbar.add_bar(time_difference, self.diff.score[x])
 					break
 
 		else:
@@ -278,7 +279,7 @@ class Check:
 		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 
 		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"]))
-		bonus = max(0, bonus)
+		bonus = max(0, bonus+2)
 
 		hitvalue = 0
 		if spin_d["extra"] >= 360 and progress <= 1:

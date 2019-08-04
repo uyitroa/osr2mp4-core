@@ -6,16 +6,16 @@ from Objects.Spinner import PrepareSpinner
 
 
 class HitObjectManager:
-	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors, movedown, moveright,
-	             check, hitresult_manager, spinbonus_manager, combocounter, scorecounter):
+	def __init__(self, beatmap, path, scale, skin, movedown, moveright,
+	             check, urbar, hitresult_manager, spinbonus_manager, combocounter, scorecounter):
 
-		self.preparecircle = PrepareCircles(slider_combo, path, diff, scale, maxcombo, gap, colors)
+		self.preparecircle = PrepareCircles(beatmap, path, scale, skin)
 		self.time_preempt = self.preparecircle.time_preempt
 		opacity = self.preparecircle.opacity_interval
-		self.diff = diff
-		self.maxtimewindow = 150 + 50 * (5 - diff["OverallDifficulty"]) / 5
-		self.prepareslider = PrepareSlider(path, diff, self.time_preempt, opacity, scale, colors, movedown, moveright)
-		self.preparespinner = PrepareSpinner(diff["OverallDifficulty"], scale, path)
+		self.diff = beatmap.diff
+		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5
+		self.prepareslider = PrepareSlider(path, self.diff, self.time_preempt, opacity, scale, skin.colours, movedown, moveright)
+		self.preparespinner = PrepareSpinner(self.diff["OverallDifficulty"], scale, path)
 		self.hitobjects = {}
 		self.objtime = []
 		self.interval = 1000 / 60
@@ -27,6 +27,7 @@ class HitObjectManager:
 		self.moveright = moveright
 		self.scale = scale
 		self.check = check
+		self.urbar = urbar
 
 		self.hitresult_manager = hitresult_manager
 		self.spinbonus_manager = spinbonus_manager
@@ -63,7 +64,7 @@ class HitObjectManager:
 
 		if followappear:
 			index_interval = -0.65
-			self.prepareslider.sliders[key][6] = self.prepareslider.slidermax_index - 1
+			self.prepareslider.sliders[key][6] = self.prepareslider.slidermax_index - 3
 
 		self.prepareslider.sliders[key][11] = index_interval
 
@@ -101,7 +102,7 @@ class HitObjectManager:
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y, reduceclick = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click)
+				update, hitresult, timestamp, x, y, reduceclick = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click, self.urbar)
 				if update:
 					new_click = max(0, new_click - reduceclick)
 					if note_lock:
