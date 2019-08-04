@@ -171,5 +171,5 @@ class HitObjectManager:
 						self.spinbonus_manager.set_bonusscore(bonusscore, middle_width, height)
 
 				self.scorecounter.update_score(self.combocounter.get_combo(), hitvalue)
-				self.scorecounter.update_score(1, bonusscore*1000)
+				self.scorecounter.bonus_score(bonusscore*1000)
 

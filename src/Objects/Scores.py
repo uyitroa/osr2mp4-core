@@ -322,6 +322,10 @@ class ScoreCounter(Images):
 	def update_score(self, combo, hitvalue, mod=1):
 		self.score += int(hitvalue + (hitvalue * ((combo * self.diff_multiplier * mod) / 25)))
 
+	def bonus_score(self, score):
+		self.score += score
+		self.showscore += score
+
 	def add_to_frame(self, background):
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
@@ -404,7 +408,7 @@ class URBar(Images):
 		self.barheight = int(self.h/5)
 		self.divide_by_255 = 1 / 255.0
 
-		self.colors = [(75, 220, 255, 175), (100, 255, 100, 175), (255, 255, 25, 175)]
+		self.colors = [(110, 210, 255, 200), (105, 255, 160, 200), (255, 205, 115, 200)]
 
 		self.maxtime = scorewindow[2]
 		self.widths = [int(self.w),
@@ -430,7 +434,10 @@ class URBar(Images):
 			self.bar_images.append(np.zeros((self.h, 4, 4)))
 			for c in range(3):
 				self.bar_images[-1][:, :, c] = self.colors[i][c]
+				self.bar_images[-1][self.barheight * 2:self.h - self.barheight * 2, :, c] += 50
+			self.bar_images[-1][:, :, :][self.bar_images[-1][:, :, :] > 255] = 255
 			self.bar_images[-1][:, :, 3] = 150
+			self.bar_images[-1][self.barheight * 2:self.h - self.barheight * 2, :, 3] = 255
 			self.to_3channel(self.bar_images[-1])
 
 	def add_bar(self, delta_t, hitresult):
