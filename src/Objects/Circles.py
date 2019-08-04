@@ -33,13 +33,13 @@ class Number:
 		:param gap: distance between two digits
 		"""
 		number = str(number)
-		size = gap * (len(number) - 1)  # image number size doesn't count because we are going to overlap them.
+		size = (-gap + self.combo_number[0].img.shape[1]) * (len(number) - 1)
 		x_pos = int((circle.shape[1] / 2) - (size / 2))
 		y_pos = int(circle.shape[0] / 2)
 
 		for digit in number:
 			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, 4)
-			x_pos += gap
+			x_pos += -gap + self.combo_number[int(digit)].img.shape[1]
 
 
 class ApproachCircle(ACircle):
@@ -80,33 +80,26 @@ class CircleSlider(ACircle):
 
 
 class PrepareCircles(Images):
-	def __init__(self, slider_combo, path, diff, scale, maxcombo, gap, colors):
-		"""
-		:param path: str where is the skin folder
-		:param diff: dict, contains ApproachRate, CircleSize, OverallDifficulty, HPDrain
-		:param scale: float scale of current screen res with 512x384
-		:param maxcombo: dict, biggest number we need to overlap, for preparing_circle, where we overlap every number with every circle
-		:param gap: int, gap between 2 digits
-		"""
+	def __init__(self, beatmap, path, scale, skin):
 		Images.__init__(self, path + hitcircle)
 		self.overlay_filename = path + hitcircleoverlay
 		self.slideroverlay_filename = path + sliderstartcircleoverlay
-		self.diff = diff
+		self.diff = beatmap.diff
 		self.circles = {}
 		self.interval = 1000 / 60  # ms between 2 frames
 		self.overlay_scale = 1.05
-		self.ar = diff["ApproachRate"]
-		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
+		self.ar = self.diff["ApproachRate"]
+		self.cs = (54.4 - 4.48 * self.diff["CircleSize"]) * scale
 
 		self.calculate_ar()
 		self.load_circle()
 
-		self.maxcolors = colors["ComboNumber"]
-		self.colors = colors
-		self.maxcombo = maxcombo
-		self.gap = int(gap * self.radius_scale)
+		self.maxcolors = skin.colours["ComboNumber"]
+		self.colors = skin.colours
+		self.maxcombo = beatmap.max_combo
+		self.gap = int(skin.fonts["HitCircleOverlap"] * self.radius_scale)
 
-		self.slider_combo = slider_combo
+		self.slider_combo = beatmap.slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
 		self.number_drawer = Number(self.cs * 0.9, path, default_size)
