@@ -7,108 +7,6 @@ class Cursor(Images):
 		self.to_3channel()
 
 
-class InputOverlay(Images):
-	def __init__(self, filename, scale, color):
-		Images.__init__(self, filename, scale)
-		self.cur_blue = 0
-		self.blue_step = 50
-
-		self.frame_index = 0
-		self.font_scale = 0.5 * scale
-		self.font_step = 0.02
-		self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
-		self.one_digit_size = self.font_width
-
-		self.clicked_called = False
-		self.going_down_frame = False
-		self.going_up_frame = False
-		self.already_down = False
-
-		self.scale = scale
-		self.n = '0'
-		self.color = (0, 0, 0)
-
-		self.button_frames = []
-		self.to_3channel()
-		self.prepare_buttons(color)
-
-	def add_color(self, image, color):
-		red = color[0]*self.divide_by_255
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-
-	def prepare_buttons(self, color):
-		self.button_frames.append(self.img)
-		self.change_size(0.97, 0.97)
-		self.button_frames.append(self.img)
-		for size in range(94, 82, -3):
-			self.img = np.copy(self.orig_img)
-			size /= 100
-			self.change_size(size, size)
-			self.add_color(self.img, color)
-
-			self.button_frames.append(self.img)
-
-	def clicked(self):
-		if not self.going_down_frame:
-			self.frame_index = 2
-			self.font_scale = 0.5 * self.scale
-			self.font_width, self.font_height = cv2.getTextSize('0', cv2.FONT_HERSHEY_DUPLEX, self.font_scale, 1)[0]
-			self.n = str(int(self.n) + 1)
-			self.font_width = self.one_digit_size * len(self.n)
-			self.already_down = False
-
-		self.clicked_called = True
-		self.going_down_frame = True
-		if self.frame_index < len(self.button_frames) - 1:
-			self.frame_index += 1
-			self.font_scale -= self.font_step
-			self.font_width *= self.font_scale / (self.font_scale + self.font_step)
-			self.font_height *= self.font_scale / (self.font_scale + self.font_step)
-
-	def add_to_frame(self, background, x_offset, y_offset):
-		if self.going_down_frame:
-			if not self.already_down:
-				self.frame_index += 1
-				self.font_scale -= self.font_step
-				self.font_width *= self.font_scale / (self.font_scale + self.font_step)
-				self.font_height *= self.font_scale / (self.font_scale + self.font_step)
-
-				if self.frame_index >= len(self.button_frames) - 2:
-					self.already_down = True
-
-			else:
-				if not self.clicked_called:
-					self.going_down_frame = False
-					self.already_down = False
-					self.going_up_frame = True
-
-		if self.going_up_frame:
-			self.frame_index -= 1
-			self.font_scale += self.font_step
-			self.font_width *= self.font_scale / (self.font_scale - self.font_step)
-			self.font_height *= self.font_scale / (self.font_scale - self.font_step)
-
-			self.frame_index -= 1
-			self.font_scale += self.font_step
-			self.font_width *= self.font_scale / (self.font_scale - self.font_step)
-			self.font_height *= self.font_scale / (self.font_scale - self.font_step)
-			if self.frame_index <= 0:
-				self.going_up_frame = False
-				self.cur_blue = 0
-				self.frame_index = 0
-
-		self.img = self.button_frames[self.frame_index]
-		super().add_to_frame(background, x_offset, y_offset)
-		center_x = int(x_offset - self.font_width / 2)
-		center_y = int(self.font_height / 2 + y_offset)
-		cv2.putText(background, self.n, (center_x, center_y), cv2.FONT_HERSHEY_DUPLEX, self.font_scale, self.color, 1, lineType=cv2.LINE_AA)
-		self.clicked_called = False
-
-
 class Cursortrail(Images):
 	# todo: cursormiddle
 	def __init__(self, filename, cursor_x, cursor_y, scale):
@@ -183,21 +81,6 @@ class Playfield:
 
 		for c in range(0, 3):
 			background[y1:y2, x1:x2, c] = (alpha_s * self.img[:, :, c] + alpha_l * background[y1:y2, x1:x2, c])
-
-
-class InputOverlayBG(Images):
-	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale * 1.05)
-		self.to_3channel()
-		self.orig_img = np.rot90(self.orig_img, 3)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.img = np.copy(self.orig_img)
-
-	def add_to_frame(self, background, x_offset, y_offset):
-		# special y_offset
-		y_offset = y_offset + int(self.orig_rows/2)
-		super().add_to_frame(background, x_offset, y_offset)
 
 
 class TimePie:
