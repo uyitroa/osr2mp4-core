@@ -26,8 +26,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/thegame.osu"
-REPLAY_FILE = "../res/thegame.osr"
+BEATMAP_FILE = "../res/tengaku.osu"
+REPLAY_FILE = "../res/ten.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -44,6 +44,7 @@ class Object:
 
 		self.scorenumbers = ScoreNumbers(path, SCALE)
 		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, scoreoverlap, SCALE)
+		self.timepie = TimePie(SCALE, self.accuracy)
 		self.hitresult = HitResult(path, SCALE, PLAYFIELD_SCALE, self.accuracy)
 		self.spinbonus = SpinBonusScore(SCALE, scoreoverlap, self.scorenumbers)
 		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, scoreoverlap, SCALE)
@@ -148,7 +149,7 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 2000: #osr_index < len(replay_event) - 3:
+	while osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -211,6 +212,7 @@ def main():
 		component.combocounter.add_to_frame(img)
 		component.scorecounter.add_to_frame(img)
 		component.accuracy.add_to_frame(img)
+		component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
 
 
 		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT

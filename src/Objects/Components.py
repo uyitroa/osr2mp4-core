@@ -3,7 +3,7 @@ from Objects.abstracts import *
 
 class Cursor(Images):
 	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale)
+		Images.__init__(self, filename, scale * 0.75)
 		self.to_3channel()
 
 
@@ -112,7 +112,7 @@ class InputOverlay(Images):
 class Cursortrail(Images):
 	# todo: cursormiddle
 	def __init__(self, filename, cursor_x, cursor_y, scale):
-		Images.__init__(self, filename, scale)
+		Images.__init__(self, filename, scale * 0.75)
 		self.trail = [[cursor_x, cursor_y] for _ in range(8)]
 		self.trail_frames = []
 		self.to_3channel()
@@ -131,45 +131,6 @@ class Cursortrail(Images):
 			self.trail[x][0], self.trail[x][1] = self.trail[x + 1][0], self.trail[x + 1][1]
 			self.img = self.trail_frames[x]
 			super().add_to_frame(background, self.trail[x][0], self.trail[x][1])
-
-
-class Smoke(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
-		self.smokes = [[]]
-		self.holding = False
-
-		self.to_3channel()
-
-	def clicked(self, cursor_x, cursor_y):
-		self.holding = True
-		self.smokes[-1].append([cursor_x, cursor_y, 1, 300])
-
-	def add_to_frame(self, background):
-		# todo: optimize this
-		x = 0
-		while x < len(self.smokes):
-			y = 0
-			while y < len(self.smokes[x]):
-				self.img[:, :, 0:3] = self.orig_img[:, :, 0:3] * self.smokes[x][y][2]
-				super().add_to_frame(background, self.smokes[x][y][0], self.smokes[x][y][1])
-				if self.smokes[x][y][3] <= 0:
-					self.smokes[x][y][2] -= 0.025
-					if self.smokes[x][y][2] <= 0:
-						del self.smokes[x][y]
-						y -= 1
-						if not self.smokes[x]:
-							del self.smokes[x]
-							x -= 1
-							if len(self.smokes) == 1:
-								break
-				if not self.holding or x < len(self.smokes):
-					self.smokes[x][y][3] -= 1
-				y += 1
-			x += 1
-		if not self.holding and self.smokes[-1]:
-			self.smokes.append([])
-		self.holding = False
 
 
 class LifeGraph:
@@ -206,14 +167,6 @@ class LifeGraph:
 		height = int(self.img.shape[0])
 
 		background[:height, :width] = self.img[:, :width]
-#
-# alpha_s = self.img[:, :width, 3] / 255.0
-# alpha_l = 1.0 - alpha_s
-
-# self.to_reset[:] = background[y1:y2, x1:x2]
-# self.y1_toreset, self.y2_toreset, self.x1_toreset, self.x2_toreset = y1, y2, x1, x2
-# for c in range(0, 3):
-# 	background[y1:y2, x1:x2, c] = (alpha_s * self.img[:, :width, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 
 class Playfield:
@@ -245,3 +198,22 @@ class InputOverlayBG(Images):
 		# special y_offset
 		y_offset = y_offset + int(self.orig_rows/2)
 		super().add_to_frame(background, x_offset, y_offset)
+
+
+class TimePie:
+	def __init__(self, scale, accuracy):
+		# need to initalize this right after initializing accuracy class
+		self.scale = scale
+		self.y = int(accuracy.y + accuracy.score_images[0].shape[0]//2)
+		self.x = int(accuracy.width*0.99 - accuracy.score_percent.shape[1] - (-accuracy.gap + accuracy.score_images[0].shape[1]) * 7)
+
+	def add_to_frame(self, background, cur_time, end_time):
+		ratio = cur_time/end_time
+		angle = 270
+		startangle = -360 + ratio * 360
+		endangle = -360
+		radius = int(12.5 * self.scale)
+		axes = (radius, radius)
+		cv2.ellipse(background, (self.x, self.y), axes, angle, startangle, endangle, (125, 125, 125, 255), -1, cv2.LINE_AA)
+		cv2.circle(background, (self.x, self.y), radius, (255, 255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
+		cv2.circle(background, (self.x, self.y), min(1, int(self.scale)), (255, 255, 255, 255), thickness=-1, lineType=cv2.LINE_AA)
