@@ -42,7 +42,7 @@ class GenerateSlider:
 
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tolerance = {"L": 1, "B": 0.01, "P": 0.05}
+		tolerance = {"L": 1, "B": 0.02, "P": 0.025}
 		cur_pos = baiser_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
@@ -67,8 +67,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4), dtype=np.uint8
-		              )
+		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)

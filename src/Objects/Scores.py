@@ -360,7 +360,7 @@ class Accuracy(Images):
 		for index, img in enumerate(self.scorenumbers.score_images):
 			img.change_size(0.5, 0.5)
 			self.score_images[index] = img.img
-		self.scorenumbers.score_percent.change_size(0.5, 0.5)
+		self.scorenumbers.score_percent.change_size(0.6, 0.6)
 		self.score_percent = self.scorenumbers.score_percent.img
 
 		self.scorenumbers.score_dot.change_size(0.5, 0.5)
@@ -382,7 +382,7 @@ class Accuracy(Images):
 		super().add_to_frame(background, x, y)
 
 		numberwidth = int(self.score_images[0].shape[1])
-		x = startx - self.img.shape[0] - (-self.gap + numberwidth) * (len(acc)-1)
+		x = startx - self.img.shape[1] - (-self.gap + numberwidth) * (len(acc)-1)
 		y = self.y + self.score_images[0].shape[0]//2
 		for digit in acc:
 			if digit == '.':
@@ -395,4 +395,7 @@ class Accuracy(Images):
 			x += -self.gap + numberwidth
 
 
+class URBar:
+	def __init__(self, scale):
+		self.scale = scale
 

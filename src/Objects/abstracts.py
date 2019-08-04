@@ -53,8 +53,6 @@ class Images:
 			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(new_img.shape[0] / 2 + background.shape[0] / 2)
 			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(new_img.shape[1] / 2 + background.shape[1] / 2)
 			new_img[y1:y2, x1:x2, :] = background[:, :, :]
-			cv2.imwrite("test.png", new_img[:, :, 3])
-			cv2.imwrite("test1.png", background[:, :, 3])
 			return new_img
 		return background
 
