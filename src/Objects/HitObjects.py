@@ -97,17 +97,22 @@ class HitObjectManager:
 		# cv2.putText(background, str(osr_index), (100, 100), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1,
 		#             lineType=cv2.LINE_AA)
 
-	def checkcursor(self, replay, new_click, osr_index):
+	def checkcursor(self, replay, new_click, osr_index, background):
 		note_lock = False
 		for i in range(len(self.objtime)):
 			key = str(self.objtime[i])
+
 			if self.hitobjects[key][0] == self.CIRCLE and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y, reduceclick = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click, self.urbar)
+				update, hitresult, timestamp, x, y, reduceclick, deltat = self.check.checkcircle(self.hitobjects[key][3], replay, osr_index, new_click)
+				if self.hitobjects[key][1] > self.preparecircle.fade_in:
+					continue
 				if update:
 					new_click = max(0, new_click - reduceclick)
+					string = key + " " + str(note_lock) + " " + str(hitresult) + " " + str(self.hitobjects[key][4])
+					cv2.putText(background, string, (100, 100), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1, lineType=cv2.LINE_AA)
 					if note_lock:
 						self.preparecircle.circles[key][9] = 1
-						if hitresult != 0:
+						if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
 							continue
 					self.hitobjects[key][4] = 0
 					x = int((x * self.scale) + self.moveright)
@@ -118,6 +123,7 @@ class HitObjectManager:
 						self.hitobjects[key][1] = -self.maxtimewindow - self.interval*2 + 175
 						followappear = True
 						self.combocounter.add_combo()
+						self.urbar.add_bar(deltat, hitresult)
 					else:
 						self.combocounter.breakcombo()
 
@@ -136,16 +142,18 @@ class HitObjectManager:
 				else:
 					note_lock = True
 			elif self.hitobjects[key][0] == self.SLIDER and self.hitobjects[key][4]:
-				update, hitresult, timestamp, x, y, followappear, hitvalue, combostatus = self.check.checkslider(self.hitobjects[key][3], replay, osr_index)
+				update, hitresult, timestamp, x, y, followappear, hitvalue, combostatus, tickend = self.check.checkslider(self.hitobjects[key][3], replay, osr_index)
 				if update:
 					if hitresult is not None:
 						self.hitobjects[key][4] = 0
 						x = int((x * self.scale) + self.moveright)
 						y = int((y * self.scale) + self.movedown)
 						self.hitresult_manager.add_result(hitresult, x, y)
+						if tickend:
+							self.scorecounter.update_score(self.combocounter.get_combo(), hitresult)
 						del self.check.sliders_memory[timestamp]
 					self.sliderchangestate(followappear, timestamp)
-				self.scorecounter.update_score(self.combocounter.get_combo(), hitvalue)
+				self.scorecounter.bonus_score(hitvalue)
 
 				if combostatus == 1:
 					self.combocounter.add_combo()
@@ -170,6 +178,6 @@ class HitObjectManager:
 						height = int(384 * 2/3 * self.scale + self.movedown)
 						self.spinbonus_manager.set_bonusscore(bonusscore, middle_width, height)
 
-				self.scorecounter.update_score(self.combocounter.get_combo(), hitvalue)
+				self.scorecounter.bonus_score(hitvalue)
 				self.scorecounter.bonus_score(bonusscore*1000)
 

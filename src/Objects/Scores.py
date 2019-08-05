@@ -408,7 +408,7 @@ class URBar(Images):
 		self.barheight = int(self.h/5)
 		self.divide_by_255 = 1 / 255.0
 
-		self.colors = [(110, 210, 255, 200), (105, 255, 160, 200), (255, 205, 115, 200)]
+		self.colors = [(50, 210, 255, 255), (50, 255, 80, 255), (255, 205, 60, 255)]
 
 		self.maxtime = scorewindow[2]
 		self.widths = [int(self.w),
@@ -434,7 +434,7 @@ class URBar(Images):
 			self.bar_images.append(np.zeros((self.h, 4, 4)))
 			for c in range(3):
 				self.bar_images[-1][:, :, c] = self.colors[i][c]
-				self.bar_images[-1][self.barheight * 2:self.h - self.barheight * 2, :, c] += 50
+				self.bar_images[-1][self.barheight * 2:self.barheight * 3, :, c] += 50
 			self.bar_images[-1][:, :, :][self.bar_images[-1][:, :, :] > 255] = 255
 			self.bar_images[-1][:, :, 3] = 150
 			self.bar_images[-1][self.barheight * 2:self.h - self.barheight * 2, :, 3] = 255
@@ -448,7 +448,7 @@ class URBar(Images):
 		blank = np.zeros((self.h, self.w, 4), np.uint8)
 		blank[:, :, 3] = 255
 		for i in range(len(self.xstart)):
-			cv2.rectangle(blank, (self.xstart[i], self.barheight * 2), (self.xstart[i] + self.widths[i], self.h - self.barheight * 2), self.colors[i], -1, cv2.LINE_AA)
+			cv2.rectangle(blank, (self.xstart[i], self.barheight * 2), (self.xstart[i] + self.widths[i], self.barheight * 3), self.colors[i], -1, cv2.LINE_AA)
 
 		i = len(self.bars)
 		while i > 0:

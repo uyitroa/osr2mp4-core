@@ -52,7 +52,7 @@ class Check:
 		self.sliders_memory = {}
 		self.spinners_memory = {}
 
-	def checkcircle(self, index, replay, osrindex, clicked, urbar):
+	def checkcircle(self, index, replay, osrindex, clicked):
 		osr = replay[osrindex]
 		update_hitobj = False
 		use_click = False
@@ -64,7 +64,7 @@ class Check:
 		if "slider" in osu_d["type"] and osu_d["time"] not in self.sliders_memory:
 			self.sliders_memory[osu_d["time"]] = {"score": 0, "max score": 1, "follow state": 0,
 			                                      "repeated slider": 1, "repeat checked": 0, "ticks index": 0, "done": False,
-			                                      "dist": self.diff.max_distance, "last osr index": -1}
+			                                      "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0}
 
 		if dist <= self.diff.max_distance and clicked:
 			update_hitobj = True
@@ -74,7 +74,6 @@ class Check:
 			for x in range(3):
 				if delta_time < self.diff.scorewindow[x]:
 					score = self.diff.score[x]
-					urbar.add_bar(time_difference, self.diff.score[x])
 					break
 
 		else:
@@ -82,7 +81,7 @@ class Check:
 				update_hitobj = True
 				score = 0
 
-		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"], use_click
+		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"], use_click, time_difference
 
 	def checkslider(self, index, replay, osrindex):
 		osr = replay[osrindex]
@@ -115,13 +114,13 @@ class Check:
 				print("what", slider_d["score"], slider_d["max score"])
 
 			return True, hitresult, osu_d["time"], osu_d["end x"], osu_d["end y"], \
-			       False, hitvalue, combostatus
+			       False, hitvalue, combostatus, slider_d["tickend"]
 
 		if followappear != prev_state:
 			slider_d["follow state"] = followappear
-			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus
+			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus, 0
 
-		return False, None, None, None, None, None, hitvalue, combostatus
+		return False, None, None, None, None, None, hitvalue, combostatus, 0
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 
@@ -204,8 +203,9 @@ class Check:
 
 		if touchtick or touchend or touchreverse:
 			hitvalue = touchtick * 10
-			hitvalue += touchend * 30
-			hitvalue *= not slider_d["done"]
+			hitvalue += (touchend or touchreverse) * 30
+			slider_d["tickend"] = touchend
+			# hitvalue *= not slider_d["done"]
 			slider_d["score"] += touchtick or touchend or touchreverse
 			return in_ball, hitvalue, int(touchend or touchtick or touchreverse)
 
