@@ -1,8 +1,8 @@
 import time
-import os
 from Judgement import Check
 from Objects.Button import InputOverlay, InputOverlayBG, ScoreEntry
 from Objects.Components import *
+from Objects.Cursors import Cursor, Cursortrail
 from Objects.Followpoints import FollowPointsManager
 from Objects.HitObjects import HitObjectManager
 from Objects.Scores import HitResult, SpinBonusScore, ScoreNumbers, ComboCounter, ScoreCounter, Accuracy, URBar
@@ -19,16 +19,16 @@ TIMES = 3
 
 # const
 PATH = "../res/skin8/"
-WIDTH = 1920
-HEIGHT = 1080
+WIDTH = 1280
+HEIGHT = 720
 FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/thegame.osu"
-REPLAY_FILE = "../res/thegame.osr"
+BEATMAP_FILE = "../res/space.osu"
+REPLAY_FILE = "../res/space.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -56,7 +56,7 @@ class Object:
 
 		self.urbar = URBar(SCALE, check.diff.scorewindow, WIDTH, HEIGHT)
 
-		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.followpoints = FollowPointsManager(PATH, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 		self.hitobjectmanager = HitObjectManager(beatmap, PATH, PLAYFIELD_SCALE, skin,
 		                                         MOVE_DOWN, MOVE_RIGHT, check, self.urbar,
 		                                         self.hitresult, self.spinbonus, self.combocounter, self.scorecounter)
@@ -154,7 +154,7 @@ def main():
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 3000: #osr_index < len(replay_event) - 3:
+	while osr_index < 1000: #len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -232,7 +232,7 @@ def main():
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = new_k1 + new_k2 + new_m1 + new_m2
-		component.hitobjectmanager.checkcursor(replay_event, new_click, osr_index + next_index)
+		component.hitobjectmanager.checkcursor(replay_event, new_click, osr_index + next_index, img)
 
 		writer.write(img)
 

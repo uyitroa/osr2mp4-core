@@ -11,19 +11,34 @@ spinnerapproachcircle = "spinner-approachcircle.png"
 spinnertop = "spinner-top.png"
 
 
+class SpinnerMetre(AnimatedImage):
+	def __init__(self, path, scale):
+		AnimatedImage.__init__(self, path, spinnermetre, scale)
+		self.prepare_frames()
+
+	def prepare_frames(self):
+		for x in range(10, -1, -1):
+			partial_metre = Images(self.path + self.filename, self.scale)
+			height, width, a = partial_metre.img.shape
+			height = int(height * x/10)
+			partial_metre.orig_img[:height, :, :] = np.zeros((height, width, 4))[:, :, :]
+			partial_metre.to_3channel()
+			self.frames.append(partial_metre)
+
+
 class PrepareSpinner(Images):
 	def __init__(self, od, scale, path):
-		self.divide_by_255 = 1/255.0
 		self.scale = scale * 1.3 * 0.5
 		self.path = path
 		self.spinners = {}
 		self.spinner_frames = []
-		self.spinnermetre = []
+		self.spinnercircles = []
 		self.spinner_images = {}
 		self.interval = 1000/60
 		self.load_spinner()
 		print("done loading spinner")
 		self.prepare_spinner()
+		self.spinnermetre = SpinnerMetre(path, self.scale)
 		print("done prepraing spinner")
 
 	def load_spinner(self):
@@ -39,18 +54,8 @@ class PrepareSpinner(Images):
 		self.spinner_images[spinnerbackground].to_3channel()
 
 		for x in range(90):
-			self.spinnermetre.append(rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(np.uint8))
+			self.spinnercircles.append(rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(np.uint8))
 
-		for x in range(10, -1, -1):
-			height, width, a = self.spinner_images[spinnermetre].img.shape
-			height = int(height * x/10)
-			partial_metre = np.copy(self.spinner_images[spinnermetre].img)
-			partial_metre[:height, :, :] = np.zeros((height, width, 4))[:, :, :]
-
-			# self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
-			self.orig_img = np.copy(partial_metre)
-			self.to_3channel()
-			self.spinner_frames.append(self.orig_img)
 
 
 	def add_spinner(self, starttime, endtime, curtime, timestamp):
@@ -63,7 +68,7 @@ class PrepareSpinner(Images):
 		n_rot = int(angle/90)
 		index = int(angle - 90*n_rot)
 
-		self.spinners[timestamp][0] = np.rot90(self.spinnermetre[index], n_rot)
+		self.spinners[timestamp][0] = np.rot90(self.spinnercircles[index], n_rot)
 		progress = progress * 10
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
 			progress -= 1
@@ -81,11 +86,10 @@ class PrepareSpinner(Images):
 			else:
 				self.spinners[i][3] = 1
 
-		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+		self.spinner_images[spinnerbackground].add_to_frame(background, background.shape[1]//2, background.shape[0]//2, alpha=self.spinners[i][3])
 
-		self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+		self.img = self.spinners[i][0][:, :, :]
+		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2, alpha=self.spinners[i][3])
 
-		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
+		self.spinnermetre.set_index(self.spinners[i][4])
+		self.spinnermetre.add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale), alpha=self.spinners[i][3])  # dude idk

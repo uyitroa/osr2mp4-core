@@ -9,7 +9,7 @@ class ScoreEntry(Images):
 		self.divide_by_255 = 1/255.0
 		self.numbers = []
 		for x in range(10):
-			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale, needconversion=True))
+			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale))
 			self.numbers[-1].to_3channel()
 		self.prepare_animation(color)
 
@@ -44,10 +44,26 @@ class ScoreEntry(Images):
 			x_start += self.img.shape[1]
 
 
-class InputOverlay(Images):
-	def __init__(self, path, scale, color, scoreentry):
-		Images.__init__(self, path + inputoverlay, scale)
+class InputOverlayFrames(AnimatedImage):
+	def __init__(self, path, scale, color):
+		AnimatedImage.__init__(self, path, inputoverlay, scale)
+		self.color = color
+		self.scale = scale
+		self.prepare_frames()
 
+	def prepare_frames(self):
+		self.frames.append(Images(self.path + inputoverlay, self.scale))
+		for size in range(97, 82, -3):
+			img = Images(self.path + inputoverlay, self.scale * (size/100))
+			img.add_color(self.color)
+			img.to_3channel()
+			self.frames.append(img)
+		self.n_frame = len(self.frames)
+
+
+class InputOverlay:
+	def __init__(self, path, scale, color, scoreentry):
+		self.button = InputOverlayFrames(path, scale, color)
 		self.scoreentry = scoreentry
 
 		self.holding = False
@@ -59,28 +75,6 @@ class InputOverlay(Images):
 		self.n = 0
 		self.color = (0, 0, 0)
 
-		self.button_frames = []
-
-		self.to_3channel()
-		self.prepare_frames(color)
-
-	def add_color(self, image, color):
-		red = color[0]*self.divide_by_255
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-
-	def prepare_frames(self, color):
-		self.button_frames.append(self.img)
-		for size in range(97, 82, -3):
-			self.img = np.copy(self.orig_img)
-			size /= 100
-			self.change_size(size, size)
-			self.add_color(self.img, color)
-
-			self.button_frames.append(self.img)
 
 	def clicked(self):
 		if not self.oldclick:
@@ -92,19 +86,14 @@ class InputOverlay(Images):
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		if self.holding:
-			self.button_index += 1
-			if self.button_index >= len(self.button_frames):
-				self.button_index -= 1
+			self.button.add_index(1)
 
 		else:
 			self.oldclick = False
-			self.button_index -= 1
-			if self.button_index < 0:
-				self.button_index += 1
+			self.button.add_index(-1)
 
 		self.holding = False
-		self.img = self.button_frames[self.button_index]
-		super().add_to_frame(background, x_offset, y_offset)
+		self.button.add_to_frame(background, x_offset, y_offset)
 		self.scoreentry.add_to_frame(background, x_offset, y_offset, self.n,
 		                             self.button_index)
 
