@@ -209,7 +209,7 @@ class Check:
 			slider_d["score"] += touchtick or touchend or touchreverse
 			return in_ball, hitvalue, int(touchend or touchtick or touchreverse)
 
-		return in_ball, 0, -((hastick and not touchtick) or (hasendtick and hasreverse and not touchend))
+		return in_ball, 0, -((hastick and not touchtick) or (hasreversetick and touchreverse))
 
 	def tickover(self, t, osu_d, slider_d, reverse):
 		goingforward = slider_d["repeat checked"] % 2 == 0
