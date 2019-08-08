@@ -12,6 +12,7 @@ class Beatmap:
 		self.breakperiods = []
 		self.timing_point = []
 		self.hitobjects = []
+		self.sliderimg = {}
 		self.max_combo = {}
 		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
@@ -159,7 +160,8 @@ class Beatmap:
 				else:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
-				my_dict["slider_img"], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
+				my_dict["head not done"] = True  # for judgement
+				self.sliderimg[my_dict["time"]], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
 
 				ps = [Position(my_dict["x"], my_dict["y"])]
 				slider_path = osuobject[5]
