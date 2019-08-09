@@ -281,11 +281,13 @@ class PrepareCircles(Images):
 		print("done")
 		del self.approachCircle
 
-	def add_circle(self, x, y, combo_color, combo_number, duration, timestamp, object_type=0):
+	def add_circle(self, x, y, cur_time, osu_d):
+		combo_color, combo_number = osu_d["combo_color"], osu_d["combo_number"]
+		duration = osu_d["time"] - cur_time
+		object_type = "slider" in osu_d["type"]
 		start_index = int((self.time_preempt - duration)/self.interval + 0.5) - 1
-		timestamp = str(timestamp) + "c"
 		# x, y, duration, frame index, color, combo number, obj type, fade out index, fadeout bool, x step, max step
-		self.circles[timestamp] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0]
+		self.circles[str(osu_d["time"]) + "c"] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0]
 
 	def add_to_frame(self, background, i):
 		color = self.circles[i][4] - 1

@@ -5,8 +5,8 @@ import copy
 
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp more")
-Circle = namedtuple("Circle", "state deltat followstate")
-Slider = namedtuple("Slider", "followstate hitvalue combostatus tickend")
+Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
+Slider = namedtuple("Slider", "followstate hitvalue tickend x y")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
@@ -34,8 +34,7 @@ class HitObjectChecker:
 
 		self.scorecounter = ScoreCounter(None, self.diff, None, None, None, None, False)
 		self.combo = 0
-		self.acc_maxscore = 0
-		self.acc_curscore = 0
+		self.results = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.clicks = [0, 0, 0, 0]
 
 		self.info = []
@@ -49,7 +48,7 @@ class HitObjectChecker:
 			if note_lock:
 				state = 1
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
-					circle = Circle(state, 0, False)
+					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
 					info = Info(replay[osr_index][3], -1, 0, self.scorecounter.showscore, -1, -1, self.clicks, None,
 					            timestamp, circle)
 					self.info.append(info)
@@ -64,15 +63,16 @@ class HitObjectChecker:
 			else:
 				combostatus = -1
 				self.combo = 0
-			self.acc_curscore += hitresult
-			self.acc_maxscore += 300
+
+			if "circle" in self.hitobjects[i]["type"]:
+				self.results[hitresult] += 1
 
 			self.scorecounter.update_score(max(0, self.combo - 1), hitresult)
 
-			circle = Circle(state, deltat, followappear)
+			circle = Circle(state, deltat, followappear, "slider" in self.hitobjects[i]["type"], x, y)
 			info = Info(replay[osr_index][3], self.combo, combostatus,
 			            self.scorecounter.showscore, self.scorecounter.score,
-			            round(self.acc_curscore / self.acc_maxscore * 100, 2), copy.copy(self.clicks), hitresult, timestamp, circle)
+			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, circle)
 			self.info.append(info)
 
 			if "circle" in self.hitobjects[i]["type"]:
@@ -98,8 +98,7 @@ class HitObjectChecker:
 
 		if update:
 			if hitresult is not None:
-				self.acc_curscore += hitresult
-				self.acc_maxscore += 300
+				self.results[hitresult] += 1
 
 				if tickend:
 					self.scorecounter.update_score(max(0, self.combo - 1), hitresult)
@@ -108,10 +107,12 @@ class HitObjectChecker:
 				del self.check.sliders_memory[timestamp]
 				i -= 1
 
-			slider = Slider(followappear, hitvalue, combostatus, tickend)
+		if update or combostatus != 0:
+			followstate = str(int(update)) + str(int(followappear))
+			slider = Slider(followstate, hitvalue, tickend, x, y)
 			info = Info(replay[osr_index][3], self.combo, combostatus,
 			            self.scorecounter.showscore, self.scorecounter.score,
-			            round(self.acc_curscore / self.acc_maxscore * 100, 2), copy.copy(self.clicks), hitresult, timestamp, slider)
+			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, slider)
 			self.info.append(info)
 
 		return i
@@ -119,11 +120,11 @@ class HitObjectChecker:
 	def checkspinner(self, i, replay, osr_index):
 		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay[osr_index])
 		combostatus = 0
+		timestamp = self.hitobjects[i]["time"]
 		self.scorecounter.bonus_score(hitvalue)
 		if update:
 			if hitresult is not None:
-				self.acc_curscore += hitresult
-				self.acc_maxscore += 300
+				self.results[hitresult] += 1
 
 				if hitresult > 0:
 					self.combo += 1
@@ -140,7 +141,7 @@ class HitObjectChecker:
 			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue)
 			info = Info(replay[osr_index][3], self.combo, combostatus,
 			            self.scorecounter.showscore, self.scorecounter.score,
-			            round(self.acc_curscore / self.acc_maxscore * 100, 2), copy.copy(self.clicks), hitresult, None, spinner)
+			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, spinner)
 			self.info.append(info)
 		return i
 

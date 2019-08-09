@@ -120,7 +120,7 @@ class Check:
 			slider_d["follow state"] = followappear
 			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus, 0
 
-		return False, None, None, None, None, None, hitvalue, combostatus, 0
+		return False, None, osu_d["time"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 
@@ -167,23 +167,15 @@ class Check:
 		prevdist = math.sqrt((posr[0] - pos.x + osu_d["stacking"]) ** 2 + (posr[1] - pos.y + osu_d["stacking"]) ** 2)
 		prev_inball = prevdist <= slider_d["dist"] and posr[2] != 0
 
-		in_ball = 0
-		for x in range(slider_d["last osr index"]+1, osr_index + 1):
-			rep = replay[x]
-			repeat = math.ceil((rep[3] - osu_d["time"]) / osu_d["duration"])
-			time_difference = (rep[3] - osu_d["time"]) - (repeat - 1) * osu_d["duration"]
-			t2 = time_difference / osu_d["duration"]
-			if not repeat % 2 == 1:
-				t2 = 1 - t2
+		rep = replay[osr_index]
+		pos = baiser(t)
+		dist = math.sqrt((rep[0] - pos.x + osu_d["stacking"]) ** 2 + (rep[1] - pos.y + osu_d["stacking"]) ** 2)
+		in_ball = dist <= slider_d["dist"] and rep[2] != 0
 
-			pos = baiser(t2)
-			dist = math.sqrt((rep[0] - pos.x + osu_d["stacking"]) ** 2 + (rep[1] - pos.y + osu_d["stacking"]) ** 2)
-			in_ball = dist <= slider_d["dist"] and rep[2] != 0
-
-			if in_ball:
-				slider_d["dist"] = self.diff.slidermax_distance
-			else:
-				slider_d["dist"] = self.diff.max_distance
+		if in_ball:
+			slider_d["dist"] = self.diff.slidermax_distance
+		else:
+			slider_d["dist"] = self.diff.max_distance
 
 		slider_d["last osr index"] = osr_index
 
@@ -193,8 +185,7 @@ class Check:
 
 		if touchtick == touchend and touchend:
 			print("true fuck")
-		if osu_d["time"] == 161625:
-			print(hasendtick, touchend, prevdist, prev_inball, posr[3], osr[3], osu_d["time"], osu_d["duration"])
+
 
 		slider_d["max score"] += hastick or hasendtick or hasreversetick
 

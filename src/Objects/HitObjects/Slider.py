@@ -35,7 +35,7 @@ class ReverseArrow(Images):
 
 
 class PrepareSlider:
-	def __init__(self, path, diff, time_preempt, opacity_interval, scale, colors, movedown, moveright):
+	def __init__(self, path, diff, scale, colors, movedown, moveright):
 		self.path = path
 		self.sliders = {}
 		self.arrows = {}
@@ -43,11 +43,11 @@ class PrepareSlider:
 		self.moveright = moveright
 		self.maxcolors = colors["ComboNumber"]
 		self.colors = colors
-		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
-		self.slidermutiplier = diff["SliderMultiplier"]
-		self.time_preempt = time_preempt
 		self.interval = 1000 / 60
-		self.opacity_interval = opacity_interval
+		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
+		self.ar = diff["ApproachRate"]
+		self.slidermutiplier = diff["SliderMultiplier"]
+		self.calculate_ar()
 		self.scale = scale
 		self.divide_by_255 = 1 / 255.0
 		self.sliderb_frames = []
@@ -55,6 +55,18 @@ class PrepareSlider:
 		self.load_sliderballs()
 		self.prepare_sliderball()
 		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
+
+	def calculate_ar(self):
+		if self.ar < 5:
+			self.time_preempt = 1200 + 600 * (5 - self.ar) / 5
+			self.fade_in = 800 + 400 * (5 - self.ar) / 5
+		elif self.ar == 5:
+			self.time_preempt = 1200
+			self.fade_in = 800
+		else:
+			self.time_preempt = 1200 - 750 * (self.ar - 5) / 5
+			self.fade_in = 800 - 500 * (self.ar - 5) / 5
+		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
 	def load_sliderballs(self):
 		self.sliderb = cv2.imread(self.path + sliderb, -1)
@@ -149,17 +161,15 @@ class PrepareSlider:
 				cur_alpha -= alpha_interval
 
 
-	def add_slider(self, osu_d, x_pos, y_pos, cur_time, timestamp):
-		image = osu_d["slider_img"]
+	def add_slider(self, image, osu_d, x_pos, y_pos, cur_time):
 		x_offset, y_offset = osu_d["x offset"], osu_d["y offset"]
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
 	
 		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
 		# function, but we add stack to reduce sliders list size
 		b_info = (osu_d["slider type"], osu_d["ps"], osu_d["pixel length"], osu_d["stacking"], osu_d["slider ticks"])
-		timestamp = str(timestamp) + "s"
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated, appear followcircle, tick alpha]
-		self.sliders[timestamp] = [image, x_pos - x_offset, y_pos - y_offset, osu_d["duration"] + osu_d["time"] - cur_time,
+		self.sliders[str(osu_d["time"]) + "s"] = [image, x_pos - x_offset, y_pos - y_offset, osu_d["duration"] + osu_d["time"] - cur_time,
 		                           0, color, self.slidermax_index, osu_d["duration"], b_info, 1, osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
 
 		pos1 = osu_d["ps"][-1]
@@ -177,7 +187,7 @@ class PrepareSlider:
 		img1 = self.reversearrow.rotate_image(angle1)
 		img2 = self.reversearrow.rotate_image(angle2)
 
-		self.arrows[timestamp] = [img2, img1]
+		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
