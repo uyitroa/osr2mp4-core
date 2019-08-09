@@ -53,10 +53,10 @@ class PrepareSpinner(Images):
 			self.spinner_frames.append(self.orig_img)
 
 
-	def add_spinner(self, starttime, endtime, curtime, timestamp):
+	def add_spinner(self, starttime, endtime, curtime):
 		duration = endtime - starttime
 		# img, duration, startime left, alpha, index, progress
-		self.spinners[timestamp] = [np.copy(self.spinner_images[spinnercircle].img), duration, starttime - curtime, 0, 0]
+		self.spinners[str(starttime) + "o"] = [np.copy(self.spinner_images[spinnercircle].img), duration, starttime - curtime, 0, 0]
 
 	def update_spinner(self, timestamp, angle, progress):
 		angle = round(angle)
@@ -81,11 +81,11 @@ class PrepareSpinner(Images):
 			else:
 				self.spinners[i][3] = 1
 
-		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-
-		self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-
-		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
+		# self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
+		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+		#
+		# self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
+		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+		#
+		# self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
+		# super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk

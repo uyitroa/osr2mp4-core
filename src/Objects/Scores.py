@@ -119,12 +119,15 @@ class ScoreNumbers:
 
 
 class SpinBonusScore(Images):
-	def __init__(self, scale, gap, scorenumbers):
+	def __init__(self, scale, gap, scorenumbers, width, height):
 		self.score_frames = []
 		self.spinbonuses = ["0", None, None, 10]
 		self.score_images = scorenumbers.score_images
 		self.gap = int(gap * scale)
 		self.divide_by_255 = 1 / 255.0
+
+		self.x = width//2
+		self.y = height * 2//3
 
 		self.prepare_scores()
 
@@ -138,11 +141,11 @@ class SpinBonusScore(Images):
 				self.score_frames[-1].append(image.img[:, :, :] * (x/15))
 				size -= 0.1
 
-	def set_bonusscore(self, rotated_bonus, x, y):
+	def set_bonusscore(self, rotated_bonus):
 		if rotated_bonus*1000 == int(self.spinbonuses[0]):
 			return
 		print(rotated_bonus)
-		self.spinbonuses = [str(rotated_bonus*1000), x, y, 0]
+		self.spinbonuses = [str(rotated_bonus*1000), self.x, self.y, 0]
 
 	def xstart(self, n, x, size):
 		digits = len(n)

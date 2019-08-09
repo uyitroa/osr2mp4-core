@@ -54,15 +54,15 @@ def checkmain(beatmap, replay_event, cur_time):
 		next_index = nearer(cur_time + 1000 / FPS, replay_event, osr_index)
 
 		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
-		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + next_index][KEYS_PRESSED])
+		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][KEYS_PRESSED])
 
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
-		hitobjectchecker.checkcursor(replay_event, new_click, osr_index + next_index)
+		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1)
 		cur_time += 1000 / FPS
 
-		osr_index += next_index
+		osr_index += 1
 	print("check done")
 	return hitobjectchecker.info
