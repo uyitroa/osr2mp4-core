@@ -11,7 +11,6 @@ class HitResult(Images):
 		self.scores_frames = {}
 		self.divide_by_255 = 1/255.0
 		self.hitresults = []
-		self.total = {100: 0, 50: 0, 0: 0}
 		self.interval = 1000/60
 		self.time = 600
 		self.playfieldscale = playfieldscale
@@ -67,7 +66,6 @@ class HitResult(Images):
 		self.accuracy.update_acc(scores)
 		if scores == 300:
 			return
-		self.total[scores] += 1
 		# [score, x, y, index, alpha, time, go down]
 		self.hitresults.append([scores, x, y, 0, 20, 0, 3])
 

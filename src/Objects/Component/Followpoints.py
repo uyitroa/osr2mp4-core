@@ -52,7 +52,7 @@ class FollowPointsManager(Images):
 		self.fp_frames.pop(0)
 		self.img = np.zeros(self.fp_frames[0].orig_img.shape)
 
-	def add_fp(self, x1, y1, t1, next_object, simulate_endtime):
+	def add_fp(self, x1, y1, t1, next_object):
 		x2, y2, t2 = next_object["x"], next_object["y"], next_object["time"]
 
 		spacing = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
@@ -62,13 +62,13 @@ class FollowPointsManager(Images):
 		angle = -np.arctan2(y_vector, x_vector) * 180 / np.pi
 		self.followpoints.append([[], x1, y1, x_vector, y_vector, t1, t2, int(spacing)])
 
-		if t2 + self.alpha_tdelta < simulate_endtime:
-			empty = np.zeros((1, 1, 4))
+		# if t2 + self.alpha_tdelta < simulate_endtime:
+		# 	empty = np.zeros((1, 1, 4))
 		for x in range(len(self.fp_frames)):
-			if t2 + self.alpha_tdelta < simulate_endtime:
-				self.followpoints[-1][0].append(empty)
-			else:
-				self.followpoints[-1][0].append(self.fp_frames[x].rotate_image(angle))
+			# if t2 + self.alpha_tdelta < simulate_endtime:
+			# 	self.followpoints[-1][0].append(empty)
+			# else:
+			self.followpoints[-1][0].append(self.fp_frames[x].rotate_image(angle))
 
 	def add_to_frame(self, background, cur_time):
 		i = len(self.followpoints) - 1

@@ -16,8 +16,8 @@ class HitObjectManager:
 		self.SLIDER = 1
 		self.SPINNER = 2
 
-	def add_slider(self, osu_d, x_pos, y_pos, cur_time, simulation_endtime):
-		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time, simulation_endtime)
+	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
+		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time)
 
 		timestamp = str(osu_d["time"]) + "s"
 		self.hitobjects[timestamp] = [self.SLIDER, osu_d["end time"] - cur_time]

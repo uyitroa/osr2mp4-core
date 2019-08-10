@@ -65,8 +65,11 @@ class ComboCounter(Images):
 	def get_combo(self):
 		return max(0, self.combofadeout-1)
 
-	def add_to_frame(self, background):
+	def set_combo(self, combo):
+		self.combofadeout = combo
+		self.combo = max(0, combo-1)
 
+	def add_to_frame(self, background):
 		if self.fadeout_index == 5:
 			self.combo = self.combofadeout
 			self.score_index = 0
