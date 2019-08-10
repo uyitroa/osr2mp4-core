@@ -3,14 +3,23 @@ import os
 from CheckSystem.Judgement import DiffCalculator
 from CheckSystem.checkmain import checkmain
 from InfoProcessor import Updater
-from Objects.Button import InputOverlay, InputOverlayBG, ScoreEntry
+from Objects.Component.Button import InputOverlay, InputOverlayBG, ScoreEntry
+from Objects.Component.Cursor import Cursor, Cursortrail
+from Objects.Component.LIfeGraph import LifeGraph
+from Objects.Component.Playfield import Playfield
 from Objects.HitObjects.Circles import PrepareCircles
-from Objects.Components import *
-from Objects.Followpoints import FollowPointsManager
+from Objects.Component.TimePie import TimePie
+from Objects.Component.Followpoints import FollowPointsManager
 from Objects.HitObjects.Manager import HitObjectManager
-from Objects.Scores import HitResult, SpinBonusScore, ScoreNumbers, ComboCounter, ScoreCounter, Accuracy, URBar
 from Objects.HitObjects.Slider import PrepareSlider
 from Objects.HitObjects.Spinner import PrepareSpinner
+from Objects.Scores.Accuracy import Accuracy
+from Objects.Scores.ComboCounter import ComboCounter
+from Objects.Scores.Hitresult import HitResult
+from Objects.Scores.ScoreCounter import ScoreCounter
+from Objects.Scores.ScoreNumbers import ScoreNumbers
+from Objects.Scores.SpinBonusScore import SpinBonusScore
+from Objects.Scores.URBar import URBar
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
