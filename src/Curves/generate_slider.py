@@ -25,7 +25,7 @@ class GenerateSlider:
 		self.scale = scale
 		self.extended = math.sqrt(2) * self.radius * self.scale
 
-	def convert(self, slider_code):
+	def convert_string(self, slider_code):
 		string = slider_code.split(",")
 		ps = [Position(int(string[0]) * self.scale + self.extended, int(string[1]) * self.scale + self.extended)]
 		slider_path = string[5]
@@ -40,10 +40,17 @@ class GenerateSlider:
 		pixel_length = float(string[7])
 		return ps, pixel_length * self.scale, slider_type
 
+	def convert(self, ps_unscale):
+		ps = []
+		for pos in ps_unscale:
+			ps.append(Position(pos.x * self.scale + self.extended, pos.y * self.scale + self.extended))
+		return ps
+
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
 		tolerance = {"L": 1, "B": 0.02, "P": 0.025}
-		cur_pos = baiser_class(0)
+
+		baiser_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
 		curve_pos = []
@@ -83,8 +90,9 @@ class GenerateSlider:
 			cv2.polylines(im, [curve_pos], False, (*cur_slider, 255), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 		return im
 
-	def get_slider_img(self, slider_code):
-		ps, pixel_length, slider_type = self.convert(slider_code)
+	def get_slider_img(self, slider_type, ps, pixel_length):
+		ps = self.convert(ps)
+		pixel_length = pixel_length * self.scale
 		baiser = Curve.from_kind_and_points(slider_type, ps, pixel_length)  # get the right curve class
 		curve_pos = self.get_pos_from_class(baiser, slider_type)
 

@@ -1,3 +1,4 @@
+from Curves.generate_slider import GenerateSlider
 from Objects.abstracts import *
 from Curves.curve import *
 
@@ -35,19 +36,26 @@ class ReverseArrow(Images):
 
 
 class PrepareSlider:
-	def __init__(self, path, diff, scale, colors, movedown, moveright):
+	def __init__(self, path, diff, scale, skin, movedown, moveright):
 		self.path = path
 		self.sliders = {}
 		self.arrows = {}
 		self.movedown = movedown
 		self.moveright = moveright
-		self.maxcolors = colors["ComboNumber"]
-		self.colors = colors
+		self.maxcolors = skin.colours["ComboNumber"]
+		self.colors = skin.colours
 		self.interval = 1000 / 60
-		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
+		self.cs = (54.4 - 4.48 * diff["CircleSize"])
+
+		self.sliderborder = skin.colours["SliderBorder"]
+		self.slideroverride = skin.colours["SliderTrackOverride"]
+		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, scale)
+
+		self.cs = self.cs * scale
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 		self.calculate_ar()
+
 		self.scale = scale
 		self.divide_by_255 = 1 / 255.0
 		self.sliderb_frames = []
@@ -160,17 +168,21 @@ class PrepareSlider:
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
 
-
-	def add_slider(self, image, osu_d, x_pos, y_pos, cur_time):
-		x_offset, y_offset = osu_d["x offset"], osu_d["y offset"]
+	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
-	
+
 		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
 		# function, but we add stack to reduce sliders list size
-		b_info = (osu_d["slider type"], osu_d["ps"], osu_d["pixel length"], osu_d["stacking"], osu_d["slider ticks"])
-		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info, cur_repeated, repeated, appear followcircle, tick alpha]
-		self.sliders[str(osu_d["time"]) + "s"] = [image, x_pos - x_offset, y_pos - y_offset, osu_d["duration"] + osu_d["time"] - cur_time,
-		                           0, color, self.slidermax_index, osu_d["duration"], b_info, 1, osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
+		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"])
+
+		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+
+		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
+		# cur_repeated, repeated, appear followcircle, tick alpha]
+		self.sliders[str(osu_d["time"]) + "s"] = [image, x_pos - x_offset, y_pos - y_offset,
+		                                          osu_d["duration"] + osu_d["time"] - cur_time,
+		                                          0, color, self.slidermax_index, osu_d["duration"], b_info, 1,
+		                                          osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
 
 		pos1 = osu_d["ps"][-1]
 		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
@@ -272,19 +284,18 @@ class PrepareSlider:
 		for count, tick_t in enumerate(self.sliders[i][8][4]):
 			if self.sliders[i][9] == self.sliders[i][10]:
 				if (going_forward and t > tick_t) or (not going_forward and t < tick_t):
-						continue
+					continue
 
 			if self.sliders[i][3] < self.sliders[i][7] + 100:
-				if count == 0 or self.sliders[i][12][count-1] >= 0.75:
+				if count == 0 or self.sliders[i][12][count - 1] >= 0.75:
 					self.sliders[i][12][count] = min(1, self.sliders[i][12][count] + 0.1)
 			tick_pos = baiser(round(tick_t, 3))
 			x = int((tick_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((tick_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 
-			self.slidertick.img[:, :, :] = self.slidertick.orig_img[:, :, :] * (self.sliders[i][4] / 100 * self.sliders[i][12][count])
+			self.slidertick.img[:, :, :] = self.slidertick.orig_img[:, :, :] * (
+						self.sliders[i][4] / 100 * self.sliders[i][12][count])
 			self.slidertick.add_to_frame(background, x, y)
-
-
 
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
 			cur_pos = baiser(round(t, 3))
