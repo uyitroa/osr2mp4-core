@@ -168,14 +168,33 @@ class PrepareSlider:
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
 
-	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
+	def add_slider(self, osu_d, x_pos, y_pos, cur_time, simulation_endtime):
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
 
 		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
 		# function, but we add stack to reduce sliders list size
 		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"])
 
-		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+		if osu_d["end time"] + 200 > simulation_endtime:
+			image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+
+			pos1 = osu_d["ps"][-1]
+			pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
+
+			pos3 = osu_d["ps"][0]
+			pos4 = osu_d["ps"][1] if osu_d["ps"][1].x != pos3.x or osu_d["ps"][1].y != pos3.y else osu_d["ps"][2]
+
+			vector_x1, vector_y1 = pos2.x - pos1.x, pos2.y - pos1.y
+			vector_x2, vector_y2 = pos4.x - pos3.x, pos4.y - pos3.y
+
+			angle1 = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
+			angle2 = -np.arctan2(vector_y2, vector_x2) * 180 / np.pi
+
+			img1 = self.reversearrow.rotate_image(angle1)
+			img2 = self.reversearrow.rotate_image(angle2)
+		else:
+			x_offset, y_offset = 0, 0
+			image = img1 = img2 = np.zeros((1, 1, 4))
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
 		# cur_repeated, repeated, appear followcircle, tick alpha]
@@ -184,33 +203,24 @@ class PrepareSlider:
 		                                          0, color, self.slidermax_index, osu_d["duration"], b_info, 1,
 		                                          osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
 
-		pos1 = osu_d["ps"][-1]
-		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
-
-		pos3 = osu_d["ps"][0]
-		pos4 = osu_d["ps"][1] if osu_d["ps"][1].x != pos3.x or osu_d["ps"][1].y != pos3.y else osu_d["ps"][2]
-
-		vector_x1, vector_y1 = pos2.x - pos1.x, pos2.y - pos1.y
-		vector_x2, vector_y2 = pos4.x - pos3.x, pos4.y - pos3.y
-
-		angle1 = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
-		angle2 = -np.arctan2(vector_y2, vector_x2) * 180 / np.pi
-
-		img1 = self.reversearrow.rotate_image(angle1)
-		img2 = self.reversearrow.rotate_image(angle2)
-
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
 
 	# crop everything that goes outside the screen
 	def checkOverdisplay(self, pos1, pos2, limit):
 		start = 0
 		end = pos2 - pos1
+
+		if pos1 >= limit:
+			return 0, 0, 0, 0
+		if pos2 <= 0:
+			return 0, 0, 0, 0
+
 		if pos1 < 0:
 			start = -pos1
 			pos1 = 0
 		if pos2 >= limit:
-			end -= pos2 - limit + 1
-			pos2 = limit - 1
+			end -= pos2 - limit
+			pos2 = limit
 		return pos1, pos2, start, end
 
 	def to_frame(self, img, background, x_offset, y_offset):

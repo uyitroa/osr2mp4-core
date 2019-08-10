@@ -174,9 +174,12 @@ def main():
 	print(resultinfo[-1])
 	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
+	simulate = replay_event[3000][TIMES]
+	orig_img = np.zeros((1, 1, 3)).astype('uint8')
+
 	print("setup done")
 
-	while osr_index < 3000: #len(replay_event) - 3:
+	while osr_index < 1000: #len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -207,7 +210,7 @@ def main():
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
-			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
+			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint], simulate)
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
 
 
@@ -223,7 +226,7 @@ def main():
 				component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
 
 				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
+					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time, simulate)
 				index_hitobject += 1
 
 		updater.update(cur_time)
@@ -245,7 +248,8 @@ def main():
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 
-		writer.write(img)
+		if cur_time > simulate:
+			writer.write(img)
 
 		cur_time += 1000 / FPS
 
@@ -258,6 +262,7 @@ def main():
 		# else:
 		cursor_event = replay_event[osr_index]
 
+	print(time.time() - start_time)
 	print(beatmap.hitobjects[index_hitobject]["time"])
 	print(component.hitresult.total)
 	writer.release()
