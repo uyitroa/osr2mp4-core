@@ -39,6 +39,7 @@ class FollowPointsManager(Images):
 		self.movedown = movedown
 		self.moveright = moveright
 		self.preempt = 800
+		self.alpha_tdelta = 200
 		self.divide_by_255 = 1/255.0
 		counter = 0
 		should_continue = True
@@ -51,7 +52,7 @@ class FollowPointsManager(Images):
 		self.fp_frames.pop(0)
 		self.img = np.zeros(self.fp_frames[0].orig_img.shape)
 
-	def add_fp(self, x1, y1, t1, next_object):
+	def add_fp(self, x1, y1, t1, next_object, simulate_endtime):
 		x2, y2, t2 = next_object["x"], next_object["y"], next_object["time"]
 
 		spacing = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
@@ -61,19 +62,23 @@ class FollowPointsManager(Images):
 		angle = -np.arctan2(y_vector, x_vector) * 180 / np.pi
 		self.followpoints.append([[], x1, y1, x_vector, y_vector, t1, t2, int(spacing)])
 
+		if t2 + self.alpha_tdelta < simulate_endtime:
+			empty = np.zeros((1, 1, 4))
 		for x in range(len(self.fp_frames)):
-			self.followpoints[-1][0].append(self.fp_frames[x].rotate_image(angle))
+			if t2 + self.alpha_tdelta < simulate_endtime:
+				self.followpoints[-1][0].append(empty)
+			else:
+				self.followpoints[-1][0].append(self.fp_frames[x].rotate_image(angle))
 
 	def add_to_frame(self, background, cur_time):
 		i = len(self.followpoints) - 1
-		alpha_tdelta = 200
 		while i > -1:
 			d = self.pointdistance * 1.5
 			duration = self.followpoints[i][6] - self.followpoints[i][5]
 			to_delete = False
 			while d < self.followpoints[i][7] - self.pointdistance:
 				fraction = d/self.followpoints[i][7]
-				fadeouttime = self.followpoints[i][5] + fraction * duration + alpha_tdelta
+				fadeouttime = self.followpoints[i][5] + fraction * duration + self.alpha_tdelta
 				fadeintime = fadeouttime - self.preempt
 
 				if cur_time < fadeintime:  # too early to draw followpoint
@@ -90,7 +95,7 @@ class FollowPointsManager(Images):
 				y = int(y * self.scale) + self.movedown
 
 				# quick maths
-				alpha = min(1, (cur_time - fadeintime)/alpha_tdelta, (fadeouttime - cur_time)/alpha_tdelta)
+				alpha = min(1, (cur_time - fadeintime)/self.alpha_tdelta, (fadeouttime - cur_time)/self.alpha_tdelta)
 
 				total_time = fadeouttime - fadeintime
 				cur_time_gone = cur_time - fadeintime
