@@ -10,9 +10,25 @@ def search_updateindex(timestamp, resultinfo, component):
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].timestamp != timestamp:
 		cur_index += 1
 	info = resultinfo[max(0, cur_index-1)]
-	component.scorecounter.set_score(info.score, info.showscore)
+	component.scorecounter.set_score(info.time, info.score, info.showscore)
 	component.accuracy.set_acc(info.accuracy)
 	component.combocounter.set_combo(info.combo)
+
+	component.key1.set_freeze(info.time, info.clicks[0])
+	component.key2.set_freeze(info.time, info.clicks[1])
+	component.mouse1.set_freeze(info.time, info.clicks[2])
+	component.mouse2.set_freeze(info.time, info.clicks[3])
+	urindex = max(0, cur_index-1)
+	diff = 0
+	while diff < 3400:
+		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
+			if resultinfo[urindex].hitresult > 0:
+				component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
+				component.urbar.bars[-1][1] = 1 - diff/3400
+		urindex -= 1
+		if urindex <= -1:
+			break
+		diff = info.time - resultinfo[urindex].time
 	return cur_index
 
 

@@ -175,14 +175,14 @@ def main():
 	print(resultinfo[-1])
 	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
-	simulate = 3000
+	simulate = 44000
 	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
 	updater.info_index = info_index
 	img = np.zeros((1, 1, 3)).astype('uint8')
 	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 1000: # len(replay_event) - 3:
+	while osr_index < 4000: # len(replay_event) - 3:
 		if cur_time > simulate:
 			img = np.copy(orig_img)  # reset background
 
@@ -192,13 +192,13 @@ def main():
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
-			component.key1.clicked()
+			component.key1.clicked(cursor_event[TIMES])
 		if k2:
-			component.key2.clicked()
+			component.key2.clicked(cursor_event[TIMES])
 		if m1:
-			component.mouse1.clicked()
+			component.mouse1.clicked(cursor_event[TIMES])
 		if m2:
-			component.mouse2.clicked()
+			component.mouse2.clicked(cursor_event[TIMES])
 
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
@@ -239,7 +239,7 @@ def main():
 		component.hitresult.add_to_frame(img)
 		component.spinbonus.add_to_frame(img)
 		component.combocounter.add_to_frame(img)
-		component.scorecounter.add_to_frame(img)
+		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
 		component.accuracy.add_to_frame(img)
 		component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
 		component.urbar.add_to_frame(img)

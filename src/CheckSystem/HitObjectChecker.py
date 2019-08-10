@@ -155,7 +155,7 @@ class HitObjectChecker:
 
 		i = 0
 		inrange = True
-		self.scorecounter.add_to_frame(None)
+		self.scorecounter.add_to_frame(None, replay[osr_index][3])
 
 		while inrange and i < len(self.hitobjects)-1:
 			if "circle" in self.hitobjects[i]["type"]:
