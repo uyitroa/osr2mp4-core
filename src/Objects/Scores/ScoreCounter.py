@@ -2,9 +2,10 @@ from Objects.abstracts import *
 
 
 class ScoreCounter(Images):
-	def __init__(self, scorenumbers, diff, width, height, gap, scale, draw=True):
+	def __init__(self, scorenumbers, diff, width, height, gap, scale, draw=True, simulate=False):
 		self.draw = draw
 		self.showscore = 0
+		self.simulate = simulate
 		self.score = 0
 		self.diff = diff
 		self.diff_multiplier = self.difficulty_multiplier()

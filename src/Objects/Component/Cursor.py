@@ -2,15 +2,15 @@ from Objects.abstracts import *
 
 
 class Cursor(Images):
-	def __init__(self, filename, scale):
-		Images.__init__(self, filename, scale * 0.75)
+	def __init__(self, filename, scale, simulate):
+		Images.__init__(self, filename, scale * 0.75, simulate=simulate)
 		self.to_3channel()
 
 
 class Cursortrail(Images):
 	# todo: cursormiddle
-	def __init__(self, filename, cursor_x, cursor_y, scale):
-		Images.__init__(self, filename, scale * 0.75)
+	def __init__(self, filename, cursor_x, cursor_y, scale, simulate):
+		Images.__init__(self, filename, scale * 0.75, simulate=simulate)
 		self.trail = [[cursor_x, cursor_y] for _ in range(8)]
 		self.trail_frames = []
 		self.to_3channel()

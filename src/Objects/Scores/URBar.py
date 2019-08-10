@@ -2,7 +2,8 @@ from Objects.abstracts import *
 
 
 class URBar(Images):
-	def __init__(self, scale, scorewindow, width, height):
+	def __init__(self, scale, scorewindow, width, height, simulate=False):
+		self.simulate = simulate
 		self.scale = scale
 		self.w, self.h = int(200 * scale), int(25 * scale)
 		self.y = height - self.h//2
@@ -62,6 +63,8 @@ class URBar(Images):
 			if bar[1] <= 0:
 				del self.bars[i]
 				break
+		if self.simulate:
+			return
 
 		cv2.rectangle(blank, (self.w // 2 - 1, 0), (self.w // 2 + 1, self.h), (255, 255, 255, 255), -1, cv2.LINE_AA)
 		self.orig_img = blank

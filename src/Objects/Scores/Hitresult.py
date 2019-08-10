@@ -5,7 +5,8 @@ hitprefix = "hit"
 
 
 class HitResult(Images):
-	def __init__(self, path, scale, playfieldscale, accuracy):
+	def __init__(self, path, scale, playfieldscale, accuracy, simulate):
+		self.simulate = simulate
 		self.accuracy = accuracy
 		self.scores_images = {}
 		self.scores_frames = {}

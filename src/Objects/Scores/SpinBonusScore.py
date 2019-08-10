@@ -2,7 +2,8 @@ from Objects.abstracts import *
 
 
 class SpinBonusScore(Images):
-	def __init__(self, scale, gap, scorenumbers, width, height):
+	def __init__(self, scale, gap, scorenumbers, width, height, simulate):
+		self.simulate = simulate
 		self.score_frames = []
 		self.spinbonuses = ["0", None, None, 10]
 		self.score_images = scorenumbers.score_images

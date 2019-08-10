@@ -5,11 +5,12 @@ inputoverlay = "inputoverlay-key.png"
 
 
 class ScoreEntry(Images):
-	def __init__(self, path, scale, color):
+	def __init__(self, path, scale, color, simulate):
 		self.divide_by_255 = 1/255.0
+		self.simulate = simulate
 		self.numbers = []
 		for x in range(10):
-			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale, needconversion=True))
+			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale, needconversion=True, simulate=simulate))
 			self.numbers[-1].to_3channel()
 		self.prepare_animation(color)
 
@@ -45,8 +46,8 @@ class ScoreEntry(Images):
 
 
 class InputOverlay(Images):
-	def __init__(self, path, scale, color, scoreentry):
-		Images.__init__(self, path + inputoverlay, scale)
+	def __init__(self, path, scale, color, scoreentry, simulate):
+		Images.__init__(self, path + inputoverlay, scale, simulate=simulate)
 
 		self.scoreentry = scoreentry
 

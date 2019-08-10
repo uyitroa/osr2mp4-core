@@ -54,10 +54,9 @@ class Updater:
 
 
 	def update(self, cur_time):
-		self.info = self.resultinfo[self.info_index]
-		if self.info.time > cur_time:
+		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
 			return
-
+		self.info = self.resultinfo[self.info_index]
 		self.process_combo()
 		self.process_acc()
 		self.info_index += 1

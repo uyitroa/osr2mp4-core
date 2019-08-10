@@ -10,8 +10,8 @@ default_size = 128
 
 
 class ReverseArrow(Images):
-	def __init__(self, path, scale):
-		Images.__init__(self, path + reversearrow)
+	def __init__(self, path, scale, simulate):
+		Images.__init__(self, path + reversearrow, simulate=simulate)
 		self.to_square()
 		self.change_size(scale * 1.1, scale * 1.1)
 		self.orig_img = np.copy(self.img)
@@ -36,8 +36,9 @@ class ReverseArrow(Images):
 
 
 class PrepareSlider:
-	def __init__(self, path, diff, scale, skin, movedown, moveright):
+	def __init__(self, path, diff, scale, skin, movedown, moveright, simulate=False):
 		self.path = path
+		self.simulate = simulate
 		self.sliders = {}
 		self.arrows = {}
 		self.movedown = movedown
@@ -83,11 +84,11 @@ class PrepareSlider:
 		self.followscale = default_size / self.sliderfollowcircle.shape[0]
 		self.radius_scale = self.cs * 2 / default_size
 
-		self.reversearrow = ReverseArrow(self.path, self.radius_scale)
+		self.reversearrow = ReverseArrow(self.path, self.radius_scale, self.simulate)
 		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
 		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
 
-		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale)
+		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale, simulate=self.simulate)
 		self.slidertick.to_3channel()
 
 	def add_color(self, image, color):
@@ -215,6 +216,9 @@ class PrepareSlider:
 
 	def to_frame(self, img, background, x_offset, y_offset):
 		# to_3channel done in generate_slider.py
+		if self.simulate:
+			return
+
 		y1, y2 = y_offset, y_offset + img.shape[0]
 		x1, x2 = x_offset, x_offset + img.shape[1]
 
@@ -229,6 +233,9 @@ class PrepareSlider:
 
 	def to_frame2(self, img, background, x_offset, y_offset):
 		# need to do to_3channel first.
+		if self.simulate:
+			return
+
 		y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
 		x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
 
@@ -243,6 +250,7 @@ class PrepareSlider:
 
 	def add_to_frame(self, background, i):
 		self.sliders[i][3] -= self.interval
+		self.sliders[i][6] = max(0, min(self.slidermax_index, self.sliders[i][6] + self.sliders[i][11]))
 		baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
 
 		# if sliderball is going forward
@@ -304,7 +312,6 @@ class PrepareSlider:
 			color = self.sliders[i][5] - 1
 			index = int(self.sliders[i][6])
 			self.to_frame2(self.sliderb_frames[color][index], background, x, y)
-			self.sliders[i][6] = max(0, min(self.slidermax_index, self.sliders[i][6] + self.sliders[i][11]))
 
 		if self.sliders[i][9] < self.sliders[i][10]:
 			cur_pos = baiser(int(going_forward))

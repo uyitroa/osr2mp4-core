@@ -6,8 +6,9 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 class Images:
-	def __init__(self, filename, scale=1, needconversion=False):
+	def __init__(self, filename, scale=1, needconversion=False, simulate=False):
 		self.filename = filename
+		self.simulate = simulate
 		self.img = cv2.imread(self.filename, -1)
 		if needconversion:
 			cv2.normalize(self.img, self.img, 0, 255, cv2.NORM_MINMAX)
@@ -63,6 +64,10 @@ class Images:
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
 		# need to do to_3channel first.
+
+		if self.simulate:
+			return
+
 		y1, y2 = y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2)
 		x1, x2 = x_offset - int(self.img.shape[1] / 2), x_offset + int(self.img.shape[1] / 2)
 

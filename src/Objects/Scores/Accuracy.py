@@ -2,7 +2,8 @@ from Objects.abstracts import *
 
 
 class Accuracy(Images):
-	def __init__(self, scorenumbers, width, height, gap, scale):
+	def __init__(self, scorenumbers, width, height, gap, scale, simulate):
+		self.simulate = simulate
 		self.divide_by_255 = 1 / 255.0
 		self.scorenumbers = scorenumbers
 		self.score_images = [None] * 10

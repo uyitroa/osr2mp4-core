@@ -2,7 +2,8 @@ from Objects.abstracts import *
 
 
 class ComboCounter(Images):
-	def __init__(self, scorenumbers, width, height, gap, scale):
+	def __init__(self, scorenumbers, width, height, gap, scale, simulate):
+		self.simulate = simulate
 		self.height = height
 		self.width = width
 		self.score_images = scorenumbers.score_images

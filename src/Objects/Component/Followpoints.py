@@ -3,8 +3,8 @@ import os.path
 
 
 class Fp(Images):
-	def __init__(self, filename, scale):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale, simulate):
+		Images.__init__(self, filename, simulate=simulate)
 		self.to_square()
 		self.change_size(scale * 0.5, scale * 0.5)
 		self.orig_img = np.copy(self.img)
@@ -31,7 +31,8 @@ class Fp(Images):
 
 
 class FollowPointsManager(Images):
-	def __init__(self, filename, scale, movedown, moveright):
+	def __init__(self, filename, scale, movedown, moveright, simulate):
+		self.simulate = simulate
 		self.fp_frames = []
 		self.followpoints = []
 		self.pointdistance = 32
@@ -45,7 +46,7 @@ class FollowPointsManager(Images):
 		fp = None
 		while should_continue:
 			self.fp_frames.append(fp)
-			fp = Fp(filename + "-" + str(counter) + ".png", scale)
+			fp = Fp(filename + "-" + str(counter) + ".png", scale, simulate)
 			counter += 1
 			should_continue = os.path.isfile(filename + "-" + str(counter) + ".png")
 		self.fp_frames.pop(0)

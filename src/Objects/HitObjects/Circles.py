@@ -80,8 +80,8 @@ class CircleSlider(ACircle):
 
 
 class PrepareCircles(Images):
-	def __init__(self, beatmap, path, scale, skin):
-		Images.__init__(self, path + hitcircle)
+	def __init__(self, beatmap, path, scale, skin, simulate=False):
+		Images.__init__(self, path + hitcircle, simulate=simulate)
 		self.overlay_filename = path + hitcircleoverlay
 		self.slideroverlay_filename = path + sliderstartcircleoverlay
 		self.diff = beatmap.diff

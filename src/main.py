@@ -41,40 +41,41 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/thegame.osu"
-REPLAY_FILE = "../res/thegame.osr"
+BEATMAP_FILE = "../res/tengaku.osu"
+REPLAY_FILE = "../res/ten.osr"
 INPUTOVERLAY_STEP = 23
+simulate = True
 start_time = time.time()
 
 
 class Object:
 	def __init__(self, cursor_x, cursor_y, beatmap, skin, check):
-		self.cursor = Cursor(PATH + "cursor.png", SCALE)
-		self.cursor_trail = Cursortrail(PATH + "cursortrail.png", cursor_x, cursor_y, SCALE)
+		self.cursor = Cursor(PATH + "cursor.png", SCALE, simulate)
+		self.cursor_trail = Cursortrail(PATH + "cursortrail.png", cursor_x, cursor_y, SCALE, simulate)
 		self.lifegraph = LifeGraph(PATH + "scorebar-colour.png")
 
-		self.scoreentry = ScoreEntry(PATH, SCALE, skin.colours["InputOverlayText"])
+		self.scoreentry = ScoreEntry(PATH, SCALE, skin.colours["InputOverlayText"], simulate)
 
-		self.key1 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
-		self.key2 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
-		self.mouse1 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
-		self.mouse2 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
+		self.key1 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry, simulate)
+		self.key2 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry, simulate)
+		self.mouse1 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry, simulate)
+		self.mouse2 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry, simulate)
 
-		self.scorenumbers = ScoreNumbers(PATH, SCALE)
-		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
-		self.timepie = TimePie(SCALE, self.accuracy)
-		self.hitresult = HitResult(PATH, SCALE, PLAYFIELD_SCALE, self.accuracy)
-		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers, WIDTH, HEIGHT)
-		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
+		self.scorenumbers = ScoreNumbers(PATH, SCALE, simulate)
+		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE, simulate)
+		self.timepie = TimePie(SCALE, self.accuracy, simulate)
+		self.hitresult = HitResult(PATH, SCALE, PLAYFIELD_SCALE, self.accuracy, simulate)
+		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers, WIDTH, HEIGHT, simulate)
+		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE, simulate)
 		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 
-		self.urbar = URBar(SCALE, check.scorewindow, WIDTH, HEIGHT)
+		self.urbar = URBar(SCALE, check.scorewindow, WIDTH, HEIGHT, simulate)
 
-		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT, simulate)
 
-		self.circle = PrepareCircles(beatmap, PATH, PLAYFIELD_SCALE, skin)
-		self.slider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
-		self.spinner = PrepareSpinner(beatmap.diff["OverallDifficulty"], PLAYFIELD_SCALE, PATH)
+		self.circle = PrepareCircles(beatmap, PATH, PLAYFIELD_SCALE, skin, simulate)
+		self.slider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT, simulate)
+		self.spinner = PrepareSpinner(beatmap.diff["OverallDifficulty"], PLAYFIELD_SCALE, PATH, simulate)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
 
@@ -176,7 +177,7 @@ def main():
 
 	print("setup done")
 
-	while osr_index < 3000: #len(replay_event) - 3:
+	while osr_index < 1000:#len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -245,7 +246,8 @@ def main():
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 
-		writer.write(img)
+		if not simulate:
+			writer.write(img)
 
 		cur_time += 1000 / FPS
 
@@ -258,6 +260,7 @@ def main():
 		# else:
 		cursor_event = replay_event[osr_index]
 
+	print(time.time() - start_time)
 	print(beatmap.hitobjects[index_hitobject]["time"])
 	print(component.hitresult.total)
 	writer.release()

@@ -2,13 +2,17 @@ from Objects.abstracts import *
 
 
 class TimePie:
-	def __init__(self, scale, accuracy):
+	def __init__(self, scale, accuracy, simulate):
 		# need to initalize this right after initializing accuracy class
+		self.simulate = simulate
 		self.scale = scale
 		self.y = int(accuracy.y + accuracy.score_images[0].shape[0]//2)
 		self.x = int(accuracy.width*0.99 - accuracy.score_percent.shape[1] - (-accuracy.gap + accuracy.score_images[0].shape[1]) * 7)
 
 	def add_to_frame(self, background, cur_time, end_time):
+		if self.simulate:
+			return
+
 		ratio = cur_time/end_time
 		angle = 270
 		startangle = -360 + ratio * 360

@@ -12,7 +12,8 @@ spinnertop = "spinner-top.png"
 
 
 class PrepareSpinner(Images):
-	def __init__(self, od, scale, path):
+	def __init__(self, od, scale, path, simulate):
+		self.simulate = simulate
 		self.divide_by_255 = 1/255.0
 		self.scale = scale * 1.3 * 0.5
 		self.path = path
@@ -81,11 +82,14 @@ class PrepareSpinner(Images):
 			else:
 				self.spinners[i][3] = 1
 
-		# self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-		#
-		# self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-		#
-		# self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
+		if self.simulate:
+			return
+
+		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+
+		self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+
+		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
