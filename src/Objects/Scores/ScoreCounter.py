@@ -32,6 +32,10 @@ class ScoreCounter(Images):
 			return 5
 		return 6
 
+	def set_score(self, score, showscore):
+		self.score = score
+		self.showscore = showscore
+
 	def update_score(self, combo, hitvalue, mod=1):
 		self.score += int(hitvalue + (hitvalue * ((combo * self.diff_multiplier * mod) / 25)))
 

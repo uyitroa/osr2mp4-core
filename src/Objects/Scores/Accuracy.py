@@ -10,6 +10,7 @@ class Accuracy(Images):
 		self.score_dot = None
 		self.width = width
 		self.height = height
+		self.total = {300:0, 100: 0, 50: 0, 0: 0}
 		self.maxscore = 0
 		self.curscore = 0
 		self.gap = int(gap * scale * 0.5)
@@ -29,6 +30,15 @@ class Accuracy(Images):
 	def update_acc(self, hitresult):
 		self.maxscore += 300
 		self.curscore += hitresult
+		self.total[hitresult] += 1
+
+	def set_acc(self, total):
+		self.total = total
+		self.maxscore = 0
+		self.curscore = 0
+		for x in total:
+			self.maxscore += 300 * total[x]
+			self.curscore += x * total[x]
 
 	def add_to_frame(self, background):
 		if self.maxscore == 0:

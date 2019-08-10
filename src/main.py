@@ -26,6 +26,8 @@ from Parser.skinparser import Skin
 import numpy as np
 
 # index for replay_event
+from skip import skip
+
 CURSOR_X = 0
 CURSOR_Y = 1
 KEYS_PRESSED = 2
@@ -41,8 +43,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/thegame.osu"
-REPLAY_FILE = "../res/thegame.osr"
+BEATMAP_FILE = "../res/tengaku.osu"
+REPLAY_FILE = "../res/ten.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -169,18 +171,20 @@ def main():
 	replay_event.append([0, 0, 0, replay_event[-1][3] * 5])
 	cursor_event = replay_event[osr_index]
 
-	start_time = time.time()
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 	print(resultinfo[-1])
 	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
-	simulate = replay_event[3000][TIMES]
-	orig_img = np.zeros((1, 1, 3)).astype('uint8')
-
+	simulate = 3000
+	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
+	updater.info_index = info_index
+	img = np.zeros((1, 1, 3)).astype('uint8')
+	start_time = time.time()
 	print("setup done")
 
-	while osr_index < 1000: #len(replay_event) - 3:
-		img = np.copy(orig_img)  # reset background
+	while osr_index < 1000: # len(replay_event) - 3:
+		if cur_time > simulate:
+			img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
 			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)), cur_time, index_hitobject, index_followpoint)
@@ -210,13 +214,12 @@ def main():
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
-			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint], simulate)
+			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
 
 
 		# check if it's time to draw circles
-		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(
-				beatmap.hitobjects):
+		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
 			if "spinner" in osu_d["type"]:
 				if cur_time + 400 > osu_d["time"]:
 					component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
@@ -226,7 +229,7 @@ def main():
 				component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
 
 				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time, simulate)
+					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
 				index_hitobject += 1
 
 		updater.update(cur_time)
@@ -264,7 +267,7 @@ def main():
 
 	print(time.time() - start_time)
 	print(beatmap.hitobjects[index_hitobject]["time"])
-	print(component.hitresult.total)
+	print(component.accuracy.total)
 	writer.release()
 
 

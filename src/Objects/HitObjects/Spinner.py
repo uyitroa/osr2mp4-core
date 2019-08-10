@@ -81,11 +81,11 @@ class PrepareSpinner(Images):
 			else:
 				self.spinners[i][3] = 1
 
-		# self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-		#
-		# self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
-		#
-		# self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		# super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
+		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+
+		self.img = self.spinners[i][0][:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, background.shape[0]//2)
+
+		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
+		super().add_to_frame(background, background.shape[1]//2, int(background.shape[0]//2 - 2.5 * self.scale))  # dude idk
