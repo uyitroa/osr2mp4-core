@@ -17,14 +17,14 @@ class Beatmap:
 		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
-		self.sliderborder = colors["SliderBorder"]
-		self.slideroverride = colors["SliderTrackOverride"]
+		# self.sliderborder = colors["SliderBorder"]
+		# self.slideroverride = colors["SliderTrackOverride"]
 		self.ncombo = colors["ComboNumber"]
 
 		self.parse_general()
 		self.parse_diff()
-		cs = (54.4 - 4.48 * self.diff["CircleSize"])
-		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, cs, self.scale)
+		# cs = (54.4 - 4.48 * self.diff["CircleSize"])
+		# self.gs = GenerateSlider(self.sliderborder, self.slideroverride, cs, self.scale)
 		self.parse_event()
 		self.parse_timingpoints()
 		self.parse_hitobject()
@@ -161,7 +161,7 @@ class Beatmap:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
 				my_dict["head not done"] = True  # for judgement
-				self.sliderimg[my_dict["time"]], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
+				# self.sliderimg[my_dict["time"]], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
 
 				ps = [Position(my_dict["x"], my_dict["y"])]
 				slider_path = osuobject[5]

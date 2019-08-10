@@ -64,7 +64,7 @@ class Object:
 		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
 		self.circle = PrepareCircles(beatmap, PATH, PLAYFIELD_SCALE, skin)
-		self.slider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin.colours, MOVE_DOWN, MOVE_RIGHT)
+		self.slider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
 		self.spinner = PrepareSpinner(beatmap.diff["OverallDifficulty"], PLAYFIELD_SCALE, PATH)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
@@ -167,7 +167,7 @@ def main():
 
 	print("setup done")
 
-	while osr_index < 3000: # len(replay_event) - 3:
+	while osr_index < 3000: #len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -214,7 +214,7 @@ def main():
 				component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
 
 				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(beatmap.sliderimg[osu_d["time"]], osu_d, x_circle, y_circle, cur_time)
+					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
 				index_hitobject += 1
 
 		updater.update(cur_time)
