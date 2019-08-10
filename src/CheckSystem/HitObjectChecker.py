@@ -1,5 +1,5 @@
 from CheckSystem.Judgement import Check
-from Objects.Scores import ScoreCounter
+from Objects.Scores.ScoreCounter import ScoreCounter
 from collections import namedtuple
 import copy
 
@@ -67,7 +67,7 @@ class HitObjectChecker:
 			if "circle" in self.hitobjects[i]["type"]:
 				self.results[hitresult] += 1
 
-			self.scorecounter.update_score(max(0, self.combo - 1), hitresult)
+			self.scorecounter.update_score(max(0, self.combo - 1), hitresult) # TODO: what if circle is sliderhead and hitresult is 100
 
 			circle = Circle(state, deltat, followappear, "slider" in self.hitobjects[i]["type"], x, y)
 			info = Info(replay[osr_index][3], self.combo, combostatus,
