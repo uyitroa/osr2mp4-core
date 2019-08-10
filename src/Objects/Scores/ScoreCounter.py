@@ -4,6 +4,7 @@ from Objects.abstracts import *
 class ScoreCounter(Images):
 	def __init__(self, scorenumbers, diff, width, height, gap, scale, draw=True):
 		self.draw = draw
+		self.freeze = 0
 		self.showscore = 0
 		self.score = 0
 		self.diff = diff
@@ -32,7 +33,8 @@ class ScoreCounter(Images):
 			return 5
 		return 6
 
-	def set_score(self, score, showscore):
+	def set_score(self, freeze, score, showscore):
+		self.freeze = freeze
 		self.score = score
 		self.showscore = showscore
 
@@ -43,7 +45,7 @@ class ScoreCounter(Images):
 		self.score += score
 		self.showscore += score
 
-	def add_to_frame(self, background):
+	def add_to_frame(self, background, cur_time):
 		if self.draw:
 			score_string = str(int(self.showscore))
 			score_string = "0" * (8 - len(score_string)) + score_string
@@ -55,10 +57,10 @@ class ScoreCounter(Images):
 				super().add_to_frame(background, x, y)
 				x += -self.gap + self.score_images[0].img.shape[1]
 
-
-		add_up = max(7.27, (self.score - self.showscore)/12.72)
-		if self.showscore + add_up > self.score:
-			self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
-		else:
-			self.showscore += add_up
+		if cur_time > self.freeze:
+			add_up = max(7.27, (self.score - self.showscore)/12.72)
+			if self.showscore + add_up > self.score:
+				self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
+			else:
+				self.showscore += add_up
 

@@ -47,7 +47,7 @@ class ScoreEntry(Images):
 class InputOverlay(Images):
 	def __init__(self, path, scale, color, scoreentry):
 		Images.__init__(self, path + inputoverlay, scale)
-
+		self.freeze = 0
 		self.scoreentry = scoreentry
 
 		self.holding = False
@@ -63,6 +63,10 @@ class InputOverlay(Images):
 
 		self.to_3channel()
 		self.prepare_frames(color)
+
+	def set_freeze(self, freeze, n):
+		self.freeze = freeze
+		self.n = n
 
 	def add_color(self, image, color):
 		red = color[0]*self.divide_by_255
@@ -82,10 +86,11 @@ class InputOverlay(Images):
 
 			self.button_frames.append(self.img)
 
-	def clicked(self):
+	def clicked(self, cur_time):
 		if not self.oldclick:
 			self.oldclick = True
-			self.n += 1
+			if cur_time > self.freeze:
+				self.n += 1
 			self.button_index = 1
 
 		self.holding = True

@@ -58,10 +58,9 @@ class URBar(Images):
 			bar = self.bars[i]
 			self.img = self.bar_images[bar[2]][:, :, :] * bar[1]
 			super().add_to_frame(blank, bar[0], self.h//2, 4)
-			bar[1] -= 0.0025
+			bar[1] -= 0.005
 			if bar[1] <= 0:
 				del self.bars[i]
-				break
 
 		cv2.rectangle(blank, (self.w // 2 - 1, 0), (self.w // 2 + 1, self.h), (255, 255, 255, 255), -1, cv2.LINE_AA)
 		self.orig_img = blank
