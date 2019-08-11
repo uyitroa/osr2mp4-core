@@ -6,6 +6,8 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 class Images:
+	divide_by_255 = 1 / 255.0
+
 	def __init__(self, filename, scale=1, needconversion=False):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
@@ -23,7 +25,6 @@ class Images:
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
-		self.divide_by_255 = 1/255.0
 
 	def to_3channel(self):
 		alpha_s = self.orig_img[:, :, 3] * self.divide_by_255

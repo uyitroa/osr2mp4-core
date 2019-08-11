@@ -1,57 +1,17 @@
 from Objects.abstracts import *
-from skimage.transform import rotate
 
 
-spinnercircle = "spinner-circle.png"
 spinnerbackground = "spinner-background.png"
-spinnerbottom = "spinner-bottom.png"
-spinnerspin = "spinner-spin.png"
-spinnermetre = "spinner-metre.png"
-spinnerapproachcircle = "spinner-approachcircle.png"
-spinnertop = "spinner-top.png"
+spinnercircle = "spinner-circle.png"
 
 
-class PrepareSpinner(Images):
-	def __init__(self, od, scale, path):
-		self.divide_by_255 = 1/255.0
-		self.scale = scale * 1.3 * 0.5
-		self.path = path
+class SpinnerManager(Images):
+	def __init__(self, frames, scale):
+		self.scale = scale
 		self.spinners = {}
-		self.spinner_frames = []
-		self.spinnermetre = []
-		self.spinner_images = {}
+		self.spinner_images, self.spinnermetre, self.spinner_frames = frames
+
 		self.interval = 1000/60
-		self.load_spinner()
-		print("done loading spinner")
-		self.prepare_spinner()
-		print("done prepraing spinner")
-
-	def load_spinner(self):
-		print(self.scale)
-		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle, spinnertop]
-		for img in n:
-			self.spinner_images[img] = Images(self.path + img, self.scale)
-
-		# self.to_square(self.spinner_images[spinnercircle])
-
-	def prepare_spinner(self):
-		self.spinner_images[spinnercircle].to_3channel()
-		self.spinner_images[spinnerbackground].to_3channel()
-
-		for x in range(90):
-			self.spinnermetre.append(rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(np.uint8))
-
-		for x in range(10, -1, -1):
-			height, width, a = self.spinner_images[spinnermetre].img.shape
-			height = int(height * x/10)
-			partial_metre = np.copy(self.spinner_images[spinnermetre].img)
-			partial_metre[:height, :, :] = np.zeros((height, width, 4))[:, :, :]
-
-			# self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
-			self.orig_img = np.copy(partial_metre)
-			self.to_3channel()
-			self.spinner_frames.append(self.orig_img)
-
 
 	def add_spinner(self, starttime, endtime, curtime):
 		duration = endtime - starttime

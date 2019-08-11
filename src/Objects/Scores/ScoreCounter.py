@@ -57,7 +57,7 @@ class ScoreCounter(Images):
 				super().add_to_frame(background, x, y)
 				x += -self.gap + self.score_images[0].img.shape[1]
 
-		if cur_time > self.freeze:
+		if cur_time >= self.freeze:
 			add_up = max(7.27, (self.score - self.showscore)/12.72)
 			if self.showscore + add_up > self.score:
 				self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
