@@ -1,68 +1,31 @@
 from Curves.generate_slider import GenerateSlider
-from Objects.abstracts import *
 from Curves.curve import *
 
-sliderb = "sliderb.png"
-sliderfollowcircle = "sliderfollowcircle.png"
-sliderscorepiont = "sliderscorepoint.png"
-reversearrow = "reversearrow.png"
-default_size = 128
 
-
-class ReverseArrow(Images):
-	def __init__(self, path, scale):
-		Images.__init__(self, path + reversearrow)
-		self.to_square()
-		self.change_size(scale * 1.1, scale * 1.1)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.to_3channel()
-
-	def to_square(self):
-		max_length = int(np.sqrt(self.img.shape[0] ** 2 + self.img.shape[1] ** 2))
-		square = np.zeros((max_length, max_length, self.img.shape[2]))
-		y1, y2 = int(max_length / 2 - self.orig_rows / 2), int(max_length / 2 + self.orig_rows / 2)
-		x1, x2 = int(max_length / 2 - self.orig_cols / 2), int(max_length / 2 + self.orig_cols / 2)
-		square[y1:y2, x1:x2, :] = self.img[:, :, :]
-		self.orig_img = square
-		self.orig_rows, self.orig_cols = max_length, max_length
-
-	def rotate_image(self, angle):
-		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
-		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
-		return result
-
-
-class PrepareSlider:
-	def __init__(self, path, diff, scale, skin, movedown, moveright):
-		self.path = path
-		self.sliders = {}
-		self.arrows = {}
+class SliderManager:
+	def __init__(self, frames, diff, scale, skin, movedown, moveright):
+		self.scale = scale
 		self.movedown = movedown
 		self.moveright = moveright
-		self.maxcolors = skin.colours["ComboNumber"]
-		self.colors = skin.colours
-		self.interval = 1000 / 60
+
+		self.reversearrow, self.sliderb_frames, self.sliderfollow_fadeout, self.slidertick = frames
+		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
+
+		self.divide_by_255 = 1/255.0
+		self.interval = 1000/60
+
+		self.arrows = {}
+		self.sliders = {}
+
 		self.cs = (54.4 - 4.48 * diff["CircleSize"])
 
 		self.sliderborder = skin.colours["SliderBorder"]
 		self.slideroverride = skin.colours["SliderTrackOverride"]
 		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, scale)
 
-		self.cs = self.cs * scale
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 		self.calculate_ar()
-
-		self.scale = scale
-		self.divide_by_255 = 1 / 255.0
-		self.sliderb_frames = []
-		self.sliderfollow_fadeout = []
-		self.load_sliderballs()
-		self.prepare_sliderball()
-		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
 
 	def calculate_ar(self):
 		if self.ar < 5:
@@ -75,98 +38,6 @@ class PrepareSlider:
 			self.time_preempt = 1200 - 750 * (self.ar - 5) / 5
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
-
-	def load_sliderballs(self):
-		self.sliderb = cv2.imread(self.path + sliderb, -1)
-		self.sliderfollowcircle = cv2.imread(self.path + sliderfollowcircle, -1)
-
-		self.followscale = default_size / self.sliderfollowcircle.shape[0]
-		self.radius_scale = self.cs * 2 / default_size
-
-		self.reversearrow = ReverseArrow(self.path, self.radius_scale)
-		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
-		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
-
-		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale)
-		self.slidertick.to_3channel()
-
-	def add_color(self, image, color):
-		red = color[0] * self.divide_by_255
-		green = color[1] * self.divide_by_255
-		blue = color[2] * self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-
-	def to_3channel(self, image):
-		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
-		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			image[:, :, c] = image[:, :, c] * alpha_s
-
-	def change_size2(self, img, new_col, new_row):
-		n_rows = int(new_row * img.shape[1])
-		n_rows -= int(n_rows % 2 == 1)  # need to be even
-		n_cols = int(new_col * img.shape[0])
-		n_cols -= int(n_cols % 2 == 1)  # need to be even
-		return cv2.resize(img, (n_cols, n_rows), interpolation=cv2.INTER_LINEAR)
-
-	def ballinhole(self, follow, sliderball):
-		# still ned 4 channels so cannot do to_3channel before.
-
-		# if sliderfollowcircle is smaller than sliderball ( possible when fading in the sliderfollowcircle), then create
-		# a blank image with sliderball shape and put sliderfollowcircle at the center of that image.
-		if sliderball.shape[0] > follow.shape[0]:
-			new_img = np.zeros(sliderball.shape)
-			y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
-			new_img[y1:y2, x1:x2, :] = follow[:, :, :]
-			follow = new_img
-
-		#  find center
-		y1, y2 = int(follow.shape[0] / 2 - sliderball.shape[0] / 2), int(follow.shape[0] / 2 + sliderball.shape[0] / 2)
-		x1, x2 = int(follow.shape[1] / 2 - sliderball.shape[1] / 2), int(follow.shape[1] / 2 + sliderball.shape[1] / 2)
-
-		alpha_s = sliderball[:, :, 3] * self.divide_by_255
-		alpha_l = 1 - alpha_s
-		for c in range(3):
-			follow[y1:y2, x1:x2, c] = sliderball[:, :, c] * alpha_s + alpha_l * follow[y1:y2, x1:x2, c]
-		follow[y1:y2, x1:x2, 3] = follow[y1:y2, x1:x2, 3] * alpha_l + sliderball[:, :, 3]
-		return follow
-
-	def prepare_sliderball(self):
-		follow_fadein = 125  # sliderfollowcircle zoom out zoom in time
-
-		for c in range(1, self.maxcolors + 1):
-			color = self.colors["Combo" + str(c)]
-			orig_color_sb = np.copy(self.sliderb)
-			self.add_color(orig_color_sb, color)
-
-			self.sliderb_frames.append([])
-
-			scale_interval = round((1 - self.followscale) * self.interval / follow_fadein, 2)
-			cur_scale = 1
-			alpha_interval = round(self.interval / follow_fadein, 2)
-			cur_alpha = 1
-
-			for x in range(follow_fadein, 0, -int(self.interval)):
-				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
-				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
-
-				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
-				# add to frame twice
-				if c == 1:
-					follow_img = np.copy(orig_sfollow)
-					self.to_3channel(follow_img)
-					self.sliderfollow_fadeout.append(follow_img)
-
-				orig_sfollow = self.ballinhole(orig_sfollow, orig_color_sb)
-				self.to_3channel(orig_sfollow)
-				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
-				# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
-				cur_scale -= scale_interval
-				cur_alpha -= alpha_interval
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]

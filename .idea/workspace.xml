@@ -2,379 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="25a205b9-869c-4652-af85-089bd91a4448" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Objects/HitObjects/PrepareHitObjFrames.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/create_frames.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/Click-Short.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/Click-Short.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/FailSound.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/FailSound.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/applause.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/applause.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/approachcircle.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/approachcircle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-left.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/button-left.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-left@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-middle.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/button-middle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-middle@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-right.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/button-right.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/button-right@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/click-close.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/cursor2 - Copy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/cursor2.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/cursor2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/cursortrail2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-0@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-1@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-2.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-3@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-4.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-6.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-7.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-7.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-8.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-8@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-9.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/default-9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/default-9@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/fail-background.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/fail-background@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-2.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/followpoint-2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/followpoint-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-4.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/followpoint-4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/followpoint-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-6.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/followpoint-6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/followpoint-7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/go.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/go.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/gos.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/gos.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/heartbeat.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/heartbeat.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit100.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit100.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit100k.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit100k.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300-0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300-0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300g-0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300g-0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300g.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300k-0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300k-0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit300k.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit300k.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit50.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit50.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hit50k.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/hit50k.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hitcircletest.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/hitsounds.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/inputoverlay-background.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/inputoverlay-background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/inputoverlay-background@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/inputoverlay-key.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/inputoverlay-key.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/inputoverlay-key@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/lighting.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/lighting.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/match-confirm.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/match-join.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/match-leave.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/match-start.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/medentero_01.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/medentero_02.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/medentero_03.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/medentero_04.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-back-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-background.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/menu-background.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-button-background.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/menu-button-background.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-button-background@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-charts-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-direct-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-edit-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-exit-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-freeplay-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-multiplayer-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-options-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-play-hover.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/menu-snow.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-fruits-med.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-fruits-med@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-fruits.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-fruits@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-mania-med.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-mania-med@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-mania.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-mania@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-osu-med.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-osu-med@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-osu.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-osu@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-taiko-med.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-taiko-med@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-taiko.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/mode-taiko@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/nomal-sliderslide.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitclap.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-hitclap.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitfinish2.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-hitfinish2.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitnormal.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-hitnormal.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitnormal1.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-hitnormal1.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitwhistle.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-hitwhistle.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitwhistle1.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-hitwistle.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/normal-sliderslide.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/normal-sliderslide.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/numbers.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-back.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/pause-back.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-back@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-continue.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/pause-continue.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-continue@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-overlay.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/pause-overlay.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-overlay@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-replay.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/pause-replay.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-replay@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-retry.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/pause-retry.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/pause-retry@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-0@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-1@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-3@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/play-skip-7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-A-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-A-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-B-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-B-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-C-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-C-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-D-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-D-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-S-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-S-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-S-small.psd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-S-small@2x-.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-SH-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-SH-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-SH-small@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-X-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-X-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-X-small@2x-.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-XH-small.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-XH-small.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-XH-small@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-accuracy.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-accuracy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-accuracy@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-graph.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-graph.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-graph@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-maxcombo.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-maxcombo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-maxcombo@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-panel.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-panel.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-panel@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-perfect.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/ranking-perfect.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/ranking-perfect@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-0@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-10.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-10@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-11.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-11@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-12.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-12@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-1@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-3@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-8.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-8@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-9.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/menu-back-9@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/scorebar-bg.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/removed elements/scorebar-bg@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/reversearrow.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/reversearrow.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/reversearrow@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score for bluefleme.rar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-0@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-1@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-2.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-3@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-4.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-6.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-7.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-7.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-8.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-8@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-9.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-9@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-comma.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-comma.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-comma@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-dot.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-dot.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-dot@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-percent.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-percent.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/score-x.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/score-x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-bg.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/scorebar-bg.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-colour.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-colour@2x.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/scorebar-colour@2x.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-ki.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-kidanger.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scorebar-kidanger2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-0@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-1@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-3@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-8.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-8@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-9.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-9@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-comma.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-comma@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-dot.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-dot@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-percent.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-percent@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/scoreentry-x@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/section-fail.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/section-fail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/section-fail@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/section-pass.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/section-pass.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/section-pass@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sectionfail.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/sectionfail.mp3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sectionfail.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sectionpass.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/sectionpass.mp3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sectionpass.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/seeya.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/seeya.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-autoplay.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-autoplay.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-autoplay@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-cinema.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-cinema.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-cinema@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-doubletime.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-doubletime.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-doubletime@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-easy.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-easy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-easy@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-fadein.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-fadein@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-flashlight.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-flashlight.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-flashlight@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-halftime.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-halftime.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-halftime@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-hardrock.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-hardrock.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-hardrock@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-hidden.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-hidden.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-hidden@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key4@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key5@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key6@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key7@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key8.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-key8@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-keycoop.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-keycoop@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-nightcore.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-nightcore.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-nightcore@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-nofail.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-nofail.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-nofail@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-perfect.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-perfect.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-perfect@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-random.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-random@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-relax.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-relax.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-relax2.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-relax2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-relax2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-relax@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-scorev2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-scorev2@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-spunout.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-spunout.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-spunout@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-suddendeath.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mod-suddendeath.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-suddendeath@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-target.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-target@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-targetpractice.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mod-targetpractice@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mode-over.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mode-over.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mode-over@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mode.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mode.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mode@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mods-over.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mods-over.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mods-over@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mods.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-mods.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-mods@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-options-over.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-options-over.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-options-over@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-options.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-options.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-options@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-random-over.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-random-over.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-random-over@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-random.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-random.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-random@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-tab.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/selection-tab.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/selection-tab@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/skin.ini" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/skin.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sliderb0.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/sliderb0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sliderendcircle.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sliderscorepoint.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sliderstartcircle.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/sliderstartcircle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/sliderstartcircleoverlay.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/sliderstartcircleoverlay.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitclap.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitclap.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitclap2.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitfinish.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitfinish.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitfinish2.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitfinish222.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitnormal.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitnormal.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitnormal1.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitnormal2.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitnormal2.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitnormalh.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitnormalhh.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitsoft.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitwhistle.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitwhistle.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-hitwhistle2.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-hitwhistle2.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-slidertick2.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/soft-slidertick2.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/soft-sliderwhistle2.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/softl-hitclap2.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/softl-hitfinish.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-approachcircle.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/spinner-approachcircle.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-approachcircle@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-background.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-background@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-circle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-circle@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-clear.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/spinner-clear.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-metre.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-metre@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner-rpm.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/spinner-rpm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinner.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/spinnerbonus.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/spinnerbonus.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/star.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/star.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/welcome.wav" beforeDir="false" afterPath="$PROJECT_DIR$/res/skin1/welcome.wav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/welcome_text.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/skin1/welcome_text@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TODO" beforeDir="false" afterPath="$PROJECT_DIR$/TODO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Curves/generate_slider.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Curves/generate_slider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/Component/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/Component/Button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/HitObjects/Circles.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/HitObjects/Circles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/HitObjects/Slider.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/HitObjects/Slider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/HitObjects/Spinner.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/HitObjects/Spinner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/Scores/ScoreCounter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/Scores/ScoreCounter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects/abstracts.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects/abstracts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/osuparser.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/osuparser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/skip.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/skip.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -383,7 +23,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/osr2mp4$Run.coverage" NAME="Run Coverage Results" MODIFIED="1556306868601" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/osr2mp4$Run.coverage" NAME="Run Coverage Results" MODIFIED="1564323943372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/osr2mp4$Unnamed.coverage" NAME="Run Coverage Results" MODIFIED="1551386652513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
   <component name="DatabaseView">
@@ -404,28 +44,29 @@
     <session id="-946220355">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="26" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.1" value="1" />
-          <entry key="project.open.time.10" value="4" />
-          <entry key="project.open.time.5" value="7" />
-          <entry key="project.open.time.6" value="9" />
-          <entry key="project.open.time.7" value="3" />
-          <entry key="project.open.time.8" value="1" />
-          <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="28" />
+          <entry key="project.closed" value="51" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.open.time.1" value="2" />
+          <entry key="project.open.time.10" value="5" />
+          <entry key="project.open.time.5" value="8" />
+          <entry key="project.open.time.6" value="17" />
+          <entry key="project.open.time.7" value="13" />
+          <entry key="project.open.time.8" value="4" />
+          <entry key="project.open.time.9" value="3" />
+          <entry key="project.opened" value="54" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+          <entry key="TODO" value="7" />
           <entry key="cfg" value="1" />
           <entry key="command" value="1" />
           <entry key="jpg" value="1" />
           <entry key="json" value="1" />
-          <entry key="osu" value="7" />
+          <entry key="osu" value="25" />
           <entry key="osz" value="1" />
           <entry key="png" value="2" />
-          <entry key="py" value="42" />
+          <entry key="py" value="362" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -433,21 +74,23 @@
           <entry key="Image" value="3" />
           <entry key="Ini" value="1" />
           <entry key="JSON" value="1" />
-          <entry key="PLAIN_TEXT" value="9" />
-          <entry key="Python" value="42" />
+          <entry key="PLAIN_TEXT" value="34" />
+          <entry key="Python" value="362" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="261" />
-          <entry key="osu" value="4" />
-          <entry key="py" value="57192" />
+          <entry key="TODO" value="334" />
+          <entry key="dummy" value="55" />
+          <entry key="osu" value="9" />
+          <entry key="py" value="141825" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="4" />
-          <entry key="Python" value="57453" />
+          <entry key="PLAIN_TEXT" value="398" />
+          <entry key="Python" value="142086" />
         </counts>
       </usages-collector>
     </session>
@@ -460,74 +103,122 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="100" column="43" selection-start-line="100" selection-start-column="43" selection-end-line="100" selection-end-column="43" />
+            <state relative-caret-position="708">
+              <caret line="92" column="19" lean-forward="true" selection-start-line="93" selection-start-column="15" selection-end-line="93" selection-end-column="57" />
               <folding>
-                <element signature="e#0#15#0" expanded="true" />
-                <marker date="1556628538744" expanded="true" signature="1817:2111" ph="..." />
-                <marker date="1556628538744" expanded="true" signature="4532:4533" ph="..." />
+                <element signature="e#0#22#0" expanded="true" />
+                <marker date="1565534303757" expanded="true" signature="844:1486" ph="..." />
+                <marker date="1565534303757" expanded="true" signature="1497:1499" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/osuparser.py">
+        <entry file="file://$PROJECT_DIR$/src/create_frames.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="598">
-              <caret line="127" column="17" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
+            <state relative-caret-position="-1092">
+              <caret line="111" column="54" lean-forward="true" selection-start-line="111" selection-start-column="38" selection-end-line="111" selection-end-column="54" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#11#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Components.py">
+        <entry file="file://$PROJECT_DIR$/src/Objects/abstracts.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="426">
-              <caret line="91" column="76" selection-start-line="91" selection-start-column="76" selection-end-line="91" selection-end-column="76" />
+            <state relative-caret-position="408">
+              <caret line="71" column="17" selection-start-line="71" selection-start-column="17" selection-end-line="71" selection-end-column="17" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
-                <marker date="1556628386554" expanded="true" signature="504:506" ph="..." />
-                <marker date="1556628386554" expanded="true" signature="504:689" ph="..." />
-                <marker date="1556628386554" expanded="true" signature="4614:4800" ph="..." />
-                <marker date="1556628386554" expanded="true" signature="15226:15228" ph="..." />
+                <marker date="1565526495264" expanded="true" signature="3102:3105" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/curve.py">
+        <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Circles.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="63">
-              <caret line="321" column="21" selection-start-line="321" selection-start-column="21" selection-end-line="321" selection-end-column="21" />
+            <state relative-caret-position="60">
+              <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
               <folding>
-                <element signature="e#0#13#0" expanded="true" />
+                <marker date="1565527250815" expanded="true" signature="104:264" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/generate_slider.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/position.py">
+        <entry file="file://$PROJECT_DIR$/src/skip.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
-              <caret line="16" column="53" selection-start-line="16" selection-start-column="53" selection-end-line="16" selection-end-column="53" />
+              <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
+              <folding>
+                <marker date="1565528450145" expanded="true" signature="37:215" ph="..." />
+                <marker date="1565528450145" expanded="true" signature="1770:1774" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Objects/Component/Button.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1365">
+              <caret line="91" column="26" selection-start-line="91" selection-start-column="26" selection-end-line="91" selection-end-column="26" />
+              <folding>
+                <marker date="1565528461004" expanded="true" signature="1990:1993" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Objects/Scores/ScoreCounter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="885">
+              <caret line="59" column="22" selection-start-line="59" selection-start-column="22" selection-end-line="59" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/PrepareHitObjFrames.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="14" selection-start-line="14" selection-end-line="14" selection-end-column="44" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+                <marker date="1565528088860" expanded="true" signature="4324:4402" ph="..." />
+                <marker date="1565528088860" expanded="true" signature="12785:12880" ph="..." />
+                <marker date="1565528088860" expanded="true" signature="17537:17540" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Spinner.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" selection-start-line="2" selection-end-line="2" />
+              <folding>
+                <marker date="1565528783173" expanded="true" signature="183:326" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Slider.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="49" selection-start-column="49" selection-end-column="49" />
+              <folding>
+                <marker date="1565527310614" expanded="true" signature="1241:1243" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -543,40 +234,50 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>4|0</find>
-      <find>approach</find>
-      <find>button</find>
-      <find>Input</find>
-      <find>class Text</find>
-      <find>self.font_scale</find>
-      <find>self.color</find>
-      <find>HitCircle</find>
-      <find>lifebar</find>
-      <find>output.mkv</find>
-      <find>def check</find>
-      <find>[:, :, 0:3]</find>
-      <find>:3]</find>
-      <find>3]</find>
-      <find>cursor</find>
-      <find>Cursor</find>
-      <find>Approach</find>
-      <find>self.alpha_s</find>
-      <find>scipy</find>
-      <find>comb</find>
-      <find>get_pos_from_bezier</find>
+      <find>self.hitobject</find>
+      <find>timingscores</find>
+      <find>score</find>
+      <find>hitresult</find>
+      <find>self.spinners_memory[osu_d[&quot;time&quot;]]</find>
+      <find>timingscore</find>
+      <find>self.hitobjects[key][2]</find>
+      <find>&quot;slider_type&quot;</find>
+      <find>&quot;y_offset&quot;</find>
+      <find>&quot;pixel_length&quot;</find>
+      <find>&quot;x_offset&quot;</find>
+      <find>print(&quot;yes&quot;)</find>
+      <find>self.maxtimewindow</find>
+      <find>self.sliders_memory[osu_d[&quot;time&quot;]]</find>
+      <find>self.slider_d</find>
+      <find>osr_index = 0</find>
       <find>print</find>
-      <find>resize</find>
-      <find>self.circles</find>
-      <find>read</find>
-      <find>collinear</find>
-      <find>get_center</find>
-      <find>get_pos</find>
-      <find>playfield</find>
-      <find>cur_life</find>
+      <find>combo_number</find>
+      <find>slider_d[&quot;score&quot;]</find>
+      <find>self.sliders[i][11]</find>
+      <find>147139</find>
+      <find>length</find>
+      <find>self.colors</find>
+      <find>self.alphachannel</find>
+      <find>save_alphachannel</find>
+      <find>self.followscale</find>
+      <find>self.to_3channel()</find>
+      <find>image_at</find>
+      <find>ToDraw</find>
+      <find>invalid value encountered in double_scalars</find>
     </findStrings>
     <replaceStrings>
       <replace>path + &quot;</replace>
       <replace>TIMES</replace>
+      <replace>self.hitobjects</replace>
+      <replace>hitresult</replace>
+      <replace>spin_d</replace>
+      <replace>hitresult_manager</replace>
+      <replace>&quot;slider type&quot;</replace>
+      <replace>&quot;y offset&quot;</replace>
+      <replace>&quot;pixel length&quot;</replace>
+      <replace>&quot;x offset&quot;</replace>
+      <replace>self.slider_d</replace>
+      <replace>slider_d</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -585,21 +286,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/make_frames.py" />
-        <option value="$PROJECT_DIR$/src/video_writer.py" />
-        <option value="$PROJECT_DIR$/src/osr.py" />
-        <option value="$PROJECT_DIR$/src/osuparse.py" />
-        <option value="$PROJECT_DIR$/src/beatmapparser.py" />
-        <option value="$PROJECT_DIR$/src/abc.py" />
-        <option value="$PROJECT_DIR$/src/position.py" />
-        <option value="$PROJECT_DIR$/src/utils.py" />
-        <option value="$PROJECT_DIR$/res/test.osu" />
-        <option value="$PROJECT_DIR$/src/slider_curve.py" />
-        <option value="$PROJECT_DIR$/src/curve.py" />
-        <option value="$PROJECT_DIR$/src/generate_slider.py" />
-        <option value="$PROJECT_DIR$/src/osuparser.py" />
-        <option value="$PROJECT_DIR$/src/Components.py" />
+        <option value="$PROJECT_DIR$/res/tengaku.osu" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/src/Parser/osrparser.py" />
+        <option value="$PROJECT_DIR$/res/imaginedragons.osu" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Components.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Followpoints.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Cursors.py" />
+        <option value="$PROJECT_DIR$/src/Judgement.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Button.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/todraw.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/HitObjects.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/Structs.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/checkmain.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Slider.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Circles.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/Judgement.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Spinner.py" />
+        <option value="$PROJECT_DIR$/src/Parser/osuparser.py" />
+        <option value="$PROJECT_DIR$/src/Curves/curve.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/Components.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/PlayField.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/Scores.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/ScoreNumbers.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/Cursor.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/LIfeGraph.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/TimePie.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/SpinBonusScore.py" />
+        <option value="$PROJECT_DIR$/src/InfoProcessor.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/Followpoints.py" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects/Manager.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/Hitresult.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/Accuracy.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/ComboCounter.py" />
+        <option value="$PROJECT_DIR$/src/Curves/generate_slider.py" />
+        <option value="$PROJECT_DIR$/src/CheckSystem/HitObjectChecker.py" />
+        <option value="$PROJECT_DIR$/TODO" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/URBar.py" />
+        <option value="$PROJECT_DIR$/src/Objects/abstracts.py" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects/Circles.py" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects/Slider.py" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects/PrepareHitObjFrames.py" />
+        <option value="$PROJECT_DIR$/src/skip.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Component/Button.py" />
+        <option value="$PROJECT_DIR$/src/Objects/Scores/ScoreCounter.py" />
+        <option value="$PROJECT_DIR$/src/Objects/HitObjects/Spinner.py" />
+        <option value="$PROJECT_DIR$/src/create_frame.py" />
         <option value="$PROJECT_DIR$/src/main.py" />
+        <option value="$PROJECT_DIR$/src/create_frames.py" />
       </list>
     </option>
   </component>
@@ -634,6 +371,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -644,18 +382,43 @@
             <path>
               <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
               <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
               <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="CheckSystem" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
+              <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Curves" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
+              <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Objects" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
+              <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Objects" type="462c0819:PsiDirectoryNode" />
+              <item name="HitObjects" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="osr2mp4" type="b2602c69:ProjectViewProjectNode" />
+              <item name="osr2mp4" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Parser" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -666,6 +429,12 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Objects/Scores" />
+      <recent name="$PROJECT_DIR$/src/Objects/Component" />
+      <recent name="$PROJECT_DIR$/src/Objects/HitObjects" />
+      <recent name="$PROJECT_DIR$/src/CheckSystem" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/res" />
     </key>
@@ -745,18 +514,18 @@
     <frame x="0" y="23" width="1680" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49946523" visible="true" weight="0.2869353" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49625668" visible="true" weight="0.15018316" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.5005348" side_tool="true" weight="0.26251528" />
+      <window_info id="Favorites" order="2" sideWeight="0.5037433" side_tool="true" weight="0.13797314" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32941177" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4969475" weight="0.25561497" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.25561497" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32941177" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50305253" side_tool="true" weight="0.27914438" />
       <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.4969475" weight="0.32941177" />
@@ -766,32 +535,8 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" weight="0.32967034" />
       <window_info anchor="right" id="Database" order="4" weight="0.32967034" />
-      <window_info anchor="right" x="0" y="0" width="370" height="827" id="Documentation" order="5" side_tool="true" weight="0.14713065" />
+      <window_info anchor="right" x="0" y="0" width="370" height="827" id="Documentation" order="5" side_tool="true" visible="true" weight="0.13125764" />
     </layout>
-    <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49946523" visible="true" weight="0.2777778" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.5005348" side_tool="true" weight="0.26251528" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4969475" visible="true" weight="0.25561497" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.25561497" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50305253" side_tool="true" weight="0.27914438" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.4969475" weight="0.32941177" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.4993895" weight="0.23101604" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.32967034" />
-      <window_info anchor="right" id="Database" order="4" weight="0.32967034" />
-      <window_info anchor="right" x="0" y="0" width="370" height="827" id="Documentation" order="5" side_tool="true" visible="true" weight="0.14713065" />
-    </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -823,159 +568,351 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/venv/lib/python3.6/site-packages/osrparse/replay.py">
+    <entry file="file://$PROJECT_DIR$/res/boku.osu">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="452">
-          <caret line="142" column="4" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="4" />
+        <state relative-caret-position="1440">
+          <caret line="96" column="12" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/lib/python3.6/site-packages/osrparse/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="24" lean-forward="true" selection-start-column="24" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/python_stubs/-1466285935/numpy/core/_multiarray_umath.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="2585" column="4" selection-start-line="2585" selection-start-column="4" selection-end-line="2585" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/video_writer.py" />
-    <entry file="file://$PROJECT_DIR$/venv/lib/python3.6/site-packages/ffmpeg/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/osr.py" />
-    <entry file="file://$PROJECT_DIR$/src/out.jpg" />
-    <entry file="file://$PROJECT_DIR$/src/osuparse.py" />
-    <entry file="file://$PROJECT_DIR$/res/daisan - -+ (Starfy) [Drop's Extra].osu">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/beatmapparser.py" />
-    <entry file="file://$PROJECT_DIR$/res/daisanextreme.osu">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbparse.py" />
-    <entry file="file://$PROJECT_DIR$/res/imagedragons.osz" />
     <entry file="file://$PROJECT_DIR$/res/imaginedragons.osu">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1583">
-          <caret line="145" column="63" selection-start-line="145" selection-start-column="63" selection-end-line="145" selection-end-column="71" />
+        <state relative-caret-position="530">
+          <caret line="441" column="27" selection-start-line="112" selection-end-line="441" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/command">
+    <entry file="file://$PROJECT_DIR$/res/image.osu">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils.py">
+    <entry file="file://$PROJECT_DIR$/res/tengaku.osu">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
-          <caret line="103" column="21" selection-start-line="103" selection-start-column="21" selection-end-line="103" selection-end-column="21" />
+        <state relative-caret-position="410">
+          <caret line="48" column="24" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/test.osu">
+    <entry file="file://$PROJECT_DIR$/res/kikoku.osu">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="13" lean-forward="true" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
+        <state relative-caret-position="630">
+          <caret line="97" column="24" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/idk.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/slider_curve.py" />
-    <entry file="file://$PROJECT_DIR$/src/testbeziercurves.png" />
-    <entry file="file://$PROJECT_DIR$/src/abc.py" />
-    <entry file="file://$PROJECT_DIR$/src/abec.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/katayoku.osu">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dessous.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/futurecider.osu">
+    <entry file="file://$PROJECT_DIR$/src/Curves/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-20405" />
+        <state relative-caret-position="-747" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/make_frames.py">
+    <entry file="file://$PROJECT_DIR$/res/thegame.osu">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.2/python_stubs/-1466285935/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="880">
+          <caret line="3671" column="8" selection-start-line="3671" selection-start-column="8" selection-end-line="3671" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Curves/abec.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <caret line="5" selection-start-line="5" selection-end-line="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/position.py">
+    <entry file="file://$PROJECT_DIR$/src/Objects/Cursors.py" />
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem.py" />
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem/todraw.py" />
+    <entry file="file://$PROJECT_DIR$/res/space.osu">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="53" selection-start-line="16" selection-start-column="53" selection-end-line="16" selection-end-column="53" />
-        </state>
+        <state relative-caret-position="-2631" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/generate_slider.py">
+    <entry file="file://$PROJECT_DIR$/src/Objects/Spinner.py" />
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects.py" />
+    <entry file="file://$PROJECT_DIR$/src/Curves/curve.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/curve.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="321" column="21" selection-start-line="321" selection-start-column="21" selection-end-line="321" selection-end-column="21" />
+        <state relative-caret-position="606">
+          <caret line="186" selection-start-line="186" selection-end-line="186" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/osuparser.py">
+    <entry file="file://$PROJECT_DIR$/test.py" />
+    <entry file="file://$PROJECT_DIR$/src/Parser/osrparser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="127" column="17" selection-start-line="127" selection-start-column="17" selection-end-line="127" selection-end-column="17" />
+        <state relative-caret-position="240">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parser/osuparser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3117">
+          <caret line="20" column="49" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parser/skinparser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="723">
+          <caret line="110" column="75" selection-start-line="110" selection-start-column="75" selection-end-line="110" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem/Judgement.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="577">
+          <caret line="122" column="74" selection-start-line="122" selection-start-column="74" selection-end-line="122" selection-end-column="74" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Components.py">
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem/Structs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="426">
-          <caret line="91" column="76" selection-start-line="91" selection-start-column="76" selection-end-line="91" selection-end-column="76" />
+        <state relative-caret-position="420">
+          <caret line="28" lean-forward="true" selection-start-line="28" selection-end-line="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem/checkmain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="618">
+          <caret line="56" column="64" selection-start-line="56" selection-start-column="64" selection-end-line="56" selection-end-column="64" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <marker date="1556628386554" expanded="true" signature="504:506" ph="..." />
-            <marker date="1556628386554" expanded="true" signature="504:689" ph="..." />
-            <marker date="1556628386554" expanded="true" signature="4614:4800" ph="..." />
-            <marker date="1556628386554" expanded="true" signature="15226:15228" ph="..." />
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Curves/position.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/ScoreNumbers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="74" selection-start-line="20" selection-start-column="74" selection-end-line="20" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/Cursor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="71" selection-start-line="12" selection-start-column="71" selection-end-line="12" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/Playfield.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="46" lean-forward="true" selection-start-line="4" selection-start-column="46" selection-end-line="4" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/LIfeGraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="31" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/TimePie.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/SpinBonusScore.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="64" selection-start-line="4" selection-start-column="64" selection-end-line="4" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/Followpoints.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="70" column="12" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/Hitresult.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="67" column="18" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/ComboCounter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="503">
+          <caret line="69" column="35" selection-start-line="69" selection-start-column="35" selection-end-line="69" selection-end-column="35" />
+          <folding>
+            <marker date="1565459050240" expanded="true" signature="1571:1633" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Curves/generate_slider.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="116" column="34" selection-start-line="116" selection-start-column="34" selection-end-line="116" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/Accuracy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="37" column="25" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="25" />
+          <folding>
+            <marker date="1565458981659" expanded="true" signature="1054:1204" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TODO">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="12" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/URBar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="930">
+          <caret line="62" column="32" selection-start-line="62" selection-start-column="32" selection-end-line="62" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/InfoProcessor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="18" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CheckSystem/HitObjectChecker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2310">
+          <caret line="157" column="65" selection-start-line="157" selection-start-column="65" selection-end-line="157" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="610">
+          <caret line="63" column="29" selection-start-line="63" selection-start-column="29" selection-end-line="63" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Circles.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+          <folding>
+            <marker date="1565527250815" expanded="true" signature="104:264" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/skip.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
+          <folding>
+            <marker date="1565528450145" expanded="true" signature="37:215" ph="..." />
+            <marker date="1565528450145" expanded="true" signature="1770:1774" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Component/Button.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1365">
+          <caret line="91" column="26" selection-start-line="91" selection-start-column="26" selection-end-line="91" selection-end-column="26" />
+          <folding>
+            <marker date="1565528461004" expanded="true" signature="1990:1993" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/Scores/ScoreCounter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="885">
+          <caret line="59" column="22" selection-start-line="59" selection-start-column="22" selection-end-line="59" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/PrepareHitObjFrames.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="14" selection-start-line="14" selection-end-line="14" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+            <marker date="1565528088860" expanded="true" signature="4324:4402" ph="..." />
+            <marker date="1565528088860" expanded="true" signature="12785:12880" ph="..." />
+            <marker date="1565528088860" expanded="true" signature="17537:17540" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Spinner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+          <folding>
+            <marker date="1565528783173" expanded="true" signature="183:326" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/HitObjects/Slider.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="49" selection-start-column="49" selection-end-column="49" />
+          <folding>
+            <marker date="1565527310614" expanded="true" signature="1241:1243" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Objects/abstracts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="71" column="17" selection-start-line="71" selection-start-column="17" selection-end-line="71" selection-end-column="17" />
+          <folding>
+            <marker date="1565526495264" expanded="true" signature="3102:3105" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/create_frames.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1092">
+          <caret line="111" column="54" lean-forward="true" selection-start-line="111" selection-start-column="38" selection-end-line="111" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="100" column="43" selection-start-line="100" selection-start-column="43" selection-end-line="100" selection-end-column="43" />
+        <state relative-caret-position="708">
+          <caret line="92" column="19" lean-forward="true" selection-start-line="93" selection-start-column="15" selection-end-line="93" selection-end-column="57" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
-            <marker date="1556628538744" expanded="true" signature="1817:2111" ph="..." />
-            <marker date="1556628538744" expanded="true" signature="4532:4533" ph="..." />
+            <element signature="e#0#22#0" expanded="true" />
+            <marker date="1565534303757" expanded="true" signature="844:1486" ph="..." />
+            <marker date="1565534303757" expanded="true" signature="1497:1499" ph="..." />
           </folding>
         </state>
       </provider>

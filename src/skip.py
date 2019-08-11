@@ -10,14 +10,14 @@ def search_updateindex(timestamp, resultinfo, component):
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].timestamp != timestamp:
 		cur_index += 1
 	info = resultinfo[max(0, cur_index-1)]
-	component.scorecounter.set_score(info.time, info.score, info.showscore)
+	component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
 	component.accuracy.set_acc(info.accuracy)
 	component.combocounter.set_combo(info.combo)
 
-	component.key1.set_freeze(info.time, info.clicks[0])
-	component.key2.set_freeze(info.time, info.clicks[1])
-	component.mouse1.set_freeze(info.time, info.clicks[2])
-	component.mouse2.set_freeze(info.time, info.clicks[3])
+	component.key1.set_freeze(resultinfo[cur_index].time, info.clicks[0])
+	component.key2.set_freeze(resultinfo[cur_index].time, info.clicks[1])
+	component.mouse1.set_freeze(resultinfo[cur_index].time, info.clicks[2])
+	component.mouse2.set_freeze(resultinfo[cur_index].time, info.clicks[3])
 	urindex = max(0, cur_index-1)
 	diff = 0
 	while diff < 3400:

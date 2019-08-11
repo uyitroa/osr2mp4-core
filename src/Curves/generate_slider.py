@@ -111,9 +111,10 @@ class GenerateSlider:
 		y_offset = int((ps[0].y - left_y_corner))
 
 		# to_3channel
-		alpha_s = img[:, :, 3] / 255.0
+		alpha_s = img[:, :, 3] * (1/255.0)
 		for c in range(3):
 			img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
+		img[:, :, :] = img[:, :, :] * 0.9
 		return img, x_offset, y_offset
 
 

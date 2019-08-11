@@ -89,7 +89,7 @@ class InputOverlay(Images):
 	def clicked(self, cur_time):
 		if not self.oldclick:
 			self.oldclick = True
-			if cur_time > self.freeze:
+			if cur_time >= self.freeze:
 				self.n += 1
 			self.button_index = 1
 
