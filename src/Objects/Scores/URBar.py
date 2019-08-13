@@ -56,7 +56,7 @@ class URBar(Images):
 		while i > 0:
 			i -= 1
 			bar = self.bars[i]
-			self.img = self.bar_images[bar[2]][:, :, :] * bar[1]
+			self.img = (self.bar_images[bar[2]][:, :, :] * bar[1]).astype(np.uint8)
 			super().add_to_frame(blank, bar[0], self.h//2, 4)
 			bar[1] -= 0.005
 			if bar[1] <= 0:

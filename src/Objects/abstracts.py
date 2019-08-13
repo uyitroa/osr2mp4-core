@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import sys
+import utils.calculation
+
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -8,20 +10,20 @@ np.set_printoptions(threshold=sys.maxsize)
 class Images:
 	divide_by_255 = 1 / 255.0
 
-	def __init__(self, filename, scale=1, needconversion=False):
+	def __init__(self, filename, scale=1):
 		self.filename = filename
 		self.img = cv2.imread(self.filename, -1)
-		if needconversion:
+		if self.img.dtype != np.uint8:
 			cv2.normalize(self.img, self.img, 0, 255, cv2.NORM_MINMAX)
 			self.img = np.uint8(self.img)
-			print(self.img.dtype)
+			print(self.img.dtype, self.filename)
 		if self.img is None or self.img.shape[0] == 1 or self.img.shape[1] == 1:
 			print(filename, "exists:", self.img is not None)
 			self.img = np.zeros((2, 2, 4))
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
-		self.change_size(scale, scale) # make rows and cols even amount
+		self.change_size(scale, scale)  # make rows and cols even amount
 		self.orig_img = np.copy(self.img)
 		self.orig_rows = self.img.shape[0]
 		self.orig_cols = self.img.shape[1]
@@ -55,12 +57,13 @@ class Images:
 			max_height = max(overlay_image.shape[0], background.shape[0])
 			max_width = max(overlay_image.shape[1], background.shape[1])
 			new_img = np.zeros((max_height, max_width, 4), dtype=overlay_image.dtype)
-			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(new_img.shape[0] / 2 + background.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(new_img.shape[1] / 2 + background.shape[1] / 2)
+			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(
+				new_img.shape[0] / 2 + background.shape[0] / 2)
+			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(
+				new_img.shape[1] / 2 + background.shape[1] / 2)
 			new_img[y1:y2, x1:x2, :] = background[:, :, :]
 			return new_img
 		return background
-
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
 		# need to do to_3channel first.
@@ -71,6 +74,14 @@ class Images:
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 		alpha_s = self.img[ystart:yend, xstart:xend, 3] * self.divide_by_255
 		alpha_l = 1.0 - alpha_s
+
+		# if self.img.dtype != np.uint8:
+		# 	self.img = self.img.astype(np.uint8)
+		#
+		# background[y1:y2, x1:x2, :channel] = utils.calculation.add_to_frame(background[y1:y2, x1:x2, :channel],
+		#                                                              self.img[ystart:yend, xstart:xend, :],
+		#                                                              alpha_l, channel)
+
 		for c in range(channel):
 			background[y1:y2, x1:x2, c] = (
 					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
@@ -86,12 +97,12 @@ class Images:
 class ACircle(Images):
 	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
 		Images.__init__(self, filename)
-		# if self.orig_cols != hitcircle_cols or self.orig_rows != hitcircle_rows:
-		# 	cols_scale = hitcircle_cols/self.orig_cols
-		# 	rows_scale = hitcircle_rows/self.orig_rows
-		# 	self.change_size(rows_scale, cols_scale, inter_type=cv2.INTER_LINEAR)
-		# 	self.orig_cols = hitcircle_cols
-		# 	self.orig_rows = hitcircle_rows
-		# 	self.orig_img = np.copy(self.img)
-		# 	print(filename)
-		# print(self.orig_img.shape, self.img.shape, self.orig_cols, self.orig_rows)
+	# if self.orig_cols != hitcircle_cols or self.orig_rows != hitcircle_rows:
+	# 	cols_scale = hitcircle_cols/self.orig_cols
+	# 	rows_scale = hitcircle_rows/self.orig_rows
+	# 	self.change_size(rows_scale, cols_scale, inter_type=cv2.INTER_LINEAR)
+	# 	self.orig_cols = hitcircle_cols
+	# 	self.orig_rows = hitcircle_rows
+	# 	self.orig_img = np.copy(self.img)
+	# 	print(filename)
+	# print(self.orig_img.shape, self.img.shape, self.orig_cols, self.orig_rows)

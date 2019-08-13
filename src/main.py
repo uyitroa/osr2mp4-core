@@ -1,17 +1,16 @@
 import multiprocessing
-from multiprocessing import Pipe, Process
+from multiprocessing import Process
 import os
 from create_frames import create_frame
 from CheckSystem.checkmain import checkmain
-from Objects.HitObjects.PrepareHitObjFrames import PrepareCircles, PrepareSlider, PrepareSpinner
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
 
 # const
 PATH = "../res/skin8/"
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 1920
+HEIGHT = 1080
 FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
@@ -62,7 +61,7 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	processes = divide_core(8000, beatmap, skin, replay_event, resultinfo)
+	processes = divide_core(2000, beatmap, skin, replay_event, resultinfo)
 
 	for x in processes:
 		x.start()
