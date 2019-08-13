@@ -1,5 +1,7 @@
+import cv2
 import time
 from Objects.Component.Playfield import Playfield
+from Objects.HitObjects.PrepareHitObjFrames import PrepareCircles, PrepareSlider, PrepareSpinner
 from Objects.HitObjects.Slider import SliderManager
 from Objects.HitObjects.Spinner import SpinnerManager
 from Objects.Scores.Accuracy import Accuracy
@@ -65,9 +67,9 @@ class Object:
 
 		self.followpoints = FollowPointsManager(PATH + "followpoint", PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
-		self.circle = CircleManager(pcircle.get_frames(), check.ar())
-		self.slider = SliderManager(pslider.get_frames(), beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
-		self.spinner = SpinnerManager(pspinner.get_frames(), PLAYFIELD_SCALE)
+		self.circle = CircleManager(pcircle, check.ar())
+		self.slider = SliderManager(pslider, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
+		self.spinner = SpinnerManager(pspinner, PLAYFIELD_SCALE)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
 
@@ -126,8 +128,9 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def create_frame(conn):
-	beatmap, skin, replay_event, resultinfo, start_index, end_index, pcircle, pslider, pspinner
+def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index, end_index):
+	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
+	print("process start")
 	orig_img = setupBackground()
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
@@ -135,6 +138,15 @@ def create_frame(conn):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
 	time_preempt = diffcalculator.ar()
+
+	pcircle = PrepareCircles(beatmap, PATH, PLAYFIELD_SCALE, skin)
+	pcircle = pcircle.get_frames()
+
+	pslider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
+	pslider = pslider.get_frames()
+
+	pspinner = PrepareSpinner(PLAYFIELD_SCALE, PATH)
+	pspinner = pspinner.get_frames()
 
 	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, diffcalculator, pcircle, pslider, pspinner)
 
@@ -147,13 +159,11 @@ def create_frame(conn):
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
 	img = np.zeros((1, 1, 3)).astype('uint8')
-	frames = []
 	print("setup done")
 
 	while osr_index < end_index: # len(replay_event) - 3:
 		if osr_index >= start_index:
 			img = np.copy(orig_img)  # reset background
-			print(start_index, osr_index)
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
@@ -215,7 +225,7 @@ def create_frame(conn):
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 
 
-		frames.append(img)
+		writer.write(img)
 
 
 		old_cursor_x = cursor_x
@@ -231,8 +241,5 @@ def create_frame(conn):
 		# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
 		# else:
 		cursor_event = replay_event[osr_index]
-	print(time.time() - start_time)
-	print(beatmap.hitobjects[index_hitobject]["time"])
-	print(component.accuracy.total)
-	# conn.send(frames)
-	# conn.close()
+	print("process done")
+	writer.release()
