@@ -62,7 +62,7 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	processes = divide_core(4000, beatmap, skin, replay_event, resultinfo)
+	processes = divide_core(8000, beatmap, skin, replay_event, resultinfo)
 
 	for x in processes:
 		x.start()
@@ -70,9 +70,16 @@ def main():
 	for x in processes:
 		x.join()
 
+	print("Done Converting..")
+	os.system("ffmpeg -f concat -i mylist.txt -c copy output.mp4 -y")
+
+	for x in range(len(processes)):
+		filename = "process" + str(x) + ".mkv"
+		os.system("rm " + filename)
+	os.system("rm mylist.txt")
+
 
 
 if __name__ == "__main__":
 	main()
-	print("Done Converting..")
-	os.system("ffmpeg -f concat -i mylist.txt -c copy output.mp4 -y")
+
