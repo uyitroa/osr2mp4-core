@@ -61,7 +61,7 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	processes = divide_core(2000, beatmap, skin, replay_event, resultinfo)
+	processes = divide_core(8000, beatmap, skin, replay_event, resultinfo)
 
 	for x in processes:
 		x.start()
