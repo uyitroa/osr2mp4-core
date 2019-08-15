@@ -175,12 +175,6 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		if m2:
 			component.mouse2.clicked(cursor_event[TIMES])
 
-		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
-		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
-		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
-		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
-
-
 		osu_d = beatmap.hitobjects[index_hitobject]
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
@@ -209,6 +203,10 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 
 		updater.update(cur_time)
 
+		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
+		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
+		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
+		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
 		component.followpoints.add_to_frame(img, cur_time)
 		component.hitobjmanager.add_to_frame(img)
 		component.hitresult.add_to_frame(img)
