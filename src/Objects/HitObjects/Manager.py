@@ -77,4 +77,4 @@ class HitObjectManager:
 				del self.hitobjects[key]
 				del self.objtime[i]
 				continue
-			hitobj[0].add_to_frame(background, key)
+			hitobj[0].add_to_frame(background, key, len(self.objtime) == 1)
