@@ -9,7 +9,7 @@ class ScoreEntry(Images):
 		self.divide_by_255 = 1/255.0
 		self.numbers = []
 		for x in range(10):
-			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale, needconversion=True))
+			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale))
 			self.numbers[-1].to_3channel()
 		self.prepare_animation(color)
 
