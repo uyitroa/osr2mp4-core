@@ -69,7 +69,7 @@ class Object:
 
 		self.circle = CircleManager(pcircle, check.ar())
 		self.slider = SliderManager(pslider, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
-		self.spinner = SpinnerManager(pspinner, PLAYFIELD_SCALE)
+		self.spinner = SpinnerManager(pspinner, PLAYFIELD_SCALE, MOVE_RIGHT, MOVE_DOWN)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
 
@@ -239,5 +239,5 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
 		# else:
 		cursor_event = replay_event[osr_index]
-	print("process done")
+	print("process done", filename)
 	writer.release()

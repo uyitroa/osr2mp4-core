@@ -46,11 +46,11 @@ class HitResult(Images):
 
 	def prepare_frames(self):
 		for x in self.scores_images:
-			end = 150
-			start = 100
+			end = 175
+			start = 125
 			if x != 0:
-				end = 70
-				start = 50
+				end = 100
+				start = 70
 				for y in range(start, end, -5):
 					self.scores_images[x].change_size(y/100, y/100)
 					self.scores_frames[x].append(self.scores_images[x].img)
@@ -59,7 +59,7 @@ class HitResult(Images):
 				self.scores_images[x].change_size(y/100, y/100)
 				img = self.scores_images[x].img
 				if x == 0:
-					img = self.rotate_image(img, -10)
+					img = self.rotate_image(img, -10 - (end - y)/10)
 				self.scores_frames[x].append(img)
 
 	def add_result(self, scores, x, y):
