@@ -16,7 +16,7 @@ class CircleManager(Images):
 		# x, y, duration, frame index, color, combo number, obj type, fade out index, fadeout bool, x step, max step
 		self.circles[str(osu_d["time"]) + "c"] = [x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0]
 
-	def add_to_frame(self, background, i):
+	def add_to_frame(self, background, i, _):
 		color = self.circles[i][4] - 1
 		self.circles[i][2] -= self.interval
 

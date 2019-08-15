@@ -174,7 +174,7 @@ class SliderManager:
 	# 		background[y1:y2, x1:x2, c] = (
 	# 				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
-	def add_to_frame(self, background, i):
+	def add_to_frame(self, background, i, _):
 		self.sliders[i][3] -= self.interval
 		baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
 
