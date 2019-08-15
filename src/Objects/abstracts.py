@@ -1,10 +1,54 @@
 import numpy as np
 import cv2
 import sys
-import utils.calculation
+import numba
+# import utils.calculation
+
+#
+# np.set_printoptions(threshold=sys.maxsize)
 
 
-np.set_printoptions(threshold=sys.maxsize)
+# crop everything that goes outside the screen
+@numba.jit(nopython=True)
+def checkOverdisplay(pos1, pos2, limit):
+	start = 0
+	end = pos2 - pos1
+
+	if pos1 >= limit:
+		return 0, 0, 0, 0
+	if pos2 <= 0:
+		return 0, 0, 0, 0
+
+	if pos1 < 0:
+		start = -pos1
+		pos1 = 0
+	if pos2 >= limit:
+		end -= pos2 - limit
+		pos2 = limit
+	return pos1, pos2, start, end
+
+
+@numba.jit(nopython=True)
+def add_to_frame(background, img, x_offset, y_offset, channel=3):
+	# need to do to_3channel first.
+	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
+	x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
+
+	y1, y2, ystart, yend = checkOverdisplay(y1, y2, background.shape[0])
+	x1, x2, xstart, xend = checkOverdisplay(x1, x2, background.shape[1])
+	alpha_s = img[ystart:yend, xstart:xend, 3] * (1/255.0)
+	alpha_l = 1.0 - alpha_s
+
+	# if self.img.dtype != np.uint8:
+	# 	self.img = self.img.astype(np.uint8)
+	#
+	# background[y1:y2, x1:x2, :channel] = utils.calculation.add_to_frame(background[y1:y2, x1:x2, :channel],
+	#                                                              self.img[ystart:yend, xstart:xend, :],
+	#                                                              alpha_l, channel)
+
+	for c in range(channel):
+		background[y1:y2, x1:x2, c] = (
+				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 
 class Images:
@@ -34,7 +78,19 @@ class Images:
 			self.orig_img[:, :, c] = self.orig_img[:, :, c] * alpha_s
 		self.img = np.copy(self.orig_img)
 
-	# crop everything that goes outside the screen
+	def ensureBGsize(self, background, overlay_image):
+		if overlay_image.shape[0] > background.shape[0] or overlay_image.shape[1] > background.shape[1]:
+			max_height = max(overlay_image.shape[0], background.shape[0])
+			max_width = max(overlay_image.shape[1], background.shape[1])
+			new_img = np.zeros((max_height, max_width, 4), dtype=overlay_image.dtype)
+			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(
+				new_img.shape[0] / 2 + background.shape[0] / 2)
+			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(
+				new_img.shape[1] / 2 + background.shape[1] / 2)
+			new_img[y1:y2, x1:x2, :] = background[:, :, :]
+			return new_img
+		return background
+
 	def checkOverdisplay(self, pos1, pos2, limit):
 		start = 0
 		end = pos2 - pos1
@@ -52,39 +108,8 @@ class Images:
 			pos2 = limit
 		return pos1, pos2, start, end
 
-	def ensureBGsize(self, background, overlay_image):
-		if overlay_image.shape[0] > background.shape[0] or overlay_image.shape[1] > background.shape[1]:
-			max_height = max(overlay_image.shape[0], background.shape[0])
-			max_width = max(overlay_image.shape[1], background.shape[1])
-			new_img = np.zeros((max_height, max_width, 4), dtype=overlay_image.dtype)
-			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(
-				new_img.shape[0] / 2 + background.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(
-				new_img.shape[1] / 2 + background.shape[1] / 2)
-			new_img[y1:y2, x1:x2, :] = background[:, :, :]
-			return new_img
-		return background
-
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
-		# need to do to_3channel first.
-		y1, y2 = y_offset - int(self.img.shape[0] / 2), y_offset + int(self.img.shape[0] / 2)
-		x1, x2 = x_offset - int(self.img.shape[1] / 2), x_offset + int(self.img.shape[1] / 2)
-
-		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
-		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-		alpha_s = self.img[ystart:yend, xstart:xend, 3] * self.divide_by_255
-		alpha_l = 1.0 - alpha_s
-
-		# if self.img.dtype != np.uint8:
-		# 	self.img = self.img.astype(np.uint8)
-		#
-		# background[y1:y2, x1:x2, :channel] = utils.calculation.add_to_frame(background[y1:y2, x1:x2, :channel],
-		#                                                              self.img[ystart:yend, xstart:xend, :],
-		#                                                              alpha_l, channel)
-
-		for c in range(channel):
-			background[y1:y2, x1:x2, c] = (
-					self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+		add_to_frame(background, self.img, x_offset, y_offset, channel)
 
 	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA):
 		n_rows = max(2, int(new_row * self.orig_rows))
