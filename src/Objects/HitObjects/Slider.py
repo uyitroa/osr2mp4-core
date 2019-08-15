@@ -4,7 +4,7 @@ import numba
 
 
 # crop everything that goes outside the screen
-@numba.jit(nopython=True)
+@numba.njit(fastmath=True)
 def checkOverdisplay(pos1, pos2, limit):
 	start = 0
 	end = pos2 - pos1
@@ -23,7 +23,7 @@ def checkOverdisplay(pos1, pos2, limit):
 	return pos1, pos2, start, end
 
 
-@numba.jit(nopython=True)
+@numba.njit(fastmath=True)
 def to_frame(img, background, x_offset, y_offset):
 	# to_3channel done in generate_slider.py
 	y1, y2 = y_offset, y_offset + img.shape[0]
@@ -39,7 +39,7 @@ def to_frame(img, background, x_offset, y_offset):
 				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 
-@numba.jit(nopython=True)
+@numba.njit(fastmath=True)
 def to_frame2(img, background, x_offset, y_offset):
 	# need to do to_3channel first.
 	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
