@@ -9,7 +9,7 @@ import numba
 
 
 # crop everything that goes outside the screen
-@numba.jit(nopython=True)
+@numba.njit(fastmath=True)
 def checkOverdisplay(pos1, pos2, limit):
 	start = 0
 	end = pos2 - pos1
@@ -28,7 +28,7 @@ def checkOverdisplay(pos1, pos2, limit):
 	return pos1, pos2, start, end
 
 
-@numba.jit(nopython=True)
+@numba.njit(fastmath=True)
 def add_to_frame(background, img, x_offset, y_offset, channel=3):
 	# need to do to_3channel first.
 	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
