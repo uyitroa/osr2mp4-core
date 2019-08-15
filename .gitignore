@@ -1,6 +1,9 @@
 *.png
 *.mp4
 *.mkv
+*.pyc
+*.xml
+.idea/
 res/
 venv/
 .DS_Store
