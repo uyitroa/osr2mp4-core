@@ -1,8 +1,8 @@
 from Objects.abstracts import *
 
 
-spinnerbackground = "spinner-background.png"
-spinnercircle = "spinner-circle.png"
+spinnerbackground = "spinner-background"
+spinnercircle = "spinner-circle"
 
 
 class SpinnerManager(Images):
@@ -44,9 +44,9 @@ class SpinnerManager(Images):
 				self.spinners[i][3] = 1
 		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
 		if not alone:
-			super().add_to_frame(background,  background.shape[1]//2 - 512 + self.img.shape[1]//2, 46 + self.img.shape[0]//2)
+			super().add_to_frame(background,  background.shape[1]//2, 46 + self.img.shape[0]//2)
 		else:
-			x, y = background.shape[1]//2 - 512, 46
+			x, y = background.shape[1]//2 - self.img.shape[1]//2, 46
 			y1, y2, ystart, yend = super().checkOverdisplay(y, y + self.img.shape[0], background.shape[0])
 			x1, x2, xstart, xend = super().checkOverdisplay(x, x + self.img.shape[1], background.shape[1])
 			background[y1:y2, x1:x2, :] = self.img[ystart:yend, xstart:xend, :3]
@@ -55,4 +55,4 @@ class SpinnerManager(Images):
 		super().add_to_frame(background, background.shape[1] // 2, int(198.5 * self.scale) + self.movedown)
 
 		self.img = self.spinner_frames[self.spinners[i][4]][:, :, :] * self.spinners[i][3]
-		super().add_to_frame(background, background.shape[1]//2 - 512 + self.img.shape[1]//2, 46 + self.img.shape[0]//2)
+		super().add_to_frame(background, background.shape[1]//2, 46 + self.img.shape[0]//2)

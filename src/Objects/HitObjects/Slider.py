@@ -113,66 +113,20 @@ class SliderManager:
 		angle1 = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
 		angle2 = -np.arctan2(vector_y2, vector_x2) * 180 / np.pi
 
-		img1 = self.reversearrow.rotate_image(angle1)
-		img2 = self.reversearrow.rotate_image(angle2)
+		img1 = self.reversearrow.rotate_images(angle1)
+		img2 = self.reversearrow.rotate_images(angle2)
 		# else:
 		# 	x_offset, y_offset = 0, 0
 		# 	image = img1 = img2 = np.zeros((1, 1, 4))
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
-		# cur_repeated, repeated, appear followcircle, tick alpha]
+		# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
 		self.sliders[str(osu_d["time"]) + "s"] = [image, x_pos - x_offset, y_pos - y_offset,
 		                                          osu_d["duration"] + osu_d["time"] - cur_time,
 		                                          0, color, self.slidermax_index, osu_d["duration"], b_info, 1,
-		                                          osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"])]
+		                                          osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"]), 0]
 
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
-
-	# # crop everything that goes outside the screen
-	# def checkOverdisplay(self, pos1, pos2, limit):
-	# 	start = 0
-	# 	end = pos2 - pos1
-	#
-	# 	if pos1 >= limit:
-	# 		return 0, 0, 0, 0
-	# 	if pos2 <= 0:
-	# 		return 0, 0, 0, 0
-	#
-	# 	if pos1 < 0:
-	# 		start = -pos1
-	# 		pos1 = 0
-	# 	if pos2 >= limit:
-	# 		end -= pos2 - limit
-	# 		pos2 = limit
-	# 	return pos1, pos2, start, end
-	#
-	# def to_frame(self, img, background, x_offset, y_offset):
-	# 	# to_3channel done in generate_slider.py
-	# 	y1, y2 = y_offset, y_offset + img.shape[0]
-	# 	x1, x2 = x_offset, x_offset + img.shape[1]
-	#
-	# 	y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
-	# 	x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-	# 	alpha_s = img[ystart:yend, xstart:xend, 3] * self.divide_by_255
-	# 	alpha_l = 1.0 - alpha_s
-	#
-	# 	for c in range(3):
-	# 		background[y1:y2, x1:x2, c] = (
-	# 				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-	#
-	# def to_frame2(self, img, background, x_offset, y_offset):
-	# 	# need to do to_3channel first.
-	# 	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
-	# 	x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
-	#
-	# 	y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
-	# 	x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
-	#
-	# 	alpha_s = img[ystart:yend, xstart:xend, 3] * self.divide_by_255
-	# 	alpha_l = 1.0 - alpha_s
-	# 	for c in range(3):
-	# 		background[y1:y2, x1:x2, c] = (
-	# 				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 	def add_to_frame(self, background, i, _):
 		self.sliders[i][3] -= self.interval
@@ -243,5 +197,9 @@ class SliderManager:
 			cur_pos = baiser(int(going_forward))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
-			arrow_img = self.arrows[i][int(going_forward)][:, :, :] * (self.sliders[i][4] / 100)
-			to_frame2(arrow_img, background, x, y)
+			arrow = self.arrows[i][int(going_forward)][int(self.sliders[i][13])][:, :, :] * self.sliders[i][4] / 100
+			to_frame2(arrow, background, x, y)
+
+			self.sliders[i][13] += 0.6
+			if self.sliders[i][13] >= len(self.arrows[i][0]):
+				self.sliders[i][13] = 0
