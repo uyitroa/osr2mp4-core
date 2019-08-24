@@ -15,7 +15,7 @@ class HitResult(Images):
 		self.time = 600
 		self.playfieldscale = playfieldscale
 		for x in [0, 50, 100]:
-			self.scores_images[x] = Images(path+hitprefix+str(x)+".png", scale)
+			self.scores_images[x] = Images(path+hitprefix+str(x), scale)
 			if x == 0:
 				self.to_square(self.scores_images[x])
 			self.scores_images[x].to_3channel()

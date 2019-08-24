@@ -1,9 +1,11 @@
 import cv2
 
 
+FORMAT = ".png"
+
 class LifeGraph:
 	def __init__(self, filename):
-		self.filename = filename
+		self.filename = filename + FORMAT
 		self.img = cv2.imread(filename)
 		self.cur_life = 1
 		self.to_life = 1

@@ -2,55 +2,19 @@ from Objects.abstracts import *
 import os.path
 
 
-class Fp(Images):
-	def __init__(self, filename, scale):
-		Images.__init__(self, filename)
-		self.to_square()
-		self.change_size(scale * 0.5, scale * 0.5)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.to_3channel()
-
-	def to_square(self):
-		max_length = int(np.sqrt(self.img.shape[0]**2 + self.img.shape[1]**2) + 2)  # round but with int
-		square = np.zeros((max_length, max_length, self.img.shape[2]))
-		y1, y2 = int(max_length / 2 - self.orig_rows / 2), int(max_length / 2 + self.orig_rows / 2)
-		x1, x2 = int(max_length / 2 - self.orig_cols / 2), int(max_length / 2 + self.orig_cols / 2)
-		square[y1:y2, x1:x2, :] = self.img[:, :, :]
-		self.orig_img = square
-		self.orig_rows, self.orig_cols = max_length, max_length
-		# cv2.imwrite("test.png", self.orig_img)
-		# cv2.yes
-
-	def rotate_image(self, angle):
-		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
-		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
-		return result
+followpoints = "followpoint"
 
 
 class FollowPointsManager(Images):
-	def __init__(self, filename, scale, movedown, moveright):
-		self.fp_frames = []
+	def __init__(self, path, scale, movedown, moveright):
 		self.followpoints = []
 		self.pointdistance = 32
+		self.alpha_tdelta = 200
 		self.scale = scale
 		self.movedown = movedown
 		self.moveright = moveright
 		self.preempt = 800
-		self.alpha_tdelta = 200
-		self.divide_by_255 = 1/255.0
-		counter = 0
-		should_continue = True
-		fp = None
-		while should_continue:
-			self.fp_frames.append(fp)
-			fp = Fp(filename + "-" + str(counter) + ".png", scale)
-			counter += 1
-			should_continue = os.path.isfile(filename + "-" + str(counter) + ".png")
-		self.fp_frames.pop(0)
-		self.img = np.zeros(self.fp_frames[0].orig_img.shape)
+		self.fp = AnimatableImage(path, followpoints, scale * 0.5, True, "-", 1)
 
 	def add_fp(self, x1, y1, t1, next_object):
 		x2, y2, t2 = next_object["x"], next_object["y"], next_object["time"]
@@ -62,13 +26,8 @@ class FollowPointsManager(Images):
 		angle = -np.arctan2(y_vector, x_vector) * 180 / np.pi
 		self.followpoints.append([[], x1, y1, x_vector, y_vector, t1, t2, int(spacing)])
 
-		# if t2 + self.alpha_tdelta < simulate_endtime:
-		# 	empty = np.zeros((1, 1, 4))
-		for x in range(len(self.fp_frames)):
-			# if t2 + self.alpha_tdelta < simulate_endtime:
-			# 	self.followpoints[-1][0].append(empty)
-			# else:
-			self.followpoints[-1][0].append(self.fp_frames[x].rotate_image(angle))
+		for x in range(self.fp.n_frame):
+				self.followpoints[-1][0].append(self.fp.image_at(x).rotate_image(angle))
 
 	def add_to_frame(self, background, cur_time):
 		i = len(self.followpoints) - 1

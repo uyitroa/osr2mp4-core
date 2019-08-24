@@ -17,7 +17,7 @@ from Objects.HitObjects.Circles import CircleManager
 from Objects.HitObjects.Manager import HitObjectManager
 from Objects.Component.Button import InputOverlay, InputOverlayBG, ScoreEntry
 from Objects.Component.Cursor import Cursor, Cursortrail
-from Objects.Component.LIfeGraph import LifeGraph
+from Objects.Component.LifeGraph import LifeGraph
 from CheckSystem.Judgement import DiffCalculator
 from InfoProcessor import Updater
 import numpy as np
@@ -29,24 +29,26 @@ CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
-# const
+
 PATH = "../res/skin8/"
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 1920
+HEIGHT = 1080
 FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
+
+
 start_time = time.time()
 
 
 class Object:
 	def __init__(self, cursor_x, cursor_y, beatmap, skin, check, pcircle, pslider, pspinner):
-		self.cursor = Cursor(PATH + "cursor.png", SCALE)
-		self.cursor_trail = Cursortrail(PATH + "cursortrail.png", cursor_x, cursor_y, SCALE)
-		self.lifegraph = LifeGraph(PATH + "scorebar-colour.png")
+		self.cursor = Cursor(PATH + "cursor", SCALE)
+		self.cursor_trail = Cursortrail(PATH + "cursortrail", cursor_x, cursor_y, SCALE)
+		self.lifegraph = LifeGraph(PATH + "scorebar-colour")
 
 		self.scoreentry = ScoreEntry(PATH, SCALE, skin.colours["InputOverlayText"])
 
@@ -112,9 +114,9 @@ def find_followp_target(beatmap, index=0):
 
 def setupBackground():
 	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8')  # setup background
-	playfield = Playfield(PATH + "scorebar-bg.png", WIDTH, HEIGHT)
+	playfield = Playfield(PATH + "scorebar-bg", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
-	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background.png", SCALE)
+	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background", SCALE)
 	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
 	return img
 

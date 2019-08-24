@@ -2,22 +2,22 @@ from Objects.abstracts import *
 from skimage import transform
 
 
-hitcircle = "hitcircle.png"
-hitcircleoverlay = "hitcircleoverlay.png"
-sliderstartcircleoverlay = "sliderstartcircleoverlay.png"
-sliderstartcircle = "sliderstartcircle.png"
-approachcircle = "approachcircle.png"
-sliderb = "sliderb.png"
-sliderfollowcircle = "sliderfollowcircle.png"
-sliderscorepiont = "sliderscorepoint.png"
-reversearrow = "reversearrow.png"
-spinnercircle = "spinner-circle.png"
-spinnerbackground = "spinner-background.png"
-spinnerbottom = "spinner-bottom.png"
-spinnerspin = "spinner-spin.png"
-spinnermetre = "spinner-metre.png"
-spinnerapproachcircle = "spinner-approachcircle.png"
-spinnertop = "spinner-top.png"
+hitcircle = "hitcircle"
+hitcircleoverlay = "hitcircleoverlay"
+sliderstartcircleoverlay = "sliderstartcircleoverlay"
+sliderstartcircle = "sliderstartcircle"
+approachcircle = "approachcircle"
+sliderb = "sliderb"
+sliderfollowcircle = "sliderfollowcircle"
+sliderscorepiont = "sliderscorepoint"
+reversearrow = "reversearrow"
+spinnercircle = "spinner-circle"
+spinnerbackground = "spinner-background"
+spinnerbottom = "spinner-bottom"
+spinnerspin = "spinner-spin"
+spinnermetre = "spinner-metre"
+spinnerapproachcircle = "spinner-approachcircle"
+spinnertop = "spinner-top"
 default_size = 128
 
 
@@ -38,7 +38,7 @@ class Number:
 	def __init__(self, radius, path, default_circle_size):
 		self.combo_number = []
 		for x in range(10):
-			self.combo_number.append(HitCircleNumber(path + "default-" + str(x) + ".png", radius, default_circle_size))
+			self.combo_number.append(HitCircleNumber(path + "default-" + str(x), radius, default_circle_size))
 
 	def draw(self, circle, number, gap):
 		"""
@@ -139,15 +139,6 @@ class PrepareCircles(Images):
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
-	def add_color(self, image, color):
-		red = color[0]*self.divide_by_255
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-		# image[image > 255] = 255
-
 	def load_circle(self):
 		self.overlay = CircleOverlay(self.overlay_filename, self.orig_cols, self.orig_rows)
 		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename, self.orig_cols, self.orig_rows)
@@ -191,13 +182,6 @@ class PrepareCircles(Images):
 		for c in range(3):
 			image[:, :, c] = image[:, :, c] * alpha_s
 
-	def change_size2(self, img, new_col, new_row):
-		n_rows = int(new_row * img.shape[1])
-		n_rows -= int(n_rows % 2 == 1)  # need to be even
-		n_cols = int(new_col * img.shape[0])
-		n_cols -= int(n_cols % 2 == 1)  # need to be even
-		return cv2.resize(img, (n_cols, n_rows), interpolation=cv2.INTER_LINEAR)
-
 	def prepare_circle(self):
 		# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 		# to overlap number, circle overlay and approach circle every single time.
@@ -208,9 +192,9 @@ class PrepareCircles(Images):
 
 			# add overlay to hitcircle
 			orig_color_img = np.copy(self.orig_img)
-			self.add_color(orig_color_img, color)
+			super().add_color(color, applytoself=False, img=orig_color_img)
 			orig_overlay_img = self.overlayhitcircle(np.copy(self.overlay.img), orig_color_img)
-			orig_overlay_img = self.change_size2(orig_overlay_img, self.radius_scale, self.radius_scale)
+			orig_overlay_img = super().change_size(self.radius_scale, self.radius_scale, applytoself=False, img=orig_overlay_img)
 			self.to_3channel(orig_overlay_img)
 			self.img = np.copy(orig_overlay_img)
 			self.circle_frames.append([])
@@ -222,14 +206,14 @@ class PrepareCircles(Images):
 				size = x/100
 				im = np.copy(self.img)
 				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
-				self.circle_fadeout[0][-1].append(self.change_size2(im, size, size))
+				self.circle_fadeout[0][-1].append(super().change_size(size, size, applytoself=False, img=im))
 
 
 			orig_color_slider = np.copy(self.slider_circle.orig_img)
 			orig_overlay_slider = np.copy(self.slidercircleoverlay.img)
-			self.add_color(orig_color_slider, color)
+			super().add_color(color, applytoself=False, img=orig_color_slider)
 			self.overlayhitcircle(orig_overlay_slider, orig_color_slider)
-			orig_overlay_slider = self.change_size2(orig_overlay_slider, self.radius_scale, self.radius_scale)
+			orig_overlay_slider = super().change_size(self.radius_scale, self.radius_scale, applytoself=False, img=orig_overlay_slider)
 			self.to_3channel(orig_overlay_slider)
 			self.slider_circle.img = np.copy(orig_overlay_slider)
 			self.slidercircle_frames.append({})   # use dict to find the right combo will be faster
@@ -241,7 +225,7 @@ class PrepareCircles(Images):
 				size = x/100
 				im = np.copy(orig_overlay_slider)
 				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
-				self.circle_fadeout[1][-1].append(self.change_size2(im, size, size))
+				self.circle_fadeout[1][-1].append(super().change_size(size, size, applytoself=False, img=im))
 
 			# add number to circles
 			for x in range(1, self.maxcombo[c] + 1):
@@ -258,7 +242,7 @@ class PrepareCircles(Images):
 				# we also overlay approach circle to circle to avoid multiple add_to_frame call
 				for i in range(len(self.approachCircle.approach_frames)):
 					approach_circle = np.copy(self.approachCircle.approach_frames[i])
-					self.add_color(approach_circle, color)
+					super().add_color(color, applytoself=False, img=approach_circle)
 					x_offset = int(approach_circle.shape[1] / 2)
 					y_offset = int(approach_circle.shape[0] / 2)
 
@@ -284,35 +268,30 @@ class PrepareCircles(Images):
 
 
 # Slider
-
-
-class ReverseArrow(Images):
+class ReverseArrow(AnimatableImage):
 	def __init__(self, path, scale):
-		Images.__init__(self, path + reversearrow)
-		self.to_square()
-		self.change_size(scale * 1.1, scale * 1.1)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.to_3channel()
+		AnimatableImage.__init__(self, path, reversearrow, scale, rotate=1)
+		self.prepare_frames()
 
-	def to_square(self):
-		max_length = int(np.sqrt(self.img.shape[0] ** 2 + self.img.shape[1] ** 2))
-		square = np.zeros((max_length, max_length, self.img.shape[2]))
-		y1, y2 = int(max_length / 2 - self.orig_rows / 2), int(max_length / 2 + self.orig_rows / 2)
-		x1, x2 = int(max_length / 2 - self.orig_cols / 2), int(max_length / 2 + self.orig_cols / 2)
-		square[y1:y2, x1:x2, :] = self.img[:, :, :]
-		self.orig_img = square
-		self.orig_rows, self.orig_cols = max_length, max_length
-
-	def rotate_image(self, angle):
-		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
-		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
-		return result
+	def prepare_frames(self):
+		for x in range(100, 80, -4):
+			img = Images(self.path + self.filename, self.scale * x/10, rotate=1)
+			img.to_3channel()
+			self.frames.append(img)
+		self.n_frame = len(self.frames)
 
 
-class PrepareSlider:
+class SliderBall(AnimatableImage):
+	def __init__(self, path, scale):
+		AnimatableImage.__init__(self, path, sliderb, scale, hasframes=True)
+
+
+class SliderFollow(AnimatableImage):
+	def __init__(self, path, scale):
+		AnimatableImage.__init__(self, path, sliderfollowcircle, scale, hasframes=True, delimiter="-")
+
+
+class PrepareSlider(Images):
 	def __init__(self, path, diff, scale, skin, movedown, moveright):
 		self.path = path
 		self.movedown = movedown
@@ -333,40 +312,15 @@ class PrepareSlider:
 		return self.reversearrow, self.sliderb_frames, self.sliderfollow_fadeout, self.slidertick
 
 	def load_sliderballs(self):
-		self.sliderb = cv2.imread(self.path + sliderb, -1)
-		self.sliderfollowcircle = cv2.imread(self.path + sliderfollowcircle, -1)
-
-		self.followscale = default_size / self.sliderfollowcircle.shape[0]
 		self.radius_scale = self.cs * 2 / default_size
 
 		self.reversearrow = ReverseArrow(self.path, self.radius_scale)
-		self.sliderb = self.change_size2(self.sliderb, self.radius_scale, self.radius_scale)
-		self.sliderfollowcircle = self.change_size2(self.sliderfollowcircle, self.radius_scale, self.radius_scale)
+		self.sliderb = SliderBall(self.path, self.radius_scale)
+		self.sliderfollowcircle = SliderFollow(self.path, self.radius_scale)
 
+		self.followscale = default_size / self.sliderfollowcircle.nparray_at(0).shape[0]
 		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale)
 		self.slidertick.to_3channel()
-
-	def add_color(self, image, color):
-		red = color[0] * self.divide_by_255
-		green = color[1] * self.divide_by_255
-		blue = color[2] * self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-
-	def to_3channel(self, image):
-		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
-		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			image[:, :, c] = image[:, :, c] * alpha_s
-
-	def change_size2(self, img, new_col, new_row):
-		n_rows = int(new_row * img.shape[1])
-		n_rows -= int(n_rows % 2 == 1)  # need to be even
-		n_cols = int(new_col * img.shape[0])
-		n_cols -= int(n_cols % 2 == 1)  # need to be even
-		return cv2.resize(img, (n_cols, n_rows), interpolation=cv2.INTER_LINEAR)
 
 	def ballinhole(self, follow, sliderball):
 		# still ned 4 channels so cannot do to_3channel before.
@@ -396,8 +350,8 @@ class PrepareSlider:
 
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
-			orig_color_sb = np.copy(self.sliderb)
-			self.add_color(orig_color_sb, color)
+			orig_color_sb = np.copy(self.sliderb.nparray_at(0))
+			super().add_color(color, applytoself=False, img=orig_color_sb)
 
 			self.sliderb_frames.append([])
 
@@ -407,18 +361,18 @@ class PrepareSlider:
 			cur_alpha = 1
 
 			for x in range(follow_fadein, 0, -int(self.interval)):
-				orig_sfollow = self.change_size2(self.sliderfollowcircle, cur_scale, cur_scale)
+				orig_sfollow = super().change_size(cur_scale, cur_scale, applytoself=False, img=self.sliderfollowcircle.nparray_at(0))
 				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
 
 				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
 				# add to frame twice
 				if c == 1:
 					follow_img = np.copy(orig_sfollow)
-					self.to_3channel(follow_img)
+					super().to_3channel(applytoself=False, img=follow_img)
 					self.sliderfollow_fadeout.append(follow_img)
 
 				orig_sfollow = self.ballinhole(orig_sfollow, orig_color_sb)
-				self.to_3channel(orig_sfollow)
+				super().to_3channel(applytoself=False, img=orig_sfollow)
 				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
 				# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
 				cur_scale -= scale_interval
