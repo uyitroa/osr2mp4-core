@@ -1,9 +1,11 @@
 import cv2
 
+FORMAT = ".png"
+
 
 class Playfield:
 	def __init__(self, filename, width, height):
-		self.img = cv2.imread(filename, -1)
+		self.img = cv2.imread(filename + FORMAT, -1)
 		self.img = cv2.resize(self.img, (width, height), interpolation=cv2.INTER_NEAREST)
 
 	def add_to_frame(self, background):

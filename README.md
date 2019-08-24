@@ -1,3 +1,3 @@
 yes.
 
-need opencv and numpy sci-kit bye
+need opencv and numpy scipy numba bye
