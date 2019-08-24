@@ -74,7 +74,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4), dtype=np.uint8)
+		im = np.zeros((int(390 * self.scale + self.extended * 2), int(520 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -100,10 +100,10 @@ class GenerateSlider:
 		img = self.draw(curve_pos)
 
 		# crop useless part of image
-		left_y_corner = int(min_y - self.extended) if int(min_y - self.extended) >= 0 else 0
-		left_x_corner = int(min_x - self.extended) if int(min_x - self.extended) >= 0 else 0
-		right_y_corner = int(max_y + self.extended) if int(max_y + self.extended) < img.shape[0] else img.shape[0]
-		right_x_corner = int(max_x + self.extended) if int(max_x + self.extended) < img.shape[1] else img.shape[1]
+		left_y_corner = max(0, int(min_y - self.extended))
+		left_x_corner = max(0, int(min_x - self.extended))
+		right_y_corner = min(img.shape[0], int(max_y + self.extended))
+		right_x_corner = min(img.shape[1], int(max_x + self.extended))
 
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
