@@ -130,8 +130,7 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index, end_index):
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
+def create_frame(beatmap, skin, replay_event, resultinfo, indices, has_spinner):
 	print("process start")
 	orig_img = setupBackground()
 
@@ -147,8 +146,11 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 	pslider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
 	pslider = pslider.get_frames()
 
-	pspinner = PrepareSpinner(PLAYFIELD_SCALE, PATH)
-	pspinner = pspinner.get_frames()
+	if has_spinner:
+		pspinner = PrepareSpinner(PLAYFIELD_SCALE, PATH)
+		pspinner = pspinner.get_frames()
+	else:
+		pspinner = None, None, None
 
 	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, diffcalculator, pcircle, pslider, pspinner)
 
@@ -156,90 +158,96 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 
 	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
-	simulate = replay_event[start_index][TIMES]
-	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
-	cursor_event = replay_event[osr_index]
-	updater.info_index = info_index
-	img = np.zeros((1, 1, 3)).astype('uint8')
-	print("setup done")
+	for x in range(0, len(indices), 2):
+		start_index = indices[x]
+		end_index = indices[x+1]
+		filename = "process" + str(start_index) + ".mkv"
 
-	while osr_index < end_index: # len(replay_event) - 3:
-		if osr_index >= start_index:
-			img = np.copy(orig_img)  # reset background
-
-		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
-		if k1:
-			component.key1.clicked(cursor_event[TIMES])
-		if k2:
-			component.key2.clicked(cursor_event[TIMES])
-		if m1:
-			component.mouse1.clicked(cursor_event[TIMES])
-		if m2:
-			component.mouse2.clicked(cursor_event[TIMES])
-
-		osu_d = beatmap.hitobjects[index_hitobject]
-		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
-
-
-		# check if it's time to draw followpoints
-		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
-			index_followpoint += 1
-			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
-			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
-
-
-		# check if it's time to draw circles
-		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
-			if "spinner" in osu_d["type"]:
-				if cur_time + 400 > osu_d["time"]:
-					component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
-					index_hitobject += 1
-			else:
-
-				component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
-
-				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
-				index_hitobject += 1
-
-		updater.update(cur_time)
-
-		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
-		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
-		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
-		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
-		component.followpoints.add_to_frame(img, cur_time)
-		component.hitobjmanager.add_to_frame(img)
-		component.hitresult.add_to_frame(img)
-		component.spinbonus.add_to_frame(img)
-		component.combocounter.add_to_frame(img)
-		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
-		component.accuracy.add_to_frame(img)
-		component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
-		component.urbar.add_to_frame(img)
-
-		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
-		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-		component.cursor.add_to_frame(img, cursor_x, cursor_y)
-
-
-		writer.write(img)
-
-
-		old_cursor_x = cursor_x
-		old_cursor_y = cursor_y
-
-		cur_time += 1000 / FPS
-
-		# choose correct osr index for the current time because in osr file there might be some lag
-		osr_index += nearer(cur_time, replay_event, osr_index)
-		# if next_index == 0:
-		# 	# trying to smooth out cursor
-		# 	cursor_event[CURSOR_X] += (replay_event[osr_index+possible_nextindex][CURSOR_X] - cursor_event[CURSOR_X])//2
-		# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
-		# else:
+		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
+		simulate = replay_event[start_index][TIMES]
+		cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
 		cursor_event = replay_event[osr_index]
-	print("process done", filename)
-	writer.release()
+		updater.info_index = info_index
+		img = np.zeros((1, 1, 3)).astype('uint8')
+		print("setup done")
+
+		while osr_index < end_index: # len(replay_event) - 3:
+			if osr_index >= start_index:
+				img = np.copy(orig_img)  # reset background
+
+			k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
+			if k1:
+				component.key1.clicked(cursor_event[TIMES])
+			if k2:
+				component.key2.clicked(cursor_event[TIMES])
+			if m1:
+				component.mouse1.clicked(cursor_event[TIMES])
+			if m2:
+				component.mouse2.clicked(cursor_event[TIMES])
+
+			osu_d = beatmap.hitobjects[index_hitobject]
+			x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
+			y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
+
+
+			# check if it's time to draw followpoints
+			if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
+				index_followpoint += 1
+				component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
+				index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
+
+
+			# check if it's time to draw circles
+			if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
+				if "spinner" in osu_d["type"]:
+					if cur_time + 400 > osu_d["time"]:
+						component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
+						index_hitobject += 1
+				else:
+
+					component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
+
+					if "slider" in osu_d["type"]:
+						component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
+					index_hitobject += 1
+
+			updater.update(cur_time)
+
+			component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
+			component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
+			component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
+			component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
+			component.followpoints.add_to_frame(img, cur_time)
+			component.hitobjmanager.add_to_frame(img)
+			component.hitresult.add_to_frame(img)
+			component.spinbonus.add_to_frame(img)
+			component.combocounter.add_to_frame(img)
+			component.scorecounter.add_to_frame(img, cursor_event[TIMES])
+			component.accuracy.add_to_frame(img)
+			component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
+			component.urbar.add_to_frame(img)
+
+			cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+			cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
+			component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
+			component.cursor.add_to_frame(img, cursor_x, cursor_y)
+
+
+			writer.write(img)
+
+
+			old_cursor_x = cursor_x
+			old_cursor_y = cursor_y
+
+			cur_time += 1000 / FPS
+
+			# choose correct osr index for the current time because in osr file there might be some lag
+			osr_index += nearer(cur_time, replay_event, osr_index)
+			# if next_index == 0:
+			# 	# trying to smooth out cursor
+			# 	cursor_event[CURSOR_X] += (replay_event[osr_index+possible_nextindex][CURSOR_X] - cursor_event[CURSOR_X])//2
+			# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
+			# else:
+			cursor_event = replay_event[osr_index]
+		print("process done", filename)
+		writer.release()

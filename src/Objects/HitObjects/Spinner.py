@@ -42,6 +42,10 @@ class SpinnerManager(Images):
 				self.spinners[i][3] = max(0, self.spinners[i][3] - self.interval / 200)
 			else:
 				self.spinners[i][3] = 1
+
+		if self.spinner_images is None:
+			return
+
 		self.img = self.spinner_images[spinnerbackground].img[:, :, :] * self.spinners[i][3]
 		if not alone:
 			super().add_to_frame(background,  background.shape[1]//2, 46 + self.img.shape[0]//2)

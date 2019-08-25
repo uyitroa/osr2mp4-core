@@ -9,9 +9,9 @@ from Parser.skinparser import Skin
 
 # const
 PATH = "../res/skin8/"
+FPS = 60
 WIDTH = 1920
 HEIGHT = 1080
-FPS = 60
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
@@ -21,24 +21,71 @@ BEATMAP_FILE = "../res/tengaku.osu"
 REPLAY_FILE = "../res/ten.osr"
 
 
+def smart_divide(beatmap, n_process, max_osr, replay):
+	has_spinner = [0] * n_process
+	divided = [[] for _ in range(n_process)]
+	filenames = []
+	osr_index = 0
+	for index in beatmap.spinner_index:
+		has_spinner[0] = 1
+		found_startindex = False
+		while replay[osr_index][3] < beatmap.hitobjects[index]["end time"] + 1000:
+			spinnertime = beatmap.hitobjects[index]["time"]
+			if spinnertime > replay[osr_index][3] > spinnertime - 1000 and not found_startindex:
+				divided[0].append(osr_index)
+				found_startindex = True
+			osr_index += 1
+		if found_startindex:
+			divided[0].append(osr_index)
+			filenames.append(divided[0][-2])
+		else:  # if 2 spinners are too close to each other
+			divided[0][-1] = osr_index
+
+	divided[0].append(len(replay)+10)
+	divided[0].append(len(replay)+10)
+
+	cur_osr = 0
+	cur_spinnerosr = 0
+	for x in range(has_spinner[0], len(has_spinner)):
+		osr_interval = int((max_osr - cur_osr) / (n_process - x))
+		end_osr = cur_osr + osr_interval
+
+		divided[x].append(cur_osr)  # start
+		while end_osr > divided[0][cur_spinnerosr+1]:
+			filenames.append(divided[x][-1])
+			if abs(divided[0][cur_spinnerosr] - divided[x][-1]) <= 100:
+				divided[0][cur_spinnerosr] = divided[x].pop()
+				filenames.pop()
+			else:
+				divided[x].append(divided[0][cur_spinnerosr])  # end
+			divided[x].append(divided[0][cur_spinnerosr+1])  # start
+			cur_spinnerosr += 2
+
+		cur_osr = min(end_osr, divided[0][cur_spinnerosr])
+		divided[x].append(cur_osr)  # end
+
+	divided[0].pop()
+	divided[0].pop()
+
+	filenames.sort()
+
+	return divided, has_spinner, filenames
+
+
+
 def divide_core(max_osr, beatmap, skin, replay_event, resultinfo):
 	cpu_count = multiprocessing.cpu_count()
-	frame_processes = cpu_count - 1
+	frame_processes = cpu_count
 	processes = []
-	osr_interval = int(max_osr / frame_processes)
 
-	start_index = 0
-	outputlistfile = open("mylist.txt", "w")
+	divided, has_spinner, filenames = smart_divide(beatmap, frame_processes, max_osr, replay_event)
+	print(divided, "\n", has_spinner)
 	for x in range(frame_processes):
-		if x == frame_processes-1:
-			end_index = max_osr
-		else:
-			end_index = start_index + osr_interval
+		processes.append(Process(target=create_frame, args=(beatmap, skin, replay_event, resultinfo, divided[x], has_spinner[x])))
 
-		filename = "process" + str(x) + ".mkv"
-		processes.append(Process(target=create_frame, args=(filename, beatmap, skin, replay_event, resultinfo, start_index, end_index)))
-		start_index += osr_interval
-
+	outputlistfile = open("mylist.txt", "w")
+	for video_id in filenames:
+		filename = "process" + str(video_id) + ".mkv"
 		outputlistfile.write("file " + filename + "\n")
 	outputlistfile.close()
 	return processes
@@ -61,7 +108,7 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	processes = divide_core(2000, beatmap, skin, replay_event, resultinfo)
+	processes = divide_core(len(replay_event) - 3, beatmap, skin, replay_event, resultinfo)
 
 	for x in processes:
 		x.start()
