@@ -119,6 +119,7 @@ def main():
 	print("Done Converting..")
 	os.system("ffmpeg -f concat -i mylist.txt -c copy output.mp4 -y")
 
+	# TODO: wrong filename
 	for x in range(len(processes)):
 		filename = "process" + str(x) + ".mkv"
 		os.system("rm " + filename)
