@@ -1,0 +1,7 @@
+python-opencv
+numpy
+scipy
+numba
+mako
+pybind11
+pyopencl
