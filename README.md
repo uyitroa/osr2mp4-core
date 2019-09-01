@@ -19,3 +19,4 @@ pip install -r requirements.txt
 	- add leaderboard
 	- implement @x2
 	- optimize resize opencl function
+	- unittest for Judgement
