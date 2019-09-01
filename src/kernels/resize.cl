@@ -1,4 +1,4 @@
-__kernel void downsample(__global uchar* image, __global uchar* outputImage, int width, int height, int pix, int target_width, int target_height){
+__kernel void downsample(__global const uchar* image, __global uchar* outputImage, int width, int height, int pix, int target_width, int target_height){
 
 	const int x = get_global_id(0);
 	const int y = get_global_id(1);
