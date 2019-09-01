@@ -18,3 +18,4 @@ pip install -r requirements.txt
 	- add break animation, background fade in
 	- add leaderboard
 	- implement @x2
+	- optimize resize opencl function
