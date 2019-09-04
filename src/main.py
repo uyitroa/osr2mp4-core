@@ -8,10 +8,11 @@ from Parser.osrparser import *
 from Parser.skinparser import Skin
 
 # const
-PATH = "../res/skin8/"
+PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
+#TODO: fix ratio, width should be wdtih * (playfield_height/height) * 3 / 4, not sure though
 PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
 PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
@@ -61,21 +62,25 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	processes = divide_core(2000, beatmap, skin, replay_event, resultinfo)
+	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 4000)
+	os.system("ffmpeg -i output.mkv output.mp4")
 
-	for x in processes:
-		x.start()
+	# processes = divide_core(4000, beatmap, skin, replay_event, resultinfo)
+	#
+	# for x in processes:
+	# 	x.start()
+	#
+	# for x in processes:
+	# 	x.join()
+	#
+	# print("Done Converting..")
+	# os.system("ffmpeg -f concat -i mylist.txt -c copy output.mp4 -y")
 
-	for x in processes:
-		x.join()
+	# for x in range(len(processes)):
+	# 	filename = "process" + str(x) + ".mkv"
+	# 	os.system("rm " + filename)
+	# os.system("rm mylist.txt")
 
-	print("Done Converting..")
-	os.system("ffmpeg -f concat -i mylist.txt -c copy output.mp4 -y")
-
-	for x in range(len(processes)):
-		filename = "process" + str(x) + ".mkv"
-		os.system("rm " + filename)
-	os.system("rm mylist.txt")
 
 
 

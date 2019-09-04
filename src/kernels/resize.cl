@@ -1,7 +1,7 @@
-__kernel void downsample(__global const uchar* image, __global uchar* outputImage, int width, int height, int pix, int target_width, int target_height){
+__kernel void resize(__global const uchar* image, __global uchar* outputImage, int width, int height, int pix, int target_width, int target_height) {
 
-	const int x = get_global_id(0);
-	const int y = get_global_id(1);
+	const int y = get_global_id(0);
+	const int x = get_global_id(1);
 
 	uchar q11, q12, q21, q22;
 
@@ -16,15 +16,15 @@ __kernel void downsample(__global const uchar* image, __global uchar* outputImag
 	const int olx = (int)accurate_x;
 	const int ohx = min(olx+1, width-1);
 
-	const int index = x * target_width * pix + y * pix;
-	for(int k=0; k<pix; k++){
-		q11 = image[olx * width * pix + oly * pix + k];
-		q12 = image[ohx * width * pix + oly * pix + k];
-		q21 = image[olx * width * pix + ohy * pix + k];
-		q22 = image[ohx * width * pix + ohy * pix + k];
+	const int index = y * target_width * pix + x * pix;
+	for(int k=0; k<pix; k++) {
+		q11 = image[oly * width * pix + olx * pix + k];
+		q12 = image[ohy * width * pix + olx * pix + k];
+		q21 = image[oly * width * pix + ohx * pix + k];
+		q22 = image[ohy * width * pix + ohx * pix + k];
 		outputImage[index + k] = (uchar)(q11*(ohy - accurate_y)*(ohx - accurate_x) +
 										q21*(accurate_y - oly)*(ohx - accurate_x) +
 										q12*(ohy - accurate_y)*(accurate_x - olx) +
 										q22*(accurate_y - oly)*(accurate_x - olx));
-  }
+	}
 }

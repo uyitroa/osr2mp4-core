@@ -1,149 +1,183 @@
 import os
-
 import numpy as np
 import cv2
-import numba
-# import utils.calculation
-
+import pyopencl as cl
 #
 # np.set_printoptions(threshold=sys.maxsize)
 
 
 FORMAT = ".png"
 
+ctx = cl.create_some_context()
+queue = cl.CommandQueue(ctx)
 
-# crop everything that goes outside the screen
-@numba.njit(fastmath=True)
-def checkOverdisplay(pos1, pos2, limit):
-	start = 0
-	end = pos2 - pos1
+kernel_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'kernels/')
 
-	if pos1 >= limit:
-		return 0, 0, 0, 0
-	if pos2 <= 0:
-		return 0, 0, 0, 0
+kernel_files = os.listdir(kernel_path)
+all_kernel = ""
+for file in kernel_files:
+	if ".cl" in file:
+		all_kernel += open(kernel_path + file).read() + "\n"
 
-	if pos1 < 0:
-		start = -pos1
-		pos1 = 0
-	if pos2 >= limit:
-		end -= pos2 - limit
-		pos2 = limit
-	return pos1, pos2, start, end
+prg = cl.Program(ctx, all_kernel).build()
 
 
-@numba.njit(fastmath=True)
-def add_to_frame(background, img, x_offset, y_offset, channel=3):
-	# need to do to_3channel first.
-	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
-	x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
+class ImageBuffer:
+	def __init__(self, img=None, w=None, h=None, pix=None):
+		self.set(img, w, h, pix)
 
-	y1, y2, ystart, yend = checkOverdisplay(y1, y2, background.shape[0])
-	x1, x2, xstart, xend = checkOverdisplay(x1, x2, background.shape[1])
-	alpha_s = img[ystart:yend, xstart:xend, 3] * (1/255.0)
-	alpha_l = 1.0 - alpha_s
+	def shape(self):
+		return self.w, self.h, self.pix
 
-	for c in range(channel):
-		background[y1:y2, x1:x2, c] = (
-				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
+	def set(self, img, w, h, pix):
+		self.h = h
+		self.pix = pix
+		self.w = w
+		self.img = img
+
+	def set_shape(self, w, h, pix):
+		self.set(self.img, w, h, pix)
+
+	def nbytes(self):
+		return self.w * self.h * self.pix
 
 
 class Images:
 	divide_by_255 = 1 / 255.0
+	mf = cl.mem_flags
+	prg, queue, ctx = prg, queue, ctx
 
 	def __init__(self, filename, scale=1, rotate=0):
+		# TODO: remove self from img_np to save memory
 		self.filename = filename
-		self.img = cv2.imread(self.filename + FORMAT, -1)
+		self.img_np = cv2.imread(self.filename + FORMAT, -1)
 
-		if self.img is None or self.img.shape[0] == 1 or self.img.shape[1] == 1:
-			print(filename, "exists:", self.img is not None)
-			self.img = np.zeros((2, 2, 4))
-		if self.img.dtype != np.uint8:
-			cv2.normalize(self.img, self.img, 0, 255, cv2.NORM_MINMAX)
-			self.img = self.img.astype(np.uint8)
-			print(self.img.dtype, self.filename)
+		if self.img_np is None or self.img_np.shape[0] == 1 or self.img_np.shape[1] == 1:
+			print(filename, "exists:", self.img_np is not None)
+			self.img_np = np.zeros((2, 2, 4))
+		if self.img_np.dtype != np.uint8:
+			cv2.normalize(self.img_np, self.img_np, 0, 255, cv2.NORM_MINMAX)
+			self.img_np = self.img_np.astype(np.uint8)
+			print(self.img_np.dtype, self.filename)
 		if rotate:
 			self.to_square()
 
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
-		self.change_size(scale, scale)  # make rows and cols even amount
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
+		img = cl.Buffer(self.ctx, self.mf.READ_WRITE | self.mf.COPY_HOST_PTR, hostbuf=self.img_np)
+		h, w, pix = self.img_np.shape
+		h, w, pix = np.int32(h), np.int32(w), np.int32(pix)
+		self.buf = ImageBuffer(img, w, h, pix)
+		self.buf.set(*self.change_size(scale, scale))
 
+	def add_color(self, color, buf=None, new_dst=False):
+		if buf is None:
+			buf = self.buf
+		if new_dst:
+			dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
+		else:
+			dest = buf.img
+		blue, green, red = np.int32(color[0]), np.int32(color[1]), np.int32(color[2])
+		self.prg.add_color(self.queue, (buf.h, buf.w), None, buf.img, dest, buf.w, buf.pix, blue, green, red)
 
-	def to_3channel(self, applytoself=True, img=None):
-		if applytoself:
-			img = self.orig_img
-		alpha_s = img[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			img[:, :, c] = img[:, :, c] * alpha_s
+		if new_dst:
+			return dest
 
-		if applytoself:
-			self.img = np.copy(img)
+	def edit_channel(self, c, scale, buf=None, new_dst=False):
+		if buf is None:
+			buf = self.buf
+		if new_dst:
+			dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
+		else:
+			dest = buf.img
 
-	def add_color(self, color, applytoself=True, img=None):
-		if applytoself:
-			img = self.img
-		red = color[0]*self.divide_by_255
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
-		img[:, :, 0] = np.multiply(img[:, :, 0], blue, casting='unsafe')
-		img[:, :, 1] = np.multiply(img[:, :, 1], green, casting='unsafe')
-		img[:, :, 2] = np.multiply(img[:, :, 2], red, casting='unsafe')
+		self.prg.edit_channel(self.queue, (buf.h, buf.w), None, buf.img, dest, buf.w, buf.pix, np.int32(c), np.float32(scale))
+
 
 	def to_square(self):
-		max_length = int(np.sqrt(self.img.shape[0] ** 2 + self.img.shape[1] ** 2) + 2)  # round but with int
+		max_length = int(np.sqrt(self.img_np.shape[0] ** 2 + self.img_np.shape[1] ** 2) + 2)  # round but with int
 		square = np.zeros((max_length, max_length, 4))
-		y1, y2 = int(max_length / 2 - self.img.shape[0] / 2), int(max_length / 2 + self.img.shape[0] / 2)
-		x1, x2 = int(max_length / 2 - self.img.shape[1] / 2), int(max_length / 2 + self.img.shape[1] / 2)
-		square[y1:y2, x1:x2, :] = self.img[:, :, :]
-		self.img = square
+		y1, y2 = int(max_length / 2 - self.img_np.shape[0] / 2), int(max_length / 2 + self.img_np.shape[0] / 2)
+		x1, x2 = int(max_length / 2 - self.img_np.shape[1] / 2), int(max_length / 2 + self.img_np.shape[1] / 2)
+		square[y1:y2, x1:x2, :] = self.img_np[:, :, :]
+		self.img_np = square
 
-	def change_size(self, new_row, new_col, inter_type=cv2.INTER_AREA, applytoself=True, img=None):
-		if applytoself:
-			img = self.orig_img
-		n_rows = max(2, int(new_row * img.shape[0]))
-		n_rows += int(n_rows % 2 == 1)  # need to be even
-		n_cols = max(2, int(new_col * img.shape[1]))
-		n_cols += int(n_cols % 2 == 1)  # need to be even
-		if applytoself:
-			self.img = cv2.resize(img, (n_cols, n_rows), interpolation=inter_type)
-			# if self.autosave:
-			# 	self.save_alphachannel()
-			return True
-		else:
-			img = cv2.resize(img, (n_cols, n_rows), interpolation=inter_type)
-			return img
+	def change_size(self, row_scale, col_scale, buf=None):
+		if buf is None:
+			buf = self.buf
+
+		n_rows = np.int32(max(2, int(row_scale * buf.w)))
+		n_rows += np.int32(n_rows % 2 == 1)  # need to be even
+		n_cols = np.int32(max(2, int(col_scale * buf.h)))
+		n_cols += np.int32(n_cols % 2 == 1)  # need to be even
+
+		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, n_rows * n_cols * buf.pix)
+
+		self.prg.resize(self.queue, (n_cols, n_rows), None, buf.img, dest, buf.w, buf.h, buf.pix, n_rows, n_cols)
+
+		return dest, n_rows, n_cols, buf.pix
 
 	def rotate_image(self, angle):
-		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
-		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
-		return result
+		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, self.buf.nbytes())
+		cos, sin = np.cos(angle, dtype=np.float32), np.sin(angle, dtype=np.float32)
+		self.prg.resize(self.queue, (self.buf.h, self.buf.w), None, self.buf.img, dest, self.buf.w, self.buf.h, self.buf.pix, cos, sin)
+		return dest
 
 	# crop everything that goes outside the screen
-	def checkOverdisplay(self, pos1, pos2, limit):
-		return checkOverdisplay(pos1, pos2, limit)
+	@staticmethod
+	def checkOverdisplay(pos1, pos2, limit):
+		start = 0
+		end = pos2 - pos1
 
-	def ensureBGsize(self, background, overlay_image):
-		if overlay_image.shape[0] > background.shape[0] or overlay_image.shape[1] > background.shape[1]:
-			max_height = max(overlay_image.shape[0], background.shape[0])
-			max_width = max(overlay_image.shape[1], background.shape[1])
-			new_img = np.zeros((max_height, max_width, 4), dtype=overlay_image.dtype)
-			y1, y2 = int(new_img.shape[0] / 2 - background.shape[0] / 2), int(new_img.shape[0] / 2 + background.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - background.shape[1] / 2), int(new_img.shape[1] / 2 + background.shape[1] / 2)
-			new_img[y1:y2, x1:x2, :] = background[:, :, :]
-			return new_img
-		return background
+		if pos1 >= limit:
+			return 0, 0, 0, 0
+		if pos2 <= 0:
+			return 0, 0, 0, 0
 
-	def add_to_frame(self, background, x_offset, y_offset, channel=3):
-		add_to_frame(background, self.img, x_offset, y_offset, channel)
+		if pos1 < 0:
+			start = -pos1
+			pos1 = 0
+		if pos2 >= limit:
+			end -= pos2 - limit
+			pos2 = limit
+		return np.int32(pos1), np.int32(pos2), np.int32(start), np.int32(end)
+
+	def copy_img(self, buf=None):
+		if buf is None:
+			buf = self.buf
+
+		copy_img = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
+		self.prg.copy(self.queue, (buf.h, buf.w, buf.pix), None, buf.img, copy_img, buf.w, buf.w, buf.pix, np.int32(0), np.int32(0))
+		return copy_img
+
+	def ensureBGsize(self, bg_buf, overlay_buf):
+		if overlay_buf.w > bg_buf.w or overlay_buf.w > bg_buf.h:
+			max_height = max(overlay_buf.h, bg_buf.h)
+			max_width = max(overlay_buf.w, bg_buf.h)
+			new_img = cl.Buffer(self.ctx, self.mf.READ_WRITE, max_height * max_width * bg_buf.pix)
+			y = np.int32(max_height/2 - bg_buf.h/2)
+			x = np.int32(max_width/2 - bg_buf.w/2)
+			self.prg.copy(self.queue, (bg_buf.h, bg_buf.w, bg_buf.pix), None, bg_buf.img, new_img, bg_buf.w, max_width, bg_buf.pix, x, y)
+			bg_buf.set(new_img, max_width, max_height, bg_buf.pix)
+
+	def add_to_frame(self, bg_buf, x_offset, y_offset, channel=3, alpha=1):
+		y1, y2 = y_offset - self.buf.h//2, y_offset + self.buf.h//2
+		x1, x2 = x_offset - self.buf.w//2, x_offset + self.buf.w//2
+
+		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, bg_buf.h)
+		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, bg_buf.w)
+
+		if channel == 3:
+			func = self.prg.add_to_frame3
+		elif channel == 4:
+			func = self.prg.add_to_frame4
+		else:
+			print("wait that's illegal")
+			return
+		func(self.queue, (y2-y1, x2-x1), None, self.buf.img, bg_buf.img, self.buf.w, self.buf.pix, bg_buf.w, bg_buf.pix, x1, y1, xstart, ystart, np.float32(alpha))
+
 
 
 class AnimatableImage:
+	# TODO: check this class
 	def __init__(self, path, filename, scale, hasframes=False, delimiter="", rotate=0):
 		self.path = path
 		self.filename = filename
@@ -178,7 +212,6 @@ class AnimatableImage:
 		while should_continue:
 			self.frames.append(img)
 			img = Images(self.path + self.filename + self.delimiter + str(counter), self.scale, rotate)
-			img.to_3channel()
 			counter += 1
 			should_continue = os.path.isfile(self.path + self.filename + self.delimiter + str(counter) + ".png")
 		if not self.frames:
@@ -198,17 +231,3 @@ class AnimatableImage:
 	def add_to_frame(self, background, x_offset, y_offset, channel=3, alpha=1):
 		# self.frames[int(self.index)].img[:, :, :] = self.frames[int(self.index)].img[:, :, :] * alpha
 		self.frames[int(self.index)].add_to_frame(background, x_offset, y_offset, channel)
-
-
-class ACircle(Images):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
-		Images.__init__(self, filename)
-	# if self.orig_cols != hitcircle_cols or self.orig_rows != hitcircle_rows:
-	# 	cols_scale = hitcircle_cols/self.orig_cols
-	# 	rows_scale = hitcircle_rows/self.orig_rows
-	# 	self.change_size(rows_scale, cols_scale, inter_type=cv2.INTER_LINEAR)
-	# 	self.orig_cols = hitcircle_cols
-	# 	self.orig_rows = hitcircle_rows
-	# 	self.orig_img = np.copy(self.img)
-	# 	print(filename)
-	# print(self.orig_img.shape, self.img.shape, self.orig_cols, self.orig_rows)

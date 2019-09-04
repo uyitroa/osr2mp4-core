@@ -1,6 +1,4 @@
 from Objects.abstracts import *
-from skimage import transform
-
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"
@@ -25,13 +23,7 @@ default_size = 128
 
 class HitCircleNumber(Images):
 	def __init__(self, filename, circle_radius, default_circle_size):
-		Images.__init__(self, filename)
-		self.scale = circle_radius * 2 / default_circle_size
-		self.change_size(self.scale, self.scale)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.img.shape[0]
-		self.orig_cols = self.img.shape[1]
-		self.to_3channel()
+		Images.__init__(self, filename, scale=circle_radius * 2 / default_circle_size)
 
 
 class Number:
@@ -41,56 +33,51 @@ class Number:
 			self.combo_number.append(HitCircleNumber(path + "default-" + str(x), radius, default_circle_size))
 
 	def draw(self, circle, number, gap):
-		"""
-		:param circle: array of image circle
-		:param number: number
-		:param gap: distance between two digits
-		"""
 		number = str(number)
-		size = (-gap + self.combo_number[0].img.shape[1]) * (len(number) - 1)
-		x_pos = int((circle.shape[1] / 2) - (size / 2))
-		y_pos = int(circle.shape[0] / 2)
+		size = (-gap + self.combo_number[int(number[0])].buf.w) * (len(number) - 1)
+		x_pos = circle.w // 2 - size // 2
+		y_pos = circle.h // 2
 
 		for digit in number:
-			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, 4)
-			x_pos += -gap + self.combo_number[int(digit)].img.shape[1]
+			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, channel=4)
+			x_pos += -gap + self.combo_number[int(digit)].buf.w
 
 
-class ApproachCircle(ACircle):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows, scale, time_preempt, interval):
-		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
+class ApproachCircle(Images):
+	def __init__(self, filename, scale, time_preempt, interval):
+		Images.__init__(self, filename)
 		self.scale = scale
 		self.time_preempt = round(time_preempt)
 		self.interval = int(interval)
 		self.approach_frames = []
-		self.to_3channel()
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
 		scale = 3.5
 		for time_left in range(self.time_preempt, 0, -self.interval):
 			scale -= 2.5 * self.interval / self.time_preempt
-			self.change_size(scale * self.scale, scale * self.scale)
-			self.approach_frames.append(self.img)
+			buf = ImageBuffer(*self.change_size(scale * self.scale, scale * self.scale))
+			self.approach_frames.append(buf)
 
-	def add_to_frame(self, background, x_offset, y_offset, time_left):
-		self.img = self.approach_frames[int((self.time_preempt - time_left) / self.interval)]
-		super().add_to_frame(background, x_offset, y_offset)
-
-
-class CircleOverlay(ACircle):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
-		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
+	# # TODO: maybe delete?
+	# def add_to_frame(self, background, x_offset, y_offset, time_left):
+	# 	self.buf = self.approach_frames[int((self.time_preempt - time_left) / self.interval)]
+	# 	super().add_to_frame(background, x_offset, y_offset, channel=4)
 
 
-class SliderCircleOverlay(ACircle):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
-		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
+class CircleOverlay(Images):
+	def __init__(self, filename):
+		Images.__init__(self, filename)
 
 
-class CircleSlider(ACircle):
-	def __init__(self, filename, hitcircle_cols, hitcircle_rows):
-		ACircle.__init__(self, filename, hitcircle_cols, hitcircle_rows)
+class SliderCircleOverlay(Images):
+	def __init__(self, filename):
+		Images.__init__(self, filename)
+
+
+class CircleSlider(Images):
+	def __init__(self, filename):
+		Images.__init__(self, filename)
 
 
 class PrepareCircles(Images):
@@ -113,10 +100,10 @@ class PrepareCircles(Images):
 		self.gap = int(skin.fonts["HitCircleOverlap"] * self.radius_scale)
 
 		self.slider_combo = beatmap.slider_combo
-		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
+		self.slider_circle = CircleSlider(path + sliderstartcircle)
 
 		self.number_drawer = Number(self.cs * 0.9, path, default_size)
-		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, self.radius_scale,
+		self.approachCircle = ApproachCircle(path + approachcircle, self.radius_scale,
 		                                     self.time_preempt, self.interval)
 
 		self.circle_frames = []
@@ -140,129 +127,124 @@ class PrepareCircles(Images):
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
 	def load_circle(self):
-		self.overlay = CircleOverlay(self.overlay_filename, self.orig_cols, self.orig_rows)
-		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename, self.orig_cols, self.orig_rows)
+		self.overlay = CircleOverlay(self.overlay_filename)
+		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename)
 		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
 
-	def overlayhitcircle(self, overlay, hitcircle_image):
-		overlay = self.ensureBGsize(overlay, hitcircle_image)
+	def overlayhitcircle(self, overlay, circle_buf):
+		self.ensureBGsize(circle_buf, overlay)
 		# still ned 4 channels so cannot do to_3channel before.
-		y1, y2 = int(overlay.shape[0]/2 - hitcircle_image.shape[0]/2), int(overlay.shape[0]/2 + hitcircle_image.shape[0]/2)
-		x1, x2 = int(overlay.shape[1]/2 - hitcircle_image.shape[1]/2), int(overlay.shape[1]/2 + hitcircle_image.shape[1]/2)
+		y1 = np.int32(circle_buf.h / 2 - overlay.h / 2)
+		x1 = np.int32(circle_buf.w / 2 - overlay.w / 2)
 
-		alpha_s = overlay[y1:y2, x1:x2, 3] * self.divide_by_255
-		alpha_l = 1 - alpha_s
+		self.prg.add_to_frame4(self.queue, (overlay.h, overlay.w), None, overlay.img, circle_buf.img, overlay.w, overlay.pix, circle_buf.w,
+		                       circle_buf.pix, x1, y1, np.int32(0), np.int32(0), np.float32(1))
 
-		for c in range(3):
-			overlay[y1:y2, x1:x2, c] = hitcircle_image[:, :, c] * alpha_l + \
-			                              alpha_s * overlay[y1:y2, x1:x2, c]
-		overlay[y1:y2, x1:x2, 3] = overlay[y1:y2, x1:x2, 3] + alpha_l * hitcircle_image[:, :, 3]
-		return overlay
+	def overlay_approach(self, background, x_offset, y_offset, circle_buf):
+		y1, y2 = y_offset - int(circle_buf.h / 2), y_offset + int(circle_buf.h / 2)
+		x1, x2 = x_offset - int(circle_buf.w / 2), x_offset + int(circle_buf .w / 2)
 
-	def overlay_approach(self, background, x_offset, y_offset, circle_img, alpha):
-		# still ned 4 channels so cannot do to_3channel before.
-		y1, y2 = y_offset - int(circle_img.shape[0] / 2), y_offset + int(circle_img.shape[0] / 2)
-		x1, x2 = x_offset - int(circle_img.shape[1] / 2), x_offset + int(circle_img.shape[1] / 2)
+		y1, y2, ystart, yend = super().checkOverdisplay(y1, y2, background.h)
+		x1, x2, xstart, xend = super().checkOverdisplay(x1, x2, background.w)
 
-		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, background.shape[0])
-		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, background.shape[1])
 
-		alpha_s = background[y1:y2, x1:x2, 3] * self.divide_by_255
-		alpha_l = 1 - alpha_s
-		for c in range(3):
-			background[y1:y2, x1:x2, c] = circle_img[ystart:yend, xstart:xend, c] * alpha_l + \
-			                              background[y1:y2, x1:x2, c]
-		background[y1:y2, x1:x2, 3] = background[y1:y2, x1:x2, 3] + circle_img[ystart:yend, xstart:xend, 3] * alpha_l
-		background[:, :, :] = background[:, :, :] * (alpha/100)
+		self.prg.add_to_frame4(self.queue, (y2-y1, x2-x1), None, circle_buf.img, background.img, circle_buf.w, circle_buf.pix,
+		                       background.w, background.pix, x1, y1, np.int32(0), np.int32(0), np.float32(1))
 
-	def to_3channel(self, image):
-		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
-		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			image[:, :, c] = image[:, :, c] * alpha_s
 
 	def prepare_circle(self):
 		# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 		# to overlap number, circle overlay and approach circle every single time.
+
+		color_circle = ImageBuffer()
+		color_slider = ImageBuffer()
+		circle_buf = ImageBuffer()  # actual buffer for the hitcircle.png + hitcircleoverlay.png
+		slider_buf = ImageBuffer()  # actual buffer for the slidercircle.png + slideroverlau.png
+		im = ImageBuffer()  # circle fadeout buffer
+		ims = ImageBuffer()  # slider circle fadeout buffer
 
 		# add color to circles
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
 
 			# add overlay to hitcircle
-			orig_color_img = np.copy(self.orig_img)
-			super().add_color(color, applytoself=False, img=orig_color_img)
-			orig_overlay_img = self.overlayhitcircle(np.copy(self.overlay.img), orig_color_img)
-			orig_overlay_img = super().change_size(self.radius_scale, self.radius_scale, applytoself=False, img=orig_overlay_img)
-			self.to_3channel(orig_overlay_img)
-			self.img = np.copy(orig_overlay_img)
+			# TODO: combine every kernel to avoid multiple unnecessary gpu call
+			color_circle.set(super().add_color(color, buf=self.buf, new_dst=True), *self.buf.shape())
+			self.overlayhitcircle(self.overlay.buf, color_circle)
+			circle_buf.set(*super().change_size(self.radius_scale, self.radius_scale, buf=color_circle))
 			self.circle_frames.append([])
 
-
 			# prepare fadeout frames
+			im.set(None, *circle_buf.shape())
 			self.circle_fadeout[0].append([])
 			for x in range(100, 140, 4):
-				size = x/100
-				im = np.copy(self.img)
-				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
-				self.circle_fadeout[0][-1].append(super().change_size(size, size, applytoself=False, img=im))
+				size = x / 100
+				im.img = super().edit_channel(3, 1 - (x - 100) / 40, buf=circle_buf, new_dst=True)
+				imgbuf = ImageBuffer(*super().change_size(size, size, buf=im))
+				self.circle_fadeout[0][-1].append(imgbuf)
 
 
-			orig_color_slider = np.copy(self.slider_circle.orig_img)
-			orig_overlay_slider = np.copy(self.slidercircleoverlay.img)
-			super().add_color(color, applytoself=False, img=orig_color_slider)
-			self.overlayhitcircle(orig_overlay_slider, orig_color_slider)
-			orig_overlay_slider = super().change_size(self.radius_scale, self.radius_scale, applytoself=False, img=orig_overlay_slider)
-			self.to_3channel(orig_overlay_slider)
-			self.slider_circle.img = np.copy(orig_overlay_slider)
-			self.slidercircle_frames.append({})   # use dict to find the right combo will be faster
-
+			color_slider.set(super().add_color(color, buf=self.slider_circle.buf, new_dst=True), *self.slider_circle.buf.shape())
+			self.overlayhitcircle(self.slidercircleoverlay.buf, color_slider)
+			slider_buf.set(*super().change_size(self.radius_scale, self.radius_scale, buf=color_slider))
+			self.slidercircle_frames.append({})  # use dict to find the right combo will be faster
 
 			# prepare fadeout frames
+			ims.set(None, *slider_buf.shape())
 			self.circle_fadeout[1].append([])
 			for x in range(100, 140, 4):
-				size = x/100
-				im = np.copy(orig_overlay_slider)
-				im[:, :, :] = im[:, :, :] * (1 - (x - 100)/40)
-				self.circle_fadeout[1][-1].append(super().change_size(size, size, applytoself=False, img=im))
+				size = x / 100
+				ims.img = super().edit_channel(3, 1 - (x - 100) / 40, buf=slider_buf, new_dst=True)
+				imgbuf = ImageBuffer(*super().change_size(size, size, buf=ims))
+				self.circle_fadeout[1][-1].append(imgbuf)
+
+
+			raw_circle_buf = ImageBuffer(super().copy_img(circle_buf), *circle_buf.shape())  # without number
+			raw_slider_buf = ImageBuffer(super().copy_img(slider_buf), *slider_buf.shape())
 
 			# add number to circles
 			for x in range(1, self.maxcombo[c] + 1):
-				self.number_drawer.draw(self.img, x, self.gap)
+				self.number_drawer.draw(circle_buf, x, self.gap)
 
 				# check if there is any slider with that number, so we can optimize the space by avoiding adding useless
 				# slider frames
 				if x in self.slider_combo:
-					self.number_drawer.draw(self.slider_circle.img, x, self.gap)
+					self.number_drawer.draw(slider_buf, x, self.gap)
 					self.slidercircle_frames[-1][x] = []
 
-				alpha = 0 # alpha for fadein
+				alpha = 0  # alpha for fadein
 				self.circle_frames[-1].append([])
 				# we also overlay approach circle to circle to avoid multiple add_to_frame call
 				for i in range(len(self.approachCircle.approach_frames)):
-					approach_circle = np.copy(self.approachCircle.approach_frames[i])
-					super().add_color(color, applytoself=False, img=approach_circle)
-					x_offset = int(approach_circle.shape[1] / 2)
-					y_offset = int(approach_circle.shape[0] / 2)
+					approach_circle = ImageBuffer()
+					approach_circle.img = super().add_color(color, buf=self.approachCircle.approach_frames[i], new_dst=True)
+					approach_circle.set_shape(*self.approachCircle.approach_frames[i].shape())
+
+					x_offset = approach_circle.w//2
+					y_offset = approach_circle.h//2
 
 					# avoid useless slider frames
 					if x in self.slider_combo:
-						approach_slider = np.copy(approach_circle)
-						self.overlay_approach(approach_slider, x_offset, y_offset, self.slider_circle.img, alpha)
+						approach_slider = ImageBuffer()
+						approach_slider.img = super().copy_img(buf=approach_circle)
+						approach_slider.set_shape(*approach_circle.shape())
+
+						self.overlay_approach(approach_slider, x_offset, y_offset, slider_buf)
+						self.edit_channel(3, alpha / 100, buf=approach_circle)
 						self.slidercircle_frames[-1][x].append(approach_slider)
 
-					self.overlay_approach(approach_circle, x_offset, y_offset, self.img, alpha)
+					self.overlay_approach(approach_circle, x_offset, y_offset, circle_buf)
+					self.edit_channel(3, alpha/100, buf=approach_circle)
 					self.circle_frames[-1][-1].append(approach_circle)
 
 					alpha = min(100, alpha + self.opacity_interval)
 
 				if x in self.slider_combo:
-					self.slidercircle_frames[-1][x].append(self.slider_circle.img)
-				self.circle_frames[-1][-1].append(self.img)  # for late tapping
+					self.slidercircle_frames[-1][x].append(slider_buf)
+				self.circle_frames[-1][-1].append(circle_buf)  # for late tapping
 
-				self.img = np.copy(orig_overlay_img)
-				self.slider_circle.img = np.copy(orig_overlay_slider)
+				circle_buf = ImageBuffer(super().copy_img(raw_circle_buf), *circle_buf.shape())
+				slider_buf = ImageBuffer(super().copy_img(raw_slider_buf), *slider_buf.shape())
 		print("done")
 		del self.approachCircle
 
@@ -275,7 +257,7 @@ class ReverseArrow(AnimatableImage):
 
 	def prepare_frames(self):
 		for x in range(100, 80, -4):
-			img = Images(self.path + self.filename, self.scale * x/10, rotate=1)
+			img = Images(self.path + self.filename, self.scale * x / 10, rotate=1)
 			img.to_3channel()
 			self.frames.append(img)
 		self.n_frame = len(self.frames)
@@ -361,7 +343,8 @@ class PrepareSlider(Images):
 			cur_alpha = 1
 
 			for x in range(follow_fadein, 0, -int(self.interval)):
-				orig_sfollow = super().change_size(cur_scale, cur_scale, applytoself=False, img=self.sliderfollowcircle.nparray_at(0))
+				orig_sfollow = super().change_size(cur_scale, cur_scale, applytoself=False,
+				                                   img=self.sliderfollowcircle.nparray_at(0))
 				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
 
 				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
@@ -384,14 +367,14 @@ class PrepareSlider(Images):
 
 class PrepareSpinner(Images):
 	def __init__(self, scale, path):
-		self.divide_by_255 = 1/255.0
+		self.divide_by_255 = 1 / 255.0
 		self.scale = scale * 1.3 * 0.5
 		self.path = path
 		self.spinners = {}
 		self.spinner_frames = []
 		self.spinnermetre = []
 		self.spinner_images = {}
-		self.interval = 1000/60
+		self.interval = 1000 / 60
 		self.load_spinner()
 		print("done loading spinner")
 		self.prepare_spinner()
@@ -402,22 +385,25 @@ class PrepareSpinner(Images):
 
 	def load_spinner(self):
 		print(self.scale)
-		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle, spinnertop]
+		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle,
+		     spinnertop]
 		for img in n:
 			self.spinner_images[img] = Images(self.path + img, self.scale)
 
-		# self.to_square(self.spinner_images[spinnercircle])
+	# self.to_square(self.spinner_images[spinnercircle])
 
 	def prepare_spinner(self):
 		self.spinner_images[spinnercircle].to_3channel()
 		self.spinner_images[spinnerbackground].to_3channel()
 
 		for x in range(90):
-			self.spinnermetre.append(transform.rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(np.uint8))
+			self.spinnermetre.append(
+				transform.rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(
+					np.uint8))
 
 		for x in range(10, -1, -1):
 			height, width, a = self.spinner_images[spinnermetre].img.shape
-			height = int(height * x/10)
+			height = int(height * x / 10)
 			partial_metre = np.copy(self.spinner_images[spinnermetre].img)
 			partial_metre[:height, :, :] = np.zeros((height, width, 4))[:, :, :]
 

@@ -30,7 +30,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 
-PATH = "../res/skin8/"
+PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -133,7 +133,6 @@ def keys(n):
 def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index, end_index):
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 	print("process start")
-	orig_img = setupBackground()
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
@@ -160,6 +159,8 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
+
+	orig_img = setupBackground()
 	img = np.zeros((1, 1, 3)).astype('uint8')
 	print("setup done")
 
