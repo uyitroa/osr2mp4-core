@@ -28,10 +28,10 @@ __kernel void add_to_frame4(
 	const float dst_alpha = bg_g[b_index+3] / 255.0;
 	const float out_alpha = alpha_s + dst_alpha * alpha_l;
 	if (out_alpha == 0) {
-	    bg_g[b_index] = 0;
-	    bg_g[b_index+1] = 0;
-	    bg_g[b_index+2] = 0;
-	    bg_g[b_index+3] = 0;
+	    bg_g[b_index] = overlay_g[a_index] * alpha_s;
+	    bg_g[b_index+1] = overlay_g[a_index+1] * alpha_s;
+	    bg_g[b_index+2] = overlay_g[a_index+2] * alpha_s;
+	    bg_g[b_index+3] = overlay_g[a_index+3] * alpha_s;
 	}
 	bg_g[b_index] = (overlay_g[a_index] * alpha_s + bg_g[b_index] * alpha_l * dst_alpha)/out_alpha;
 	bg_g[b_index+1] = (overlay_g[a_index+1] * alpha_s + bg_g[b_index+1] * alpha_l * dst_alpha)/out_alpha;
