@@ -43,7 +43,6 @@ class ImageBuffer:
 
 
 class Images:
-	divide_by_255 = 1 / 255.0
 	mf = cl.mem_flags
 	prg, queue, ctx = prg, queue, ctx
 
@@ -91,6 +90,8 @@ class Images:
 
 		self.prg.edit_channel(self.queue, (buf.h, buf.w), None, buf.img, dest, buf.w, buf.pix, np.int32(c), np.float32(scale))
 
+		if new_dst:
+			return dest
 
 	def to_square(self):
 		max_length = int(np.sqrt(self.img_np.shape[0] ** 2 + self.img_np.shape[1] ** 2) + 2)  # round but with int
@@ -118,7 +119,7 @@ class Images:
 	def rotate_image(self, angle):
 		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, self.buf.nbytes())
 		cos, sin = np.cos(angle, dtype=np.float32), np.sin(angle, dtype=np.float32)
-		self.prg.resize(self.queue, (self.buf.h, self.buf.w), None, self.buf.img, dest, self.buf.w, self.buf.h, self.buf.pix, cos, sin)
+		self.prg.rotate_img(self.queue, (self.buf.h, self.buf.w), None, self.buf.img, dest, self.buf.w, self.buf.h, self.buf.pix, cos, sin)
 		return dest
 
 	# crop everything that goes outside the screen
@@ -147,6 +148,29 @@ class Images:
 		copy_img = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
 		self.prg.copy(self.queue, (buf.h, buf.w, buf.pix), None, buf.img, copy_img, buf.w, buf.w, buf.pix, np.int32(0), np.int32(0))
 		return copy_img
+
+	def overlap(self, buf=None, scalar=None, img2=None, x1=None, x2=None, y1=None, y2=None):
+
+		if x2 == 0 or y2 == 0:
+			return
+
+		if buf is None:
+			buf = self.buf
+		
+		x1 = x1 or 0
+		if x2 is None:
+			x2 = buf.w
+		y1 = y1 or 0
+		if y2 is None:
+			y2 = buf.h
+
+		print(x1, x2, y1, y2)
+
+		if scalar:
+			r, g, b, a = np.int32(scalar[0]), np.int32(scalar[1]), np.int32(scalar[2]), np.int32(scalar[3])
+			self.prg.overlap_scalar(self.queue, (y2-y1, x2-x1), None, buf.img, buf.w, buf.h, buf.pix, np.int32(x1), np.int32(y1), r, g, b, a)
+		elif img2:
+			print("\n\nnot yet\n\n")
 
 	def ensureBGsize(self, bg_buf, overlay_buf):
 		if overlay_buf.w > bg_buf.w or overlay_buf.w > bg_buf.h:
@@ -199,11 +223,11 @@ class AnimatableImage:
 	def add_index(self, index):
 		self.index = max(0, min(len(self.frames) - 1, self.index + index))
 
-	def image_at(self, index):
-		return self.frames[index]
+	def buffer_at(self, index):
+		return self.frames[index].buf
 
-	def nparray_at(self, index):
-		return self.frames[index].img
+	def imagebuffer_at(self, index):
+		return self.frames[index].buf.img
 
 	def load_frames(self, rotate):
 		counter = 0
