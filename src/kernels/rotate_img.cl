@@ -1,4 +1,4 @@
-__kernel void roate_img(__global const uchar * src, __global uchar * dest, const int width, const int height, const int pix, const float cos, const float sin) {
+__kernel void rotate_img(__global const uchar * src, __global uchar * dest, const int width, const int height, const int pix, const float cos, const float sin) {
 
     const int y1 = get_global_id(0);
     const int x1 = get_global_id(1);
