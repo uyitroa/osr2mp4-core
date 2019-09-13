@@ -360,7 +360,7 @@ class PrepareSpinner(Images):
 		self.path = path
 		self.spinners = {}
 		self.spinner_frames = []
-		self.spinnermetre = []
+		self.spinnercircle = []
 		self.spinner_images = {}
 		self.interval = 1000 / 60
 		self.load_spinner()
@@ -369,7 +369,7 @@ class PrepareSpinner(Images):
 		print("done prepraing spinner")
 
 	def get_frames(self):
-		return self.spinner_images, self.spinnermetre, self.spinner_frames
+		return self.spinner_images, self.spinnercircle, self.spinner_frames
 
 	def load_spinner(self):
 		print(self.scale)
@@ -381,21 +381,16 @@ class PrepareSpinner(Images):
 	# self.to_square(self.spinner_images[spinnercircle])
 
 	def prepare_spinner(self):
-		self.spinner_images[spinnercircle].to_3channel()
-		self.spinner_images[spinnerbackground].to_3channel()
+		spincircle_buf = self.spinner_images[spinnercircle]
 
 		for x in range(90):
-			self.spinnermetre.append(
-				transform.rotate(self.spinner_images[spinnercircle].img, x, preserve_range=True, order=0).astype(
-					np.uint8))
+			spinbuf = ImageBuffer(spincircle_buf.rotate_image(x), *spincircle_buf.buf.shape())
+			self.spinnercircle.append(spinbuf)
 
 		for x in range(10, -1, -1):
-			height, width, a = self.spinner_images[spinnermetre].img.shape
+			height, width, a = self.spinner_images[spinnermetre].buf.shape()
 			height = int(height * x / 10)
-			partial_metre = np.copy(self.spinner_images[spinnermetre].img)
-			partial_metre[:height, :, :] = np.zeros((height, width, 4))[:, :, :]
+			partial_metre = ImageBuffer(super().copy_img(self.spinner_images[spinnermetre].buf), *self.spinner_images[spinnermetre].buf.shape())
+			super().overlap(buf=partial_metre, scalar=[0, 0, 0, 0], y2=height)
+			self.spinner_frames.append(partial_metre)
 
-			# self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
-			self.orig_img = np.copy(partial_metre)
-			self.to_3channel()
-			self.spinner_frames.append(self.orig_img)
