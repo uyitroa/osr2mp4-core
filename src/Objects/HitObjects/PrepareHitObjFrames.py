@@ -258,10 +258,8 @@ class ReverseArrow(AnimatableImage):
 	def prepare_frames(self):
 		for x in range(100, 80, -4):
 			img = Images(self.path + self.filename, self.scale * x / 10, rotate=1)
-			img.to_3channel()
-			self.frames.append(img)
+			self.frames.append(img.buf)
 		self.n_frame = len(self.frames)
-
 
 class SliderBall(AnimatableImage):
 	def __init__(self, path, scale):
@@ -300,40 +298,33 @@ class PrepareSlider(Images):
 		self.sliderb = SliderBall(self.path, self.radius_scale)
 		self.sliderfollowcircle = SliderFollow(self.path, self.radius_scale)
 
-		self.followscale = default_size / self.sliderfollowcircle.nparray_at(0).shape[0]
+		self.followscale = default_size / self.sliderfollowcircle.buffer_at(0).shape()[0]
 		self.slidertick = Images(self.path + sliderscorepiont, self.radius_scale)
-		self.slidertick.to_3channel()
 
 	def ballinhole(self, follow, sliderball):
 		# still ned 4 channels so cannot do to_3channel before.
 
 		# if sliderfollowcircle is smaller than sliderball ( possible when fading in the sliderfollowcircle), then create
 		# a blank image with sliderball shape and put sliderfollowcircle at the center of that image.
-		if sliderball.shape[0] > follow.shape[0]:
-			new_img = np.zeros(sliderball.shape)
-			y1, y2 = int(new_img.shape[0] / 2 - follow.shape[0] / 2), int(new_img.shape[0] / 2 + follow.shape[0] / 2)
-			x1, x2 = int(new_img.shape[1] / 2 - follow.shape[1] / 2), int(new_img.shape[1] / 2 + follow.shape[1] / 2)
-			new_img[y1:y2, x1:x2, :] = follow[:, :, :]
-			follow = new_img
+		super().ensureBGsize(follow, sliderball)
 
 		#  find center
-		y1, y2 = int(follow.shape[0] / 2 - sliderball.shape[0] / 2), int(follow.shape[0] / 2 + sliderball.shape[0] / 2)
-		x1, x2 = int(follow.shape[1] / 2 - sliderball.shape[1] / 2), int(follow.shape[1] / 2 + sliderball.shape[1] / 2)
+		y1= np.int32(follow.h / 2 - sliderball.h / 2)
+		x1 = np.int32(follow.w / 2 - sliderball.w / 2)
 
-		alpha_s = sliderball[:, :, 3] * self.divide_by_255
-		alpha_l = 1 - alpha_s
-		for c in range(3):
-			follow[y1:y2, x1:x2, c] = sliderball[:, :, c] * alpha_s + alpha_l * follow[y1:y2, x1:x2, c]
-		follow[y1:y2, x1:x2, 3] = follow[y1:y2, x1:x2, 3] * alpha_l + sliderball[:, :, 3]
-		return follow
+		zero = np.int32(0)
+		self.prg.add_to_frame4(self.queue, (sliderball.h, sliderball.w), None, sliderball.img, follow.img, sliderball.w, sliderball.pix, follow.w, follow.pix, x1, y1, zero, zero, np.float32(1))
 
 	def prepare_sliderball(self):
 		follow_fadein = 125  # sliderfollowcircle zoom out zoom in time
 
+		color_sb = ImageBuffer()
+		sfollow = ImageBuffer()
+
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
-			orig_color_sb = np.copy(self.sliderb.nparray_at(0))
-			super().add_color(color, applytoself=False, img=orig_color_sb)
+			color_sb.set(super().copy_img(self.sliderb.buffer_at(0)), *self.sliderb.buffer_at(0).shape())
+			super().add_color(color, buf=color_sb)
 
 			self.sliderb_frames.append([])
 
@@ -343,20 +334,17 @@ class PrepareSlider(Images):
 			cur_alpha = 1
 
 			for x in range(follow_fadein, 0, -int(self.interval)):
-				orig_sfollow = super().change_size(cur_scale, cur_scale, applytoself=False,
-				                                   img=self.sliderfollowcircle.nparray_at(0))
-				orig_sfollow[:, :, 3] = orig_sfollow[:, :, 3] * cur_alpha
+				sfollow = ImageBuffer(*super().change_size(cur_scale, cur_scale, buf=self.sliderfollowcircle.buffer_at(0)))
+				super().edit_channel(3, cur_alpha, buf=sfollow)
 
 				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to
 				# add to frame twice
 				if c == 1:
-					follow_img = np.copy(orig_sfollow)
-					super().to_3channel(applytoself=False, img=follow_img)
+					follow_img = ImageBuffer(super().copy_img(sfollow), *sfollow.shape())
 					self.sliderfollow_fadeout.append(follow_img)
 
-				orig_sfollow = self.ballinhole(orig_sfollow, orig_color_sb)
-				super().to_3channel(applytoself=False, img=orig_sfollow)
-				self.sliderb_frames[-1].append(np.copy(orig_sfollow))
+				self.ballinhole(sfollow, color_sb)
+				self.sliderb_frames[-1].append(sfollow)
 				# if it's the first loop then add sliderfollowcircle without sliderball for the fadeout
 				cur_scale -= scale_interval
 				cur_alpha -= alpha_interval
