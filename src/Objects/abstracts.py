@@ -172,6 +172,24 @@ class Images:
 		elif img2:
 			print("\n\nnot yet\n\n")
 
+	def rot90(self, n, buf=None):
+		if buf is None:
+			buf = self.buf
+		funcs = [self.prg.rot90, self.prg.rot180, self.prg.rot270]
+		copy_img = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
+		
+		n = n % 4
+
+		w, h, pix = buf.shape()
+		shape = (w, h, pix) if n % 2 == 0 else (h, w, pix)
+
+		if n == 0:
+			return (self.copy_img(buf), *shape)
+
+		funcs[n-1](self.queue, (buf.h, buf.w), None, buf.img, copy_img, w, h, pix)
+
+		return (copy_img, *shape)
+
 	def ensureBGsize(self, bg_buf, overlay_buf):
 		if overlay_buf.w > bg_buf.w or overlay_buf.w > bg_buf.h:
 			max_height = max(overlay_buf.h, bg_buf.h)
