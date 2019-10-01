@@ -1,5 +1,6 @@
 import cv2
 import time
+from Objects.abstracts import ctx, ImageBuffer, queue
 from Objects.Component.Playfield import Playfield
 from Objects.HitObjects.PrepareHitObjFrames import PrepareCircles, PrepareSlider, PrepareSpinner
 from Objects.HitObjects.Slider import SliderManager
@@ -21,6 +22,7 @@ from Objects.Component.LifeGraph import LifeGraph
 from CheckSystem.Judgement import DiffCalculator
 from InfoProcessor import Updater
 import numpy as np
+import pyopencl as cl
 
 from skip import skip
 
@@ -113,11 +115,11 @@ def find_followp_target(beatmap, index=0):
 
 
 def setupBackground():
-	img = np.zeros((HEIGHT, WIDTH, 3)).astype('uint8')  # setup background
+	img = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, WIDTH * HEIGHT * 3)  # setup background
 	playfield = Playfield(PATH + "scorebar-bg", WIDTH, HEIGHT)
 	playfield.add_to_frame(img)
 	inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background", SCALE)
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
+	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.buf.h / 2), int(320 * SCALE))
 	return img
 
 
@@ -160,13 +162,14 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
 
-	orig_img = setupBackground()
-	img = np.zeros((1, 1, 3)).astype('uint8')
+	# orig_img = setupBackground()
+	img = ImageBuffer(cl.Buffer(ctx, cl.mem_flags.READ_WRITE, 3), w=np.int32(1), h=np.int32(1), pix=np.int32(3))
+
 	print("setup done")
 
 	while osr_index < end_index: # len(replay_event) - 3:
 		if osr_index >= start_index:
-			img = np.copy(orig_img)  # reset background
+			img.set(cl.Buffer(ctx, cl.mem_flags.READ_WRITE, WIDTH * HEIGHT * 3), np.int32(WIDTH), np.int32(HEIGHT), np.int32(3))  # reset background
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
@@ -217,16 +220,17 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		component.combocounter.add_to_frame(img)
 		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
 		component.accuracy.add_to_frame(img)
-		component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
-		component.urbar.add_to_frame(img)
+		#component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
+		#component.urbar.add_to_frame(img)
 
 		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 
-
-		writer.write(img)
+		array, _ = cl.enqueue_map_buffer(queue, img.img, cl.map_flags.READ | cl.map_flags.WRITE, 0, (img.h, img.w, img.pix),
+		                                 np.uint8)
+		writer.write(array)
 
 
 		old_cursor_x = cursor_x

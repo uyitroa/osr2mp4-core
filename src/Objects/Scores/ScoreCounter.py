@@ -49,13 +49,13 @@ class ScoreCounter(Images):
 		if self.draw:
 			score_string = str(int(self.showscore))
 			score_string = "0" * (8 - len(score_string)) + score_string
-			x = self.width - (-self.gap + self.score_images[0].img.shape[1]) * len(score_string)
-			y = self.score_images[0].img.shape[0]//2
+			x = self.width - (-self.gap + self.score_images[0].buf.w) * len(score_string)
+			y = self.score_images[0].buf.h//2
 			for digit in score_string:
 				digit = int(digit)
-				self.img = self.score_images[digit].img
+				self.buf = self.score_images[digit].buf
 				super().add_to_frame(background, x, y)
-				x += -self.gap + self.score_images[0].img.shape[1]
+				x += -self.gap + self.score_images[0].buf.w
 
 		if cur_time >= self.freeze:
 			add_up = max(7.27, (self.score - self.showscore)/12.72)

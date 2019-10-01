@@ -62,8 +62,8 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 4000)
-	os.system("ffmpeg -i output.mkv output.mp4")
+	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 2000)
+	os.system("ffmpeg -i output.mkv output.mp4 -y")
 
 	# processes = divide_core(4000, beatmap, skin, replay_event, resultinfo)
 	#

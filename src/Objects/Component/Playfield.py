@@ -1,20 +1,13 @@
-import cv2
+from Objects.abstracts import Images
 
 FORMAT = ".png"
 
 
-class Playfield:
+class Playfield(Images):
 	def __init__(self, filename, width, height):
-		self.img = cv2.imread(filename + FORMAT, -1)
-		self.img = cv2.resize(self.img, (width, height), interpolation=cv2.INTER_NEAREST)
+		Images.__init__(self, filename)
 
 	def add_to_frame(self, background):
-		y1, y2 = 0, background.shape[0]
-		x1, x2 = 0, background.shape[1]
+		super().add_to_frame(background, 0, 0)
 
-		alpha_s = self.img[:, :, 3] / 255.0
-		alpha_l = 1.0 - alpha_s
-
-		for c in range(0, 3):
-			background[y1:y2, x1:x2, c] = (alpha_s * self.img[:, :, c] + alpha_l * background[y1:y2, x1:x2, c])
 

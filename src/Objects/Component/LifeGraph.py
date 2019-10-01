@@ -1,12 +1,9 @@
-import cv2
+from Objects.abstracts import Images
 
 
-FORMAT = ".png"
-
-class LifeGraph:
+class LifeGraph(Images):
 	def __init__(self, filename):
-		self.filename = filename + FORMAT
-		self.img = cv2.imread(filename)
+		Images.__init__(self, filename)
 		self.cur_life = 1
 		self.to_life = 1
 		self.speed = 0
@@ -33,7 +30,7 @@ class LifeGraph:
 		# 	if self.cur_life > 1:
 		# 		self.cur_life = 1
 		# self.wait_to_goes_down -= 1
-		width = int(self.img.shape[1] * self.cur_life)
-		height = int(self.img.shape[0])
+		width = int(self.buf.w * self.cur_life)
+		height = int(self.buf.h)
 
-		background[:height, :width] = self.img[:, :width]
+		# TODO: background[:height, :width] = self.img[:, :width]

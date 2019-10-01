@@ -83,8 +83,7 @@ class CircleSlider(Images):
 class PrepareCircles(Images):
 	def __init__(self, beatmap, path, scale, skin):
 		Images.__init__(self, path + hitcircle)
-		self.overlay_filename = path + hitcircleoverlay
-		self.slideroverlay_filename = path + sliderstartcircleoverlay
+
 		self.diff = beatmap.diff
 		self.interval = 1000 / 60  # ms between 2 frames
 		self.overlay_scale = 1.05
@@ -92,7 +91,7 @@ class PrepareCircles(Images):
 		self.cs = (54.4 - 4.48 * self.diff["CircleSize"]) * scale
 
 		self.calculate_ar()
-		self.load_circle()
+		self.load_circle(path)
 
 		self.maxcolors = skin.colours["ComboNumber"]
 		self.colors = skin.colours
@@ -100,7 +99,6 @@ class PrepareCircles(Images):
 		self.gap = int(skin.fonts["HitCircleOverlap"] * self.radius_scale)
 
 		self.slider_combo = beatmap.slider_combo
-		self.slider_circle = CircleSlider(path + sliderstartcircle)
 
 		self.number_drawer = Number(self.cs * 0.9, path, default_size)
 		self.approachCircle = ApproachCircle(path + approachcircle, self.radius_scale,
@@ -126,9 +124,10 @@ class PrepareCircles(Images):
 			self.fade_in = 800 - 500 * (self.ar - 5) / 5
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
-	def load_circle(self):
-		self.overlay = CircleOverlay(self.overlay_filename)
-		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename)
+	def load_circle(self, path):
+		self.overlay = CircleOverlay(path + hitcircleoverlay)
+		self.slidercircleoverlay = SliderCircleOverlay(path + sliderstartcircleoverlay)
+		self.slider_circle = CircleSlider(path + sliderstartcircle)
 		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
 
 	def overlayhitcircle(self, overlay, circle_buf):
@@ -246,6 +245,13 @@ class PrepareCircles(Images):
 				circle_buf = ImageBuffer(super().copy_img(raw_circle_buf), *circle_buf.shape())
 				slider_buf = ImageBuffer(super().copy_img(raw_slider_buf), *slider_buf.shape())
 		print("done")
+
+		# for i, x in enumerate(self.circle_fadeout[0][1]):
+		# 	array, _ = cl.enqueue_map_buffer(queue, x.img, cl.map_flags.READ | cl.map_flags.WRITE, 0,
+		# 	                                (x.h, x.w, x.pix),
+		# 	                                np.uint8)
+		# 	cv2.imwrite(str(i) + "test.png", array)
+		# cv2.stop
 		del self.approachCircle
 
 
@@ -258,8 +264,9 @@ class ReverseArrow(AnimatableImage):
 	def prepare_frames(self):
 		for x in range(100, 80, -4):
 			img = Images(self.path + self.filename, self.scale * x / 10, rotate=1)
-			self.frames.append(img.buf)
+			self.frames.append(img)
 		self.n_frame = len(self.frames)
+
 
 class SliderBall(AnimatableImage):
 	def __init__(self, path, scale):
@@ -282,7 +289,6 @@ class PrepareSlider(Images):
 		self.cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 
 		self.scale = scale
-		self.divide_by_255 = 1 / 255.0
 		self.sliderb_frames = []
 		self.sliderfollow_fadeout = []
 		self.load_sliderballs()

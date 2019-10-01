@@ -25,7 +25,7 @@ class CircleManager(Images):
 			isslider = self.circles[i][6]
 			if self.circles[i][7] > len(self.circle_fadeout[isslider][color]) - 1:
 				return
-			self.img = self.circle_fadeout[isslider][color][self.circles[i][7]]
+			self.buf = self.circle_fadeout[isslider][color][self.circles[i][7]]
 			self.circles[i][7] += 1
 			super().add_to_frame(background, self.circles[i][0], self.circles[i][1])
 			return
@@ -47,10 +47,10 @@ class CircleManager(Images):
 			# in case opacity_index exceed list range because of the creator shitty algorithm
 			# the creator is me btw
 			opacity_index = min(self.circles[i][3], len(self.slidercircle_frames[color][number]) - 1)
-			self.img = self.slidercircle_frames[color][number][opacity_index]
+			self.buf = self.slidercircle_frames[color][number][opacity_index]
 		else:
 			opacity_index = min(self.circles[i][3], len(self.circle_frames[color][number - 1]) - 1)
-			self.img = self.circle_frames[color][number - 1][opacity_index]
+			self.buf = self.circle_frames[color][number - 1][opacity_index]
 
 		# if self.circles[i][6] and self.circles[i][2] <= 0:
 		# 	self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i][2]/50)

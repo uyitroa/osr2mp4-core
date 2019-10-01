@@ -32,13 +32,12 @@ class ComboCounter(Images):
 			self.score_frames.append([])
 			self.score_fadeout.append([])
 			for x in range(100, 111, 2):
-				self.score_images[digit].change_size(x/100, x/100)
-				normal = self.score_images[digit].img
+				normal = ImageBuffer(*self.score_images[digit].change_size(x/100, x/100))
 				self.score_frames[-1].append(normal)
 
 			for x in range(150, 129, -4):
-				self.score_images[digit].change_size(x/100, x/100)
-				fadeout = self.score_images[digit].img[:, :, :] * (x/300)
+				fadeout = ImageBuffer(*self.score_images[digit].change_size(x/100, x/100))
+				super().edit_channel(3, x/300, buf=fadeout)
 				self.score_fadeout[-1].append(fadeout)
 
 	def breakcombo(self):
@@ -89,39 +88,39 @@ class ComboCounter(Images):
 
 		if self.adding:
 			x = 0
-			y = self.height - self.score_fadeout[0][self.fadeout_index].shape[0]
+			y = self.height - self.score_fadeout[0][self.fadeout_index].h
 			for digit in str(self.combofadeout):
 				digit = int(digit)
-				self.img = self.score_fadeout[digit][self.fadeout_index]
-				x += self.img.shape[1] - self.gap
-				x_offset = x - self.img.shape[1]//2
-				y_offset = y + self.img.shape[0]//2
+				self.buf = self.score_fadeout[digit][self.fadeout_index]
+				x += self.buf.w - self.gap
+				x_offset = x - self.buf.w//2
+				y_offset = y + self.buf.h//2
 				super().add_to_frame(background, x_offset, y_offset)
 
 
-			self.img = self.score_fadeout[10][self.fadeout_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1] // 2
-			y_offset = y + self.img.shape[0] // 2
+			self.buf = self.score_fadeout[10][self.fadeout_index]
+			x += self.buf.w - self.gap
+			x_offset = x - self.buf.w // 2
+			y_offset = y + self.buf.h // 2
 			super().add_to_frame(background, x_offset, y_offset)
 
 			self.fadeout_index += 1
 
 		x = 0
-		y = self.height - self.score_frames[0][self.score_index].shape[0]
+		y = self.height - self.score_frames[0][self.score_index].h
 		for digit in str(self.combo):
 			digit = int(digit)
-			self.img = self.score_frames[digit][self.score_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1]//2
-			y_offset = y + self.img.shape[0]//2
+			self.buf = self.score_frames[digit][self.score_index]
+			x += self.buf.w - self.gap
+			x_offset = x - self.buf.w//2
+			y_offset = y + self.buf.h//2
 			super().add_to_frame(background, x_offset, y_offset)
 
 
-		self.img = self.score_frames[10][self.score_index]
-		x += self.img.shape[1] - self.gap
-		x_offset = x - self.img.shape[1] // 2
-		y_offset = y + self.img.shape[0] // 2
+		self.buf = self.score_frames[10][self.score_index]
+		x += self.buf.w - self.gap
+		x_offset = x - self.buf.w // 2
+		y_offset = y + self.buf.h // 2
 		super().add_to_frame(background, x_offset, y_offset)
 
 		if self.animate:

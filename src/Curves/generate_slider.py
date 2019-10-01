@@ -1,4 +1,6 @@
 import cv2
+from Objects.abstracts import ctx, ImageBuffer
+import pyopencl as cl
 try:
 	from Curves.curve import *
 except Exception:
@@ -105,24 +107,21 @@ class GenerateSlider:
 		right_y_corner = min(img.shape[0], int(max_y + self.extended))
 		right_x_corner = min(img.shape[1], int(max_x + self.extended))
 
-		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
+		img = np.array(img[left_y_corner:right_y_corner, left_x_corner:right_x_corner])
+		h, w, z = img.shape
 
 		x_offset = int((ps[0].x - left_x_corner))
 		y_offset = int((ps[0].y - left_y_corner))
 
-		# to_3channel
-		alpha_s = img[:, :, 3] * (1/255.0)
-		for c in range(3):
-			img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
-		img[:, :, :] = img[:, :, :] * 0.9
-		return img, x_offset, y_offset
+		img_g = ImageBuffer(cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=img), w, h, z)
+		return img_g, x_offset, y_offset
 
 
 if __name__ == "__main__":
 	# slidercode = "96,180,0,2,0,B|286:44|286:44|416:201|416:201|251:340|251:340|95:179|95:179,1,875"
 	# slidercode = "130,77,0,2,0,B|414:155|98:307,1,375"
 	slidercode = "105,194,0,2,0,L|407:190,1,300"
-	#slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
+	# slidercode = "226,81,0,2,0,B|427:107|272:303|85:222|226:81,1,400"
 	# slidercode = "142,314,0,2,0,B|267:54|267:54|387:330|387:330|95:128|95:128|417:124|417:124|141:314,1,1600"
 	# slidercode = "182,326,3923,2,0,P|99:174|394:243,1,700"
 	# slidercode = "485,360,99863,2,0,P|483:342|470:225,1,135.8307"

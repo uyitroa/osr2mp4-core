@@ -30,9 +30,9 @@ class ImageBuffer:
 		return self.w, self.h, self.pix
 
 	def set(self, img, w, h, pix):
-		self.h = h
-		self.pix = pix
-		self.w = w
+		self.h = None if h is None else np.int32(h)
+		self.pix = None if pix is None else np.int32(pix)
+		self.w = None if w is None else np.int32(w)
 		self.img = img
 
 	def set_shape(self, w, h, pix):
@@ -84,7 +84,7 @@ class Images:
 		if buf is None:
 			buf = self.buf
 		if new_dst:
-			dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
+			dest = self.copy_img(buf)
 		else:
 			dest = buf.img
 
@@ -116,10 +116,12 @@ class Images:
 
 		return dest, n_rows, n_cols, buf.pix
 
-	def rotate_image(self, angle):
-		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, self.buf.nbytes())
+	def rotate_image(self, angle, buf=None):
+		if buf is None:
+			buf = self.buf
+		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
 		cos, sin = np.cos(angle, dtype=np.float32), np.sin(angle, dtype=np.float32)
-		self.prg.rotate_img(self.queue, (self.buf.h, self.buf.w), None, self.buf.img, dest, self.buf.w, self.buf.h, self.buf.pix, cos, sin)
+		self.prg.rotate_img(self.queue, (buf.h, buf.w), None, buf.img, dest, buf.w, buf.h, buf.pix, cos, sin)
 		return dest
 
 	# crop everything that goes outside the screen
@@ -200,12 +202,16 @@ class Images:
 			self.prg.copy(self.queue, (bg_buf.h, bg_buf.w, bg_buf.pix), None, bg_buf.img, new_img, bg_buf.w, max_width, bg_buf.pix, x, y)
 			bg_buf.set(new_img, max_width, max_height, bg_buf.pix)
 
-	def add_to_frame(self, bg_buf, x_offset, y_offset, channel=3, alpha=1):
-		y1, y2 = y_offset - self.buf.h//2, y_offset + self.buf.h//2
-		x1, x2 = x_offset - self.buf.w//2, x_offset + self.buf.w//2
+	def add_to_frame(self, bg_buf, x_offset, y_offset, channel=3, alpha=1, buf=None):
+		if buf is None:
+			buf = self.buf
+		y1, y2 = y_offset - buf.h//2, y_offset + buf.h//2
+		x1, x2 = x_offset - buf.w//2, x_offset + buf.w//2
 
 		y1, y2, ystart, yend = self.checkOverdisplay(y1, y2, bg_buf.h)
 		x1, x2, xstart, xend = self.checkOverdisplay(x1, x2, bg_buf.w)
+
+		alpha = min(100, max(0, alpha))
 
 		if channel == 3:
 			func = self.prg.add_to_frame3
@@ -214,7 +220,7 @@ class Images:
 		else:
 			print("wait that's illegal")
 			return
-		func(self.queue, (y2-y1, x2-x1), None, self.buf.img, bg_buf.img, self.buf.w, self.buf.pix, bg_buf.w, bg_buf.pix, x1, y1, xstart, ystart, np.float32(alpha))
+		func(self.queue, (y2-y1, x2-x1), None, buf.img, bg_buf.img, buf.w, buf.pix, bg_buf.w, bg_buf.pix, x1, y1, xstart, ystart, np.float32(alpha))
 
 
 
@@ -246,6 +252,9 @@ class AnimatableImage:
 
 	def imagebuffer_at(self, index):
 		return self.frames[index].buf.img
+	
+	def image_at(self, index):
+		return self.frames[index]
 
 	def load_frames(self, rotate):
 		counter = 0
@@ -267,7 +276,7 @@ class AnimatableImage:
 	def rotate_images(self, angle):
 		images = [None] * self.n_frame
 		for x in range(self.n_frame):
-			images[x] = self.frames[x].rotate_image(angle)
+			images[x] = ImageBuffer(self.frames[x].rotate_image(angle), *self.frames[x].buf.shape())
 		return images
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3, alpha=1):

@@ -20,8 +20,9 @@ class SpinBonusScore(Images):
 			self.score_frames.append([])
 			size = 2.5
 			for x in range(15, 5, -1):
-				image.change_size(size, size)
-				self.score_frames[-1].append(image.img[:, :, :] * (x/15))
+				buf = ImageBuffer(*image.change_size(size, size))
+				super().edit_channel(3, x/15, buf=buf)
+				self.score_frames[-1].append(buf)
 				size -= 0.1
 
 	def set_bonusscore(self, rotated_bonus):
@@ -40,13 +41,13 @@ class SpinBonusScore(Images):
 			return
 
 		index = int(self.spinbonuses[3])
-		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].shape[1]-self.gap * (2.5 - index/10))
+		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].w-self.gap * (2.5 - index/10))
 		y = self.spinbonuses[2]
 
 		for digit in self.spinbonuses[0]:
 			digit = int(digit)
-			self.img = self.score_frames[digit][index]
+			self.buf = self.score_frames[digit][index]
 			super().add_to_frame(background, x, y)
-			x += int(self.score_frames[digit][index].shape[1] - self.gap * (2.5 - index/10))
+			x += int(self.score_frames[digit][index].w - self.gap * (2.5 - index/10))
 
 		self.spinbonuses[3] += 0.75
