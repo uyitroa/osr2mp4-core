@@ -74,7 +74,7 @@ class Images:
 			dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, buf.nbytes())
 		else:
 			dest = buf.img
-		blue, green, red = np.int32(color[0]), np.int32(color[1]), np.int32(color[2])
+		red, green, blue = np.int32(color[0]), np.int32(color[1]), np.int32(color[2])
 		self.prg.add_color(self.queue, (buf.h, buf.w), None, buf.img, dest, buf.w, buf.pix, blue, green, red)
 
 		if new_dst:
