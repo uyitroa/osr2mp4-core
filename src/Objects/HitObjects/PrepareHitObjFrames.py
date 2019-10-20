@@ -229,7 +229,7 @@ class PrepareCircles(Images):
 						approach_slider.set_shape(*approach_circle.shape())
 
 						self.overlay_approach(approach_slider, x_offset, y_offset, slider_buf)
-						self.edit_channel(3, alpha / 100, buf=approach_circle)
+						self.edit_channel(3, alpha / 100, buf=approach_slider)
 						self.slidercircle_frames[-1][x].append(approach_slider)
 
 					self.overlay_approach(approach_circle, x_offset, y_offset, circle_buf)
@@ -246,7 +246,7 @@ class PrepareCircles(Images):
 				slider_buf = ImageBuffer(super().copy_img(raw_slider_buf), *slider_buf.shape())
 		print("done")
 
-		# for i, x in enumerate(self.circle_fadeout[0][1]):
+		# for i, x in enumerate(self.circle_frames[0][1]):
 		# 	array, _ = cl.enqueue_map_buffer(queue, x.img, cl.map_flags.READ | cl.map_flags.WRITE, 0,
 		# 	                                (x.h, x.w, x.pix),
 		# 	                                np.uint8)
