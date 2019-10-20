@@ -57,6 +57,6 @@ class Accuracy(Images):
 				super().add_to_frame(background, x-self.buf.w+self.gap, y)
 				x += self.buf.w - self.gap
 				continue
-			self.img = self.score_images[int(digit)]
+			self.buf = self.score_images[int(digit)]
 			super().add_to_frame(background, x, y)
 			x += -self.gap + numberwidth
