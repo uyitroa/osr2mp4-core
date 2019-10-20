@@ -87,7 +87,7 @@ class URBar:
 			i -= 1
 			bar = self.bars[i]
 			self.overlay_bar(blank, self.bar_images[bar[2]], bar[0], self.h//2, bar[1])
-			bar[1] -= 0.0025
+			bar[1] -= 0.0035
 			if bar[1] <= 0:
 				del self.bars[i]
 
