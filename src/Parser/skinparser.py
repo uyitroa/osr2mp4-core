@@ -92,6 +92,7 @@ class Skin:
 		self.general['SliderStyle'] = int(self.general.get('SliderStyle', 0))
 
 	def parse_colors(self):
+		self.colours["InputOverlayText"] = '74, 137, 222'
 		for key, value in self.colours.items():
 			value = value.split(",")
 			for x in range(len(value)):
