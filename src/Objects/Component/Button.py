@@ -85,7 +85,7 @@ class InputOverlay(Images):
 				self.button_index += 1
 
 		self.holding = False
-		self.img = self.button_frames[self.button_index]
+		self.buf = self.button_frames[self.button_index]
 		super().add_to_frame(background, x_offset, y_offset)
 		self.scoreentry.add_to_frame(background, x_offset, y_offset, self.n,
 		                             self.button_index)
