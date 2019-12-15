@@ -18,8 +18,8 @@ class ScoreCounter(Images):
 			self.divide_by_255 = 1 / 255.0
 
 	def prepare_number(self):
-		for image in self.score_images:
-			image.change_size(0.75, 0.75)
+		for i in range(len(self.score_images)):
+			self.score_images[i].buf.set(*self.score_images[i].change_size(0.75, 0.75))
 
 	def difficulty_multiplier(self):
 		points = self.diff["OverallDifficulty"] + self.diff["HPDrainRate"] + self.diff["CircleSize"]

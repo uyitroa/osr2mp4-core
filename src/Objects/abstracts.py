@@ -104,17 +104,25 @@ class Images:
 	def change_size(self, row_scale, col_scale, buf=None):
 		if buf is None:
 			buf = self.buf
-
-		n_rows = np.int32(max(2, int(row_scale * buf.w)))
-		n_rows += np.int32(n_rows % 2 == 1)  # need to be even
-		n_cols = np.int32(max(2, int(col_scale * buf.h)))
+		print(row_scale, buf.shape())
+		n_cols = np.int32(max(2, int(col_scale * buf.w)))
 		n_cols += np.int32(n_cols % 2 == 1)  # need to be even
+		n_rows = np.int32(max(2, int(row_scale * buf.h)))
+		n_rows += np.int32(n_rows % 2 == 1)  # need to be even
 
 		dest = cl.Buffer(self.ctx, self.mf.READ_WRITE, n_rows * n_cols * buf.pix)
 
-		self.prg.resize(self.queue, (n_cols, n_rows), None, buf.img, dest, buf.w, buf.h, buf.pix, n_rows, n_cols)
+		if row_scale < 1:
+			func = self.prg.scale_down
+			gpu_args = (n_rows, n_cols, buf.pix)
+		else:
+			func = self.prg.scale_up
+			gpu_args = (buf.h, buf.w, buf.pix)
 
-		return dest, n_rows, n_cols, buf.pix
+		func(self.queue, gpu_args, None, buf.img, dest, buf.w, buf.h, buf.pix, n_cols, n_rows)
+
+		return dest, n_cols, n_rows, buf.pix
+		# return (self.copy_img(buf), *buf.shape())
 
 	def rotate_image(self, angle, buf=None):
 		if buf is None:
