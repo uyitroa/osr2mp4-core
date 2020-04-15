@@ -45,19 +45,22 @@ class Number:
 
 class ApproachCircle(Images):
 	def __init__(self, filename, scale, time_preempt, interval):
-		Images.__init__(self, filename)
 		self.scale = scale
 		self.time_preempt = round(time_preempt)
 		self.interval = int(interval)
 		self.approach_frames = []
 		self.prepare_sizes()
+		Images.__init__(self, filename)
+		for buf in self.scaledbuffs:
+			self.approach_frames.append(buf)
 
 	def prepare_sizes(self):
 		scale = 3.5
+		scales = []
+
 		for time_left in range(self.time_preempt, 0, -self.interval):
 			scale -= 2.5 * self.interval / self.time_preempt
-			buf = ImageBuffer(*self.change_size(scale * self.scale, scale * self.scale))
-			self.approach_frames.append(buf)
+			scales.append(scale)
 
 	# # TODO: maybe delete?
 	# def add_to_frame(self, background, x_offset, y_offset, time_left):
@@ -66,23 +69,26 @@ class ApproachCircle(Images):
 
 
 class CircleOverlay(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale):
+		Images.__init__(self, filename, scale)
 
 
 class SliderCircleOverlay(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale):
+		Images.__init__(self, filename, scale)
 
 
 class CircleSlider(Images):
-	def __init__(self, filename):
-		Images.__init__(self, filename)
+	def __init__(self, filename, scale):
+		Images.__init__(self, filename, scale)
 
 
 class PrepareCircles(Images):
 	def __init__(self, beatmap, path, scale, skin):
-		Images.__init__(self, path + hitcircle)
+
+		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
+
+		Images.__init__(self, path + hitcircle, self.radius_scale)
 
 		self.diff = beatmap.diff
 		self.interval = 1000 / 60  # ms between 2 frames
@@ -125,10 +131,9 @@ class PrepareCircles(Images):
 		self.opacity_interval = int(100 * self.interval / self.fade_in)
 
 	def load_circle(self, path):
-		self.overlay = CircleOverlay(path + hitcircleoverlay)
-		self.slidercircleoverlay = SliderCircleOverlay(path + sliderstartcircleoverlay)
-		self.slider_circle = CircleSlider(path + sliderstartcircle)
-		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
+		self.overlay = CircleOverlay(path + hitcircleoverlay, self.radius_scale)
+		self.slidercircleoverlay = SliderCircleOverlay(path + sliderstartcircleoverlay, self.radius_scale)
+		self.slider_circle = CircleSlider(path + sliderstartcircle, self.radius_scale)
 
 	def overlayhitcircle(self, overlay, circle_buf):
 		self.ensureBGsize(circle_buf, overlay)
@@ -150,6 +155,17 @@ class PrepareCircles(Images):
 		self.prg.add_to_frame4(self.queue, (y2-y1, x2-x1), None, circle_buf.img, background.img, circle_buf.w, circle_buf.pix,
 		                       background.w, background.pix, x1, y1, np.int32(0), np.int32(0), np.float32(1))
 
+	def prepare_fadeout(self, buf):
+		scales = [x/100 for x in range(100, 140, 4)]
+		alpha_level = [1-(x-100)/40 for x in range(100, 140, 4)]
+		fadeout = []
+		# TODO: combine kernel
+		resizes = super().change_size(scales, scales, buf=buf)
+		for i, buffer in enumerate(resizes):
+			imgbuf = ImageBuffer(*buffer)
+			imgbuf.img = super().edit_channel(3, alpha_level[i], buf=imgbuf, new_dst=True)
+			fadeout.append(imgbuf)
+		return fadeout
 
 	def prepare_circle(self):
 		# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
@@ -170,32 +186,19 @@ class PrepareCircles(Images):
 			# TODO: combine every kernel to avoid multiple unnecessary gpu call
 			color_circle.set(super().add_color(color, buf=self.buf, new_dst=True), *self.buf.shape())
 			self.overlayhitcircle(self.overlay.buf, color_circle)
-			circle_buf.set(*super().change_size(self.radius_scale, self.radius_scale, buf=color_circle))
+			circle_buf = color_circle
 			self.circle_frames.append([])
 
 			# prepare fadeout frames
-			im.set(None, *circle_buf.shape())
-			self.circle_fadeout[0].append([])
-			for x in range(100, 140, 4):
-				size = x / 100
-				im.img = super().edit_channel(3, 1 - (x - 100) / 40, buf=circle_buf, new_dst=True)
-				imgbuf = ImageBuffer(*super().change_size(size, size, buf=im))
-				self.circle_fadeout[0][-1].append(imgbuf)
-
+			self.circle_fadeout[0][-1] = self.prepare_fadeout(circle_buf)
 
 			color_slider.set(super().add_color(color, buf=self.slider_circle.buf, new_dst=True), *self.slider_circle.buf.shape())
 			self.overlayhitcircle(self.slidercircleoverlay.buf, color_slider)
-			slider_buf.set(*super().change_size(self.radius_scale, self.radius_scale, buf=color_slider))
+			slider_buf = color_slider
 			self.slidercircle_frames.append({})  # use dict to find the right combo will be faster
 
 			# prepare fadeout frames
-			ims.set(None, *slider_buf.shape())
-			self.circle_fadeout[1].append([])
-			for x in range(100, 140, 4):
-				size = x / 100
-				ims.img = super().edit_channel(3, 1 - (x - 100) / 40, buf=slider_buf, new_dst=True)
-				imgbuf = ImageBuffer(*super().change_size(size, size, buf=ims))
-				self.circle_fadeout[1][-1].append(imgbuf)
+			self.circle_fadeout[1][-1] = self.prepare_fadeout(slider_buf)
 
 
 			raw_circle_buf = ImageBuffer(super().copy_img(circle_buf), *circle_buf.shape())  # without number
@@ -324,8 +327,12 @@ class PrepareSlider(Images):
 	def prepare_sliderball(self):
 		follow_fadein = 125  # sliderfollowcircle zoom out zoom in time
 
+		follow_scales = [x for x in range(1, )]
+		sfollow = ImageBuffer(*super().change_size(cur_scale, cur_scale, buf=self.sliderfollowcircle.buffer_at(0)))
+
 		color_sb = ImageBuffer()
 		sfollow = ImageBuffer()
+
 
 		for c in range(1, self.maxcolors + 1):
 			color = self.colors["Combo" + str(c)]
@@ -340,7 +347,6 @@ class PrepareSlider(Images):
 			cur_alpha = 1
 
 			for x in range(follow_fadein, 0, -int(self.interval)):
-				sfollow = ImageBuffer(*super().change_size(cur_scale, cur_scale, buf=self.sliderfollowcircle.buffer_at(0)))
 				super().edit_channel(3, cur_alpha, buf=sfollow)
 
 				# add sliderball to sliderfollowcircle because it will optimize the render time since we don't need to

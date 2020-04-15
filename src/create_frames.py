@@ -31,8 +31,7 @@ CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
-
-PATH = "../res/skin4/"
+PATH = "../res/skin3/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -41,7 +40,6 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-
 
 start_time = time.time()
 
@@ -65,7 +63,8 @@ class Object:
 		self.hitresult = HitResult(PATH, SCALE, PLAYFIELD_SCALE, self.accuracy)
 		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers, WIDTH, HEIGHT)
 		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
-		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
+		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"],
+		                                 SCALE)
 
 		self.urbar = URBar(SCALE, check.scorewindow, WIDTH, HEIGHT)
 
@@ -80,7 +79,7 @@ class Object:
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the cur_time
 	min_time = abs(replay[index][TIMES] - cur_time)
-	min_time_toskip = min(min_time, abs(replay[index+1][TIMES] - cur_time))
+	min_time_toskip = min(min_time, abs(replay[index + 1][TIMES] - cur_time))
 
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
@@ -158,18 +157,26 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
 	simulate = replay_event[start_index][TIMES]
-	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
+	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate,
+	                                                                                                         resultinfo,
+	                                                                                                         replay_event,
+	                                                                                                         beatmap.hitobjects,
+	                                                                                                         time_preempt,
+	                                                                                                         component)
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
 
 	# orig_img = setupBackground()
 	img = ImageBuffer(cl.Buffer(ctx, cl.mem_flags.READ_WRITE, 3), w=np.int32(1), h=np.int32(1), pix=np.int32(3))
+	array, _ = cl.enqueue_map_buffer(queue, img.img, cl.map_flags.READ, 0, (img.h, img.w, img.pix),
+	                                 np.uint8)
 
 	print("setup done")
 
-	while osr_index < end_index: # len(replay_event) - 3:
+	while osr_index < end_index:  # len(replay_event) - 3:
 		if osr_index >= start_index:
-			img.set(cl.Buffer(ctx, cl.mem_flags.READ_WRITE, WIDTH * HEIGHT * 3), np.int32(WIDTH), np.int32(HEIGHT), np.int32(3))  # reset background
+			img.set(cl.Buffer(ctx, cl.mem_flags.READ_WRITE, WIDTH * HEIGHT * 3), np.int32(WIDTH), np.int32(HEIGHT),
+			        np.int32(3))  # reset background
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
@@ -185,13 +192,11 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
-
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
-
 
 		# check if it's time to draw circles
 		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
@@ -220,18 +225,22 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		component.combocounter.add_to_frame(img)
 		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
 		component.accuracy.add_to_frame(img)
-		#component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
-		#component.urbar.add_to_frame(img)
 
 		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 
-		array, _ = cl.enqueue_map_buffer(queue, img.img, cl.map_flags.READ | cl.map_flags.WRITE, 0, (img.h, img.w, img.pix),
+		array, _ = cl.enqueue_map_buffer(queue, img.img, cl.map_flags.READ, 0, (img.h, img.w, img.pix),
 		                                 np.uint8)
-		writer.write(array)
 
+		# if osr_index == 400:
+		# 	cv2.imwrite("test.png", array)
+		# 	cv2.yes
+
+		component.timepie.add_to_frame(array, cur_time, beatmap.end_time)
+		component.urbar.add_to_frame(array)
+		writer.write(array)
 
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
