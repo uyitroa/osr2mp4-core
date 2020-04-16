@@ -18,7 +18,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 # const
-PATH = "../res/skin8/"
+PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -27,8 +27,8 @@ PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
 SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
-BEATMAP_FILE = "../res/thegame.osu"
-REPLAY_FILE = "../res/thegame.osr"
+BEATMAP_FILE = "../res/tengaku.osu"
+REPLAY_FILE = "../res/ten.osr"
 INPUTOVERLAY_STEP = 23
 start_time = time.time()
 
@@ -152,9 +152,11 @@ def main():
 	cursor_event = replay_event[osr_index]
 
 	start_time = time.time()
+
+	timer = [0, 0, 0, 0]
 	print("setup done")
 
-	while osr_index < 3000: #osr_index < len(replay_event) - 3:
+	while osr_index < 5000: #osr_index < len(replay_event) - 3:
 		img = np.copy(orig_img)  # reset background
 
 		if time.time() - start_time > 60:
@@ -171,11 +173,14 @@ def main():
 		if m2:
 			component.mouse2.clicked()
 
+		a = time.time()
+
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
 		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
 		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
 
+		timer[1] += time.time() - a
 
 		osu_d = beatmap.hitobjects[index_hitobject]
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
@@ -190,6 +195,7 @@ def main():
 
 
 		# check if it's time to draw circles
+		a = time.time()
 		if cur_time + component.hitobjectmanager.time_preempt >= osu_d["time"] and index_hitobject + 1 < len(
 				beatmap.hitobjects):
 			if "spinner" in osu_d["type"]:
@@ -209,7 +215,9 @@ def main():
 					                                      index_hitobject)
 				index_hitobject += 1
 
+		timer[0] += time.time() - a
 
+		a = time.time()
 		component.followpoints.add_to_frame(img,cur_time)
 		component.hitobjectmanager.add_to_frame(img, osr_index)
 		component.hitresult.add_to_frame(img)
@@ -224,6 +232,8 @@ def main():
 		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
+		timer[1] += time.time() - a
+
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 
@@ -232,9 +242,11 @@ def main():
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = new_k1 + new_k2 + new_m1 + new_m2
-		component.hitobjectmanager.checkcursor(replay_event, new_click, osr_index + next_index)
+		component.hitobjectmanager.checkcursor(replay_event, new_click, osr_index + next_index, img)
 
+		a = time.time() - a
 		writer.write(img)
+		timer[2] += time.time() - a
 
 		cur_time += 1000 / FPS
 
@@ -249,6 +261,7 @@ def main():
 
 	print(beatmap.hitobjects[index_hitobject]["time"])
 	print(component.hitresult.total)
+	print(timer)
 	writer.release()
 
 
