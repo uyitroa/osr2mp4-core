@@ -157,7 +157,7 @@ def main():
 	print("setup done")
 
 	while osr_index < 5000: #osr_index < len(replay_event) - 3:
-		img = np.copy(orig_img)  # reset background
+		img = orig_img.copy()  # reset background
 
 		if time.time() - start_time > 60:
 			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)), cur_time, index_hitobject, index_followpoint)

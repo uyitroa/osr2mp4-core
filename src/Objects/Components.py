@@ -1,10 +1,10 @@
 from Objects.abstracts import *
-
+from PIL import Image
 
 class Cursor(Images):
 	def __init__(self, filename, scale):
 		Images.__init__(self, filename, scale * 0.75)
-		self.to_3channel()
+		##self.to_3channel()
 
 
 class Cursortrail(Images):
@@ -13,13 +13,13 @@ class Cursortrail(Images):
 		Images.__init__(self, filename, scale * 0.75)
 		self.trail = [[cursor_x, cursor_y] for _ in range(8)]
 		self.trail_frames = []
-		self.to_3channel()
+		#self.to_3channel()
 		self.prepare_trails()
 
 	def prepare_trails(self):
 		for x in [0.45, 0.5, 0.6, 0.65, 0.75, 0.9, 1, 0]:
-			self.img = np.copy(self.orig_img)
-			self.img[:, :, :] = self.orig_img[:, :, :] * x
+			self.img = self.orig_img.copy()
+			self.img.putalpha(int(255 * x))
 			self.trail_frames.append(self.img)
 
 	def add_to_frame(self, background, x_offset, y_offset):
@@ -34,7 +34,7 @@ class Cursortrail(Images):
 class LifeGraph:
 	def __init__(self, filename):
 		self.filename = filename
-		self.img = cv2.imread(filename)
+		self.img = Image.open(filename)
 		self.cur_life = 1
 		self.to_life = 1
 		self.speed = 0
@@ -61,20 +61,20 @@ class LifeGraph:
 		# 	if self.cur_life > 1:
 		# 		self.cur_life = 1
 		# self.wait_to_goes_down -= 1
-		width = int(self.img.shape[1] * self.cur_life)
-		height = int(self.img.shape[0])
+		width = int(self.img.size[1] * self.cur_life)
+		height = int(self.img.size[0])
 
 		background[:height, :width] = self.img[:, :width]
 
 
 class Playfield:
 	def __init__(self, filename, width, height):
-		self.img = cv2.imread(filename, -1)
-		self.img = cv2.resize(self.img, (width, height), interpolation=cv2.INTER_NEAREST)
+		self.img = Image.open(filename,)
+		self.img.resize(width, height)
 
 	def add_to_frame(self, background):
-		y1, y2 = 0, background.shape[0]
-		x1, x2 = 0, background.shape[1]
+		y1, y2 = 0, background.size[0]
+		x1, x2 = 0, background.size[1]
 
 		alpha_s = self.img[:, :, 3] / 255.0
 		alpha_l = 1.0 - alpha_s
@@ -87,8 +87,8 @@ class TimePie:
 	def __init__(self, scale, accuracy):
 		# need to initalize this right after initializing accuracy class
 		self.scale = scale
-		self.y = int(accuracy.y + accuracy.score_images[0].shape[0]//2)
-		self.x = int(accuracy.width*0.99 - accuracy.score_percent.shape[1] - (-accuracy.gap + accuracy.score_images[0].shape[1]) * 7)
+		self.y = int(accuracy.y + accuracy.score_images[0].size[0]//2)
+		self.x = int(accuracy.width*0.99 - accuracy.score_percent.size[1] - (-accuracy.gap + accuracy.score_images[0].size[1]) * 7)
 
 	def add_to_frame(self, background, cur_time, end_time):
 		ratio = cur_time/end_time

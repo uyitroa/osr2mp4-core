@@ -7,14 +7,14 @@ class Fp(Images):
 		Images.__init__(self, filename)
 		self.to_square()
 		self.change_size(scale * 0.5, scale * 0.5)
-		self.orig_img = np.copy(self.img)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.to_3channel()
+		self.orig_img = self.img.copy()
+		self.orig_rows = self.orig_img.size[0]
+		self.orig_cols = self.orig_img.size[1]
+		#self.to_3channel()
 
 	def to_square(self):
-		max_length = int(np.sqrt(self.img.shape[0]**2 + self.img.shape[1]**2) + 2)  # round but with int
-		square = np.zeros((max_length, max_length, self.img.shape[2]))
+		max_length = int(np.sqrt(self.img.size[0]**2 + self.img.size[1]**2) + 2)  # round but with int
+		square = np.zeros((max_length, max_length, self.img.size[2]))
 		y1, y2 = int(max_length / 2 - self.orig_rows / 2), int(max_length / 2 + self.orig_rows / 2)
 		x1, x2 = int(max_length / 2 - self.orig_cols / 2), int(max_length / 2 + self.orig_cols / 2)
 		square[y1:y2, x1:x2, :] = self.img[:, :, :]
@@ -24,9 +24,9 @@ class Fp(Images):
 		# cv2.yes
 
 	def rotate_image(self, angle):
-		image_center = tuple(np.array(self.img.shape[1::-1]) / 2)
+		image_center = tuple(np.array(self.img.size[1::-1]) / 2)
 		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(self.img, rot_mat, self.img.shape[1::-1], flags=cv2.INTER_LINEAR)
+		result = cv2.warpAffine(self.img, rot_mat, self.img.size[1::-1], flags=cv2.INTER_LINEAR)
 		return result
 
 
@@ -39,7 +39,7 @@ class FollowPointsManager(Images):
 		self.movedown = movedown
 		self.moveright = moveright
 		self.preempt = 800
-		self.divide_by_255 = 1/255.0
+
 		counter = 0
 		should_continue = True
 		fp = None

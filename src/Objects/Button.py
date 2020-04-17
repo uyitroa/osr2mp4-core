@@ -6,11 +6,11 @@ inputoverlay = "inputoverlay-key.png"
 
 class ScoreEntry(Images):
 	def __init__(self, path, scale, color):
-		self.divide_by_255 = 1/255.0
+
 		self.numbers = []
 		for x in range(10):
 			self.numbers.append(Images(path + scoreentry + str(x) + ".png", scale, needconversion=True))
-			self.numbers[-1].to_3channel()
+			#self.numbers[-1].to_3channel()
 		self.prepare_animation(color)
 
 	def add_color(self, image, color):
@@ -26,22 +26,22 @@ class ScoreEntry(Images):
 		self.numbers_animation = []
 		for img in self.numbers:
 			self.numbers_animation.append([])
-			tmp = np.copy(img.orig_img)
+			tmp = img.orig_img.copy()
 			self.add_color(img.orig_img, color)
 			for size in range(100, 82, -3):
 				size /= 100
 				img.change_size(size, size)
-				self.numbers_animation[-1].append(np.copy(img.img))
+				self.numbers_animation[-1].append(img.img.copy())
 			img.orig_img = tmp
 
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
 		number = str(number)
-		x_start = x_offset - int((len(number)-1)/2 * self.numbers_animation[0][index].shape[1])
+		x_start = x_offset - int((len(number)-1)/2 * self.numbers_animation[0][index].size[1])
 		for digit in number:
 			digit = int(digit)
 			self.img = self.numbers_animation[digit][index]
 			super().add_to_frame(background, x_start, y_offset)
-			x_start += self.img.shape[1]
+			x_start += self.img.size[1]
 
 
 class InputOverlay(Images):
@@ -61,11 +61,11 @@ class InputOverlay(Images):
 
 		self.button_frames = []
 
-		self.to_3channel()
+		#self.to_3channel()
 		self.prepare_frames(color)
 
 	def add_color(self, image, color):
-		red = color[0]*self.divide_by_255
+		red = color[0]
 		green = color[1]*self.divide_by_255
 		blue = color[2]*self.divide_by_255
 		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
@@ -75,7 +75,7 @@ class InputOverlay(Images):
 	def prepare_frames(self, color):
 		self.button_frames.append(self.img)
 		for size in range(97, 82, -3):
-			self.img = np.copy(self.orig_img)
+			self.img = self.orig_img.copy()
 			size /= 100
 			self.change_size(size, size)
 			self.add_color(self.img, color)
@@ -112,11 +112,11 @@ class InputOverlay(Images):
 class InputOverlayBG(Images):
 	def __init__(self, filename, scale):
 		Images.__init__(self, filename, scale * 1.05)
-		self.to_3channel()
+		#self.to_3channel()
 		self.orig_img = np.rot90(self.orig_img, 3)
-		self.orig_rows = self.orig_img.shape[0]
-		self.orig_cols = self.orig_img.shape[1]
-		self.img = np.copy(self.orig_img)
+		self.orig_rows = self.orig_img.size[0]
+		self.orig_cols = self.orig_img.size[1]
+		self.img = self.orig_img.copy()
 
 	def add_to_frame(self, background, x_offset, y_offset):
 		# special y_offset

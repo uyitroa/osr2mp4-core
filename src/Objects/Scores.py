@@ -13,7 +13,7 @@ class HitResult(Images):
 		self.accuracy = accuracy
 		self.scores_images = {}
 		self.scores_frames = {}
-		self.divide_by_255 = 1/255.0
+
 		self.hitresults = []
 		self.total = {100: 0, 50: 0, 0: 0}
 		self.interval = 1000/60
@@ -23,13 +23,13 @@ class HitResult(Images):
 			self.scores_images[x] = Images(path+hitprefix+str(x)+".png", scale)
 			if x == 0:
 				self.to_square(self.scores_images[x])
-			self.scores_images[x].to_3channel()
+			#self.scores_images[x].to_3channel()
 			self.scores_frames[x] = []
 		self.prepare_frames()
 
 	def to_square(self, image):
-		max_length = int(np.sqrt(image.img.shape[0]**2 + image.img.shape[1]**2) + 2)  # round but with int
-		square = np.zeros((max_length, max_length, image.img.shape[2]))
+		max_length = int(np.sqrt(image.img.size[0]**2 + image.img.size[1]**2) + 2)  # round but with int
+		square = np.zeros((max_length, max_length, image.img.size[2]))
 		y1, y2 = int(max_length / 2 - image.orig_rows / 2), int(max_length / 2 + image.orig_rows / 2)
 		x1, x2 = int(max_length / 2 - image.orig_cols / 2), int(max_length / 2 + image.orig_cols / 2)
 		square[y1:y2, x1:x2, :] = image.img[:, :, :]
@@ -37,17 +37,17 @@ class HitResult(Images):
 		image.orig_rows, image.orig_cols = max_length, max_length
 
 	def rotate_image(self, image, angle):
-		image_center = tuple(np.array(image.shape[1::-1]) / 2)
+		image_center = tuple(np.array(image.size[1::-1]) / 2)
 		rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-		result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+		result = cv2.warpAffine(image, rot_mat, image.size[1::-1], flags=cv2.INTER_LINEAR)
 		return result
 
-	def to_3channel(self, image):
-		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
-		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			image[:, :, c] = image[:, :, c] * alpha_s
+	# def to_3channel(self, image):
+	# 	# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
+	# 	# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
+	# 	alpha_s = image[:, :, 3] * self.divide_by_255
+	# 	for c in range(3):
+	# 		image[:, :, c] = image[:, :, c] * alpha_s
 
 	def prepare_frames(self):
 		for x in self.scores_images:
@@ -107,15 +107,15 @@ class ScoreNumbers:
 		self.score_images = []
 		for x in range(10):
 			self.score_images.append(Images(path + scoreprefix+str(x)+".png", scale))
-			self.score_images[-1].to_3channel()
+			#self.score_images[-1].to_3channel()
 		self.score_x = Images(path + score_x, scale)
-		self.score_x.to_3channel()
+		#self.score_x.to_3channel()
 
 		self.score_percent = Images(path + score_percent, scale)
-		self.score_percent.to_3channel()
+		#self.score_percent.to_3channel()
 
 		self.score_dot = Images(path + score_dot, scale)
-		self.score_dot.to_3channel()
+		#self.score_dot.to_3channel()
 
 
 class SpinBonusScore(Images):
@@ -154,14 +154,14 @@ class SpinBonusScore(Images):
 			return
 
 		index = int(self.spinbonuses[3])
-		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].shape[1]-self.gap * (2.5 - index/10))
+		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].size[1]-self.gap * (2.5 - index/10))
 		y = self.spinbonuses[2]
 
 		for digit in self.spinbonuses[0]:
 			digit = int(digit)
 			self.img = self.score_frames[digit][index]
 			super().add_to_frame(background, x, y)
-			x += int(self.score_frames[digit][index].shape[1] - self.gap * (2.5 - index/10))
+			x += int(self.score_frames[digit][index].size[1] - self.gap * (2.5 - index/10))
 
 		self.spinbonuses[3] += 0.75
 
@@ -251,39 +251,39 @@ class ComboCounter(Images):
 
 		if self.adding:
 			x = 0
-			y = self.height - self.score_fadeout[0][self.fadeout_index].shape[0]
+			y = self.height - self.score_fadeout[0][self.fadeout_index].size[0]
 			for digit in str(self.combofadeout):
 				digit = int(digit)
 				self.img = self.score_fadeout[digit][self.fadeout_index]
-				x += self.img.shape[1] - self.gap
-				x_offset = x - self.img.shape[1]//2
-				y_offset = y + self.img.shape[0]//2
+				x += self.img.size[1] - self.gap
+				x_offset = x - self.img.size[1]//2
+				y_offset = y + self.img.size[0]//2
 				super().add_to_frame(background, x_offset, y_offset)
 
 
 			self.img = self.score_fadeout[10][self.fadeout_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1] // 2
-			y_offset = y + self.img.shape[0] // 2
+			x += self.img.size[1] - self.gap
+			x_offset = x - self.img.size[1] // 2
+			y_offset = y + self.img.size[0] // 2
 			super().add_to_frame(background, x_offset, y_offset)
 
 			self.fadeout_index += 1
 
 		x = 0
-		y = self.height - self.score_frames[0][self.score_index].shape[0]
+		y = self.height - self.score_frames[0][self.score_index].size[0]
 		for digit in str(self.combo):
 			digit = int(digit)
 			self.img = self.score_frames[digit][self.score_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1]//2
-			y_offset = y + self.img.shape[0]//2
+			x += self.img.size[1] - self.gap
+			x_offset = x - self.img.size[1]//2
+			y_offset = y + self.img.size[0]//2
 			super().add_to_frame(background, x_offset, y_offset)
 
 
 		self.img = self.score_frames[10][self.score_index]
-		x += self.img.shape[1] - self.gap
-		x_offset = x - self.img.shape[1] // 2
-		y_offset = y + self.img.shape[0] // 2
+		x += self.img.size[1] - self.gap
+		x_offset = x - self.img.size[1] // 2
+		y_offset = y + self.img.size[0] // 2
 		super().add_to_frame(background, x_offset, y_offset)
 
 		if self.animate:
@@ -329,13 +329,13 @@ class ScoreCounter(Images):
 	def add_to_frame(self, background):
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
-		x = self.width - (-self.gap + self.score_images[0].img.shape[1]) * len(score_string)
-		y = self.score_images[0].img.shape[0]//2
+		x = self.width - (-self.gap + self.score_images[0].img.size[1]) * len(score_string)
+		y = self.score_images[0].img.size[0]//2
 		for digit in score_string:
 			digit = int(digit)
 			self.img = self.score_images[digit].img
 			super().add_to_frame(background, x, y)
-			x += -self.gap + self.score_images[0].img.shape[1]
+			x += -self.gap + self.score_images[0].img.size[1]
 
 
 		add_up = max(7.27, (self.score - self.showscore)/12.72)
@@ -357,7 +357,7 @@ class Accuracy(Images):
 		self.maxscore = 0
 		self.curscore = 0
 		self.gap = int(gap * scale * 0.5)
-		self.y = int(self.scorenumbers.score_images[0].img.shape[0] * 0.75)
+		self.y = int(self.scorenumbers.score_images[0].img.size[0] * 0.75)
 		self.prepare_numbers()
 
 	def prepare_numbers(self):
@@ -382,17 +382,17 @@ class Accuracy(Images):
 		startx = int(self.width * 0.99)
 
 		self.img = self.score_percent
-		x, y = startx - self.img.shape[1]//2, self.y + self.img.shape[0]//2
+		x, y = startx - self.img.size[1]//2, self.y + self.img.size[0]//2
 		super().add_to_frame(background, x, y)
 
-		numberwidth = int(self.score_images[0].shape[1])
-		x = startx - self.img.shape[1] - (-self.gap + numberwidth) * (len(acc)-1)
-		y = self.y + self.score_images[0].shape[0]//2
+		numberwidth = int(self.score_images[0].size[1])
+		x = startx - self.img.size[1] - (-self.gap + numberwidth) * (len(acc)-1)
+		y = self.y + self.score_images[0].size[0]//2
 		for digit in acc:
 			if digit == '.':
 				self.img = self.score_dot
-				super().add_to_frame(background, x-self.img.shape[1]+self.gap, y)
-				x += self.img.shape[1] - self.gap
+				super().add_to_frame(background, x-self.img.size[1]+self.gap, y)
+				x += self.img.size[1] - self.gap
 				continue
 			self.img = self.score_images[int(digit)]
 			super().add_to_frame(background, x, y)
@@ -422,12 +422,12 @@ class URBar(Images):
 		self.bar_images = []
 		self.prepare_bar()
 
-	def to_3channel(self, image):
-		# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
-		# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
-		alpha_s = image[:, :, 3] * self.divide_by_255
-		for c in range(3):
-			image[:, :, c] = image[:, :, c] * alpha_s
+	# def to_3channel(self, image):
+	# 	# convert 4 channel to 3 channel, so we can ignore alpha channel, this will optimize the time of add_to_frame
+	# 	# where we needed to do each time alpha_s * img[:, :, 0:3]. Now we don't need to do it anymore
+	# 	alpha_s = image[:, :, 3] * self.divide_by_255
+	# 	for c in range(3):
+	# 		image[:, :, c] = image[:, :, c] * alpha_s
 
 	def prepare_bar(self):
 		for i in range(3):
@@ -438,7 +438,7 @@ class URBar(Images):
 			self.bar_images[-1][:, :, :][self.bar_images[-1][:, :, :] > 255] = 255
 			self.bar_images[-1][:, :, 3] = 150
 			self.bar_images[-1][self.barheight * 2:self.h - self.barheight * 2, :, 3] = 255
-			self.to_3channel(self.bar_images[-1])
+			#self.to_3channel(self.bar_images[-1])
 
 	def add_bar(self, delta_t, hitresult):
 		pos = int(self.w/2 + delta_t/self.maxtime * self.w/2)
@@ -463,5 +463,5 @@ class URBar(Images):
 
 		cv2.rectangle(blank, (self.w // 2 - 1, 0), (self.w // 2 + 1, self.h), (255, 255, 255, 255), -1, cv2.LINE_AA)
 		self.orig_img = blank
-		super().to_3channel()
+		#super().to_3channel()
 		super().add_to_frame(background, self.x, self.y)
