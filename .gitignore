@@ -5,3 +5,4 @@
 res/
 venv/
 .DS_Store
+.idea/
