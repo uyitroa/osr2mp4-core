@@ -14,9 +14,7 @@ class ScoreEntry(Images):
 		self.prepare_animation(color)
 
 	def add_color(self, image, color):
-		red = color[0]*self.divide_by_255
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
+		
 		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
 		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
 		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
@@ -113,7 +111,7 @@ class InputOverlayBG(Images):
 	def __init__(self, filename, scale):
 		Images.__init__(self, filename, scale * 1.05)
 		#self.to_3channel()
-		self.orig_img = np.rot90(self.orig_img, 3)
+		self.orig_img = self.orig_img.rotate(270)
 		self.orig_rows = self.orig_img.size[0]
 		self.orig_cols = self.orig_img.size[1]
 		self.img = self.orig_img.copy()
