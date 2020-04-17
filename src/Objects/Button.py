@@ -14,18 +14,19 @@ class ScoreEntry(Images):
 		self.prepare_animation(color)
 
 	def add_color(self, image, color):
-		
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
-		# image[image > 255] = 255
+		im = image.convert('RGBA')
+		r, g, b, a = im.split()
+		r = r.point(lambda i: i * color[0] / 255)
+		g = g.point(lambda i: i * color[1] / 255)
+		b = b.point(lambda i: i * color[2] / 255)
+		return Image.merge('RGBA', (r, g, b, a))
 
 	def prepare_animation(self, color):
 		self.numbers_animation = []
 		for img in self.numbers:
 			self.numbers_animation.append([])
 			tmp = img.orig_img.copy()
-			self.add_color(img.orig_img, color)
+			img.orig_img = self.add_color(img.orig_img, color)
 			for size in range(100, 82, -3):
 				size /= 100
 				img.change_size(size, size)
@@ -63,12 +64,12 @@ class InputOverlay(Images):
 		self.prepare_frames(color)
 
 	def add_color(self, image, color):
-		red = color[0]
-		green = color[1]*self.divide_by_255
-		blue = color[2]*self.divide_by_255
-		image[:, :, 0] = np.multiply(image[:, :, 0], blue, casting='unsafe')
-		image[:, :, 1] = np.multiply(image[:, :, 1], green, casting='unsafe')
-		image[:, :, 2] = np.multiply(image[:, :, 2], red, casting='unsafe')
+		im = image.convert('RGBA')
+		r, g, b, a = im.split()
+		r = r.point(lambda i: i * color[0] / 255)
+		g = g.point(lambda i: i * color[1] / 255)
+		b = b.point(lambda i: i * color[2] / 255)
+		return Image.merge('RGBA', (r, g, b, a))
 
 	def prepare_frames(self, color):
 		self.button_frames.append(self.img)
@@ -76,7 +77,7 @@ class InputOverlay(Images):
 			self.img = self.orig_img.copy()
 			size /= 100
 			self.change_size(size, size)
-			self.add_color(self.img, color)
+			self.img = self.add_color(self.img, color)
 
 			self.button_frames.append(self.img)
 
