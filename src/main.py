@@ -9,7 +9,7 @@ from Parser.osrparser import *
 from Parser.skinparser import Skin
 
 # const
-PATH = "../res/skin4/"
+PATH = "../res/skin/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60

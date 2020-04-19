@@ -4,7 +4,7 @@ from PIL import Image
 try:
 	from Curves.curve import *
 except Exception:
-	from curve import *
+        from .curve import *
 
 
 class GenerateSlider:
