@@ -224,7 +224,7 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 		# component.spinbonus.add_to_frame(img)
 		# component.combocounter.add_to_frame(img)
 		# component.scorecounter.add_to_frame(img, cursor_event[TIMES])
-		# component.accuracy.add_to_frame(img)
+		component.accuracy.add_to_frame(img)
 		# component.timepie.add_to_frame(img, cur_time, beatmap.end_time)
 		# component.urbar.add_to_frame(img)
 
