@@ -2,6 +2,11 @@
 *.mp4
 *.mkv
 *.pyc
+<<<<<<< HEAD
+=======
+*.xml
+.idea/
+>>>>>>> master
 res/
 venv/
 .DS_Store

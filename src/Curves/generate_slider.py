@@ -25,7 +25,7 @@ class GenerateSlider:
 		self.scale = scale
 		self.extended = math.sqrt(2) * self.radius * self.scale
 
-	def convert(self, slider_code):
+	def convert_string(self, slider_code):
 		string = slider_code.split(",")
 		ps = [Position(int(string[0]) * self.scale + self.extended, int(string[1]) * self.scale + self.extended)]
 		slider_path = string[5]
@@ -40,10 +40,17 @@ class GenerateSlider:
 		pixel_length = float(string[7])
 		return ps, pixel_length * self.scale, slider_type
 
+	def convert(self, ps_unscale):
+		ps = []
+		for pos in ps_unscale:
+			ps.append(Position(pos.x * self.scale + self.extended, pos.y * self.scale + self.extended))
+		return ps
+
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
 		tolerance = {"L": 1, "B": 0.02, "P": 0.025}
-		cur_pos = baiser_class(0)
+
+		baiser_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
 		curve_pos = []
@@ -67,7 +74,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(384 * self.scale + self.extended*2), int(512 * self.scale + self.extended*2), 4), dtype=np.uint8)
+		im = np.zeros((int(390 * self.scale + self.extended * 2), int(520 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -83,8 +90,9 @@ class GenerateSlider:
 			cv2.polylines(im, [curve_pos], False, (*cur_slider, 255), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 		return im
 
-	def get_slider_img(self, slider_code):
-		ps, pixel_length, slider_type = self.convert(slider_code)
+	def get_slider_img(self, slider_type, ps, pixel_length):
+		ps = self.convert(ps)
+		pixel_length = pixel_length * self.scale
 		baiser = Curve.from_kind_and_points(slider_type, ps, pixel_length)  # get the right curve class
 		curve_pos = self.get_pos_from_class(baiser, slider_type)
 
@@ -92,10 +100,10 @@ class GenerateSlider:
 		img = self.draw(curve_pos)
 
 		# crop useless part of image
-		left_y_corner = int(min_y - self.extended) if int(min_y - self.extended) >= 0 else 0
-		left_x_corner = int(min_x - self.extended) if int(min_x - self.extended) >= 0 else 0
-		right_y_corner = int(max_y + self.extended) if int(max_y + self.extended) < img.shape[0] else img.shape[0]
-		right_x_corner = int(max_x + self.extended) if int(max_x + self.extended) < img.shape[1] else img.shape[1]
+		left_y_corner = max(0, int(min_y - self.extended))
+		left_x_corner = max(0, int(min_x - self.extended))
+		right_y_corner = min(img.shape[0], int(max_y + self.extended))
+		right_x_corner = min(img.shape[1], int(max_x + self.extended))
 
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
@@ -103,9 +111,10 @@ class GenerateSlider:
 		y_offset = int((ps[0].y - left_y_corner))
 
 		# to_3channel
-		alpha_s = img[:, :, 3] / 255.0
+		alpha_s = img[:, :, 3] * (1/255.0)
 		for c in range(3):
 			img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
+		img[:, :, :] = img[:, :, :] * 0.9
 		return img, x_offset, y_offset
 
 
