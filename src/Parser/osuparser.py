@@ -139,6 +139,10 @@ class Beatmap:
 				my_dict["end time"] = my_dict["time"]
 				my_dict["end x"] = my_dict["x"]
 				my_dict["end y"] = my_dict["y"]
+				if len(osuobject) > 5:
+					my_dict["hitSample"] = osuobject[5]
+				else:
+					my_dict["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[2]):
 				object_type.append("new combo")
@@ -201,8 +205,14 @@ class Beatmap:
 					d += tickdistance
 
 				if len(osuobject) > 9:
-					my_dict["edgeHitsound"] = osuobject[8]
-					my_dict["edgeAdditions"] = osuobject[9]
+					my_dict["edgeSounds"] = osuobject[8]
+					my_dict["edgeSets"] = osuobject[9]
+					if len(osuobject) > 10:
+						my_dict["hitSample"] = osuobject[10]
+					else:
+						my_dict["hitSample"] = "0:0:0:0:"
+				else:
+					my_dict["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[3]):
 				object_type.append("spinner")
@@ -210,7 +220,10 @@ class Beatmap:
 				my_dict["end time"] = int(endtime)
 				my_dict["end x"] = -1
 				my_dict["end y"] = -1
-
+				if len(osuobject) > 6:
+					my_dict["hitSample"] = osuobject[6]
+				else:
+					my_dict["hitSample"] = "0:0:0:0:"
 
 			my_dict["combo_color"] = cur_combo_color
 			my_dict["combo_number"] = cur_combo_number

@@ -10,9 +10,9 @@ def search_updateindex(timestamp, resultinfo, component):
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].timestamp != timestamp:
 		cur_index += 1
 	info = resultinfo[max(0, cur_index-1)]
-	component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
-	component.accuracy.set_acc(info.accuracy)
-	component.combocounter.set_combo(info.combo)
+	# component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
+	# component.accuracy.set_acc(info.accuracy)
+	# component.combocounter.set_combo(info.combo)
 
 	component.key1.set_freeze(resultinfo[cur_index].time, info.clicks[0])
 	component.key2.set_freeze(resultinfo[cur_index].time, info.clicks[1])
@@ -23,8 +23,9 @@ def search_updateindex(timestamp, resultinfo, component):
 	while diff < 3400:
 		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
 			if resultinfo[urindex].hitresult > 0:
-				component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
-				component.urbar.bars[-1][1] = 1 - diff/3400
+				# component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
+				# component.urbar.bars[-1][1] = 1 - diff/3400
+				pass
 		urindex -= 1
 		if urindex <= -1:
 			break
@@ -36,9 +37,9 @@ def set_scores(to_time, resultinfo, component):
 	cur_index = 0
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].time < to_time:
 		cur_index += 1
-	component.scorecounter.set_score(resultinfo[cur_index].score, resultinfo[cur_index].showscore)
-	component.accuracy.set_acc(resultinfo[cur_index].accuracy)
-	component.combocounter.set_combo(resultinfo[cur_index].combo)
+	# component.scorecounter.set_score(resultinfo[cur_index].score, resultinfo[cur_index].showscore)
+	# component.accuracy.set_acc(resultinfo[cur_index].accuracy)
+	# component.combocounter.set_combo(resultinfo[cur_index].combo)
 	return resultinfo[cur_index].time
 
 

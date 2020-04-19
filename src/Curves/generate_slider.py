@@ -1,4 +1,6 @@
 import cv2
+from PIL import Image
+
 try:
 	from Curves.curve import *
 except Exception:
@@ -110,11 +112,7 @@ class GenerateSlider:
 		x_offset = int((ps[0].x - left_x_corner))
 		y_offset = int((ps[0].y - left_y_corner))
 
-		# to_3channel
-		alpha_s = img[:, :, 3] * (1/255.0)
-		for c in range(3):
-			img[:, :, c] = (img[:, :, c] * alpha_s).astype(img.dtype)
-		img[:, :, :] = img[:, :, :] * 0.9
+		img = Image.fromarray(img)
 		return img, x_offset, y_offset
 
 

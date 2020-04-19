@@ -1,58 +1,8 @@
+from PIL import Image
+
 from Curves.generate_slider import GenerateSlider
 from Curves.curve import *
 import numba
-
-
-# crop everything that goes outside the screen
-@numba.njit(fastmath=True)
-def checkOverdisplay(pos1, pos2, limit):
-	start = 0
-	end = pos2 - pos1
-
-	if pos1 >= limit:
-		return 0, 0, 0, 0
-	if pos2 <= 0:
-		return 0, 0, 0, 0
-
-	if pos1 < 0:
-		start = -pos1
-		pos1 = 0
-	if pos2 >= limit:
-		end -= pos2 - limit
-		pos2 = limit
-	return pos1, pos2, start, end
-
-
-@numba.njit(fastmath=True)
-def to_frame(img, background, x_offset, y_offset):
-	# to_3channel done in generate_slider.py
-	y1, y2 = y_offset, y_offset + img.shape[0]
-	x1, x2 = x_offset, x_offset + img.shape[1]
-
-	y1, y2, ystart, yend = checkOverdisplay(y1, y2, background.shape[0])
-	x1, x2, xstart, xend = checkOverdisplay(x1, x2, background.shape[1])
-	alpha_s = img[ystart:yend, xstart:xend, 3] * (1/255.0)
-	alpha_l = 1.0 - alpha_s
-
-	for c in range(3):
-		background[y1:y2, x1:x2, c] = (
-				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-
-
-@numba.njit(fastmath=True)
-def to_frame2(img, background, x_offset, y_offset):
-	# need to do to_3channel first.
-	y1, y2 = y_offset - int(img.shape[0] / 2), y_offset + int(img.shape[0] / 2)
-	x1, x2 = x_offset - int(img.shape[1] / 2), x_offset + int(img.shape[1] / 2)
-
-	y1, y2, ystart, yend = checkOverdisplay(y1, y2, background.shape[0])
-	x1, x2, xstart, xend = checkOverdisplay(x1, x2, background.shape[1])
-
-	alpha_s = img[ystart:yend, xstart:xend, 3] * (1/255.0)
-	alpha_l = 1.0 - alpha_s
-	for c in range(3):
-		background[y1:y2, x1:x2, c] = (
-				img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 
 
 class SliderManager:
@@ -128,6 +78,21 @@ class SliderManager:
 
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
 
+
+	def slider_to_frame(self, img, background, x_offset, y_offset):
+		background.paste(img, (x_offset, y_offset), img)
+
+	def sliderstuff_to_frame(self, img, background, x_offset, y_offset):
+		# need to do to_3channel first.
+		y1 = y_offset - int(img.size[1] / 2)
+		x1 = x_offset - int(img.size[0] / 2)
+		background.paste(img, (x1, y1), img)
+
+	def newalpha(self, img, alpha):
+		r, g, b, a = img.split()
+		a = a.point(lambda i: i * alpha)
+		return Image.merge('RGBA', (r, g, b, a))
+
 	def add_to_frame(self, background, i, _):
 		self.sliders[i][3] -= self.interval
 		baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
@@ -149,7 +114,7 @@ class SliderManager:
 
 				index = int(self.sliders[i][6])
 
-				to_frame2(self.sliderfollow_fadeout[index], background, x, y)
+				self.sliderstuff_to_frame(self.sliderfollow_fadeout[index], background, x, y)
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
@@ -159,8 +124,8 @@ class SliderManager:
 				self.sliders[i][4] = max(-self.opacity_interval, self.sliders[i][4] - 4 * self.opacity_interval)
 
 		self.sliders[i][4] = min(90, self.sliders[i][4] + self.opacity_interval)
-		cur_img = self.sliders[i][0][:, :, :] * (self.sliders[i][4] / 100)
-		to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
+		cur_img = self.newalpha(self.sliders[i][0], (self.sliders[i][4] / 100))
+		self.slider_to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
 
 		t = self.sliders[i][3] / self.sliders[i][7]
 
@@ -180,8 +145,7 @@ class SliderManager:
 			x = int((tick_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((tick_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 
-			self.slidertick.img[:, :, :] = self.slidertick.orig_img[:, :, :] * (
-						self.sliders[i][4] / 100 * self.sliders[i][12][count])
+			self.slidertick.img = self.newalpha(self.slidertick.orig_img, (self.sliders[i][4] / 100 * self.sliders[i][12][count]))
 			self.slidertick.add_to_frame(background, x, y)
 
 		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
@@ -190,15 +154,15 @@ class SliderManager:
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
 			color = self.sliders[i][5] - 1
 			index = int(self.sliders[i][6])
-			to_frame2(self.sliderb_frames[color][index], background, x, y)
+			self.sliderstuff_to_frame(self.sliderb_frames[color][index], background, x, y)
 			self.sliders[i][6] = max(0, min(self.slidermax_index, self.sliders[i][6] + self.sliders[i][11]))
 
 		if self.sliders[i][9] < self.sliders[i][10]:
 			cur_pos = baiser(int(going_forward))
 			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
-			arrow = self.arrows[i][int(going_forward)][int(self.sliders[i][13])][:, :, :] * self.sliders[i][4] / 100
-			to_frame2(arrow, background, x, y)
+			arrow = self.newalpha(self.arrows[i][int(going_forward)][int(self.sliders[i][13])], self.sliders[i][4] / 100)
+			self.sliderstuff_to_frame(arrow, background, x, y)
 
 			self.sliders[i][13] += 0.6
 			if self.sliders[i][13] >= len(self.arrows[i][0]):

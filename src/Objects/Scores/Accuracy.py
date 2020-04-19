@@ -10,11 +10,11 @@ class Accuracy(Images):
 		self.score_dot = None
 		self.width = width
 		self.height = height
-		self.total = {300:0, 100: 0, 50: 0, 0: 0}
+		self.total = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.maxscore = 0
 		self.curscore = 0
 		self.gap = int(gap * scale * 0.5)
-		self.y = int(self.scorenumbers.score_images[0].img.shape[0] * 0.75)
+		self.y = int(self.scorenumbers.score_images[0].img.size[1] * 0.75)
 		self.prepare_numbers()
 
 	def prepare_numbers(self):
@@ -48,17 +48,17 @@ class Accuracy(Images):
 		startx = int(self.width * 0.99)
 
 		self.img = self.score_percent
-		x, y = startx - self.img.shape[1]//2, self.y + self.img.shape[0]//2
+		x, y = startx - self.img.size[0]//2, self.y + self.img.size[1]//2
 		super().add_to_frame(background, x, y)
 
-		numberwidth = int(self.score_images[0].shape[1])
-		x = startx - self.img.shape[1] - (-self.gap + numberwidth) * (len(acc)-1)
-		y = self.y + self.score_images[0].shape[0]//2
+		numberwidth = int(self.score_images[0].size[0])
+		x = startx - self.img.size[0] - (-self.gap + numberwidth) * (len(acc)-1)
+		y = self.y + self.score_images[0].size[1]//2
 		for digit in acc:
 			if digit == '.':
 				self.img = self.score_dot
-				super().add_to_frame(background, x-self.img.shape[1]+self.gap, y)
-				x += self.img.shape[1] - self.gap
+				super().add_to_frame(background, x-self.img.size[0]+self.gap, y)
+				x += self.img.size[0] - self.gap
 				continue
 			self.img = self.score_images[int(digit)]
 			super().add_to_frame(background, x, y)

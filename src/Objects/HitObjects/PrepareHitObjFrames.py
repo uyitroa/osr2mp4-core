@@ -29,7 +29,7 @@ class HitCircleNumber(Images):
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
 		self.orig_cols = self.img.size[0]
-		#self.to_3channel()
+	# self.to_3channel()
 
 
 class Number:
@@ -38,20 +38,20 @@ class Number:
 		for x in range(10):
 			self.combo_number.append(HitCircleNumber(path + "default-" + str(x), radius, default_circle_size))
 
-	def draw(self, circle, number, gap):
+	def draw(self, circle, number, overlap):
 		"""
 		:param circle: array of image circle
 		:param number: number
 		:param gap: distance between two digits
 		"""
 		number = str(number)
-		size = (-gap + self.combo_number[0].img.size[0]) * (len(number) - 1)
+		size = (self.combo_number[0].img.size[0] - overlap) * (len(number) - 1)
 		x_pos = int((circle.size[0] / 2) - (size / 2))
 		y_pos = int(circle.size[1] / 2)
 
 		for digit in number:
 			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, 4)
-			x_pos += -gap + self.combo_number[int(digit)].img.size[0]
+			x_pos += -overlap + self.combo_number[int(digit)].img.size[0]
 
 
 class ApproachCircle(ACircle):
@@ -61,7 +61,7 @@ class ApproachCircle(ACircle):
 		self.time_preempt = round(time_preempt)
 		self.interval = int(interval)
 		self.approach_frames = []
-		#self.to_3channel()
+		# self.to_3channel()
 		self.prepare_sizes()
 
 	def prepare_sizes(self):
@@ -71,9 +71,10 @@ class ApproachCircle(ACircle):
 			p = super().change_size(scale * self.scale, scale * self.scale, img=self.img)
 			print(scale * self.scale, p.size)
 			self.approach_frames.append(p)
-		# self.approach_frames[3].save("asdf.png")
-		# self.approach_frames[6].save("asdf1.png")
-		# self.approach_frames[10].save("asdf2.png")
+
+	# self.approach_frames[3].save("asdf.png")
+	# self.approach_frames[6].save("asdf1.png")
+	# self.approach_frames[10].save("asdf2.png")
 
 	def add_to_frame(self, background, x_offset, y_offset, time_left):
 		self.img = self.approach_frames[int((self.time_preempt - time_left) / self.interval)]
@@ -112,7 +113,7 @@ class PrepareCircles(Images):
 		self.maxcolors = skin.colours["ComboNumber"]
 		self.colors = skin.colours
 		self.maxcombo = beatmap.max_combo
-		self.gap = int(skin.fonts["HitCircleOverlap"] * self.radius_scale)
+		self.overlap = int(skin.fonts["HitCircleOverlap"])
 
 		self.slider_combo = beatmap.slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
@@ -153,14 +154,14 @@ class PrepareCircles(Images):
 		self.slidercircleoverlay = SliderCircleOverlay(self.slideroverlay_filename, self.orig_cols, self.orig_rows)
 		self.radius_scale = self.cs * self.overlay_scale * 2 / default_size
 
-	def overlayhitcircle(self, overlay, background, alpha=False):
+	def overlayhitcircle(self, overlay, background, alpha=None):
 		x1 = (background.size[0] - overlay.size[0]) // 2
 		y1 = (background.size[1] - overlay.size[1]) // 2
 		b = background.crop((x1, y1, x1 + overlay.size[0], y1 + overlay.size[1]))
 		c = Image.alpha_composite(b, overlay)
 		background.paste(c, (x1, y1))
-		if alpha:
-			super().changealpha(background, alpha/100)
+		if alpha is not None:
+			super().changealpha(background, alpha / 100)
 
 	def prepare_circle(self):
 		# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
@@ -181,8 +182,8 @@ class PrepareCircles(Images):
 			# prepare fadeout frames
 			self.circle_fadeout[0].append([])
 			for x in range(100, 140, 4):
-				size = x/100
-				im = super().newalpha(self.img, 1 - (x - 100)/40)
+				size = x / 100
+				im = super().newalpha(self.img, 1 - (x - 100) / 40)
 				im = super().change_size(size, size, img=im)
 				self.circle_fadeout[0][-1].append(im)
 
@@ -190,24 +191,24 @@ class PrepareCircles(Images):
 			self.overlayhitcircle(self.slidercircleoverlay.img, orig_color_slider)
 			orig_overlay_slider = super().change_size(self.radius_scale, self.radius_scale, img=orig_color_slider)
 			self.slider_circle.img = orig_overlay_slider.copy()
-			self.slidercircle_frames.append({})   # use dict to find the right combo will be faster
+			self.slidercircle_frames.append({})  # use dict to find the right combo will be faster
 
 			# prepare fadeout frames
 			self.circle_fadeout[1].append([])
 			for x in range(100, 140, 4):
-				size = x/100
-				im = super().newalpha(orig_overlay_slider, 1 - (x - 100)/40)
+				size = x / 100
+				im = super().newalpha(orig_overlay_slider, 1 - (x - 100) / 40)
 				im = super().change_size(size, size, img=im)
 				self.circle_fadeout[1][-1].append(im)
 
 			# add number to circles
 			for x in range(1, self.maxcombo[c] + 1):
-				self.number_drawer.draw(self.img, x, self.gap)
+				self.number_drawer.draw(self.img, x, self.overlap)
 
 				# check if there is any slider with that number, so we can optimize the space by avoiding adding useless
 				# slider frames
 				if x in self.slider_combo:
-					self.number_drawer.draw(self.slider_circle.img, x, self.gap)
+					self.number_drawer.draw(self.slider_circle.img, x, self.overlap)
 					self.slidercircle_frames[-1][x] = []
 
 				alpha = 0  # alpha for fadein
@@ -222,7 +223,7 @@ class PrepareCircles(Images):
 						self.slidercircle_frames[-1][x].append(approach_slider)
 					self.overlayhitcircle(self.img, approach_circle, alpha)
 					self.circle_frames[-1][-1].append(approach_circle)
-					# alpha = min(100, alpha + self.opacity_interval)
+					alpha = min(100, alpha + self.opacity_interval)
 
 				if x in self.slider_combo:
 					self.slidercircle_frames[-1][x].append(self.slider_circle.img)
@@ -242,7 +243,7 @@ class ReverseArrow(AnimatableImage):
 
 	def prepare_frames(self):
 		for x in range(100, 80, -4):
-			img = Images(self.path + self.filename, self.scale * x/10, rotate=1)
+			img = Images(self.path + self.filename, self.scale * x / 100, rotate=1)
 			self.frames.append(img)
 		self.n_frame = len(self.frames)
 
@@ -300,8 +301,8 @@ class PrepareSlider(Images):
 		# 	follow = new_img
 
 		#  find center
-		y1 = (follow.size[1] - sliderball.size[1])//2
-		x1= (follow.size[0] - sliderball.size[0])//2
+		y1 = (follow.size[1] - sliderball.size[1]) // 2
+		x1 = (follow.size[0] - sliderball.size[0]) // 2
 
 		follow.paste(sliderball, (x1, y1), sliderball)
 
@@ -337,18 +338,16 @@ class PrepareSlider(Images):
 
 
 # Spinner
-
-
 class PrepareSpinner(Images):
 	def __init__(self, scale, path):
-		self.divide_by_255 = 1/255.0
+		self.divide_by_255 = 1 / 255.0
 		self.scale = scale * 1.3 * 0.5
 		self.path = path
 		self.spinners = {}
 		self.spinner_frames = []
 		self.spinnermetre = []
 		self.spinner_images = {}
-		self.interval = 1000/60
+		self.interval = 1000 / 60
 		self.load_spinner()
 		print("done loading spinner")
 		self.prepare_spinner()
@@ -359,11 +358,12 @@ class PrepareSpinner(Images):
 
 	def load_spinner(self):
 		print(self.scale)
-		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle, spinnertop]
+		n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle,
+		     spinnertop]
 		for img in n:
 			self.spinner_images[img] = Images(self.path + img, self.scale)
 
-		# self.to_square(self.spinner_images[spinnercircle])
+	# self.to_square(self.spinner_images[spinnercircle])
 
 	def prepare_spinner(self):
 		for x in range(90):
@@ -371,7 +371,7 @@ class PrepareSpinner(Images):
 
 		for x in range(10, -1, -1):
 			width, height = self.spinner_images[spinnermetre].img.size
-			height = int(height * x/10)
+			height = int(height * x / 10)
 			partial_metre = self.spinner_images[spinnermetre].img.copy()
 			partial_metre.paste(Image.new("RGBA", (width, height)))
 

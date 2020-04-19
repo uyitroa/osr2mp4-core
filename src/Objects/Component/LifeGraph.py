@@ -33,7 +33,9 @@ class LifeGraph:
 		# 	if self.cur_life > 1:
 		# 		self.cur_life = 1
 		# self.wait_to_goes_down -= 1
-		width = int(self.img.shape[1] * self.cur_life)
-		height = int(self.img.shape[0])
-
-		background[:height, :width] = self.img[:, :width]
+		# width = int(self.img.shape[1] * self.cur_life)
+		# height = int(self.img.shape[0])
+		#
+		# background[:height, :width] = self.img[:, :width]
+		pass
+		#TODO
