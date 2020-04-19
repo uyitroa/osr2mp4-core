@@ -66,7 +66,7 @@ def main():
 	# for x in beatmap.hitobjects:
 	# 	print(x)
 
-	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 2000)
+	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 5000)
 	#
 	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 	# for x in processes:
