@@ -33,7 +33,7 @@ KEYS_PRESSED = 2
 TIMES = 3
 
 
-PATH = "../res/skin4/"
+PATH = "../res/skin/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60

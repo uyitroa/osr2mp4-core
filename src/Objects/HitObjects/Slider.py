@@ -2,7 +2,6 @@ from PIL import Image
 
 from Curves.generate_slider import GenerateSlider
 from Curves.curve import *
-import numba
 
 
 class SliderManager:
