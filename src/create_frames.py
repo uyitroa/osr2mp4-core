@@ -152,7 +152,7 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	pspinner = PrepareSpinner(PLAYFIELD_SCALE, skin_path)
 	pspinner = pspinner.get_frames()
 
-	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, diffcalculator, pcircle, pslider, pspinner)
+	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, skin_path, diffcalculator, pcircle, pslider, pspinner)
 	orig_img = setupBackground(component.inputoverlayBG, component.urbar)
 	prepare_timer = time.time() - prepare_timer
 
