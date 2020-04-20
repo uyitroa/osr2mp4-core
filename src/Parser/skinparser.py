@@ -13,7 +13,7 @@ def detect_comments(line):
 def del_comment(line):
 	i = detect_comments(line)
 	if i != -1:
-		line = line[: i -1]
+		line = line[: i - 1]
 	return line.strip()
 
 
@@ -92,7 +92,6 @@ class Skin:
 		self.general['SliderStyle'] = int(self.general.get('SliderStyle', 0))
 
 	def parse_colors(self):
-		self.colours["InputOverlayText"] = '74, 137, 222'
 		for key, value in self.colours.items():
 			value = value.split(",")
 			for x in range(len(value)):
@@ -105,11 +104,27 @@ class Skin:
 				cur_combo += 1
 			else:
 				break
+		self.colours["Comb1"] = self.colours.get("Combo1", (255, 192, 0))
+		self.colours["Comb2"] = self.colours.get("Combo2", (0, 202, 0))
+		self.colours["Comb3"] = self.colours.get("Combo3", (18, 124, 255))
+		self.colours["Comb3"] = self.colours.get("Combo4", (242, 24, 57))
+		self.colours["InputOverlayText"] = self.colours.get("InputOverlayText", (0, 0, 0))
+		self.colours["SliderBall"] = self.colours.get("SliderBall", (2, 170, 255))
+		self.colours["SliderBorder"] = self.colours.get("SliderBorder", (255, 255, 255))
+		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
+		self.colours["SpinnerBackground"] = self.colours.get("SpinnerBackground", (100, 100, 100))
 		self.colours["ComboNumber"] = cur_combo - 1
 
 	def parse_fonts(self):
-		self.fonts['HitCircleOverlap'] = int(self.fonts.get('HitCircleOverlap', 0))
-		self.fonts['ScoreOverlap'] = int(self.fonts.get('ScoreOverlap', 0))
+		self.fonts['HitCircleOverlap'] = int(self.fonts.get('HitCircleOverlap', -2))
+		self.fonts['ScoreOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
+		self.fonts['ComboOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
+		self.fonts['ComboPrefix'] = self.fonts.get('ComboPrefix', 'score')
+		self.fonts['ComboPrefix'] = self.fonts['ComboPrefix'].replace(" ", "")
+		self.fonts['ScorePrefix'] = self.fonts.get('ScorePrefix', 'score')
+		self.fonts['ScorePrefix'] = self.fonts['ScorePrefix'].replace(" ", "")
+		self.fonts['HitCirclePrefix'] = self.fonts.get('HitCirclePrefix', 'default')
+		self.fonts['HitCirclePrefix'] = self.fonts['HitCirclePrefix'].replace(" ", "")
 
 
 if __name__ == "__main__":
