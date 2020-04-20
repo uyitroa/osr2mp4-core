@@ -31,8 +31,6 @@ CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
-
-PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -133,7 +131,7 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index, end_index):
+def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 	print("process start")
 
@@ -145,13 +143,13 @@ def create_frame(filename, beatmap, skin, replay_event, resultinfo, start_index,
 
 	prepare_timer = time.time()
 
-	pcircle = PrepareCircles(beatmap, PATH, PLAYFIELD_SCALE, skin)
+	pcircle = PrepareCircles(beatmap, skin_path, PLAYFIELD_SCALE, skin)
 	pcircle = pcircle.get_frames()
 
-	pslider = PrepareSlider(PATH, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
+	pslider = PrepareSlider(skin_path, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
 	pslider = pslider.get_frames()
 
-	pspinner = PrepareSpinner(PLAYFIELD_SCALE, PATH)
+	pspinner = PrepareSpinner(PLAYFIELD_SCALE, skin_path)
 	pspinner = pspinner.get_frames()
 
 	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, diffcalculator, pcircle, pslider, pspinner)
