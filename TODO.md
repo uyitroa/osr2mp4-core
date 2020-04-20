@@ -16,3 +16,10 @@
 - Optimize newalpha() method in abstract class -> could potentially reduce a lot of execution time
 - Optimize RAM Memory by reducing the amount of prepared frame
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
+- Delete uunsed prepared frames
+- Pattern search for sliderbody, so instead of storing multiple same slider body, just need to store one. Reduce preparing time and ram memory
+
+# Clean up code
+- All class must be independent from each others
+- Add comment
+- add_to_frame of Circle and Slider and prepare_frame of Circle are too complicated. Need to refactor them
