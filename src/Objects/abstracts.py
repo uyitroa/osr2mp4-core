@@ -87,11 +87,9 @@ class Images:
 		img.putalpha(alpha)
 
 	def newalpha(self, img, alpha):
-		asdf = time.time()
 		r, g, b, a = img.split()
 		a = a.point(lambda i: i * alpha)
 		out = Image.merge('RGBA', (r, g, b, a))
-		Timer.newalpha_timer += time.time() - asdf
 		return out
 
 	def add_color(self, image, color):
@@ -105,10 +103,10 @@ class Images:
 		r = r.point(lambda i: i * color[0] / 255)
 		g = g.point(lambda i: i * color[1] / 255)
 		b = b.point(lambda i: i * color[2] / 255)
-		return Image.merge('RGBA', (r, g, b, a))
+		out = Image.merge('RGBA', (r, g, b, a))
+		return out
 
 	def add_to_frame(self, background, x_offset, y_offset, channel=3):
-		asdf = time.time()
 		y1 = y_offset - int(self.img.size[1] / 2)
 		x1 = x_offset - int(self.img.size[0] / 2)
 		#
@@ -120,7 +118,6 @@ class Images:
 		# 	background[y1:y2, x1:x2, c] = (
 		# 			self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
 		background.paste(self.img, (x1, y1), self.img)
-		Timer.add_to_frame_timer += time.time() - asdf
 
 	def change_size(self, scale_row, scale_col, img=None):
 		if img is None:
