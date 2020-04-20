@@ -15,3 +15,4 @@
 # Optimisation
 - Optimize newalpha() method in abstract class -> could potentially reduce a lot of execution time
 - Optimize RAM Memory by reducing the amount of prepared frame
+- Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
