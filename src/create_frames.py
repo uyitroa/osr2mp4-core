@@ -58,7 +58,7 @@ class Object:
 		self.mouse1 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
 		self.mouse2 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
 
-		self.scorenumbers = ScoreNumbers(skin_path, SCALE)
+		self.scorenumbers = ScoreNumbers(skin.fonts, skin_path, SCALE)
 		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 		self.timepie = TimePie(SCALE, self.accuracy)
 		self.hitresult = HitResult(skin_path, SCALE, PLAYFIELD_SCALE, self.accuracy)
