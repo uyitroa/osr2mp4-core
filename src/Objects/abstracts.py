@@ -175,8 +175,6 @@ class AnimatableImage:
 			should_continue = os.path.isfile(self.path + self.filename + self.delimiter + str(counter) + ".png")
 		if not self.frames:
 			self.frames.append(Images(self.path + self.filename, self.scale, rotate))
-		else:
-			self.frames.pop(0)
 
 	def prepare_frames(self):
 		pass

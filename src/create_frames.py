@@ -45,30 +45,30 @@ start_time = time.time()
 
 
 class Object:
-	def __init__(self, cursor_x, cursor_y, beatmap, skin, check, pcircle, pslider, pspinner):
-		self.cursor = Cursor(PATH + "cursor", SCALE)
-		self.cursor_trail = Cursortrail(PATH + "cursortrail", cursor_x, cursor_y, SCALE)
-		# self.lifegraph = LifeGraph(PATH + "scorebar-colour")
+	def __init__(self, cursor_x, cursor_y, beatmap, skin, skin_path, check, pcircle, pslider, pspinner):
+		self.cursor = Cursor(skin_path + "cursor", SCALE)
+		self.cursor_trail = Cursortrail(skin_path + "cursortrail", cursor_x, cursor_y, SCALE)
+		# self.lifegraph = LifeGraph(skin_path + "scorebar-colour")
 
-		self.scoreentry = ScoreEntry(PATH, SCALE, skin.colours["InputOverlayText"])
+		self.scoreentry = ScoreEntry(skin_path, SCALE, skin.colours["InputOverlayText"])
 
-		self.inputoverlayBG = InputOverlayBG(PATH + "inputoverlay-background", SCALE)
-		self.key1 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
-		self.key2 = InputOverlay(PATH, SCALE, [255, 255, 0], self.scoreentry)
-		self.mouse1 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
-		self.mouse2 = InputOverlay(PATH, SCALE, [255, 0, 255], self.scoreentry)
+		self.inputoverlayBG = InputOverlayBG(skin_path + "inputoverlay-background", SCALE)
+		self.key1 = InputOverlay(skin_path, SCALE, [255, 255, 0], self.scoreentry)
+		self.key2 = InputOverlay(skin_path, SCALE, [255, 255, 0], self.scoreentry)
+		self.mouse1 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
+		self.mouse2 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
 
-		self.scorenumbers = ScoreNumbers(PATH, SCALE)
+		self.scorenumbers = ScoreNumbers(skin_path, SCALE)
 		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 		self.timepie = TimePie(SCALE, self.accuracy)
-		self.hitresult = HitResult(PATH, SCALE, PLAYFIELD_SCALE, self.accuracy)
+		self.hitresult = HitResult(skin_path, SCALE, PLAYFIELD_SCALE, self.accuracy)
 		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers, WIDTH, HEIGHT)
 		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
 
 		self.urbar = URBar(SCALE, check.scorewindow, WIDTH, HEIGHT)
 
-		self.followpoints = FollowPointsManager(PATH, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.followpoints = FollowPointsManager(skin_path, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
 		self.circle = CircleManager(pcircle, check.ar())
 		self.slider = SliderManager(pslider, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
@@ -115,7 +115,7 @@ def find_followp_target(beatmap, index=0):
 
 def setupBackground(inputoverlayBG, urbar):
 	img = Image.new("RGB", (WIDTH, HEIGHT))  # setup background
-	# playfield = Playfield(PATH + "scorebar-bg", WIDTH, HEIGHT)
+	# playfield = Playfield(skin_path + "scorebar-bg", WIDTH, HEIGHT)
 	# playfield.add_to_frame(img)
 	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
 	urbar.add_to_frame_bar(img)
