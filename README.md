@@ -1,3 +1,6 @@
-yes.
+```
+pip install -r requirements.txt
+```
 
-need opencv and numpy scipy numba bye
+Download Pillow-SIMD here
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pillow-simd
