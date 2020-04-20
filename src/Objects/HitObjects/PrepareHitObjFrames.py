@@ -33,10 +33,10 @@ class HitCircleNumber(Images):
 
 
 class Number:
-	def __init__(self, radius, path, default_circle_size):
+	def __init__(self, info, radius, path, default_circle_size):
 		self.combo_number = []
 		for x in range(10):
-			self.combo_number.append(HitCircleNumber(path + "default-" + str(x), radius, default_circle_size))
+			self.combo_number.append(HitCircleNumber(path + info["HitCirclePrefix"] + "-" + str(x), radius, default_circle_size))
 
 	def draw(self, circle, number, overlap):
 		"""
@@ -118,7 +118,7 @@ class PrepareCircles(Images):
 		self.slider_combo = beatmap.slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
-		self.number_drawer = Number(self.cs * 0.9, path, default_size)
+		self.number_drawer = Number(skin.fonts, self.cs * 0.9, path, default_size)
 		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, self.radius_scale,
 		                                     self.time_preempt, self.interval)
 
