@@ -27,7 +27,7 @@ class FollowPointsManager(Images):
 		self.followpoints.append([[], x1, y1, x_vector, y_vector, t1, t2, int(spacing)])
 
 		for x in range(self.fp.n_frame):
-				self.followpoints[-1][0].append(self.fp.image_at(x).rotate_image(angle))
+				self.followpoints[-1][0].append(self.fp.pilimg_at(x).rotate(angle))
 
 	def add_to_frame(self, background, cur_time):
 		i = len(self.followpoints) - 1
@@ -62,7 +62,7 @@ class FollowPointsManager(Images):
 				if index >= len(self.followpoints[i][0]):
 					index -= len(self.followpoints[i][0])
 
-				self.img = self.followpoints[i][0][index][:, :, :] * alpha
+				self.img = self.newalpha(self.followpoints[i][0][index], alpha)
 				super().add_to_frame(background, x, y)
 				d += self.pointdistance
 			if to_delete:

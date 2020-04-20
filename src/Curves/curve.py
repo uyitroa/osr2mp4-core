@@ -3,7 +3,7 @@ import math
 from itertools import accumulate
 
 import numpy as np
-from scipy.misc import comb
+from scipy.special import comb
 from toolz import sliding_window
 try:
     from Curves.abec import ABCMeta, abstractmethod

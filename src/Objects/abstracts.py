@@ -26,16 +26,19 @@ class Images:
 		# 	cv2.normalize(self.img, self.img, 0, 255, cv2.NORM_MINMAX)
 		# 	self.img = np.uint8(self.img)
 		# 	print(self.img.dtype)
+		if rotate:
+			self.tosquare()
 		if self.img is None or self.img.size[1] == 1 or self.img.size[0] == 1:
 			print(filename, "exists:", self.img is not None)
 			self.img = Image.new('RGBA', (2, 2))
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
 		self.orig_cols = self.img.size[0]
-		self.change_size(scale, scale) # make rows and cols even amount
-		self.orig_img = self.img.copy()
-		self.orig_rows = self.img.size[1]
-		self.orig_cols = self.img.size[0]
+		if scale != 1:
+			self.change_size(scale, scale) # make rows and cols even amount
+			self.orig_img = self.img.copy()
+			self.orig_rows = self.img.size[1]
+			self.orig_cols = self.img.size[0]
 
 	# def to_3channel(self):
 	# 	alpha_s = self.orig_img[:, :, 3] * self.divide_by_255
@@ -71,6 +74,12 @@ class Images:
 	# 		new_img[y1:y2, x1:x2, :] = background[:, :, :]
 	# 		return new_img
 	# 	return background
+
+	def tosquare(self):
+		dim = int(np.sqrt(self.img.size[0]**2 + self.img.size[1]**2))
+		square = Image.new("RGBA", (dim, dim))
+		square.paste(self.img, ((dim - self.img.size[0])//2, (dim - self.img.size[1])//2))
+		self.img = square
 
 	def changealpha(self, img, opacity):
 		alpha = img.split()[3]
@@ -115,7 +124,7 @@ class Images:
 
 	def change_size(self, scale_row, scale_col, img=None):
 		if img is None:
-			im = self.img
+			im = self.orig_img
 			rows, cols = self.orig_rows, self.orig_cols
 		else:
 			im = img

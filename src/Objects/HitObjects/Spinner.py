@@ -28,7 +28,7 @@ class SpinnerManager(Images):
 
 		self.spinners[timestamp][0] = self.spinnermetre[index]
 		if n_rot != 1:
-			self.spinners[timestamp][0].transpose(n_rot)
+			self.spinners[timestamp][0] = self.spinners[timestamp][0].transpose(n_rot)
 
 		progress = progress * 10
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:

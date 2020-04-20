@@ -15,7 +15,6 @@ class ScoreCounter(Images):
 			self.width = width
 			self.height = height
 			self.gap = int(gap * scale * 0.75)
-			self.divide_by_255 = 1 / 255.0
 
 	def prepare_number(self):
 		for image in self.score_images:
@@ -49,13 +48,13 @@ class ScoreCounter(Images):
 		if self.draw:
 			score_string = str(int(self.showscore))
 			score_string = "0" * (8 - len(score_string)) + score_string
-			x = self.width - (-self.gap + self.score_images[0].img.shape[1]) * len(score_string)
-			y = self.score_images[0].img.shape[0]//2
+			x = self.width - (-self.gap + self.score_images[0].img.size[0]) * len(score_string)
+			y = self.score_images[0].img.size[1]//2
 			for digit in score_string:
 				digit = int(digit)
 				self.img = self.score_images[digit].img
 				super().add_to_frame(background, x, y)
-				x += -self.gap + self.score_images[0].img.shape[1]
+				x += -self.gap + self.score_images[0].img.size[0]
 
 		if cur_time >= self.freeze:
 			add_up = max(7.27, (self.score - self.showscore)/12.72)

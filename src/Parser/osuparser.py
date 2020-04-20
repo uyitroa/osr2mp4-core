@@ -287,8 +287,7 @@ def split(delimiters, string):
 
 
 def read_file(filename, scale, colors):
-	content = open(filename, "r").read()
-	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
-	              "[HitObjects]"]
-	info = split(delimiters, content)
-	return Beatmap(info, scale, colors)
+        content = open(filename, "r", encoding="utf-8").read()
+        delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]","[HitObjects]"]
+        info = split(delimiters, content)
+        return Beatmap(info, scale, colors)

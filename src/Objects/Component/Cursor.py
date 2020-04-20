@@ -15,7 +15,7 @@ class Cursortrail(Images):
 		self.prepare_trails()
 
 	def prepare_trails(self):
-		for x in [0.45, 0.5, 0.6, 0.65, 0.75, 0.9, 1, 0]:
+		for x in [0.2, 0.35, 0.55, 0.65, 0.75, 0.9, 1, 0]:
 			self.img = self.orig_img.copy()
 			self.changealpha(self.img, x)
 			self.trail_frames.append(self.img)

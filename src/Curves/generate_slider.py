@@ -4,7 +4,7 @@ from PIL import Image
 try:
 	from Curves.curve import *
 except Exception:
-	from curve import *
+        from .curve import *
 
 
 class GenerateSlider:
@@ -112,6 +112,7 @@ class GenerateSlider:
 		x_offset = int((ps[0].x - left_x_corner))
 		y_offset = int((ps[0].y - left_y_corner))
 
+		img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGRA)
 		img = Image.fromarray(img)
 		return img, x_offset, y_offset
 

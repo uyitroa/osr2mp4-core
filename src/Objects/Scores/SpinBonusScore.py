@@ -7,7 +7,6 @@ class SpinBonusScore(Images):
 		self.spinbonuses = ["0", None, None, 10]
 		self.score_images = scorenumbers.score_images
 		self.gap = int(gap * scale)
-		self.divide_by_255 = 1 / 255.0
 
 		self.x = width//2
 		self.y = height * 2//3
@@ -21,7 +20,7 @@ class SpinBonusScore(Images):
 			size = 2.5
 			for x in range(15, 5, -1):
 				image.change_size(size, size)
-				self.score_frames[-1].append(image.img[:, :, :] * (x/15))
+				self.score_frames[-1].append(super().newalpha(image.img, x/15))
 				size -= 0.1
 
 	def set_bonusscore(self, rotated_bonus):
@@ -36,17 +35,16 @@ class SpinBonusScore(Images):
 
 	def add_to_frame(self, background):
 		if self.spinbonuses[3] >= 10:
-			self.spinbonuses = ["0", None, None, 10]
 			return
 
 		index = int(self.spinbonuses[3])
-		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].shape[1]-self.gap * (2.5 - index/10))
+		x = self.xstart(self.spinbonuses[0], self.spinbonuses[1], self.score_frames[0][index].size[0]-self.gap * (2.5 - index/10))
 		y = self.spinbonuses[2]
 
 		for digit in self.spinbonuses[0]:
 			digit = int(digit)
 			self.img = self.score_frames[digit][index]
 			super().add_to_frame(background, x, y)
-			x += int(self.score_frames[digit][index].shape[1] - self.gap * (2.5 - index/10))
+			x += int(self.score_frames[digit][index].size[0] - self.gap * (2.5 - index/10))
 
 		self.spinbonuses[3] += 0.75
