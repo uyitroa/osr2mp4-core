@@ -9,7 +9,7 @@ from Parser.osrparser import *
 from Parser.skinparser import Skin
 
 # const
-PATH = "../res/skin/"
+PATH = "../res/skin4/"
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 60
@@ -66,7 +66,7 @@ def main():
 	# for x in beatmap.hitobjects:
 	# 	print(x)
 
-	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, 1500)
+	create_frame("output.mkv", beatmap, skin, replay_event, resultinfo, 0, len(replay_event) - 3)
 	#
 	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 	# for x in processes:

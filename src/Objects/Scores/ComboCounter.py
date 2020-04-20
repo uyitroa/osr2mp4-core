@@ -1,3 +1,5 @@
+from math import ceil
+
 from Objects.abstracts import *
 
 
@@ -23,22 +25,20 @@ class ComboCounter(Images):
 
 		self.gap = int(gap * scale)
 
-		self.divide_by_255 = 1/255
-
 		self.prepare_combo()
 
 	def prepare_combo(self):
 		for digit in range(len(self.score_images)):
 			self.score_frames.append([])
 			self.score_fadeout.append([])
-			for x in range(100, 111, 2):
+			for x in range(100, 131, 3):
 				self.score_images[digit].change_size(x/100, x/100)
 				normal = self.score_images[digit].img
 				self.score_frames[-1].append(normal)
 
-			for x in range(150, 129, -4):
+			for x in range(180, 109, -7):
 				self.score_images[digit].change_size(x/100, x/100)
-				fadeout = self.score_images[digit].img[:, :, :] * (x/300)
+				fadeout = super().newalpha(self.score_images[digit].img, (x/300))
 				self.score_fadeout[-1].append(fadeout)
 
 	def breakcombo(self):
@@ -70,7 +70,7 @@ class ComboCounter(Images):
 		self.combo = max(0, combo-1)
 
 	def add_to_frame(self, background):
-		if self.fadeout_index == 5:
+		if int(self.fadeout_index) == 10:
 			self.combo = self.combofadeout
 			self.score_index = 0
 			self.index_step = 1
@@ -81,47 +81,45 @@ class ComboCounter(Images):
 		if self.breaking:
 			self.combo = max(0, self.combo - 1)
 
-		if self.score_index == 5:
+		if int(self.score_index) == 10:
 			self.index_step = -1
 
-		if self.score_index == 0 and self.animate and self.index_step == -1:
+		if ceil(self.score_index) == 0 and self.animate and self.index_step == -1:
 			self.animate = False
 
 		if self.adding:
 			x = 0
-			y = self.height - self.score_fadeout[0][self.fadeout_index].shape[0]
+			y = self.height - self.score_fadeout[0][int(self.fadeout_index)].size[1]
 			for digit in str(self.combofadeout):
 				digit = int(digit)
-				self.img = self.score_fadeout[digit][self.fadeout_index]
-				x += self.img.shape[1] - self.gap
-				x_offset = x - self.img.shape[1]//2
-				y_offset = y + self.img.shape[0]//2
+				self.img = self.score_fadeout[digit][int(self.fadeout_index)]
+				x += self.img.size[0] - self.gap
+				x_offset = x - self.img.size[0]//2
+				y_offset = y + self.img.size[1]//2
 				super().add_to_frame(background, x_offset, y_offset)
 
-
-			self.img = self.score_fadeout[10][self.fadeout_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1] // 2
-			y_offset = y + self.img.shape[0] // 2
+			self.img = self.score_fadeout[10][int(self.fadeout_index)]
+			x += self.img.size[0] - self.gap
+			x_offset = x - self.img.size[0] // 2
+			y_offset = y + self.img.size[1] // 2
 			super().add_to_frame(background, x_offset, y_offset)
 
 			self.fadeout_index += 1
 
 		x = 0
-		y = self.height - self.score_frames[0][self.score_index].shape[0]
+		y = self.height - self.score_frames[0][int(self.score_index)].size[1]
 		for digit in str(self.combo):
 			digit = int(digit)
-			self.img = self.score_frames[digit][self.score_index]
-			x += self.img.shape[1] - self.gap
-			x_offset = x - self.img.shape[1]//2
-			y_offset = y + self.img.shape[0]//2
+			self.img = self.score_frames[digit][int(self.score_index)]
+			x += self.img.size[0] - self.gap
+			x_offset = x - self.img.size[0]//2
+			y_offset = y + self.img.size[1]//2
 			super().add_to_frame(background, x_offset, y_offset)
 
-
-		self.img = self.score_frames[10][self.score_index]
-		x += self.img.shape[1] - self.gap
-		x_offset = x - self.img.shape[1] // 2
-		y_offset = y + self.img.shape[0] // 2
+		self.img = self.score_frames[10][int(self.score_index)]
+		x += self.img.size[0] - self.gap
+		x_offset = x - self.img.size[0] // 2
+		y_offset = y + self.img.size[1] // 2
 		super().add_to_frame(background, x_offset, y_offset)
 
 		if self.animate:

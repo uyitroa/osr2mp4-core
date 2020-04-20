@@ -1,6 +1,10 @@
 
 
 class HitObjectManager:
+	CIRCLE = 0
+	SLIDER = 1
+	SPINNER = 2
+
 	def __init__(self, circle, slider, spinner, maxtimewindow):
 
 		self.preparecircle = circle
@@ -12,9 +16,6 @@ class HitObjectManager:
 		self.hitobjects = {}
 		self.objtime = []
 		self.interval = 1000 / 60
-		self.CIRCLE = 0
-		self.SLIDER = 1
-		self.SPINNER = 2
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time)
