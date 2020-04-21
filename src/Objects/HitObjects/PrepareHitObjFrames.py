@@ -33,25 +33,27 @@ class HitCircleNumber(Images):
 
 
 class Number:
-	def __init__(self, info, radius, path, default_circle_size):
+	def __init__(self, info, radius, path, default_circle_size, opacity_interval):
 		self.combo_number = []
+		self.overlap = info["HitCircleOverlap"]
+		self.opacity_interval = opacity_interval
 		for x in range(10):
 			self.combo_number.append(HitCircleNumber(path + info["HitCirclePrefix"] + "-" + str(x), radius, default_circle_size))
 
-	def draw(self, circle, number, overlap):
+	def draw(self, background, alpha, number, x, y):
 		"""
 		:param circle: array of image circle
 		:param number: number
 		:param gap: distance between two digits
 		"""
 		number = str(number)
-		size = (self.combo_number[0].img.size[0] - overlap) * (len(number) - 1)
-		x_pos = int((circle.size[0] / 2) - (size / 2))
-		y_pos = int(circle.size[1] / 2)
+		size = (self.combo_number[0].img.size[0] - self.overlap) * (len(number) - 1)
+		x_pos = x - size//2
+		y_pos = y
 
 		for digit in number:
-			self.combo_number[int(digit)].add_to_frame(circle, x_pos, y_pos, 4)
-			x_pos += -overlap + self.combo_number[int(digit)].img.size[0]
+			self.combo_number[int(digit)].add_to_frame(background, x_pos, y_pos, alpha=alpha * self.opacity_interval / 100)
+			x_pos += -self.overlap + self.combo_number[int(digit)].img.size[0]
 
 
 class ApproachCircle(ACircle):
@@ -113,12 +115,11 @@ class PrepareCircles(Images):
 		self.maxcolors = skin.colours["ComboNumber"]
 		self.colors = skin.colours
 		self.maxcombo = beatmap.max_combo
-		self.overlap = int(skin.fonts["HitCircleOverlap"])
 
 		self.slider_combo = beatmap.slider_combo
 		self.slider_circle = CircleSlider(path + sliderstartcircle, self.orig_cols, self.orig_rows)
 
-		self.number_drawer = Number(skin.fonts, self.cs * 0.9, path, default_size)
+		self.number_drawer = Number(skin.fonts, self.cs * 0.9, path, default_size, self.opacity_interval)
 		self.approachCircle = ApproachCircle(path + approachcircle, self.orig_cols, self.orig_rows, self.radius_scale,
 		                                     self.time_preempt, self.interval)
 
@@ -135,7 +136,7 @@ class PrepareCircles(Images):
 		self.circle_supporter.putalpha()
 
 	def get_frames(self):
-		return self.slidercircle_frames, self.circle_frames, self.circle_fadeout
+		return self.slidercircle_frames, self.circle_frames, self.circle_fadeout, self.number_drawer
 
 	def calculate_ar(self):
 		if self.ar < 5:
@@ -177,7 +178,6 @@ class PrepareCircles(Images):
 			self.overlayhitcircle(orig_overlay_img, orig_color_img)
 			orig_overlay_img = super().change_size(self.radius_scale, self.radius_scale, img=orig_color_img)
 			self.img = orig_overlay_img.copy()
-			self.circle_frames.append([])
 
 			# prepare fadeout frames
 			self.circle_fadeout[0].append([])
@@ -191,7 +191,6 @@ class PrepareCircles(Images):
 			self.overlayhitcircle(self.slidercircleoverlay.img, orig_color_slider)
 			orig_overlay_slider = super().change_size(self.radius_scale, self.radius_scale, img=orig_color_slider)
 			self.slider_circle.img = orig_overlay_slider.copy()
-			self.slidercircle_frames.append({})  # use dict to find the right combo will be faster
 
 			# prepare fadeout frames
 			self.circle_fadeout[1].append([])
@@ -201,36 +200,26 @@ class PrepareCircles(Images):
 				im = super().change_size(size, size, img=im)
 				self.circle_fadeout[1][-1].append(im)
 
-			# add number to circles
-			for x in range(1, self.maxcombo[c] + 1):
-				self.number_drawer.draw(self.img, x, self.overlap)
+			alpha = 0  # alpha for fadein
+			self.circle_frames.append([])
+			self.slidercircle_frames.append([])
+			# we also overlay approach circle to circle to avoid multiple add_to_frame call
+			for i in range(len(self.approachCircle.approach_frames)):
+				approach_circle = super().add_color(self.approachCircle.approach_frames[i], color)
+				# avoid useless slider frames
+				approach_slider = approach_circle.copy()
+				self.overlayhitcircle(self.slider_circle.img, approach_slider, alpha)
+				self.slidercircle_frames[-1].append(approach_slider)
 
-				# check if there is any slider with that number, so we can optimize the space by avoiding adding useless
-				# slider frames
-				if x in self.slider_combo:
-					self.number_drawer.draw(self.slider_circle.img, x, self.overlap)
-					self.slidercircle_frames[-1][x] = []
+				self.overlayhitcircle(self.img, approach_circle, alpha)
+				self.circle_frames[-1].append(approach_circle)
+				alpha = min(100, alpha + self.opacity_interval)
 
-				alpha = 0  # alpha for fadein
-				self.circle_frames[-1].append([])
-				# we also overlay approach circle to circle to avoid multiple add_to_frame call
-				for i in range(len(self.approachCircle.approach_frames)):
-					approach_circle = super().add_color(self.approachCircle.approach_frames[i], color)
-					# avoid useless slider frames
-					if x in self.slider_combo:
-						approach_slider = approach_circle.copy()
-						self.overlayhitcircle(self.slider_circle.img, approach_slider, alpha)
-						self.slidercircle_frames[-1][x].append(approach_slider)
-					self.overlayhitcircle(self.img, approach_circle, alpha)
-					self.circle_frames[-1][-1].append(approach_circle)
-					alpha = min(100, alpha + self.opacity_interval)
-
-				if x in self.slider_combo:
-					self.slidercircle_frames[-1][x].append(self.slider_circle.img)
-				self.circle_frames[-1][-1].append(self.img)  # for late tapping
-				#
-				self.img = orig_overlay_img.copy()
-				self.slider_circle.img = orig_overlay_slider.copy()
+			self.slidercircle_frames[-1].append(self.slider_circle.img)
+			self.circle_frames[-1].append(self.img)  # for late tapping
+			#
+			self.img = orig_overlay_img.copy()
+			self.slider_circle.img = orig_overlay_slider.copy()
 		print("done")
 		del self.approachCircle
 

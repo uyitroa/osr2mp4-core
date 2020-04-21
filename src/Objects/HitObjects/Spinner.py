@@ -51,17 +51,17 @@ class SpinnerManager(Images):
 				self.spinners[i].alpha = max(0, self.spinners[i].alpha - self.interval / 200)
 			else:
 				self.spinners[i].alpha = 1
-		self.img = super().newalpha(self.spinner_images[spinnerbackground].img, self.spinners[i].alpha)
+		self.img = self.spinner_images[spinnerbackground].img
 		# if not alone:
-		super().add_to_frame(background,  background.size[0]//2, 46 + self.img.size[1]//2)
+		super().add_to_frame(background,  background.size[0]//2, 46 + self.img.size[1]//2, alpha=self.spinners[i].alpha)
 		# else:
 		# 	x, y = background.size[0]//2 - self.img.size[0]//2, 46
 		# 	y1, y2, ystart, yend = super().checkOverdisplay(y, y + self.img.size[1], background.size[1])
 		# 	x1, x2, xstart, xend = super().checkOverdisplay(x, x + self.img.size[0], background.size[0])
 		# 	background[y1:y2, x1:x2, :] = self.img[ystart:yend, xstart:xend, :3]
 
-		self.img = super().newalpha(self.spinners[i].image, self.spinners[i].alpha)
-		super().add_to_frame(background, background.size[0] // 2, int(198.5 * self.scale) + self.movedown)
+		self.img = self.spinners[i].image
+		super().add_to_frame(background, background.size[0] // 2, int(198.5 * self.scale) + self.movedown, alpha=self.spinners[i].alpha)
 
-		self.img = super().newalpha(self.spinner_frames[self.spinners[i][4]], self.spinners[i].alpha)
-		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2)
+		self.img = self.spinner_frames[self.spinners[i][4]]
+		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2, alpha=self.spinners[i].alpha)

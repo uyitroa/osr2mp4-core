@@ -107,7 +107,7 @@ class Images:
 		out = Image.merge('RGBA', (r, g, b, a))
 		return out
 
-	def add_to_frame(self, background, x_offset, y_offset, channel=3):
+	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
 		y1 = y_offset - int(self.img.size[1] / 2)
 		x1 = x_offset - int(self.img.size[0] / 2)
 		#
@@ -118,7 +118,13 @@ class Images:
 		# for c in range(channel):
 		# 	background[y1:y2, x1:x2, c] = (
 		# 			self.img[ystart:yend, xstart:xend, c] + alpha_l * background[y1:y2, x1:x2, c])
-		background.paste(self.img, (x1, y1), self.img)
+		a = self.img
+		if 0 < alpha < 1:
+			a = self.img.getchannel("A")
+			a = a.point(lambda i: i * alpha)
+		if alpha == 0:
+			return
+		background.paste(self.img, (x1, y1), a)
 
 	def change_size(self, scale_row, scale_col, img=None):
 		if img is None:

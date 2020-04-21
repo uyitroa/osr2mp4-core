@@ -52,10 +52,10 @@ class HitResult(Images):
 				break
 
 			score = self.hitresults[i][0]
-			self.img = super().newalpha(self.scores_frames[score][self.hitresults[i][3]], self.hitresults[i][4] / 100)
+			self.img = self.scores_frames[score][self.hitresults[i][3]]
 
 			x, y = self.hitresults[i][1], self.hitresults[i][2]
-			super().add_to_frame(background, x, y)
+			super().add_to_frame(background, x, y, alpha=self.hitresults[i][4] / 100)
 
 			if score == 0:
 				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)

@@ -8,7 +8,7 @@ Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fade
 
 class CircleManager(Images):
 	def __init__(self, frames, timepreempt):
-		self.slidercircle_frames, self.circle_frames, self.circle_fadeout = frames
+		self.slidercircle_frames, self.circle_frames, self.circle_fadeout, self.number = frames
 		self.time_preempt = timepreempt
 		self.interval = 1000/60
 		self.circles = {}
@@ -51,13 +51,14 @@ class CircleManager(Images):
 		if self.circles[i].obj_type:
 			# in case opacity_index exceed list range because of the creator shitty algorithm
 			# the creator is me btw
-			opacity_index = min(self.circles[i].frame_i, len(self.slidercircle_frames[color][number]) - 1)
-			self.img = self.slidercircle_frames[color][number][opacity_index]
+			opacity_index = min(self.circles[i].frame_i, len(self.slidercircle_frames[color]) - 1)
+			self.img = self.slidercircle_frames[color][opacity_index]
 		else:
-			opacity_index = min(self.circles[i].frame_i, len(self.circle_frames[color][number - 1]) - 1)
-			self.img = self.circle_frames[color][number - 1][opacity_index]
+			opacity_index = min(self.circles[i].frame_i, len(self.circle_frames[color]) - 1)
+			self.img = self.circle_frames[color][opacity_index]
 
 		# if self.circles[i].obj_type and self.circles[i].duration <= 0:
 		# 	self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i].duration/50)
-
 		super().add_to_frame(background, self.circles[i].x+self.circles[i].x_step, self.circles[i].y)
+		self.number.draw(background, self.circles[i].frame_i, number, self.circles[i].x+self.circles[i].x_step, self.circles[i].y)
+

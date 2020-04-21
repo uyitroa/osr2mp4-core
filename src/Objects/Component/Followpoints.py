@@ -62,8 +62,8 @@ class FollowPointsManager(Images):
 				if index >= len(self.followpoints[i][0]):
 					index -= len(self.followpoints[i][0])
 
-				self.img = self.newalpha(self.followpoints[i][0][index], alpha)
-				super().add_to_frame(background, x, y)
+				self.img = self.followpoints[i][0][index]
+				super().add_to_frame(background, x, y, alpha=alpha)
 				d += self.pointdistance
 			if to_delete:
 				del self.followpoints[i]

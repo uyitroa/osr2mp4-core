@@ -82,22 +82,27 @@ class SliderManager:
 
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
 
-	def slider_to_frame(self, img, background, x_offset, y_offset):
-		background.paste(img, (x_offset, y_offset), img)
+	def slider_to_frame(self, img, background, x_offset, y_offset, alpha=1):
+		a = img
+		if 0 < alpha < 1:
+			a = img.getchannel("A")
+			a = a.point(lambda i: i * alpha)
+		if alpha == 0:
+			return
+		background.paste(img, (x_offset, y_offset), a)
 
-	def sliderstuff_to_frame(self, img, background, x_offset, y_offset):
-		# need to do to_3channel first.
+	def sliderstuff_to_frame(self, img, background, x_offset, y_offset, alpha=1):
+
+		a = img
+		if 0 < alpha < 1:
+			a = img.getchannel("A")
+			a = a.point(lambda i: i * alpha)
+		if alpha == 0:
+			return
+
 		y1 = y_offset - int(img.size[1] / 2)
 		x1 = x_offset - int(img.size[0] / 2)
-		background.paste(img, (x1, y1), img)
-
-	def newalpha(self, img, alpha):
-		out = img.copy()
-		alpha /= 100
-		a = img.getchannel('A')
-		a = a.point(lambda i: i * alpha)
-		out.putalpha(a)
-		return out
+		background.paste(img, (x1, y1), a)
 
 	#
 	# def changealpha(self, img, alpha, old_alpha):
@@ -139,8 +144,7 @@ class SliderManager:
 				                              self.sliders[i].opacity - 4 * self.opacity_interval)
 
 		self.sliders[i].opacity = min(90, self.sliders[i].opacity + self.opacity_interval)
-		img = self.newalpha(self.sliders[i].image, self.sliders[i].opacity)
-		self.slider_to_frame(img, background, self.sliders[i].x, self.sliders[i].y)
+		self.slider_to_frame(self.sliders[i].image, background, self.sliders[i].x, self.sliders[i].y, alpha=self.sliders[i].opacity/100)
 
 		t = self.sliders[i].cur_duration / self.sliders[i].orig_duration
 
@@ -159,10 +163,7 @@ class SliderManager:
 			tick_pos = baiser(round(tick_t, 3))
 			x = int((tick_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
 			y = int((tick_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
-
-			self.slidertick.img = self.newalpha(self.slidertick.orig_img,
-			                                    self.sliders[i].opacity * self.sliders[i].tick_a[count])
-			self.slidertick.add_to_frame(background, x, y)
+			self.slidertick.add_to_frame(background, x, y, alpha=self.sliders[i].opacity * self.sliders[i].tick_a[count]/100)
 
 		if 0 < self.sliders[i].cur_duration <= self.sliders[i].orig_duration:
 			cur_pos = baiser(round(t, 3))
@@ -178,9 +179,7 @@ class SliderManager:
 			cur_pos = baiser(int(going_forward))
 			x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
-			arrow = self.newalpha(self.arrows[i][int(going_forward)][int(self.sliders[i].arrow_i)],
-			                      self.sliders[i].opacity)
-			self.sliderstuff_to_frame(arrow, background, x, y)
+			self.sliderstuff_to_frame(self.arrows[i][int(going_forward)][int(self.sliders[i].arrow_i)], background, x, y, alpha=self.sliders[i].opacity/100)
 
 			self.sliders[i].arrow_i += 0.6
 			if self.sliders[i].arrow_i >= len(self.arrows[i][0]):
