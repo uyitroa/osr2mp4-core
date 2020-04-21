@@ -8,9 +8,6 @@ from Curves.curve import *
 Slider = recordclass("Slider", "image x y cur_duration opacity color sliderb_i orig_duration bezier_info "
                                "cur_repeated repeated appear_f tick_a arrow_i")
 
-
-# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
-# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
 class SliderManager:
 	def __init__(self, frames, diff, scale, skin, movedown, moveright):
 		self.scale = scale
