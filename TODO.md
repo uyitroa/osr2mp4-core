@@ -21,6 +21,7 @@
 - Delete uunsed prepared frames
 - Pattern search for sliderbody, so instead of storing multiple same slider body, just need to store one. Reduce preparing time and ram memory
 - Converting Pillow Image to numpy array is using too much time
+- Convert slider body images to pillow class later to reduce ram memory? to test
 
 # Clean up code
 - All class must be independent from each others
