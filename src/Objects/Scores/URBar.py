@@ -7,6 +7,7 @@ class URBar(Images):
 		self.w, self.h = int(200 * scale), int(25 * scale)
 		self.y = height - self.h//2
 		self.x = width//2
+		self.x_offset = self.x - self.w // 2
 		self.barheight = int(self.h/5)
 
 		self.colors = [(255, 210, 50, 150), (80, 255, 50, 150), (60, 205, 255, 150)]
@@ -32,7 +33,7 @@ class URBar(Images):
 
 	def add_bar(self, delta_t, hitresult):
 		pos = int(self.w/2 + delta_t/self.maxtime * self.w/2)
-		self.bars.append([pos, 1, self.resultdict[hitresult]])
+		self.bars.append([pos, 200, self.resultdict[hitresult]])
 
 	def add_to_frame_bar(self, background):
 		self.img = self.urbar
@@ -40,16 +41,19 @@ class URBar(Images):
 		self.img = Image.new("RGBA", (4, self.h), (255, 255, 255, 255))
 		super().add_to_frame(background, self.x, self.y)
 
+	def determine(self, i):
+		background = self.bg
+		bar = self.bars[i]
+		self.img = super().newalpha(self.bar_images[bar[2]], bar[1])
+		super().add_to_frame(background, self.x_offset + bar[0], self.y)
+		bar[1] -= 1
+		if bar[1] <= 0:
+			return False
+		return True
+
 	def add_to_frame(self, background):
-		i = len(self.bars)
-		while i > 0:
-			i -= 1
-			bar = self.bars[i]
-			self.img = super().newalpha(self.bar_images[bar[2]], bar[1])
-			super().add_to_frame(background, self.x - self.w//2 + bar[0], self.y)
-			bar[1] -= 0.005
-			if bar[1] <= 0:
-				del self.bars[i]
+		self.bg = background
+		self.bars = [self.bars[i] for i in range(len(self.bars)) if self.determine(i)]
 		#
 		# cv2.rectangle(blank, (self.w // 2 - 1, 0), (self.w // 2 + 1, self.h), (255, 255, 255, 255), -1, cv2.LINE_AA)
 		# self.orig_img = blank
