@@ -1,9 +1,16 @@
+from recordclass import recordclass
+
 from PIL import Image
 
 from Curves.generate_slider import GenerateSlider
 from Curves.curve import *
 
+Slider = recordclass("Slider", "image x y cur_duration opacity color sliderb_i orig_duration bezier_info "
+                               "cur_repeated repeated appear_f tick_a arrow_i")
 
+
+# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
+# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
 class SliderManager:
 	def __init__(self, frames, diff, scale, skin, movedown, moveright):
 		self.scale = scale
@@ -13,8 +20,8 @@ class SliderManager:
 		self.reversearrow, self.sliderb_frames, self.sliderfollow_fadeout, self.slidertick = frames
 		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
 
-		self.divide_by_255 = 1/255.0
-		self.interval = 1000/60
+		self.divide_by_255 = 1 / 255.0
+		self.interval = 1000 / 60
 
 		self.arrows = {}
 		self.sliders = {}
@@ -70,13 +77,13 @@ class SliderManager:
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
 		# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
-		self.sliders[str(osu_d["time"]) + "s"] = [image, x_pos - x_offset, y_pos - y_offset,
-		                                          osu_d["duration"] + osu_d["time"] - cur_time,
-		                                          0, color, self.slidermax_index, osu_d["duration"], b_info, 1,
-		                                          osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"]), 0]
+		self.sliders[str(osu_d["time"]) + "s"] = Slider(image, x_pos - x_offset, y_pos - y_offset,
+		                                                osu_d["duration"] + osu_d["time"] - cur_time,
+		                                                0, color, self.slidermax_index, osu_d["duration"], b_info,
+		                                                1,
+		                                                osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"]), 0)
 
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
-
 
 	def slider_to_frame(self, img, background, x_offset, y_offset):
 		background.paste(img, (x_offset, y_offset), img)
@@ -88,81 +95,96 @@ class SliderManager:
 		background.paste(img, (x1, y1), img)
 
 	def newalpha(self, img, alpha):
-		r, g, b, a = img.split()
+		out = img.copy()
+		alpha /= 100
+		a = img.getchannel('A')
 		a = a.point(lambda i: i * alpha)
-		return Image.merge('RGBA', (r, g, b, a))
+		out.putalpha(a)
+		return out
+
+	#
+	# def changealpha(self, img, alpha, old_alpha):
+	# 	alpha = alpha/old_alpha
+	# 	a = img.getchannel('A')
+	# 	a = a.point(lambda i: i * alpha)
+	# 	img.putalpha(a)
 
 	def add_to_frame(self, background, i, _):
-		self.sliders[i][3] -= self.interval
-		baiser = Curve.from_kind_and_points(*self.sliders[i][8][0:3])
+		self.sliders[i].cur_duration -= self.interval
+		baiser = Curve.from_kind_and_points(*self.sliders[i].bezier_info[0:3])
 
 		# if sliderball is going forward
-		going_forward = self.sliders[i][9] % 2 == 1
+		going_forward = self.sliders[i].cur_repeated % 2 == 1
 
-		if self.sliders[i][3] <= 0:
+		if self.sliders[i].cur_duration <= 0:
 			# if the slider is repeated
-			if self.sliders[i][9] < self.sliders[i][10]:
-				self.sliders[i][3] = self.sliders[i][7]  # reset
-				self.sliders[i][9] += 1
+			if self.sliders[i].cur_repeated < self.sliders[i].repeated:
+				self.sliders[i].cur_duration = self.sliders[i].orig_duration  # reset
+				self.sliders[i].cur_repeated += 1
 				going_forward = not going_forward
 
 			else:
 				cur_pos = baiser(int(going_forward))  # if going_foward is true then t = 1 otherwise it's 0
-				x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-				y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
+				x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
+				y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
 
-				index = int(self.sliders[i][6])
+				index = int(self.sliders[i].sliderb_i)
 
 				self.sliderstuff_to_frame(self.sliderfollow_fadeout[index], background, x, y)
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
-				self.sliders[i][6] = max(0, min(self.slidermax_index, self.sliders[i][6] + self.sliders[i][11]))
+				self.sliders[i].sliderb_i = max(0, min(self.slidermax_index,
+				                                       self.sliders[i].sliderb_i + self.sliders[i].appear_f))
 
 				# reduce opacity of slider
-				self.sliders[i][4] = max(-self.opacity_interval, self.sliders[i][4] - 4 * self.opacity_interval)
+				self.sliders[i].opacity = max(-self.opacity_interval,
+				                              self.sliders[i].opacity - 4 * self.opacity_interval)
 
-		self.sliders[i][4] = min(90, self.sliders[i][4] + self.opacity_interval)
-		cur_img = self.newalpha(self.sliders[i][0], (self.sliders[i][4] / 100))
-		self.slider_to_frame(cur_img, background, self.sliders[i][1], self.sliders[i][2])
+		self.sliders[i].opacity = min(90, self.sliders[i].opacity + self.opacity_interval)
+		img = self.newalpha(self.sliders[i].image, self.sliders[i].opacity)
+		self.slider_to_frame(img, background, self.sliders[i].x, self.sliders[i].y)
 
-		t = self.sliders[i][3] / self.sliders[i][7]
+		t = self.sliders[i].cur_duration / self.sliders[i].orig_duration
 
 		# if sliderball is going forward
 		if going_forward:
 			t = 1 - t
 
-		for count, tick_t in enumerate(self.sliders[i][8][4]):
-			if self.sliders[i][9] == self.sliders[i][10]:
+		for count, tick_t in enumerate(self.sliders[i].bezier_info[4]):
+			if self.sliders[i].cur_repeated == self.sliders[i].repeated:
 				if (going_forward and t > tick_t) or (not going_forward and t < tick_t):
 					continue
 
-			if self.sliders[i][3] < self.sliders[i][7] + 100:
-				if count == 0 or self.sliders[i][12][count - 1] >= 0.75:
-					self.sliders[i][12][count] = min(1, self.sliders[i][12][count] + 0.1)
+			if self.sliders[i].cur_duration < self.sliders[i].orig_duration + 100:
+				if count == 0 or self.sliders[i].tick_a[count - 1] >= 0.75:
+					self.sliders[i].tick_a[count] = min(1, self.sliders[i].tick_a[count] + 0.1)
 			tick_pos = baiser(round(tick_t, 3))
-			x = int((tick_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-			y = int((tick_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
+			x = int((tick_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
+			y = int((tick_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
 
-			self.slidertick.img = self.newalpha(self.slidertick.orig_img, (self.sliders[i][4] / 100 * self.sliders[i][12][count]))
+			self.slidertick.img = self.newalpha(self.slidertick.orig_img,
+			                                    self.sliders[i].opacity * self.sliders[i].tick_a[count])
 			self.slidertick.add_to_frame(background, x, y)
 
-		if 0 < self.sliders[i][3] <= self.sliders[i][7]:
+		if 0 < self.sliders[i].cur_duration <= self.sliders[i].orig_duration:
 			cur_pos = baiser(round(t, 3))
-			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
-			color = self.sliders[i][5] - 1
-			index = int(self.sliders[i][6])
+			x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
+			y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
+			color = self.sliders[i].color - 1
+			index = int(self.sliders[i].sliderb_i)
 			self.sliderstuff_to_frame(self.sliderb_frames[color][index], background, x, y)
-			self.sliders[i][6] = max(0, min(self.slidermax_index, self.sliders[i][6] + self.sliders[i][11]))
+			self.sliders[i].sliderb_i = max(0, min(self.slidermax_index,
+			                                       self.sliders[i].sliderb_i + self.sliders[i].appear_f))
 
-		if self.sliders[i][9] < self.sliders[i][10]:
+		if self.sliders[i].cur_repeated < self.sliders[i].repeated:
 			cur_pos = baiser(int(going_forward))
-			x = int((cur_pos.x + self.sliders[i][8][3]) * self.scale) + self.moveright
-			y = int((cur_pos.y + self.sliders[i][8][3]) * self.scale) + self.movedown
-			arrow = self.newalpha(self.arrows[i][int(going_forward)][int(self.sliders[i][13])], self.sliders[i][4] / 100)
+			x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
+			y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
+			arrow = self.newalpha(self.arrows[i][int(going_forward)][int(self.sliders[i].arrow_i)],
+			                      self.sliders[i].opacity)
 			self.sliderstuff_to_frame(arrow, background, x, y)
 
-			self.sliders[i][13] += 0.6
-			if self.sliders[i][13] >= len(self.arrows[i][0]):
-				self.sliders[i][13] = 0
+			self.sliders[i].arrow_i += 0.6
+			if self.sliders[i].arrow_i >= len(self.arrows[i][0]):
+				self.sliders[i].arrow_i = 0

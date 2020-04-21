@@ -82,14 +82,15 @@ class Images:
 		self.img = square
 
 	def changealpha(self, img, opacity):
-		alpha = img.split()[3]
-		alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-		img.putalpha(alpha)
+		a = img.getchannel('A')
+		a = a.point(lambda i: i * opacity)
+		img.putalpha(a)
 
 	def newalpha(self, img, alpha):
-		r, g, b, a = img.split()
+		out = img.copy()
+		a = img.getchannel('A')
 		a = a.point(lambda i: i * alpha)
-		out = Image.merge('RGBA', (r, g, b, a))
+		out.putalpha(a)
 		return out
 
 	def add_color(self, image, color):
@@ -98,7 +99,7 @@ class Images:
 		:param color: tuple RGB
 		:return: PIL.Image
 		"""
-		im = image.convert('RGBA')
+		im = image.copy()
 		r, g, b, a = im.split()
 		r = r.point(lambda i: i * color[0] / 255)
 		g = g.point(lambda i: i * color[1] / 255)
