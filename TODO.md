@@ -11,12 +11,14 @@
 - Add break time animation (shows background, pass/fail image)
 - Add leaderboard
 - Implement @x2 images for better result
+- Bezier tolerance depends on the size of the slider
 
 # Optimisation
 - Optimize RAM Memory by reducing the amount of prepared frame
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
 - Delete uunsed prepared frames
 - Pattern search for sliderbody, so instead of storing multiple same slider body, just need to store one. Reduce preparing time and ram memory
+- Converting Pillow Image to numpy array is using too much time
 
 # Clean up code
 - All class must be independent from each others
