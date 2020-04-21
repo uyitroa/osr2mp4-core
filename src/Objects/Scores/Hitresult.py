@@ -20,11 +20,11 @@ class HitResult(Images):
 
 	def prepare_frames(self):
 		for x in self.scores_images:
-			end = 175
-			start = 125
+			end = 125
+			start = 75
 			if x != 0:
-				end = 100
-				start = 70
+				end = 125
+				start = 100
 				for y in range(start, end, -5):
 					self.scores_images[x].change_size(y / 100, y / 100)
 					self.scores_frames[x].append(self.scores_images[x].img)
