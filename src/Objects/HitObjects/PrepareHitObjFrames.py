@@ -355,14 +355,14 @@ class PrepareSpinner(Images):
 	# self.to_square(self.spinner_images[spinnercircle])
 
 	def prepare_spinner(self):
-		for x in range(90):
-			self.spinnermetre.append(self.spinner_images[spinnercircle].img.rotate(x))
-
-		for x in range(10, -1, -1):
-			width, height = self.spinner_images[spinnermetre].img.size
-			height = int(height * x / 10)
-			partial_metre = self.spinner_images[spinnermetre].img.copy()
-			partial_metre.paste(Image.new("RGBA", (width, height)))
-
-			# self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
-			self.spinner_frames.append(partial_metre)
+		# for x in range(90):
+		self.spinnermetre = self.spinner_images[spinnercircle].img
+		self.spinner_frames = self.spinner_images[spinnermetre].img
+		# for x in range(10, -1, -1):
+		# 	width, height = self.spinner_images[spinnermetre].img.size
+		# 	height = int(height * x / 10)
+		# 	partial_metre = self.spinner_images[spinnermetre].img.copy()
+		# 	partial_metre.paste(Image.new("RGBA", (width, height)))
+		#
+		# 	# self.to_frame(new_img, self.spinner_images[spinnerbottom].img)
+		# 	self.spinner_frames.append(partial_metre)

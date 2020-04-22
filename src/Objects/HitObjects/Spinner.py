@@ -7,7 +7,7 @@ spinnerbackground = "spinner-background"
 spinnercircle = "spinner-circle"
 
 
-Spinner = recordclass("Spinner", "image duration starttime_left alpha index")
+Spinner = recordclass("Spinner", "angle duration starttime_left alpha index")
 
 
 class SpinnerManager(Images):
@@ -23,17 +23,17 @@ class SpinnerManager(Images):
 	def add_spinner(self, starttime, endtime, curtime):
 		duration = endtime - starttime
 		# img, duration, startime left, alpha, index, progress
-		self.spinners[str(starttime) + "o"] = Spinner(self.spinner_images[spinnercircle].img.copy(), duration, starttime - curtime, 0, 0)
+		self.spinners[str(starttime) + "o"] = Spinner(0, duration, starttime - curtime, 0, 0)
 
 	def update_spinner(self, timestamp, angle, progress):
-		angle = round(angle * 0.9)
-		n_rot = int(angle/90)
-		index = int(angle - 90*n_rot)
-		n_rot = n_rot % 4 + 1
+		# angle = round(angle * 0.9)
+		# n_rot = int(angle/90)
+		# index = int(angle - 90*n_rot)
+		# n_rot = n_rot % 4 + 1
 
-		self.spinners[timestamp][0] = self.spinnermetre[index]
-		if n_rot != 1:
-			self.spinners[timestamp][0] = self.spinners[timestamp][0].transpose(n_rot)
+		self.spinners[timestamp].angle = angle
+		# if n_rot != 1:
+		# 	self.spinners[timestamp][0] = self.spinners[timestamp][0].transpose(n_rot)
 
 		progress = progress * 10
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
@@ -60,8 +60,11 @@ class SpinnerManager(Images):
 		# 	x1, x2, xstart, xend = super().checkOverdisplay(x, x + self.img.size[0], background.size[0])
 		# 	background[y1:y2, x1:x2, :] = self.img[ystart:yend, xstart:xend, :3]
 
-		self.img = self.spinners[i].image
+		self.img = self.spinnermetre.rotate(self.spinners[i].angle)
 		super().add_to_frame(background, background.size[0] // 2, int(198.5 * self.scale) + self.movedown, alpha=self.spinners[i].alpha)
 
-		self.img = self.spinner_frames[self.spinners[i][4]]
-		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2, alpha=self.spinners[i].alpha)
+		height = self.spinner_frames.size[1]
+		y_start = height - self.spinners[i].index * height // 10
+		width = self.spinner_frames.size[0]
+		self.img = self.spinner_frames.crop((0, y_start, width, height))
+		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2 + y_start, alpha=self.spinners[i].alpha)
