@@ -40,17 +40,43 @@ spinRotationTime = 0
 
 lenF = int(len(my_info)/4)
 whileV=0
-
 while int(my_info[whileV].time) < len(oneF):
-    whileV+=1
+    if type(my_info[whileV].more).__name__ == "Spinner":
+        if int(my_info[whileV].more.rotate) >= 180:
+            if my_info[whileV].time < spinRotationTime:
+                pass
+            else:
+                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
+                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
+
+        if my_info[whileV].more.bonusscore  > 0:
+           if my_info[whileV].time < spinBonusTime:
+               whileV+=1
+               continue
+           else:
+               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
+               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
+        whileV+=1
+        continue
+               
     if my_info[whileV].hitresult == None:
-        pass
+        whileV+=1
+        continue
 
     elif my_info[whileV].hitresult == 0:
         oneF = oneF.overlay(miss,position=my_info[whileV].time)
 
     elif my_info[whileV].hitresult >0:
         oneF = oneF.overlay(hit,position=my_info[whileV].time)
+    whileV+=1
+        
+
+
+
+spinBonusTime = 0
+spinRotationTime = 0
+while int(my_info[whileV].time) < len(oneF*2):
+
     if type(my_info[whileV].more).__name__ == "Spinner":
         if int(my_info[whileV].more.rotate) >= 180:
             if my_info[whileV].time < spinRotationTime:
@@ -61,26 +87,28 @@ while int(my_info[whileV].time) < len(oneF):
 
         if my_info[whileV].more.bonusscore  > 0:
            if my_info[whileV].time < spinBonusTime:
+               whileV+=1
                continue
            else:
                oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
                spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-
-spinBonusTime = 0
-spinRotationTime = 0
-while int(my_info[whileV].time) < len(oneF*2):
-    whileV+=1
+        whileV+=1
+        continue
     if my_info[whileV].hitresult == None:
-        pass
+        whileV+=1
+        continue
 
     elif my_info[whileV].hitresult == 0:
         secondF = secondF.overlay(miss,position=my_info[whileV].time - mainLength)
 
     elif my_info[whileV].hitresult >0:
         secondF = secondF.overlay(hit,position=my_info[whileV].time - mainLength)
+    whileV+=1
+spinBonusTime = 0
+spinRotationTime = 0
+while int(my_info[whileV].time) < len(oneF*3):
 
     if type(my_info[whileV].more).__name__ == "Spinner":
-
         if int(my_info[whileV].more.rotate) >= 180:
             if my_info[whileV].time < spinRotationTime:
                 pass
@@ -90,25 +118,29 @@ while int(my_info[whileV].time) < len(oneF*2):
 
         if my_info[whileV].more.bonusscore  > 0:
            if my_info[whileV].time < spinBonusTime:
+               whileV+=1
                continue
            else:
                oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
                spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-spinBonusTime = 0
-spinRotationTime = 0
-while int(my_info[whileV].time) < len(oneF*3):
-    whileV+=1
+        whileV+=1
+        continue
     if my_info[whileV].hitresult == None:
-        pass
+        whileV+=1
+        continue
 
     elif my_info[whileV].hitresult == 0:
         thirdF = thirdF.overlay(miss,position=my_info[whileV].time - mainLength-mainLength)
 
     elif my_info[whileV].hitresult > 0:
         thirdF = thirdF.overlay(hit,position=my_info[whileV].time-mainLength-mainLength)
+    whileV+=1
+
+spinBonusTime = 0
+spinRotationTime = 0
+while whileV < len(my_info) - 1:
 
     if type(my_info[whileV].more).__name__ == "Spinner":
-
         if int(my_info[whileV].more.rotate) >= 180:
             if my_info[whileV].time < spinRotationTime:
                 pass
@@ -118,37 +150,24 @@ while int(my_info[whileV].time) < len(oneF*3):
 
         if my_info[whileV].more.bonusscore  > 0:
            if my_info[whileV].time < spinBonusTime:
+               whileV+=1
                continue
            else:
                oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
                spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-spinBonusTime = 0
-spinRotationTime = 0
-while whileV < len(my_info) - 1:
-    whileV+=1
+        whileV+=1
+        continue
+               
     if my_info[whileV].hitresult == None:
-        pass
+        whileV+=1
+        continue
 
     elif my_info[whileV].hitresult == 0:
         fourthF = fourthF.overlay(miss,position=my_info[whileV].time-mainLength-mainLength-mainLength)
 
     elif my_info[whileV].hitresult >0:
         fourthF = fourthF.overlay(hit,position=my_info[whileV].time-mainLength-mainLength-mainLength)
-    if type(my_info[whileV].more).__name__ == "Spinner":
-
-        if int(my_info[whileV].more.rotate) >= 180:
-            if my_info[whileV].time < spinRotationTime:
-                pass
-            else:
-                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
-                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
-
-        if my_info[whileV].more.bonusscore  > 0:
-           if my_info[whileV].time < spinBonusTime:
-               continue
-           else:
-               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
-               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
+    whileV+=1
 
 
 combined = oneF+secondF+thirdF+fourthF
@@ -156,4 +175,4 @@ combined.export("output.mp3",format="mp3")
 
 end=time.time()
 print(end-start)
-print("Current Length = {}\nTarget Length = {}".format(whileV,len(song)))
+print("Current Length = {}\nTarget Length = {}".format(whileV,len(my_info))
