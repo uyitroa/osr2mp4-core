@@ -12,7 +12,6 @@
 - Add leaderboard
 - Implement @x2 images for better result
 - Bezier tolerance depends on the size of the slider
-- URBar not changing alpha
 - Add continuos cursortrail (cursormiddle)
 
 # Optimisation

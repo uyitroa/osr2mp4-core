@@ -45,7 +45,7 @@ class URBar(Images):
 		background = self.bg
 		bar = self.bars[i]
 		self.img = self.bar_images[bar[2]]
-		super().add_to_frame(background, self.x_offset + bar[0], self.y, alpha=bar[1])
+		super().add_to_frame(background, self.x_offset + bar[0], self.y, alpha=bar[1]/200)
 		bar[1] -= 1
 		if bar[1] <= 0:
 			return False
