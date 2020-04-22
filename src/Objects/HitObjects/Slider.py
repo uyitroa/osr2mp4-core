@@ -1,3 +1,4 @@
+import cv2
 from recordclass import recordclass
 
 from PIL import Image
@@ -53,6 +54,8 @@ class SliderManager:
 		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"])
 
 		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+		image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
+		img = Image.fromarray(image)
 
 		pos1 = osu_d["ps"][-1]
 		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
@@ -74,7 +77,7 @@ class SliderManager:
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
 		# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
-		self.sliders[str(osu_d["time"]) + "s"] = Slider(image, x_pos - x_offset, y_pos - y_offset,
+		self.sliders[str(osu_d["time"]) + "s"] = Slider(img, x_pos - x_offset, y_pos - y_offset,
 		                                                osu_d["duration"] + osu_d["time"] - cur_time,
 		                                                0, color, self.slidermax_index, osu_d["duration"], b_info,
 		                                                1,
