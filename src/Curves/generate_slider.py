@@ -4,7 +4,7 @@ from PIL import Image
 try:
 	from Curves.curve import *
 except Exception:
-        from .curve import *
+		from .curve import *
 
 
 class GenerateSlider:
@@ -25,7 +25,7 @@ class GenerateSlider:
 
 		self.radius = radius
 		self.scale = scale
-		self.extended = math.sqrt(2) * self.radius * self.scale
+		self.extended = 2 * self.radius * self.scale
 
 	def convert_string(self, slider_code):
 		string = slider_code.split(",")
