@@ -170,7 +170,9 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	timer2 = 0
 	while osr_index < end_index: # len(replay_event) - 3:
 		if osr_index >= start_index:
-			img = orig_img.copy()  # reset background
+			if img.size[0] == 1:
+				img = orig_img.copy()  # reset background
+			img.paste(orig_img, (0, 0))
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
