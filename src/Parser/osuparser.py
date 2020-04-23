@@ -193,6 +193,9 @@ class Beatmap:
 				my_dict["end y"] = int(endpos.y)
 
 				my_dict["slider ticks"] = []
+				my_dict["ticks pos"] = []
+				my_dict["arrow pos"] = baiser(1)
+				my_dict["baiser"] = baiser
 				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
@@ -202,6 +205,7 @@ class Beatmap:
 				while d < my_dict["pixel length"] - mindist_fromend:
 					pathprogress = d / my_dict["pixel length"]
 					my_dict["slider ticks"].append(pathprogress)
+					my_dict["ticks pos"].append(baiser(round(pathprogress, 3)))
 					d += tickdistance
 
 				if len(osuobject) > 9:
