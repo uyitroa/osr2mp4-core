@@ -43,6 +43,12 @@ class URBar(Images):
 		self.bar_container.paste((255, 255, 255, 255), (s[0]//2 - 1, 0, s[0]//2 + 1, s[1]))
 		self.timer += time.time() - asdf
 
+	def add_to_frame_bar(self, background):
+		self.img = self.urbar
+		super().add_to_frame(background, self.x, self.y)
+		self.img = Image.new("RGBA", (4, self.h), (255, 255, 255, 255))
+		super().add_to_frame(background, self.x, self.y)
+
 
 	def add_to_frame(self, background):
 		self.bg = background
