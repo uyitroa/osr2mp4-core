@@ -139,7 +139,7 @@ class SliderManager:
 
 				index = int(self.sliders[i].sliderb_i)
 
-				# self.sliderstuff_to_frame(self.sliderfollow_fadeout[index], background, x, y)
+				self.sliderstuff_to_frame(self.sliderfollow_fadeout[index], background, x, y)
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
