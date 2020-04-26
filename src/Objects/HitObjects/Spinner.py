@@ -43,7 +43,6 @@ class SpinnerManager(Images):
 		self.spinners[timestamp][4] = min(10, int(progress))
 
 	def add_to_frame(self, background, i, alone):
-		asdf = time.time()
 		if self.spinners[i].starttime_left > 0:
 			self.spinners[i].starttime_left -= self.interval
 			self.spinners[i].alpha = min(1, self.spinners[i].alpha + self.interval / 400)
@@ -70,6 +69,4 @@ class SpinnerManager(Images):
 		width = self.spinner_frames.size[0]
 		self.img = self.spinner_frames.crop((0, y_start, width, height))
 		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2 + y_start, alpha=self.spinners[i].alpha)
-
-		self.timer += time.time() - asdf
 

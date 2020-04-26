@@ -66,25 +66,10 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	# for x in beatmap.hitobjects:
-	# 	print(x)
-	asdf = time.time()
 	create_frame("output.mkv", beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3)
-	print("\n\ncreate_frame:", time.time() - asdf)
-	#
 	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
-	# for x in processes:
-	# 	x.start()
-	#
-	#
-	# for x in range(len(processes)):
-	# 	filename = "process" + str(x) + ".mkv"
-	# 	os.system("rm " + filename)
-	# os.system("rm mylist.txt")
 
 
 if __name__ == "__main__":
-	asf = time.time()
 	main()
-	print("\n\nmain:", time.time() - asf)
 
