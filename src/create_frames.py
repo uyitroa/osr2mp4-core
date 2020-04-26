@@ -113,13 +113,11 @@ def find_followp_target(beatmap, index=0):
 	return index, object_endtime, x_end, y_end
 
 
-def setupBackground(inputoverlayBG, urbar):
-	img = Image.new("RGB", (WIDTH, HEIGHT))  # setup background
+def setupBackground(inputoverlayBG, urbar, background):
 	# playfield = Playfield(skin_path + "scorebar-bg", WIDTH, HEIGHT)
 	# playfield.add_to_frame(img)
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
-	urbar.add_to_frame_bar(img)
-	return img
+	inputoverlayBG.add_to_frame(background, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
+	urbar.add_to_frame_bar(background)
 
 
 def keys(n):
@@ -132,6 +130,7 @@ def keys(n):
 
 
 def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
+	ok = time.time()
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
 	print("process start")
 
@@ -153,7 +152,8 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	pspinner = pspinner.get_frames()
 
 	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, skin_path, diffcalculator, pcircle, pslider, pspinner)
-	orig_img = setupBackground(component.inputoverlayBG, component.urbar)
+	orig_img = Image.new("RGB", (WIDTH, HEIGHT))
+	setupBackground(component.inputoverlayBG, component.urbar, orig_img)
 	prepare_timer = time.time() - prepare_timer
 
 	preempt_followpoint = 800
@@ -165,14 +165,23 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
 	img = Image.new("RGB", (1, 1))
+	np_img = np.ones((HEIGHT, WIDTH, 4), dtype=np.uint8)
+	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
+	pbuffer.readonly = False
+	print(time.time() - ok)
 	print("setup done")
 	timer = 0
 	timer2 = 0
+	timer3 = 0
+	timer4 = 0
+	timer5 = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 	while osr_index < end_index: # len(replay_event) - 3:
+		asdf = time.time()
 		if osr_index >= start_index:
 			if img.size[0] == 1:
-				img = orig_img.copy()  # reset background
+				img = pbuffer
 			img.paste(orig_img, (0, 0))
+		timer3 += time.time() - asdf
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
@@ -188,13 +197,11 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
-
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
-
 
 		# check if it's time to draw circles
 		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
@@ -211,30 +218,53 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 				index_hitobject += 1
 
 		updater.update(cur_time)
-
+		asdf = time.time()
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
 		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
 		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
+		timer5[0] += time.time() - asdf
+		asdf = time.time()
 		component.followpoints.add_to_frame(img, cur_time)
+		timer5[1] += time.time() - asdf
+		asdf = time.time()
 		component.hitobjmanager.add_to_frame(img)
+		timer5[1] += time.time() - asdf
+		asdf = time.time()
 		component.hitresult.add_to_frame(img)
+		timer5[2] += time.time() - asdf
+		asdf = time.time()
 		component.spinbonus.add_to_frame(img)
+		timer5[3] += time.time() - asdf
+		asdf = time.time()
 		component.combocounter.add_to_frame(img)
+		timer5[4] += time.time() - asdf
+		asdf = time.time()
 		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
+		timer5[5] += time.time() - asdf
+		asdf = time.time()
 		component.accuracy.add_to_frame(img)
+		timer5[6] += time.time() - asdf
+		asdf = time.time()
 		component.urbar.add_to_frame(img)
+		timer5[7] += time.time() - asdf
+		asdf = time.time()
 
 		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
+		timer5[8] += time.time() - asdf
 
-		im = np.asarray(img)
-		im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+		if img.size[0] != 1:
+			asdf = time.time()
+			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+			timer += time.time() - asdf
 
-		component.timepie.add_to_frame(im, cur_time, beatmap.end_time)
-		writer.write(im)
+			asdf = time.time()
+			component.timepie.add_to_frame(im, cur_time, beatmap.end_time)
+			writer.write(im)
+			timer2 += time.time() - asdf
 
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
@@ -252,6 +282,11 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	print("process done", filename)
 	print(timer)
 	print(timer2)
+	print(timer3)
+	print(timer4)
+	print(timer5)
+	print(component.spinner.timer, component.circle.timer, component.slider.timer, component.hitobjmanager.timer)
+	print(component.urbar.timer)
 	print(prepare_timer)
 	print(Timer.add_to_frame_timer, Timer.newalpha_timer)
 	writer.release()

@@ -1,5 +1,5 @@
 from recordclass import recordclass
-
+import time
 from Objects.abstracts import *
 
 
@@ -13,6 +13,8 @@ class CircleManager(Images):
 		self.interval = 1000/60
 		self.circles = {}
 
+		self.timer = 0
+
 	def add_circle(self, x, y, cur_time, osu_d):
 		combo_color, combo_number = osu_d["combo_color"], osu_d["combo_number"]
 		duration = osu_d["time"] - cur_time
@@ -22,6 +24,7 @@ class CircleManager(Images):
 		self.circles[str(osu_d["time"]) + "c"] = Circle(x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0)
 
 	def add_to_frame(self, background, i, _):
+		asdf = time.time()
 		color = self.circles[i].color - 1
 		self.circles[i].duration -= self.interval
 
@@ -61,4 +64,6 @@ class CircleManager(Images):
 		# 	self.img[:, :, :] = self.img[:, :, :] * max(0, 1+self.circles[i].duration/50)
 		super().add_to_frame(background, self.circles[i].x+self.circles[i].x_step, self.circles[i].y)
 		self.number.draw(background, self.circles[i].frame_i, number, self.circles[i].x+self.circles[i].x_step, self.circles[i].y)
+		self.timer += time.time() - asdf
+
 

@@ -1,3 +1,4 @@
+import time
 
 
 class HitObjectManager:
@@ -16,6 +17,7 @@ class HitObjectManager:
 		self.hitobjects = {}
 		self.objtime = []
 		self.interval = 1000 / 60
+		self.timer = 0
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		self.prepareslider.add_slider(osu_d, x_pos, y_pos, cur_time)
@@ -51,17 +53,18 @@ class HitObjectManager:
 	def sliderchangestate(self, followappear, timestamp):
 		index_interval = 0.65
 
-		if self.prepareslider.sliders[timestamp][6] != self.prepareslider.slidermax_index:
-			self.prepareslider.sliders[timestamp][6] = 0
+		if self.prepareslider.sliders[timestamp].sliderb_i != self.prepareslider.slidermax_index:
+			self.prepareslider.sliders[timestamp].sliderb_i = 0
 
 		if followappear:
 			index_interval = -0.65
-			self.prepareslider.sliders[timestamp][6] = self.prepareslider.slidermax_index - 3
+			self.prepareslider.sliders[timestamp].sliderb_i = self.prepareslider.slidermax_index - 3
 
-		self.prepareslider.sliders[timestamp][11] = index_interval
+		self.prepareslider.sliders[timestamp].appear_f = index_interval
 
 	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):
+		asdf = time.time()
 		i = len(self.objtime)
 		objecttype = {self.CIRCLE: [self.preparecircle, self.preparecircle.circles, -self.maxtimewindow - self.interval*2],
 		              self.SLIDER: [self.prepareslider, self.prepareslider.sliders, -175],
@@ -79,3 +82,4 @@ class HitObjectManager:
 				del self.objtime[i]
 				continue
 			hitobj[0].add_to_frame(background, key, len(self.objtime) == 1)
+		self.timer += time.time() - asdf
