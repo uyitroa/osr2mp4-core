@@ -150,7 +150,7 @@ class SliderManager:
 				self.sliders[i].opacity = max(-self.opacity_interval,
 				                              self.sliders[i].opacity - 4 * self.opacity_interval)
 
-		self.sliders[i].opacity = min(90, self.sliders[i].opacity + self.opacity_interval)
+		self.sliders[i].opacity = min(100, self.sliders[i].opacity + self.opacity_interval)
 		self.slider_to_frame(self.sliders[i].image, background, self.sliders[i].x, self.sliders[i].y, alpha=self.sliders[i].opacity/100)
 
 		t = self.sliders[i].cur_duration / self.sliders[i].orig_duration

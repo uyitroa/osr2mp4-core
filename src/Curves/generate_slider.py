@@ -79,8 +79,8 @@ class GenerateSlider:
 		im = np.zeros((int(390 * self.scale + self.extended * 2), int(520 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
-		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 255), int(self.radius*2*self.scale), cv2.LINE_AA)
-		cv2.polylines(im, [curve_pos], False, (*self.slideroverride, 255), int((self.radius-8)*2*self.scale), cv2.LINE_AA)
+		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 200), int(self.radius*2*self.scale), cv2.LINE_AA)
+		cv2.polylines(im, [curve_pos], False, (*self.slideroverride, 200), int((self.radius-8)*2*self.scale), cv2.LINE_AA)
 
 		# make shadow color effect
 		for c in range(4, int(self.radius), 2):
@@ -89,7 +89,7 @@ class GenerateSlider:
 			cur_slider[cur_slider > 255] = 255
 			cur_slider = tuple(cur_slider)
 
-			cv2.polylines(im, [curve_pos], False, (*cur_slider, 255), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
+			cv2.polylines(im, [curve_pos], False, (*cur_slider, 200), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 		return im
 
 	def get_slider_img(self, slider_type, ps, pixel_length):
