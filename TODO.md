@@ -3,6 +3,8 @@
 - Wrong hitresult, most likely because of slider 100s. watch dadada at 22th 100s. When key clicked and cursor is not in the slider, that key will not be counted in slider, so if the cursor move to the slider, it will not be counted.
 - Unittest for judgement
 - Combo doesn't break sometimes
+- Sliderheads don't have notelock
+- Sliderfollow disappear immediatly if cursor goes out
 
 # Implement features
 - Add animation for sliderball, enable flip sliderball.
@@ -17,9 +19,7 @@
 
 # Optimisation
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
-- Delete uunsed prepared frames
 - Pattern search for sliderbody, so instead of storing multiple same slider body, just need to store one. Reduce preparing time and ram memory
-- Converting Pillow Image to numpy array is using too much time
 
 # Clean up code
 - All class must be independent from each others
