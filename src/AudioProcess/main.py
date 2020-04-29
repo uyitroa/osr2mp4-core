@@ -98,16 +98,14 @@ for x in range(len(my_info)):
                 z[start_index:start_index + len(b)] += b * 0.5
                 spinBonusTime = my_info[x].time/1000 + length_bonus
 
-channel1 = signal[:,0]
 
-audio_segment = pydub.AudioSegment(
-    channel1.tobytes(),
-    frame_rate=rate,
-    sample_width=channel1.dtype.itemsize,
-    channels=1
-)
-audio_segment.export("output.mp3",format="mp3")
-#write('out.mp3', rate, z)
+
+write('out.wav', rate, z)
+
+
+Ass = AudioSegment.from_wav("out.wav")
+Ass.export("output.mp3",format="mp3")
+
 
 end=time.time()
 print(end-start)
