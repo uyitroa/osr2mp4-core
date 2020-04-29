@@ -41,8 +41,6 @@ MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
 
 
-start_time = time.time()
-
 
 class Object:
 	def __init__(self, cursor_x, cursor_y, beatmap, skin, skin_path, check, pcircle, pslider, pspinner):
@@ -113,13 +111,11 @@ def find_followp_target(beatmap, index=0):
 	return index, object_endtime, x_end, y_end
 
 
-def setupBackground(inputoverlayBG, urbar):
-	img = Image.new("RGB", (WIDTH, HEIGHT))  # setup background
+def setupBackground(inputoverlayBG, urbar, background):
 	# playfield = Playfield(skin_path + "scorebar-bg", WIDTH, HEIGHT)
 	# playfield.add_to_frame(img)
-	inputoverlayBG.add_to_frame(img, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
-	urbar.add_to_frame_bar(img)
-	return img
+	inputoverlayBG.add_to_frame(background, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
+	urbar.add_to_frame_bar(background)
 
 
 def keys(n):
@@ -153,7 +149,8 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	pspinner = pspinner.get_frames()
 
 	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, skin_path, diffcalculator, pcircle, pslider, pspinner)
-	orig_img = setupBackground(component.inputoverlayBG, component.urbar)
+	orig_img = Image.new("RGB", (WIDTH, HEIGHT))
+	setupBackground(component.inputoverlayBG, component.urbar, orig_img)
 	prepare_timer = time.time() - prepare_timer
 
 	preempt_followpoint = 800
@@ -165,14 +162,17 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	cursor_event = replay_event[osr_index]
 	updater.info_index = info_index
 	img = Image.new("RGB", (1, 1))
+	np_img = np.ones((HEIGHT, WIDTH, 4), dtype=np.uint8)
+	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
+	pbuffer.readonly = False
 	print("setup done")
-	timer = 0
-	timer2 = 0
 	while osr_index < end_index: # len(replay_event) - 3:
 		if osr_index >= start_index:
 			if img.size[0] == 1:
-				img = orig_img.copy()  # reset background
-			img.paste(orig_img, (0, 0))
+				img = pbuffer
+			#img.paste(orig_img, (0, 0))
+			np_img.fill(0)
+			setupBackground(component.inputoverlayBG, component.urbar, pbuffer)
 
 		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
 		if k1:
@@ -188,13 +188,11 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
-
 		# check if it's time to draw followpoints
 		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
 			index_followpoint += 1
 			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
 			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
-
 
 		# check if it's time to draw circles
 		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
@@ -211,7 +209,6 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 				index_hitobject += 1
 
 		updater.update(cur_time)
-
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
 		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
@@ -230,11 +227,11 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 
-		im = np.asarray(img)
-		im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+		if img.size[0] != 1:
+			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 
-		component.timepie.add_to_frame(im, cur_time, beatmap.end_time)
-		writer.write(im)
+			component.timepie.add_to_frame(im, cur_time, beatmap.end_time)
+			writer.write(im)
 
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
@@ -250,8 +247,4 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		# else:
 		cursor_event = replay_event[osr_index]
 	print("process done", filename)
-	print(timer)
-	print(timer2)
-	print(prepare_timer)
-	print(Timer.add_to_frame_timer, Timer.newalpha_timer)
 	writer.release()

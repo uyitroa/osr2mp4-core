@@ -7,6 +7,7 @@ from CheckSystem.checkmain import checkmain
 from Parser.osuparser import *
 from Parser.osrparser import *
 from Parser.skinparser import Skin
+import time
 
 # const
 WIDTH = 1920
@@ -45,9 +46,9 @@ def divide_core(max_osr, beatmap, skin, replay_event, resultinfo):
 
 def main():
 
-	skin_path = input("Skin path: ")
-	beatmap_file = input("Beatmap .osu path: ")
-	replay_file = input("Replay .osr path: ")
+	skin_path = "../res/skin4/"
+	beatmap_file = "../res/thegame.osu"
+	replay_file = "../res/thegame.osr"
 
 	skin = Skin(skin_path)
 	beatmap = read_file(beatmap_file, PLAYFIELD_SCALE, skin.colours)
@@ -65,20 +66,8 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	# for x in beatmap.hitobjects:
-	# 	print(x)
-
 	create_frame("output.mkv", beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3)
-	#
 	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
-	# for x in processes:
-	# 	x.start()
-	#
-	#
-	# for x in range(len(processes)):
-	# 	filename = "process" + str(x) + ".mkv"
-	# 	os.system("rm " + filename)
-	# os.system("rm mylist.txt")
 
 
 if __name__ == "__main__":

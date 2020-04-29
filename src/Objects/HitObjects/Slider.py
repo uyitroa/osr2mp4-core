@@ -1,12 +1,14 @@
+import cv2
 from recordclass import recordclass
 
 from PIL import Image
 
 from Curves.generate_slider import GenerateSlider
 from Curves.curve import *
+import time
 
 Slider = recordclass("Slider", "image x y cur_duration opacity color sliderb_i orig_duration bezier_info "
-                               "cur_repeated repeated appear_f tick_a arrow_i")
+                               "cur_repeated repeated appear_f tick_a arrow_i baiser arrow_pos")
 
 class SliderManager:
 	def __init__(self, frames, diff, scale, skin, movedown, moveright):
@@ -32,6 +34,7 @@ class SliderManager:
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 		self.calculate_ar()
+		self.timer = 0
 
 	def calculate_ar(self):
 		if self.ar < 5:
@@ -50,9 +53,11 @@ class SliderManager:
 
 		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
 		# function, but we add stack to reduce sliders list size
-		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"])
+		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"], osu_d["ticks pos"])
 
 		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+		image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
+		img = Image.fromarray(image)
 
 		pos1 = osu_d["ps"][-1]
 		pos2 = osu_d["ps"][-2] if osu_d["ps"][-2].x != pos1.x or osu_d["ps"][-2].y != pos1.y else osu_d["ps"][-3]
@@ -74,11 +79,12 @@ class SliderManager:
 
 		# [image, x, y, current duration, opacity, color, sliderball index, original duration, bezier info,
 		# cur_repeated, repeated, appear followcircle, tick alpha, arrow index]
-		self.sliders[str(osu_d["time"]) + "s"] = Slider(image, x_pos - x_offset, y_pos - y_offset,
+
+		self.sliders[str(osu_d["time"]) + "s"] = Slider(img, x_pos - x_offset, y_pos - y_offset,
 		                                                osu_d["duration"] + osu_d["time"] - cur_time,
 		                                                0, color, self.slidermax_index, osu_d["duration"], b_info,
 		                                                1,
-		                                                osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"]), 0)
+		                                                osu_d["repeated"], 0, [0] * len(osu_d["slider ticks"]), 0, osu_d["baiser"], osu_d["arrow pos"])
 
 		self.arrows[str(osu_d["time"]) + "s"] = [img2, img1]
 
@@ -112,8 +118,9 @@ class SliderManager:
 	# 	img.putalpha(a)
 
 	def add_to_frame(self, background, i, _):
+		asdf = time.time()
 		self.sliders[i].cur_duration -= self.interval
-		baiser = Curve.from_kind_and_points(*self.sliders[i].bezier_info[0:3])
+		baiser = self.sliders[i].baiser
 
 		# if sliderball is going forward
 		going_forward = self.sliders[i].cur_repeated % 2 == 1
@@ -143,7 +150,7 @@ class SliderManager:
 				self.sliders[i].opacity = max(-self.opacity_interval,
 				                              self.sliders[i].opacity - 4 * self.opacity_interval)
 
-		self.sliders[i].opacity = min(90, self.sliders[i].opacity + self.opacity_interval)
+		self.sliders[i].opacity = min(100, self.sliders[i].opacity + self.opacity_interval)
 		self.slider_to_frame(self.sliders[i].image, background, self.sliders[i].x, self.sliders[i].y, alpha=self.sliders[i].opacity/100)
 
 		t = self.sliders[i].cur_duration / self.sliders[i].orig_duration
@@ -160,13 +167,18 @@ class SliderManager:
 			if self.sliders[i].cur_duration < self.sliders[i].orig_duration + 100:
 				if count == 0 or self.sliders[i].tick_a[count - 1] >= 0.75:
 					self.sliders[i].tick_a[count] = min(1, self.sliders[i].tick_a[count] + 0.1)
-			tick_pos = baiser(round(tick_t, 3))
+			tick_pos = self.sliders[i].bezier_info[5][count]
 			x = int((tick_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
 			y = int((tick_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
 			self.slidertick.add_to_frame(background, x, y, alpha=self.sliders[i].opacity * self.sliders[i].tick_a[count]/100)
 
 		if 0 < self.sliders[i].cur_duration <= self.sliders[i].orig_duration:
-			cur_pos = baiser(round(t, 3))
+			if self.sliders[i].bezier_info[0] != "L":
+				cur_pos = baiser(round(t, 3))
+			else:
+				sum_x = (1 - t) * self.sliders[i].bezier_info[1][0].x + t * self.sliders[i].arrow_pos.x
+				sum_y = (1 - t) * self.sliders[i].bezier_info[1][0].y + t * self.sliders[i].arrow_pos.y
+				cur_pos = Position(sum_x, sum_y)
 			x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
 			color = self.sliders[i].color - 1
@@ -176,7 +188,7 @@ class SliderManager:
 			                                       self.sliders[i].sliderb_i + self.sliders[i].appear_f))
 
 		if self.sliders[i].cur_repeated < self.sliders[i].repeated:
-			cur_pos = baiser(int(going_forward))
+			cur_pos = self.sliders[i].arrow_pos if going_forward else self.sliders[i].bezier_info[1][0]
 			x = int((cur_pos.x + self.sliders[i].bezier_info[3]) * self.scale) + self.moveright
 			y = int((cur_pos.y + self.sliders[i].bezier_info[3]) * self.scale) + self.movedown
 			self.sliderstuff_to_frame(self.arrows[i][int(going_forward)][int(self.sliders[i].arrow_i)], background, x, y, alpha=self.sliders[i].opacity/100)
@@ -184,3 +196,6 @@ class SliderManager:
 			self.sliders[i].arrow_i += 0.6
 			if self.sliders[i].arrow_i >= len(self.arrows[i][0]):
 				self.sliders[i].arrow_i = 0
+
+		self.timer += time.time() - asdf
+

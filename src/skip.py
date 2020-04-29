@@ -24,7 +24,6 @@ def search_updateindex(timestamp, resultinfo, component):
 		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
 			if resultinfo[urindex].hitresult > 0:
 				component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
-				component.urbar.bars[-1][1] = 1 - diff/3400
 				pass
 		urindex -= 1
 		if urindex <= -1:

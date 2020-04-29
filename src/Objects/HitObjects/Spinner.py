@@ -1,5 +1,5 @@
 from recordclass import recordclass
-
+import time
 from Objects.abstracts import *
 
 
@@ -19,6 +19,7 @@ class SpinnerManager(Images):
 		self.spinner_images, self.spinnermetre, self.spinner_frames = frames
 
 		self.interval = 1000/60
+		self.timer = 0
 
 	def add_spinner(self, starttime, endtime, curtime):
 		duration = endtime - starttime
@@ -53,7 +54,7 @@ class SpinnerManager(Images):
 				self.spinners[i].alpha = 1
 		self.img = self.spinner_images[spinnerbackground].img
 		# if not alone:
-		super().add_to_frame(background,  background.size[0]//2, 46 + self.img.size[1]//2, alpha=self.spinners[i].alpha)
+		super().add_to_frame(background,  background.size[0]//2, background.size[1]//2, alpha=self.spinners[i].alpha)
 		# else:
 		# 	x, y = background.size[0]//2 - self.img.size[0]//2, 46
 		# 	y1, y2, ystart, yend = super().checkOverdisplay(y, y + self.img.size[1], background.size[1])
@@ -68,3 +69,4 @@ class SpinnerManager(Images):
 		width = self.spinner_frames.size[0]
 		self.img = self.spinner_frames.crop((0, y_start, width, height))
 		super().add_to_frame(background, background.size[0]//2, 46 + self.img.size[1]//2 + y_start, alpha=self.spinners[i].alpha)
+
