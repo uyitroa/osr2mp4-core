@@ -1,13 +1,10 @@
-from collections import namedtuple
+from scipy.io.wavfile import write
+import numpy as np
 from pydub import AudioSegment
-from pydub.playback import play
+from collections import namedtuple
 import time
-start = time.time()
-song = AudioSegment.from_mp3("Tengaku.mp3")
-hit = AudioSegment.from_wav("hit1.wav")
-miss = AudioSegment.from_wav("miss1.wav")
-spinnerSpin = AudioSegment.from_mp3("spinnerspin.mp3")
-spinnerBonus = AudioSegment.from_wav("spinnerbonus.wav")
+start=time.time()
+
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
@@ -17,162 +14,63 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 a = open("tengaku.txt", "r")
 exec("my_info=" + a.read())
 
-'''
-Results = [0][7]
-Time = [0][0]
-'''
-length = len(song)
-firstH = song[:length/2]
-lastH = song[-length/2:]
+def read(f):
+        if f[-1] == "3":
+            a = AudioSegment.from_mp3(f)
+        else:
+            a = AudioSegment.from_file(f)
+        y = np.array(a.get_array_of_samples())
+        if a.channels == 2:
+                y = y.reshape((-1, 2))
+        if a.channels == 1:
+                y1 = np.zeros((len(y), 2), dtype=y.dtype)
+                y1[:, 0] = y
+                y1[:, 1] = y
+                y = y1
+        return a.frame_rate, np.float32(y) / 2**(a.sample_width * 8 - 1)
 
-oneF = firstH[:len(firstH)/2]
-secondF = firstH[-len(firstH)/2:]
-
-thirdF = lastH[:len(firstH)/2]
-fourthF = lastH[-len(firstH)/2:]
-
-mainLength = len(oneF)
-
-combined = AudioSegment.empty()
-
-spinBonusTime = 0
-spinRotationTime = 0
-
-lenF = int(len(my_info)/4)
-whileV=0
-while int(my_info[whileV].time) < len(oneF):
-    if type(my_info[whileV].more).__name__ == "Spinner":
-        if int(my_info[whileV].more.rotate) >= 180:
-            if my_info[whileV].time < spinRotationTime:
-                pass
-            else:
-                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
-                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
-
-        if my_info[whileV].more.bonusscore  > 0:
-           if my_info[whileV].time < spinBonusTime:
-               whileV+=1
-               continue
-           else:
-               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
-               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-        whileV+=1
-        continue
-               
-    if my_info[whileV].hitresult == None:
-        whileV+=1
-        continue
-
-    elif my_info[whileV].hitresult == 0:
-        oneF = oneF.overlay(miss,position=my_info[whileV].time)
-
-    elif my_info[whileV].hitresult >0:
-        oneF = oneF.overlay(hit,position=my_info[whileV].time)
-    whileV+=1
-        
-
-
+ratey, y = read('hit1.wav')
+rate, z = read('Tengaku.mp3')
+rateM, m = read('miss1.wav')
+ratesb, b = read('spinnerbonus.wav')
+ratesc, c = read('spinnerspin.wav')
 
 spinBonusTime = 0
 spinRotationTime = 0
-while int(my_info[whileV].time) < len(oneF*2):
+length_bonus = ratesb/len(b)
+length_spin = ratesc/len(c)
+for x in range(len(my_info)):
+    start_index = int(my_info[x].time/1000 * rate)
 
-    if type(my_info[whileV].more).__name__ == "Spinner":
-        if int(my_info[whileV].more.rotate) >= 180:
-            if my_info[whileV].time < spinRotationTime:
+    if not type(my_info[x].more).__name__ == "Spinner":
+        if my_info[x].hitresult == None:
+                continue
+        if my_info[x].hitresult == 0:
+                z[start_index:start_index + len(m)] += m * 0.5
+
+        if my_info[x].hitresult > 0:
+                z[start_index:start_index + len(y)] += y * 0.5
+
+    elif type(my_info[x].more).__name__ == "Spinner":
+
+        if int(my_info[x].more.rotate) >= 180:
+            if my_info[x].time/1009 < spinRotationTime:
                 pass
             else:
-                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
-                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
+                z[start_index:start_index + len(c)] += c * 0.5
+                spinRotationTime = my_info[x].time/1000 + length_spin
 
-        if my_info[whileV].more.bonusscore  > 0:
-           if my_info[whileV].time < spinBonusTime:
-               whileV+=1
-               continue
-           else:
-               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
-               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-        whileV+=1
-        continue
-    if my_info[whileV].hitresult == None:
-        whileV+=1
-        continue
-
-    elif my_info[whileV].hitresult == 0:
-        secondF = secondF.overlay(miss,position=my_info[whileV].time - mainLength)
-
-    elif my_info[whileV].hitresult >0:
-        secondF = secondF.overlay(hit,position=my_info[whileV].time - mainLength)
-    whileV+=1
-spinBonusTime = 0
-spinRotationTime = 0
-while int(my_info[whileV].time) < len(oneF*3):
-
-    if type(my_info[whileV].more).__name__ == "Spinner":
-        if int(my_info[whileV].more.rotate) >= 180:
-            if my_info[whileV].time < spinRotationTime:
-                pass
+        if my_info[x].more.bonusscore  > 0:
+            if my_info[x].time/1000 < spinBonusTime:
+                continue
             else:
-                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
-                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
-
-        if my_info[whileV].more.bonusscore  > 0:
-           if my_info[whileV].time < spinBonusTime:
-               whileV+=1
-               continue
-           else:
-               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
-               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-        whileV+=1
-        continue
-    if my_info[whileV].hitresult == None:
-        whileV+=1
-        continue
-
-    elif my_info[whileV].hitresult == 0:
-        thirdF = thirdF.overlay(miss,position=my_info[whileV].time - mainLength-mainLength)
-
-    elif my_info[whileV].hitresult > 0:
-        thirdF = thirdF.overlay(hit,position=my_info[whileV].time-mainLength-mainLength)
-    whileV+=1
-
-spinBonusTime = 0
-spinRotationTime = 0
-while whileV < len(my_info) - 1:
-
-    if type(my_info[whileV].more).__name__ == "Spinner":
-        if int(my_info[whileV].more.rotate) >= 180:
-            if my_info[whileV].time < spinRotationTime:
-                pass
-            else:
-                oneF = oneF.overlay(spinnerSpin,position=my_info[whileV].time)
-                spinRotationTime = my_info[whileV].time + len(spinnerSpin)
-
-        if my_info[whileV].more.bonusscore  > 0:
-           if my_info[whileV].time < spinBonusTime:
-               whileV+=1
-               continue
-           else:
-               oneF = oneF.overlay(spinnerBonus,position=my_info[whileV].time+len(spinnerBonus)*2)
-               spinBonusTime = my_info[whileV].time + len(spinnerBonus)
-        whileV+=1
-        continue
-               
-    if my_info[whileV].hitresult == None:
-        whileV+=1
-        continue
-
-    elif my_info[whileV].hitresult == 0:
-        fourthF = fourthF.overlay(miss,position=my_info[whileV].time-mainLength-mainLength-mainLength)
-
-    elif my_info[whileV].hitresult >0:
-        fourthF = fourthF.overlay(hit,position=my_info[whileV].time-mainLength-mainLength-mainLength)
-    whileV+=1
+                z[start_index:start_index + len(b)] += b * 0.5
+                spinBonusTime = my_info[x].time/1000 + length_bonus
 
 
-combined = oneF+secondF+thirdF+fourthF
-combined.export("output.mp3",format="mp3")
+write('out.wav', rate, z)
 
 end=time.time()
 print(end-start)
-print("Current Length = {}\nTarget Length = {}".format(whileV,len(my_info))
+az = AudioSegment.from_wav("out.wav")
+az.export("out.mp3",format="mp3")
