@@ -79,7 +79,7 @@ for x in range(len(my_info)):
                 z[start_index:start_index + len(m)] += m * 0.5
 
 
-'''
+
     elif type(my_info[x].more).__name__ == "Spinner":
 
         if int(my_info[x].more.rotate) >= 180:
@@ -96,10 +96,18 @@ for x in range(len(my_info)):
                 continue
             else:
                 z[start_index:start_index + len(b)] += b * 0.5
-                spinBonusTime = my_info[x].time/1000 + length_bonus'''
+                spinBonusTime = my_info[x].time/1000 + length_bonus
 
+channel1 = signal[:,0]
 
-write('out.mp3', rate, z)
+audio_segment = pydub.AudioSegment(
+    channel1.tobytes(),
+    frame_rate=rate,
+    sample_width=channel1.dtype.itemsize,
+    channels=1
+)
+audio_segment.export("output.mp3",format="mp3")
+#write('out.mp3', rate, z)
 
 end=time.time()
 print(end-start)
