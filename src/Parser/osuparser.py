@@ -1,6 +1,8 @@
+import math
 import re
-from Curves.generate_slider import *
-import numpy as np
+
+from ImageProcess.Curves.curve import Curve
+from ImageProcess.Curves.position import Position
 
 
 class Beatmap:
@@ -195,7 +197,6 @@ class Beatmap:
 				my_dict["slider ticks"] = []
 				my_dict["ticks pos"] = []
 				my_dict["arrow pos"] = baiser(1)
-				my_dict["baiser"] = baiser
 				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10

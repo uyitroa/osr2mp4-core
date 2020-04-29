@@ -1,8 +1,5 @@
 import time
 from CheckSystem.HitObjectChecker import HitObjectChecker
-from Parser import osrparser
-from Parser.osrparser import setupReplay
-from Parser.osuparser import read_file
 
 CURSOR_X = 0
 CURSOR_Y = 1

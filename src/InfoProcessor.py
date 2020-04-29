@@ -1,11 +1,10 @@
+
+
 class Updater:
-	def __init__(self, resultinfo, component, playfieldscale, movedown, moveright):
+	def __init__(self, resultinfo, component):
 		self.resultinfo = resultinfo
 		self.component = component
 		self.info_index = 0
-		self.playfieldscale = playfieldscale
-		self.movedown = movedown
-		self.moveright = moveright
 
 	def process_combo(self):
 		if self.info.combostatus == 1:
@@ -43,14 +42,12 @@ class Updater:
 			if self.info.more.bonusscore >= 1:
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
 
-		x = int(x * self.playfieldscale + self.moveright)
-		y = int(y * self.playfieldscale + self.movedown)
-
 		if self.info.hitresult is not None:
 			if not (objtype == "Circle" and self.info.more.sliderhead):
 				self.component.hitresult.add_result(self.info.hitresult, x, y)
+				self.component.accuracy.update_acc(self.info.hitresult)
 			if objtype != "Slider" or self.info.more.tickend:
-				self.component.scorecounter.update_score(self.component.combocounter.get_combo(), self.info.hitresult)
+				self.component.scorecounter.update_score(self.info.score)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:

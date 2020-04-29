@@ -1,30 +1,43 @@
 import cv2
-import time
 
 from PIL import Image
 
-from Objects.Component.Followpoints import FollowPointsManager
-from Objects.Component.TimePie import TimePie
-from Objects.HitObjects.PrepareHitObjFrames import PrepareCircles, PrepareSlider, PrepareSpinner, Timer
-from Objects.HitObjects.Slider import SliderManager
-from Objects.HitObjects.Spinner import SpinnerManager
-from Objects.Scores.Accuracy import Accuracy
-from Objects.Scores.ComboCounter import ComboCounter
-from Objects.Scores.Hitresult import HitResult
-from Objects.Scores.ScoreCounter import ScoreCounter
-from Objects.Scores.ScoreNumbers import ScoreNumbers
-from Objects.HitObjects.Circles import CircleManager
-from Objects.HitObjects.Manager import HitObjectManager
-from Objects.Component.Button import InputOverlay, InputOverlayBG, ScoreEntry
-from Objects.Component.Cursor import Cursor, Cursortrail
-from Objects.Component.LifeGraph import LifeGraph
+from ImageProcess.Objects.Components.Followpoints import FollowPointsManager
+from ImageProcess.Objects.Components.TimePie import TimePie
+from ImageProcess.Objects.HitObjects.CircleNumber import Number
+from ImageProcess.Objects.HitObjects.Slider import SliderManager
+from ImageProcess.Objects.HitObjects.Spinner import SpinnerManager
+from ImageProcess.Objects.Scores.Accuracy import Accuracy
+from ImageProcess.Objects.Scores.ComboCounter import ComboCounter
+from ImageProcess.Objects.Scores.Hitresult import HitResult
+from ImageProcess.Objects.Scores.ScoreCounter import ScoreCounter
+from ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
+from ImageProcess.Objects.HitObjects.Circles import CircleManager
+from ImageProcess.Objects.HitObjects.Manager import HitObjectManager
+from ImageProcess.Objects.Components.Button import InputOverlay, InputOverlayBG, ScoreEntry
+from ImageProcess.Objects.Components.Cursor import Cursor, Cursortrail
+from ImageProcess.Objects.Scores.SpinBonusScore import SpinBonusScore
+from ImageProcess.Objects.Scores.URBar import URBar
 from CheckSystem.Judgement import DiffCalculator
+from ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, prepare_inputoverlaybg, \
+	prepare_inputoverlay
+from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail
+from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
+from ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
+from ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
+from ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
+from ImageProcess.PrepareFrames.HitObjects.Spinner import prepare_spinner
+from ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
+from ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
+from ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
+from ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
+from ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
+from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 from InfoProcessor import Updater
 import numpy as np
-
-from Objects.Scores.SpinBonusScore import SpinBonusScore
-from Objects.Scores.URBar import URBar
 from skip import skip
+from recordclass import recordclass
+
 
 CURSOR_X = 0
 CURSOR_Y = 1
@@ -41,41 +54,69 @@ MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
 
 
+FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end")
+Settings = recordclass("Settings", "width height fps scale playfieldscale movedown moveright")
+settings = Settings(WIDTH, HEIGHT, FPS, SCALE, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
-class Object:
-	def __init__(self, cursor_x, cursor_y, beatmap, skin, skin_path, check, pcircle, pslider, pspinner):
-		self.cursor = Cursor(skin_path + "cursor", SCALE)
-		self.cursor_trail = Cursortrail(skin_path + "cursortrail", cursor_x, cursor_y, SCALE)
+
+class PreparedFrames:
+	def __init__(self, path, skin, check, beatmap):
+		self.cursor = prepare_cursor(path, SCALE)
+		self.cursor_trail = prepare_cursortrail(path, SCALE)
+		self.scoreentry = prepare_scoreentry(path, SCALE,  skin.colours["InputOverlayText"])
+		self.inputoverlayBG = prepare_inputoverlaybg(path, SCALE)
+		self.key = prepare_inputoverlay(path, SCALE, [255, 255, 0])
+		self.mouse = prepare_inputoverlay(path, SCALE, [255, 0, 255])
+		self.scorenumbers = ScoreNumbers(skin.fonts, path, SCALE)
+		self.hitcirclenumber = prepare_hitcirclenumber(path, skin.fonts, beatmap.diff, PLAYFIELD_SCALE)
+		self.accuracy = prepare_accuracy(self.scorenumbers)
+		self.combocounter = prepare_combo(self.scorenumbers)
+		self.hitresult = prepare_hitresults(path, SCALE)
+		self.spinbonus = prepare_spinbonus(self.scorenumbers)
+		self.scorecounter = prepare_scorecounter(self.scorenumbers)
+		self.urbar = prepare_bar(SCALE, check.scorewindow)
+		self.fpmanager = prepare_fpmanager(path, PLAYFIELD_SCALE)
+		self.circle = prepare_circle(beatmap, path, PLAYFIELD_SCALE, skin, FPS)
+		self.slider = prepare_slider(path, beatmap.diff, PLAYFIELD_SCALE, skin, FPS)
+		self.spinner = prepare_spinner(path, PLAYFIELD_SCALE)
+
+
+class FrameObjects:
+	def __init__(self, frames, skin, beatmap, check):
+		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], FPS)
+
+		self.cursor = Cursor(frames.cursor)
+		self.cursor_trail = Cursortrail(frames.cursor_trail)
 		# self.lifegraph = LifeGraph(skin_path + "scorebar-colour")
 
-		self.scoreentry = ScoreEntry(skin_path, SCALE, skin.colours["InputOverlayText"])
+		self.scoreentry = ScoreEntry(frames.scoreentry)
 
-		self.inputoverlayBG = InputOverlayBG(skin_path + "inputoverlay-background", SCALE)
-		self.key1 = InputOverlay(skin_path, SCALE, [255, 255, 0], self.scoreentry)
-		self.key2 = InputOverlay(skin_path, SCALE, [255, 255, 0], self.scoreentry)
-		self.mouse1 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
-		self.mouse2 = InputOverlay(skin_path, SCALE, [255, 0, 255], self.scoreentry)
+		self.inputoverlayBG = InputOverlayBG(frames.inputoverlayBG)
+		self.key1 = InputOverlay(frames.key, self.scoreentry)
+		self.key2 = InputOverlay(frames.key, self.scoreentry)
+		self.mouse1 = InputOverlay(frames.mouse, self.scoreentry)
+		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry)
 
-		self.scorenumbers = ScoreNumbers(skin.fonts, skin_path, SCALE)
-		self.accuracy = Accuracy(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
+		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
 		self.timepie = TimePie(SCALE, self.accuracy)
-		self.hitresult = HitResult(skin_path, SCALE, PLAYFIELD_SCALE, self.accuracy)
-		self.spinbonus = SpinBonusScore(SCALE, skin.fonts["ScoreOverlap"], self.scorenumbers, WIDTH, HEIGHT)
-		self.combocounter = ComboCounter(self.scorenumbers, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
-		self.scorecounter = ScoreCounter(self.scorenumbers, beatmap.diff, WIDTH, HEIGHT, skin.fonts["ScoreOverlap"], SCALE)
+		self.hitresult = HitResult(frames.hitresult, settings)
+		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
+		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
+		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)
 
-		self.urbar = URBar(SCALE, check.scorewindow, WIDTH, HEIGHT)
+		self.urbar = URBar(frames.urbar, settings)
 
-		self.followpoints = FollowPointsManager(skin_path, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
-		self.circle = CircleManager(pcircle, check.ar())
-		self.slider = SliderManager(pslider, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
-		self.spinner = SpinnerManager(pspinner, PLAYFIELD_SCALE, MOVE_RIGHT, MOVE_DOWN)
+		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts, opacity_interval)
+		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber)
+		self.slider = SliderManager(frames.slider, beatmap.diff, skin, settings)
+		self.spinner = SpinnerManager(frames.spinner, settings)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
 
 def nearer(cur_time, replay, index):
-	# decide the next replay_data index, by finding the closest to the cur_time
+	# decide the next replay_data index, by finding the closest to the frame_info.cur_time
 	min_time = abs(replay[index][TIMES] - cur_time)
 	min_time_toskip = min(min_time, abs(replay[index+1][TIMES] - cur_time))
 
@@ -93,29 +134,28 @@ def nearer(cur_time, replay, index):
 	return returnindex
 
 
-def find_followp_target(beatmap, index=0):
+def find_followp_target(beatmap, frame_info):
 	# reminder: index means the previous circle. the followpoints will point to the circle of index+1
+
+	index = frame_info.index_fp
 
 	while "spinner" in beatmap.hitobjects[index + 1]["type"] or "new combo" in beatmap.hitobjects[index + 1]["type"]:
 		index += 1
 
 	if "end" in beatmap.hitobjects[index + 1]["type"]:
+		frame_info.x_end = 0
+		frame_info.y_end = 0
+
+		frame_info.obj_endtime = beatmap.hitobjects[index]["end time"] * 10
+		frame_info.index_fp = index * 10
 		return index * 10, beatmap.hitobjects[index]["end time"] * 10, 0, 0
 
 	osu_d = beatmap.hitobjects[index]
-	x_end = osu_d["end x"]
-	y_end = osu_d["end y"]
+	frame_info.x_end = osu_d["end x"]
+	frame_info.y_end = osu_d["end y"]
 
-	object_endtime = osu_d["end time"]
-
-	return index, object_endtime, x_end, y_end
-
-
-def setupBackground(inputoverlayBG, urbar, background):
-	# playfield = Playfield(skin_path + "scorebar-bg", WIDTH, HEIGHT)
-	# playfield.add_to_frame(img)
-	inputoverlayBG.add_to_frame(background, WIDTH - int(inputoverlayBG.orig_cols / 2), int(320 * SCALE))
-	urbar.add_to_frame_bar(background)
+	frame_info.obj_endtime = osu_d["end time"]
+	frame_info.index_fp = index
 
 
 def keys(n):
@@ -125,6 +165,25 @@ def keys(n):
 	m2 = not k2 and n & 2 == 2
 	smoke = n & 16 == 16
 	return k1, k2, m1, m2  # fuck smoke
+
+
+def check_key(component, cursor_event):
+	k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
+	if k1:
+		component.key1.clicked(cursor_event[TIMES])
+	if k2:
+		component.key2.clicked(cursor_event[TIMES])
+	if m1:
+		component.mouse1.clicked(cursor_event[TIMES])
+	if m2:
+		component.mouse2.clicked(cursor_event[TIMES])
+
+
+def get_buffer():
+	np_img = np.ones((HEIGHT, WIDTH, 4), dtype=np.uint8)
+	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
+	pbuffer.readonly = False
+	return np_img, pbuffer
 
 
 def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
@@ -137,83 +196,68 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	diffcalculator = DiffCalculator(beatmap.diff)
 	time_preempt = diffcalculator.ar()
 
-	prepare_timer = time.time()
+	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap)
+	component = FrameObjects(frames, skin, beatmap, diffcalculator)
 
-	pcircle = PrepareCircles(beatmap, skin_path, PLAYFIELD_SCALE, skin)
-	pcircle = pcircle.get_frames()
-
-	pslider = PrepareSlider(skin_path, beatmap.diff, PLAYFIELD_SCALE, skin, MOVE_DOWN, MOVE_RIGHT)
-	pslider = pslider.get_frames()
-
-	pspinner = PrepareSpinner(PLAYFIELD_SCALE, skin_path)
-	pspinner = pspinner.get_frames()
-
-	component = Object(old_cursor_x, old_cursor_y, beatmap, skin, skin_path, diffcalculator, pcircle, pslider, pspinner)
-	orig_img = Image.new("RGB", (WIDTH, HEIGHT))
-	setupBackground(component.inputoverlayBG, component.urbar, orig_img)
-	prepare_timer = time.time() - prepare_timer
+	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
 
 	preempt_followpoint = 800
 
-	updater = Updater(resultinfo, component, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+	updater = Updater(resultinfo, component)
 
 	simulate = replay_event[start_index][TIMES]
-	cur_time, index_hitobject, info_index, osr_index, index_followpoint, object_endtime, x_end, y_end = skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component)
-	cursor_event = replay_event[osr_index]
-	updater.info_index = info_index
+	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component))
+	cursor_event = replay_event[frame_info.osr_index]
+	updater.info_index = frame_info.info_index
+
 	img = Image.new("RGB", (1, 1))
-	np_img = np.ones((HEIGHT, WIDTH, 4), dtype=np.uint8)
-	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
-	pbuffer.readonly = False
+	np_img, pbuffer = get_buffer()
 	print("setup done")
-	while osr_index < end_index: # len(replay_event) - 3:
-		if osr_index >= start_index:
+
+	while frame_info.osr_index < end_index: # len(replay_event) - 3:
+		if frame_info.osr_index >= start_index:
 			if img.size[0] == 1:
 				img = pbuffer
-			#img.paste(orig_img, (0, 0))
 			np_img.fill(0)
-			setupBackground(component.inputoverlayBG, component.urbar, pbuffer)
 
-		k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
-		if k1:
-			component.key1.clicked(cursor_event[TIMES])
-		if k2:
-			component.key2.clicked(cursor_event[TIMES])
-		if m1:
-			component.mouse1.clicked(cursor_event[TIMES])
-		if m2:
-			component.mouse2.clicked(cursor_event[TIMES])
+		check_key(component, cursor_event)
 
-		osu_d = beatmap.hitobjects[index_hitobject]
+		osu_d = beatmap.hitobjects[frame_info.index_hitobj]
 		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
 		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
 
 		# check if it's time to draw followpoints
-		if cur_time + preempt_followpoint >= object_endtime and index_followpoint + 2 < len(beatmap.hitobjects):
-			index_followpoint += 1
-			component.followpoints.add_fp(x_end, y_end, object_endtime, beatmap.hitobjects[index_followpoint])
-			index_followpoint, object_endtime, x_end, y_end = find_followp_target(beatmap, index_followpoint)
+		if frame_info.cur_time + preempt_followpoint >= frame_info.obj_endtime and frame_info.index_fp + 2 < len(beatmap.hitobjects):
+			frame_info.index_fp += 1
+			component.followpoints.add_fp(frame_info.x_end, frame_info.y_end, frame_info.obj_endtime, beatmap.hitobjects[frame_info.index_fp])
+			find_followp_target(beatmap, frame_info)
 
 		# check if it's time to draw circles
-		if cur_time + time_preempt >= osu_d["time"] and index_hitobject + 1 < len(beatmap.hitobjects):
+		if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
 			if "spinner" in osu_d["type"]:
-				if cur_time + 400 > osu_d["time"]:
-					component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], cur_time)
-					index_hitobject += 1
+				if frame_info.cur_time + 400 > osu_d["time"]:
+					component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time)
+					frame_info.index_hitobj += 1
 			else:
 
-				component.hitobjmanager.add_circle(x_circle, y_circle, cur_time, osu_d)
+				component.hitobjmanager.add_circle(x_circle, y_circle, frame_info.cur_time, osu_d)
 
 				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, cur_time)
-				index_hitobject += 1
+					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, frame_info.cur_time)
+				frame_info.index_hitobj += 1
 
-		updater.update(cur_time)
+		updater.update(frame_info.cur_time)
+
+		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
+
+		component.inputoverlayBG.add_to_frame(img, WIDTH - component.inputoverlayBG.w()//2, int(320 * SCALE))
+		component.urbar.add_to_frame_bar(img)
 		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
 		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
 		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
 		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
-		component.followpoints.add_to_frame(img, cur_time)
+		component.followpoints.add_to_frame(img, frame_info.cur_time)
 		component.hitobjmanager.add_to_frame(img)
 		component.hitresult.add_to_frame(img)
 		component.spinbonus.add_to_frame(img)
@@ -221,30 +265,26 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
 		component.accuracy.add_to_frame(img)
 		component.urbar.add_to_frame(img)
-
-		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
 
 		if img.size[0] != 1:
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 
-			component.timepie.add_to_frame(im, cur_time, beatmap.end_time)
+			component.timepie.add_to_frame(im, frame_info.cur_time, beatmap.end_time)
 			writer.write(im)
 
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
 
-		cur_time += 1000 / FPS
+		frame_info.cur_time += 1000 / FPS
 
 		# choose correct osr index for the current time because in osr file there might be some lag
-		osr_index += nearer(cur_time, replay_event, osr_index)
-		# if next_index == 0:
-		# 	# trying to smooth out cursor
-		# 	cursor_event[CURSOR_X] += (replay_event[osr_index+possible_nextindex][CURSOR_X] - cursor_event[CURSOR_X])//2
-		# 	cursor_event[CURSOR_Y] += (replay_event[osr_index+possible_nextindex][CURSOR_Y] - cursor_event[CURSOR_Y])//2
-		# else:
-		cursor_event = replay_event[osr_index]
+		frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
+		cursor_event = replay_event[frame_info.osr_index]
+
 	print("process done", filename)
 	writer.release()
+
+
+

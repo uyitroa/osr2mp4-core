@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from Curves.curve import Curve
+from ImageProcess.Curves.curve import Curve
 
 
 class DiffCalculator:

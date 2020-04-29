@@ -1,13 +1,12 @@
 import multiprocessing
 from multiprocessing import Process
 import os
-from Objects.HitObjects.PrepareHitObjFrames import PrepareCircles, PrepareSlider, PrepareSpinner
-from create_frames import create_frame
+
 from CheckSystem.checkmain import checkmain
+from Parser.osrparser import setupReplay, CURSOR_Y, CURSOR_X, TIMES
+from create_frames import create_frame
 from Parser.osuparser import *
-from Parser.osrparser import *
 from Parser.skinparser import Skin
-import time
 
 # const
 WIDTH = 1920
@@ -57,7 +56,9 @@ def main():
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 	beatmap.hitobjects.append(
 		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
-
+	# a = open("tengaku.txt", "w")
+	# a.write(str(beatmap.hitobjects))
+	# a.close()
 	for x in range(10):
 		replay_event.append([replay_event[-1][CURSOR_X], replay_event[-1][CURSOR_Y], 0, int(replay_event[-1][TIMES]+1000/FPS)])
 
