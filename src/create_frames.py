@@ -58,7 +58,10 @@ MOVE_DOWN = int(HEIGHT * 0.1)
 
 FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end")
 Settings = recordclass("Settings", "width height fps scale playfieldscale movedown moveright")
+CursorEvent = recordclass("CursorEvent", "event old_x old_y")
+
 settings = Settings(WIDTH, HEIGHT, FPS, SCALE, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
+
 
 
 class PreparedFrames:
@@ -170,15 +173,15 @@ def keys(n):
 
 
 def check_key(component, cursor_event):
-	k1, k2, m1, m2 = keys(cursor_event[KEYS_PRESSED])
+	k1, k2, m1, m2 = keys(cursor_event.event[KEYS_PRESSED])
 	if k1:
-		component.key1.clicked(cursor_event[TIMES])
+		component.key1.clicked(cursor_event.event[TIMES])
 	if k2:
-		component.key2.clicked(cursor_event[TIMES])
+		component.key2.clicked(cursor_event.event[TIMES])
 	if m1:
-		component.mouse1.clicked(cursor_event[TIMES])
+		component.mouse1.clicked(cursor_event.event[TIMES])
 	if m2:
-		component.mouse2.clicked(cursor_event[TIMES])
+		component.mouse2.clicked(cursor_event.event[TIMES])
 
 
 def get_buffer(img):
@@ -189,104 +192,121 @@ def get_buffer(img):
 	return np_img, pbuffer
 
 
+def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
+                preempt_followpoint, replay_event, start_index, time_preempt, updater):
+
+	if frame_info.osr_index >= start_index:
+		if img.size[0] == 1:
+			img = pbuffer
+		np_img.fill(0)
+
+	check_key(component, cursor_event)
+
+	osu_d = beatmap.hitobjects[frame_info.index_hitobj]
+	x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
+	y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
+
+	# check if it's time to draw followpoints
+	if frame_info.cur_time + preempt_followpoint >= frame_info.obj_endtime and frame_info.index_fp + 2 < len(
+			beatmap.hitobjects):
+		frame_info.index_fp += 1
+
+		component.followpoints.add_fp(frame_info.x_end, frame_info.y_end, frame_info.obj_endtime,
+		                              beatmap.hitobjects[frame_info.index_fp])
+
+		find_followp_target(beatmap, frame_info)
+
+	# check if it's time to draw circles
+	if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
+
+		if "spinner" in osu_d["type"]:
+
+			if frame_info.cur_time + 400 > osu_d["time"]:
+
+				component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time)
+				frame_info.index_hitobj += 1
+
+		else:
+
+			component.hitobjmanager.add_circle(x_circle, y_circle, frame_info.cur_time, osu_d)
+
+			if "slider" in osu_d["type"]:
+
+				component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, frame_info.cur_time)
+
+			frame_info.index_hitobj += 1
+
+	updater.update(frame_info.cur_time)
+
+	cursor_x = int(cursor_event.event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+	cursor_y = int(cursor_event.event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
+
+	component.inputoverlayBG.add_to_frame(img, WIDTH - component.inputoverlayBG.w() // 2, int(320 * SCALE))
+	component.urbar.add_to_frame_bar(img)
+	component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
+	component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
+	component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
+	component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
+	component.followpoints.add_to_frame(img, frame_info.cur_time)
+	component.hitobjmanager.add_to_frame(img)
+	component.hitresult.add_to_frame(img)
+	component.spinbonus.add_to_frame(img)
+	component.combocounter.add_to_frame(img)
+	component.scorecounter.add_to_frame(img, cursor_event.event[TIMES])
+	component.accuracy.add_to_frame(img)
+	component.urbar.add_to_frame(img)
+	component.cursor_trail.add_to_frame(img, cursor_event.old_x, cursor_event.old_y)
+	component.cursor.add_to_frame(img, cursor_x, cursor_y)
+	component.timepie.add_to_frame(np_img, frame_info.cur_time, beatmap.end_time)
+
+	cursor_event.old_x = cursor_x
+	cursor_event.old_y = cursor_y
+
+	frame_info.cur_time += 1000 / FPS
+	# choose correct osr index for the current time because in osr file there might be some lag
+	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
+	cursor_event.event = replay_event[frame_info.osr_index]
+
+	return img.size[0]!=1
+
+
 def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
 	print("process start")
 
-	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
-
-	diffcalculator = DiffCalculator(beatmap.diff)
-	time_preempt = diffcalculator.ar()
-
-	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap)
-	component = FrameObjects(frames, skin, beatmap, diffcalculator)
-
-	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
-
-	preempt_followpoint = 800
-
-	updater = Updater(resultinfo, component)
-
-	simulate = replay_event[start_index][TIMES]
-	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component))
-	cursor_event = replay_event[frame_info.osr_index]
-	updater.info_index = frame_info.info_index
-
-	img = Image.new("RGB", (1, 1))
-	np_img, pbuffer = get_buffer(shared)
+	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
+		beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
 	print("setup done")
 
 	while frame_info.osr_index < end_index: # len(replay_event) - 3:
-		if frame_info.osr_index >= start_index:
-			if img.size[0] == 1:
-				img = pbuffer
-			np_img.fill(0)
-
-		check_key(component, cursor_event)
-
-		osu_d = beatmap.hitobjects[frame_info.index_hitobj]
-		x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
-
-		# check if it's time to draw followpoints
-		if frame_info.cur_time + preempt_followpoint >= frame_info.obj_endtime and frame_info.index_fp + 2 < len(beatmap.hitobjects):
-			frame_info.index_fp += 1
-			component.followpoints.add_fp(frame_info.x_end, frame_info.y_end, frame_info.obj_endtime, beatmap.hitobjects[frame_info.index_fp])
-			find_followp_target(beatmap, frame_info)
-
-		# check if it's time to draw circles
-		if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
-			if "spinner" in osu_d["type"]:
-				if frame_info.cur_time + 400 > osu_d["time"]:
-					component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time)
-					frame_info.index_hitobj += 1
-			else:
-
-				component.hitobjmanager.add_circle(x_circle, y_circle, frame_info.cur_time, osu_d)
-
-				if "slider" in osu_d["type"]:
-					component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, frame_info.cur_time)
-				frame_info.index_hitobj += 1
-
-		updater.update(frame_info.cur_time)
-
-		cursor_x = int(cursor_event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-		cursor_y = int(cursor_event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
-
-		component.inputoverlayBG.add_to_frame(img, WIDTH - component.inputoverlayBG.w()//2, int(320 * SCALE))
-		component.urbar.add_to_frame_bar(img)
-		component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
-		component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
-		component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
-		component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
-		component.followpoints.add_to_frame(img, frame_info.cur_time)
-		component.hitobjmanager.add_to_frame(img)
-		component.hitresult.add_to_frame(img)
-		component.spinbonus.add_to_frame(img)
-		component.combocounter.add_to_frame(img)
-		component.scorecounter.add_to_frame(img, cursor_event[TIMES])
-		component.accuracy.add_to_frame(img)
-		component.urbar.add_to_frame(img)
-		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
-		component.cursor.add_to_frame(img, cursor_x, cursor_y)
-		component.timepie.add_to_frame(np_img, frame_info.cur_time, beatmap.end_time)
+		render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
+		            preempt_followpoint, replay_event, start_index, time_preempt, updater)
 
 		lock.value = 1
-
-		old_cursor_x = cursor_x
-		old_cursor_y = cursor_y
-
-		frame_info.cur_time += 1000 / FPS
-
-		# choose correct osr index for the current time because in osr file there might be some lag
-		frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
-		cursor_event = replay_event[frame_info.osr_index]
 
 		while lock.value == 1:
 			pass
 
 	lock.value = 10
 	print("process done")
+
+
+def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index):
+	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
+	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
+	diffcalculator = DiffCalculator(beatmap.diff)
+	time_preempt = diffcalculator.ar()
+	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap)
+	component = FrameObjects(frames, skin, beatmap, diffcalculator)
+	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
+	preempt_followpoint = 800
+	updater = Updater(resultinfo, component)
+	simulate = replay_event[start_index][TIMES]
+	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component))
+	cursor_event = CursorEvent(replay_event[frame_info.osr_index], old_cursor_x, old_cursor_y)
+	updater.info_index = frame_info.info_index
+	img = Image.new("RGB", (1, 1))
+	np_img, pbuffer = get_buffer(shared)
+	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
 def write_frame(shared, lock, filename, codec):
@@ -303,15 +323,32 @@ def write_frame(shared, lock, filename, codec):
 	writer.release()
 
 
-def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
+def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
 	shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
 	lock = Value('i', 0)
-	drawer = Process(target=draw_frame, args=(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
-	writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
+	if mpp:
+		drawer = Process(target=draw_frame, args=(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
+		writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
 
-	drawer.start()
-	writer.start()
+		drawer.start()
+		writer.start()
 
-	drawer.join()
-	writer.join()
+		drawer.join()
+		lock.value = 10
+		writer.join()
+	else:
 
+		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
+		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
+			beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
+		print("setup done")
+
+		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
+			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
+			            preempt_followpoint, replay_event, start_index, time_preempt, updater)
+
+			if status:
+				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+				writer.write(im)
+
+		writer.release()
