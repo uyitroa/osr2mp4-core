@@ -41,7 +41,6 @@ import numpy as np
 from skip import skip
 from recordclass import recordclass
 
-
 CURSOR_X = 0
 CURSOR_Y = 1
 KEYS_PRESSED = 2
@@ -56,7 +55,6 @@ SCALE = HEIGHT / 768
 MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
 MOVE_DOWN = int(HEIGHT * 0.1)
 
-
 FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end")
 Settings = recordclass("Settings", "width height fps scale playfieldscale movedown moveright")
 CursorEvent = recordclass("CursorEvent", "event old_x old_y")
@@ -64,12 +62,11 @@ CursorEvent = recordclass("CursorEvent", "event old_x old_y")
 settings = Settings(WIDTH, HEIGHT, FPS, SCALE, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
 
-
 class PreparedFrames:
 	def __init__(self, path, skin, check, beatmap):
 		self.cursor = prepare_cursor(path, SCALE)
 		self.cursor_trail = prepare_cursortrail(path, SCALE)
-		self.scoreentry = prepare_scoreentry(path, SCALE,  skin.colours["InputOverlayText"])
+		self.scoreentry = prepare_scoreentry(path, SCALE, skin.colours["InputOverlayText"])
 		self.inputoverlayBG = prepare_inputoverlaybg(path, SCALE)
 		self.key = prepare_inputoverlay(path, SCALE, [255, 255, 0])
 		self.mouse = prepare_inputoverlay(path, SCALE, [255, 0, 255])
@@ -124,7 +121,7 @@ class FrameObjects:
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the frame_info.cur_time
 	min_time = abs(replay[index][TIMES] - cur_time)
-	min_time_toskip = min(min_time, abs(replay[index+1][TIMES] - cur_time))
+	min_time_toskip = min(min_time, abs(replay[index + 1][TIMES] - cur_time))
 
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
@@ -195,7 +192,6 @@ def get_buffer(img):
 
 def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
                 preempt_followpoint, replay_event, start_index, time_preempt, updater):
-
 	if frame_info.osr_index >= start_index:
 		if img.size[0] == 1:
 			img = pbuffer
@@ -223,7 +219,6 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 		if "spinner" in osu_d["type"]:
 
 			if frame_info.cur_time + 400 > osu_d["time"]:
-
 				component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time)
 				frame_info.index_hitobj += 1
 
@@ -232,7 +227,6 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 			component.hitobjmanager.add_circle(x_circle, y_circle, frame_info.cur_time, osu_d)
 
 			if "slider" in osu_d["type"]:
-
 				component.hitobjmanager.add_slider(osu_d, x_circle, y_circle, frame_info.cur_time)
 
 			frame_info.index_hitobj += 1
@@ -268,30 +262,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
 	cursor_event.event = replay_event[frame_info.osr_index]
 
-	return img.size[0]!=1
-
-
-def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
-	print("process start")
-	asdf = time.time()
-
-	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-		beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
-	print("setup done")
-
-	while frame_info.osr_index < end_index: # len(replay_event) - 3:
-		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-		            preempt_followpoint, replay_event, start_index, time_preempt, updater)
-
-		if status:
-			lock.value = 1
-
-		while lock.value == 1:
-			pass
-
-	lock.value = 10
-	print("process done")
-	print("\nDrawing time:", time.time() - asdf)
+	return img.size[0] != 1
 
 
 def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index):
@@ -313,27 +284,54 @@ def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
+def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
+	print("process start")
+
+	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
+		beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
+	print("setup done")
+	timer = 0
+	while frame_info.osr_index < end_index:  # len(replay_event) - 3:
+		asdf = time.time()
+		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
+		                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
+		timer += time.time() - asdf
+		if status:
+			lock.value = 1
+
+		while lock.value == 1:
+			pass
+
+	lock.value = 10
+	print("process done")
+	print("\nDrawing time:", timer)
+
+
 def write_frame(shared, lock, filename, codec):
-	asdf = time.time()
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
 	np_img = np.frombuffer(shared.get_obj(), dtype=np.uint8)
 	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
 
+	timer = 0
+
 	while lock.value != 10:
 		if lock.value == 1:
+			asdf = time.time()
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 			lock.value = 0
 			writer.write(im)
+			timer += time.time() - asdf
 
 	writer.release()
-	print("\nWriting time:", time.time() - asdf)
+	print("\nWriting time:", timer)
 
 
 def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
 	shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
 	lock = Value('i', 0)
 	if mpp:
-		drawer = Process(target=draw_frame, args=(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
+		drawer = Process(target=draw_frame, args=(
+		shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
 		writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
 
 		drawer.start()
@@ -351,7 +349,7 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-			            preempt_followpoint, replay_event, start_index, time_preempt, updater)
+			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
 
 			if status:
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
