@@ -3,8 +3,8 @@
   ".osu path": "../res/dada.osu",
   ".osr path": "../res/dada.osr",
   "Multiprocessing": 0,
-  "Video codec": "X264",
-  "Output path": "output.mkv",
+  "Video codec": "XVID",
+  "Output path": "output.avi",
   "Start time": 0,
   "End time": -1
 }
