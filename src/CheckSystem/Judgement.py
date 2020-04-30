@@ -103,7 +103,7 @@ class Check:
 		if osr[3] > osu_d["end time"]:
 			if slider_d["score"] == 0:
 				hitresult = 0
-			elif slider_d["score"] < int(slider_d["max score"]/2):
+			elif slider_d["score"] < slider_d["max score"]/2:
 				hitresult = 50
 			elif slider_d["score"] < slider_d["max score"]:
 				hitresult = 100
@@ -186,7 +186,6 @@ class Check:
 		if touchtick == touchend and touchend:
 			print("true fuck")
 
-
 		slider_d["max score"] += hastick or hasendtick or hasreversetick
 
 		slider_d["done"] = hasendtick
@@ -200,7 +199,7 @@ class Check:
 			slider_d["score"] += touchtick or touchend or touchreverse
 			return in_ball, hitvalue, int(touchend or touchtick or touchreverse)
 
-		return in_ball, 0, -((hastick and not touchtick) or (hasreversetick and touchreverse))
+		return in_ball, 0, -((hastick and not touchtick) or (hasreversetick and not touchreverse))
 
 	def tickover(self, t, osu_d, slider_d, reverse):
 		goingforward = slider_d["repeat checked"] % 2 == 0
