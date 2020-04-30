@@ -1,4 +1,5 @@
 import ctypes
+import time
 
 import cv2
 
@@ -272,6 +273,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
 	print("process start")
+	asdf = time.time()
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
 		beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
@@ -289,6 +291,7 @@ def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo,
 
 	lock.value = 10
 	print("process done")
+	print("\nDrawing time:", time.time() - asdf)
 
 
 def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index):
@@ -311,6 +314,7 @@ def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start
 
 
 def write_frame(shared, lock, filename, codec):
+	asdf = time.time()
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
 	np_img = np.frombuffer(shared.get_obj(), dtype=np.uint8)
 	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
@@ -322,6 +326,7 @@ def write_frame(shared, lock, filename, codec):
 			writer.write(im)
 
 	writer.release()
+	print("\nWriting time:", time.time() - asdf)
 
 
 def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):

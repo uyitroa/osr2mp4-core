@@ -6,6 +6,7 @@ from create_frames import create_frame
 from Parser.osuparser import *
 from Parser.skinparser import Skin
 import json
+import time
 
 # const
 WIDTH = 1920
@@ -61,8 +62,10 @@ def main():
 
 	print(resultinfo[-1].accuracy)
 	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process)
-	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
+	# os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 
 
 if __name__ == "__main__":
+	asdf = time.time()
 	main()
+	print("\nTotal time:", time.time() - asdf)
