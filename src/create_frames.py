@@ -1,7 +1,9 @@
+import ctypes
+
 import cv2
 
 from PIL import Image
-
+from multiprocessing import Process, Array, Value
 from ImageProcess.Objects.Components.Followpoints import FollowPointsManager
 from ImageProcess.Objects.Components.TimePie import TimePie
 from ImageProcess.Objects.HitObjects.CircleNumber import Number
@@ -179,15 +181,15 @@ def check_key(component, cursor_event):
 		component.mouse2.clicked(cursor_event[TIMES])
 
 
-def get_buffer():
-	np_img = np.ones((HEIGHT, WIDTH, 4), dtype=np.uint8)
+def get_buffer(img):
+	np_img = np.frombuffer(img.get_obj(), dtype=np.uint8)
+	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
 	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
 	pbuffer.readonly = False
 	return np_img, pbuffer
 
 
-def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"X264"), FPS, (WIDTH, HEIGHT))
+def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
 	print("process start")
 
 	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
@@ -211,7 +213,7 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 	updater.info_index = frame_info.info_index
 
 	img = Image.new("RGB", (1, 1))
-	np_img, pbuffer = get_buffer()
+	np_img, pbuffer = get_buffer(shared)
 	print("setup done")
 
 	while frame_info.osr_index < end_index: # len(replay_event) - 3:
@@ -267,12 +269,9 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		component.urbar.add_to_frame(img)
 		component.cursor_trail.add_to_frame(img, old_cursor_x, old_cursor_y)
 		component.cursor.add_to_frame(img, cursor_x, cursor_y)
+		component.timepie.add_to_frame(np_img, frame_info.cur_time, beatmap.end_time)
 
-		if img.size[0] != 1:
-			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
-
-			component.timepie.add_to_frame(im, frame_info.cur_time, beatmap.end_time)
-			writer.write(im)
+		lock.value = 1
 
 		old_cursor_x = cursor_x
 		old_cursor_y = cursor_y
@@ -283,8 +282,36 @@ def create_frame(filename, beatmap, skin, skin_path, replay_event, resultinfo, s
 		frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
 		cursor_event = replay_event[frame_info.osr_index]
 
-	print("process done", filename)
+		while lock.value == 1:
+			pass
+
+	lock.value = 10
+	print("process done")
+
+
+def write_frame(shared, lock, filename, codec):
+	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
+	np_img = np.frombuffer(shared.get_obj(), dtype=np.uint8)
+	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
+
+	while lock.value != 10:
+		if lock.value == 1:
+			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+			lock.value = 0
+			writer.write(im)
+
 	writer.release()
 
 
+def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index):
+	shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
+	lock = Value('i', 0)
+	drawer = Process(target=draw_frame, args=(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
+	writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
+
+	drawer.start()
+	writer.start()
+
+	drawer.join()
+	writer.join()
 

@@ -23,8 +23,8 @@ INPUTOVERLAY_STEP = 23
 def main():
 
 	skin_path = "../res/skin4/"
-	beatmap_file = "../res/dada.osu"
-	replay_file = "../res/dada.osr"
+	beatmap_file = "../res/thegame.osu"
+	replay_file = "../res/thegame.osr"
 
 	skin = Skin(skin_path)
 	beatmap = read_file(beatmap_file, PLAYFIELD_SCALE, skin.colours)
@@ -33,16 +33,19 @@ def main():
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 	beatmap.hitobjects.append(
 		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
-	# a = open("tengaku.txt", "w")
-	# a.write(str(beatmap.hitobjects))
-	# a.close()
+	a = open("map.txt", "w")
+	a.write(str(beatmap.hitobjects))
+	a.close()
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
+	a = open("resultinfo.txt", "w")
+	a.write(str(resultinfo))
+	a.close()
+
 	print(resultinfo[-1].accuracy)
-	create_frame("output.mkv", beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3)
+	create_frame("output.mkv", "X264", beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3)
 	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 
 
 if __name__ == "__main__":
 	main()
-
