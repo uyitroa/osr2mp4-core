@@ -31,7 +31,7 @@ def setupReplay(osrfile, start_time, end_time):
 
 		replay_data[index] = [None, None, None, None]
 		replay_data[index][CURSOR_X] = replay_info.play_data[index].x
-		replay_data[index][CURSOR_Y] = 384 - replay_info.play_data[index].y
+		replay_data[index][CURSOR_Y] = replay_info.play_data[index].y
 		replay_data[index][KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
 		replay_data[index][TIMES] = total_time
 
