@@ -5,6 +5,7 @@ from Parser.osrparser import setupReplay
 from create_frames import create_frame
 from Parser.osuparser import *
 from Parser.skinparser import Skin
+import json
 
 # const
 WIDTH = 1920
@@ -20,10 +21,13 @@ INPUTOVERLAY_STEP = 23
 
 def main():
 
-	skin_path = "../res/skin4/"
-	beatmap_file = "../res/dada.osu"
-	replay_file = "../res/dada.osr"
-	multi_process = False
+	data = json.load(open("config.json"))
+	skin_path = data["Skin path"]
+	beatmap_file = data[".osu path"]
+	replay_file = data[".osr path"]
+	multi_process = bool(data["Multiprocessing"])
+	codec = data["Video codec"]
+	output_path = data["Output path"]
 
 	skin = Skin(skin_path)
 	beatmap = read_file(beatmap_file, PLAYFIELD_SCALE, skin.colours)
@@ -36,8 +40,8 @@ def main():
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
 	print(resultinfo[-1].accuracy)
-	create_frame("output.mkv", "X264", beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3, multi_process)
-	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
+	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3, multi_process)
+	#os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 
 
 if __name__ == "__main__":
