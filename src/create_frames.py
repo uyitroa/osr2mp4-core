@@ -281,7 +281,8 @@ def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo,
 		render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 		            preempt_followpoint, replay_event, start_index, time_preempt, updater)
 
-		lock.value = 1
+		if img.size[0] != 1:
+			lock.value = 1
 
 		while lock.value == 1:
 			pass

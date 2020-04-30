@@ -1,7 +1,7 @@
 import os
 
 from CheckSystem.checkmain import checkmain
-from Parser.osrparser import setupReplay
+from Parser.osrparser import setupReplay, TIMES
 from create_frames import create_frame
 from Parser.osuparser import *
 from Parser.skinparser import Skin
@@ -19,6 +19,20 @@ MOVE_DOWN = int(HEIGHT * 0.1)
 INPUTOVERLAY_STEP = 23
 
 
+def findTime(starttime, endtime, replay):
+	startindex = None
+	endindex = len(replay) - 3
+	if endtime == -1:
+		endindex = len(replay) - 3
+	for index, x in enumerate(replay):
+		if x[TIMES] >= starttime * 1000 and startindex is None:
+			startindex = index
+		if x[TIMES] >= (endtime+1) * 1000 and endtime != -1:
+			endindex = index
+			break
+	return startindex, endindex
+
+
 def main():
 
 	data = json.load(open("config.json"))
@@ -28,10 +42,16 @@ def main():
 	multi_process = bool(data["Multiprocessing"])
 	codec = data["Video codec"]
 	output_path = data["Output path"]
+	start_time = data["Start time"]
+	end_time = data["End time"]
+
+	if skin_path[-1] != "/" and skin_path[-1] != "\\":
+		skin_path += "/"
 
 	skin = Skin(skin_path)
 	beatmap = read_file(beatmap_file, PLAYFIELD_SCALE, skin.colours)
 	replay_event, cur_time = setupReplay(replay_file, beatmap.start_time, beatmap.end_time)
+	start_index, end_index = findTime(start_time, end_time, replay_event)
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 	beatmap.hitobjects.append(
@@ -40,8 +60,8 @@ def main():
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
 	print(resultinfo[-1].accuracy)
-	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, 0, len(replay_event) - 3, multi_process)
-	#os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
+	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process)
+	os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
 
 
 if __name__ == "__main__":
