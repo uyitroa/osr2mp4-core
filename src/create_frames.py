@@ -328,7 +328,7 @@ def write_frame(shared, lock, filename, codec):
 
 
 def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
-	if mpp > 1:
+	if mpp >= 1:
 		shared_array = []
 		shared_lock = []
 		drawers = []
