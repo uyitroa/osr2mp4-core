@@ -40,7 +40,7 @@ def main():
 	skin_path = data["Skin path"]
 	beatmap_file = data[".osu path"]
 	replay_file = data[".osr path"]
-	multi_process = bool(data["Multiprocessing"])
+	multi_process = data["Process"]
 	codec = data["Video codec"]
 	output_path = data["Output path"]
 	start_time = data["Start time"]
@@ -62,7 +62,7 @@ def main():
 
 	print(resultinfo[-1].accuracy)
 	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process)
-	# os.system("ffmpeg -i output.mkv -codec copy output.mp4 -y")
+	os.system("ffmpeg -i {} -codec copy output.mp4 -y".format(output_path))
 
 
 if __name__ == "__main__":

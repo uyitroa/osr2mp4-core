@@ -1,4 +1,5 @@
 import ctypes
+import os
 import time
 
 import cv2
@@ -327,21 +328,55 @@ def write_frame(shared, lock, filename, codec):
 
 
 def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
-	shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
-	lock = Value('i', 0)
-	if mpp:
-		drawer = Process(target=draw_frame, args=(
-		shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
-		writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
+	if mpp > 1:
+		shared_array = []
+		shared_lock = []
+		drawers = []
+		writers = []
 
-		drawer.start()
-		writer.start()
+		osr_interval = int((end_index - start_index) / mpp)
+		start = start_index
 
-		drawer.join()
-		lock.value = 10
-		writer.join()
+		my_file = open("listvideo.txt", "w")
+		for i in range(mpp):
+
+			if i == mpp - 1:
+				end = end_index
+			else:
+				end = start + osr_interval
+
+			shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
+			lock = Value('i', 0)
+
+			f = str(i) + filename
+
+			drawer = Process(target=draw_frame, args=(
+				shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start, end,))
+			writer = Process(target=write_frame, args=(shared, lock, f, codec,))
+
+			shared_array.append(shared)
+			shared_lock.append(lock)
+			drawers.append(drawer)
+			writers.append(writer)
+
+			my_file.write("file '{}'\n".format(f))
+
+			drawer.start()
+			writer.start()
+
+			start += osr_interval
+
+		my_file.close()
+
+		for i in range(mpp):
+			drawers[i].join()
+			shared_lock[i].value = 10
+			writers[i].join()
+
+		os.system("ffmpeg -safe 0 -f concat -i listvideo.txt -c copy {} -y".format(filename))
+
 	else:
-
+		shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
 		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
 			beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
