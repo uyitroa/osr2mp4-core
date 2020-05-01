@@ -1,10 +1,10 @@
 {
   "Skin path": "../res/skin4",
-  ".osu path": "../res/thegame.osu",
-  ".osr path": "../res/thegame.osr",
+  ".osu path": "../res/freedomdive.osu",
+  ".osr path": "../res/fd.osr",
   "Process": 4,
   "Video codec": "X264",
   "Output path": "output.mkv",
   "Start time": 30,
-  "End time": 40
+  "End time": 240
 }
