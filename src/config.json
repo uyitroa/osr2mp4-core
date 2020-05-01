@@ -1,10 +1,10 @@
 {
   "Skin path": "../res/skin4",
-  ".osu path": "../res/dada.osu",
-  ".osr path": "../res/dada.osr",
-  "Multiprocessing": 0,
-  "Video codec": "XVID",
-  "Output path": "output.avi",
-  "Start time": 0,
-  "End time": -1
+  ".osu path": "../res/thegame.osu",
+  ".osr path": "../res/thegame.osr",
+  "Process": 4,
+  "Video codec": "X264",
+  "Output path": "output.mkv",
+  "Start time": 30,
+  "End time": 40
 }
