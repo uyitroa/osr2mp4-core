@@ -1,9 +1,12 @@
 import ctypes
+import os
+import time
 
 import cv2
 
 from PIL import Image
-from multiprocessing import Process, Array, Value
+from multiprocessing import Process, Pipe
+from multiprocessing.sharedctypes import RawArray
 from ImageProcess.Objects.Components.Followpoints import FollowPointsManager
 from ImageProcess.Objects.Components.TimePie import TimePie
 from ImageProcess.Objects.HitObjects.CircleNumber import Number
@@ -185,7 +188,7 @@ def check_key(component, cursor_event):
 
 
 def get_buffer(img):
-	np_img = np.frombuffer(img.get_obj(), dtype=np.uint8)
+	np_img = np.frombuffer(img, dtype=np.uint8)
 	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
 	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
 	pbuffer.readonly = False
@@ -290,57 +293,175 @@ def draw_frame(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo,
 	print("process done")
 
 
-def setup_draw(beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index):
+def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index):
 	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
+
 	diffcalculator = DiffCalculator(beatmap.diff)
+
 	time_preempt = diffcalculator.ar()
-	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap)
+
 	component = FrameObjects(frames, skin, beatmap, diffcalculator)
+
 	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
+
 	preempt_followpoint = 800
+
 	updater = Updater(resultinfo, component)
+
 	simulate = replay_event[start_index][TIMES]
 	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component))
+
 	cursor_event = CursorEvent(replay_event[frame_info.osr_index], old_cursor_x, old_cursor_y)
+
 	updater.info_index = frame_info.info_index
+
 	img = Image.new("RGB", (1, 1))
 	np_img, pbuffer = get_buffer(shared)
+
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
-def write_frame(shared, lock, filename, codec):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index):
+	asdfasdf = time.time()
+	print("process start")
+
+	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
+		beatmap, frames, replay_event, resultinfo, shared, skin, start_index)
+	print("setup done")
+	timer = 0
+	timer2 = 0
+	timer3 = 0
+	while frame_info.osr_index < end_index:  # len(replay_event) - 3:
+
+		asdf = time.time()
+		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
+		                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
+		timer += time.time() - asdf
+
+		asdf = time.time()
+		if status:
+			# print("send")
+			conn.send(1)
+			# print("sent")
+			timer3 += time.time() - asdf
+
+			asdf = time.time()
+			# print("wait")
+			i = conn.recv()
+			# print("received")
+			timer2 += time.time() - asdf
+		# print("unlocked", timer2)
+
+	conn.send(10)
+	print("\nprocess done")
+	print("Drawing time:", timer)
+	print("Total time:", time.time() - asdfasdf)
+	print("Waiting time:", timer2)
+	print("Changing value time:", timer3)
+
+
+def write_frame(shared, conn, filename, codec):
+	asdfasdf = time.time()
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
-	np_img = np.frombuffer(shared.get_obj(), dtype=np.uint8)
+	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
 
-	while lock.value != 10:
-		if lock.value == 1:
+	timer = 0
+	timer2 = 0
+	timer3 = 0
+	timer4 = 0
+	a = 0
+	print("start writing:", time.time() - asdfasdf)
+
+	while a != 10:
+
+		asdf = time.time()
+		# print("video wait")
+		# print(filename)
+		a = conn.recv()
+		# print("video received")
+		timer2 += time.time() - asdf
+
+		if a == 1:
+
+			asdf = time.time()
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
-			lock.value = 0
+			# print("video send")
+			conn.send(0)
+			# print("video sent")
+			timer3 += time.time() - asdf
+			# print("unlock", timer3)
+
+			asdf = time.time()
 			writer.write(im)
 
 	writer.release()
 
+	print("\nTotal time:", time.time() - asdfasdf)
+	print("Writing time:", timer)
+	print("Waiting time:", timer2)
+	print("Changing value time:", timer3)
+	print("??? value time:", timer4)
+
 
 def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
-	shared = Array(ctypes.c_uint8, HEIGHT * WIDTH * 4)
-	lock = Value('i', 0)
-	if mpp:
-		drawer = Process(target=draw_frame, args=(shared, lock, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index,))
-		writer = Process(target=write_frame, args=(shared, lock, filename, codec,))
+	diffcalculator = DiffCalculator(beatmap.diff)
+	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap)
 
-		drawer.start()
-		writer.start()
+	if mpp >= 1:
+		shared_array = []
+		shared_pipe = []
+		drawers = []
+		writers = []
 
-		drawer.join()
-		lock.value = 10
-		writer.join()
+		osr_interval = int((end_index - start_index) / mpp)
+		start = start_index
+
+		my_file = open("listvideo.txt", "w")
+		for i in range(mpp):
+
+			if i == mpp - 1:
+				end = end_index
+			else:
+				end = start + osr_interval
+
+			shared = RawArray(ctypes.c_uint8, HEIGHT * WIDTH * 4)
+			conn1, conn2 = Pipe()
+
+			f = str(i) + filename
+
+			drawer = Process(target=draw_frame, args=(
+				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end,))
+			writer = Process(target=write_frame, args=(shared, conn2, f, codec,))
+
+			shared_array.append(shared)
+			shared_pipe.append((conn1, conn2))
+			drawers.append(drawer)
+			writers.append(writer)
+
+			my_file.write("file '{}'\n".format(f))
+
+			drawer.start()
+			writer.start()
+
+			start += osr_interval
+		my_file.close()
+
+		for i in range(mpp):
+			drawers[i].join()
+			conn1, conn2 = shared_pipe[i]
+			conn1.close()
+			conn2.close()
+			writers[i].join()
+
+		os.system("ffmpeg -safe 0 -f concat -i listvideo.txt -c copy {} -y".format(filename))
+
 	else:
-
+		shared = RawArray(ctypes.c_uint8, HEIGHT * WIDTH * 4)
 		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-			beatmap, replay_event, resultinfo, shared, skin, skin_path, start_index)
+			beatmap, frames, replay_event, resultinfo, shared, skin, start_index)
 		print("setup done")
 
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:

@@ -1,0 +1,10 @@
+{
+  "Skin path": "../res/skin4",
+  ".osu path": "../res/thegame.osu",
+  ".osr path": "../res/thegame.osr",
+  "Process": 4,
+  "Video codec": "X264",
+  "Output path": "output.mkv",
+  "Start time": 0,
+  "End time": -1
+}
