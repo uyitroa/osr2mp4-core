@@ -99,12 +99,11 @@ for x in range(len(my_info)):
         arrow_time_list = []
         if int(my_info[x].more.rotate) >= 180:
             if my_info[x].time/1000 < spinRotationTime:
-                print("F")
                 pass
             else:
-                z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] = speedup_dict["sound_" + str(spinSpeedup)] * 0.5
+                z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] += speedup_dict["sound_" + str(spinSpeedup)] * 0.5
                 spinRotationTime = my_info[x].time/1000 + length_spin
-                if not spinSpeedup == 2:
+                if spinSpeedup != 2:
                     spinSpeedup -= 2
 
         if my_info[x].more.bonusscore  > 0:
@@ -113,7 +112,7 @@ for x in range(len(my_info)):
             else:
                 z[start_index:start_index + len(b)] += b * 0.5
                 spinBonusTime = my_info[x].time/1000 + length_bonus
-'''
+
     if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
             slider_duration = beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]
             for a in range(beatmap_info[x]["repeated"]):
@@ -123,7 +122,7 @@ for x in range(len(my_info)):
                     for abc in arrow_time_list:
                         start_index2 = int(abc/1000 * rate)
                         z[start_index2:start_index2 + len(s)] += s * 0.5
-'''
+
 write('out.mp3', rate, z)
 
 end=time.time()
