@@ -298,7 +298,7 @@ def write_frame(shared, conn, filename, codec):
 	print("??? value time:", timer4)
 
 
-def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp):
+def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp, ffmpeg):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
 	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap, settings)
@@ -349,7 +349,7 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 			conn2.close()
 			writers[i].join()
 
-		os.system("ffmpeg -safe 0 -f concat -i listvideo.txt -c copy {} -y".format(filename))
+		os.system("{} -safe 0 -f concat -i listvideo.txt -c copy {} -y".format(ffmpeg, filename))
 
 	else:
 

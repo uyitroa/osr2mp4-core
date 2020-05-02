@@ -45,6 +45,7 @@ def main():
 	output_path = data["Output path"]
 	start_time = data["Start time"]
 	end_time = data["End time"]
+	ffmpeg = data["ffmpeg path"]
 
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
@@ -60,9 +61,8 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	print(resultinfo[-1].accuracy)
-	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process)
-	os.system("ffmpeg -i {} -codec copy output.mp4 -y".format(output_path))
+	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process, ffmpeg)
+	os.system("{} -i {} -codec copy output.mp4 -y".format(ffmpeg, output_path))
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@
   "Process": 4,
   "Video codec": "X264",
   "Output path": "output.mkv",
-  "Start time": 30,
-  "End time": 240
+  "Start time": 200,
+  "End time": -1,
+  "ffmpeg path": "ffmpeg"
 }
