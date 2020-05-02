@@ -323,7 +323,7 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 			shared = RawArray(ctypes.c_uint8, HEIGHT * WIDTH * 4)
 			conn1, conn2 = Pipe()
 
-			f = str(i) + filename
+			f = filename[:-4] + str(i) + filename[-4:]
 
 			drawer = Process(target=draw_frame, args=(
 				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end,))
