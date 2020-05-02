@@ -19,7 +19,7 @@ def read_requirements():
 
 def setup():
 	requirements = read_requirements()
-
+	print("Ignore warning")
 	uninstall("pil")
 	uninstall("pillow")
 
