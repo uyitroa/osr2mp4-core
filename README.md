@@ -26,3 +26,5 @@ Set `"End time"` to -1 if you want to convert full replay.
 
 `"Process": 2` means the program will use 2 processes to convert so it will be faster than just 1.
 Use `"Process": 0` if you don't want parallel computing.
+
+Replace "\" by "/" for the path.
