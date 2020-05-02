@@ -48,23 +48,8 @@ def search_osrindex(to_time, replays):
 	cur_index = 0
 	while cur_index <= len(replays)-1 and replays[cur_index+1][3] < to_time:
 		cur_index += 1
-	#
-	# cur_index -= 3
-	# min_time = abs(replays[cur_index][3] - to_time)
-	# min_time_toskip = min(min_time, abs(replays[cur_index+1][3] - to_time))
-	#
-	# returnindex = 0
-	# key_state = replays[cur_index][3]
-	# for x in range(1, 4):
-	# 	delta_t = abs(replays[cur_index + x][3] - to_time)
-	# 	if key_state != replays[cur_index + x][2]:
-	# 		if delta_t <= min_time_toskip:
-	# 			return x
-	# 	if delta_t < min_time:
-	# 		min_time = delta_t
-	# 		returnindex = x
-	#
-	# return returnindex
+
+	print("cur_index", cur_index)
 	return cur_index
 
 
@@ -91,6 +76,7 @@ def search_fpindex(to_time, hitobjects):
 
 
 def skip(to_time, resultinfo, replayinfo, objectinfo, timepreempt, component):
+	print(to_time)
 	to_time, hitobjectindex = search_time(to_time, objectinfo)
 	to_time -= timepreempt
 	info_index = search_updateindex(objectinfo[hitobjectindex]["time"], resultinfo, component)

@@ -15,7 +15,7 @@ def setupReplay(osrfile, start_time, end_time):
 	total_time = 0
 	start_index = 0
 
-	start_osr = max(0, start_time - 5000)
+	start_osr = max(0, start_time - 3000)
 
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
