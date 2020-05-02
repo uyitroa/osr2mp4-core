@@ -7,5 +7,5 @@
   "End time": -1,
   "Video codec": "XVID",
   "Process": 2,
-  "ffmpeg path": "ffmpeg"
+  "ffmpeg path": "/Users/yuitora/ffmpeg-2020/bin/ffmpeg"
 }
