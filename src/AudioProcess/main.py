@@ -94,7 +94,7 @@ for x in range(len(my_info)):
                         start_index2 = int(abc/1000 * rate)
                         z[start_index2:start_index2 + len(y)] += y * 0.5
                 
-    elif not type(my_info[x].more).__name__ == "Spinner":
+    if not type(my_info[x].more).__name__ == "Spinner":
                 spinSpeedup = 6
                 if my_info[x].hitresult == None:
                         continue
