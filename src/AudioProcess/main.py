@@ -83,7 +83,7 @@ for x in range(len(my_info)):
 
     start_index = int(my_info[x].time/1000 * rate)
 
-    if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
+    if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"] and beatmap_info[x]["repeated"] > 1:
         spinSpeedup = 6
         arrow_time_list = []    
         for a in range(beatmap_info[x]["repeated"]):
@@ -91,10 +91,11 @@ for x in range(len(my_info)):
         
         if my_info[x].time <  beatmap_info[x]["time"] + beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]:
                 for abc in arrow_time_list:
+                        print(beatmap_info[x]["time"])
                         start_index2 = int(abc/1000 * rate)
                         z[start_index2:start_index2 + len(y)] += y * 0.5
                 
-    if not type(my_info[x].more).__name__ == "Spinner":
+    elif type(my_info[x].more).__name__ != "Spinner":
                 spinSpeedup = 6
                 if my_info[x].hitresult == None:
                         continue
