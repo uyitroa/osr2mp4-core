@@ -13,6 +13,8 @@ Download ffmpeg here:
 https://www.ffmpeg.org/download.html#build-windows
 
 Setup path for skin, beatmap, replay and ffmpeg in `src/config.json`
+
+
 `"Start time": 0, "End time": 60` means it will only convert the first minute of the replay.
 Set `"End time"` to -1 if you want to convert full replay.
 
