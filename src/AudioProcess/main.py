@@ -3,9 +3,18 @@ import numpy as np
 from pydub import AudioSegment
 from collections import namedtuple
 import time
+from collections import namedtuple
 start=time.time()
 
 
+
+class Position(namedtuple('Position', 'x y')):
+        pass
+
+
+a = open("map_thegame.txt", "r")
+
+beatmap_info = eval(a.read())
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
 Slider = namedtuple("Slider", "followstate hitvalue tickend x y")
@@ -45,8 +54,10 @@ rate, z = read('Tengaku.mp3')
 rateM, m = read('miss1.wav')
 ratesb, b = read('spinnerbonus.wav')
 ratesc, c = read('spinnerspin.wav')
+rateS, s = read('slider.wav')
 
 spinSound = AudioSegment.from_wav("spinnerspin.wav")
+slider12 = AudioSegment.from_wav("slider.wav")
 
 spinBonusTime = 0
 spinRotationTime = 0
@@ -54,8 +65,6 @@ length_bonus = len(b)/ratesb
 length_spin = len(c)/ratesc
 spinSpeedup = 6
 speedup_dict = {}
-fr = 0
-someRandom_Variable = AudioSegment.empty()
 for x in range(6,0,-2):
     fr = spinSound.frame_rate + int(spinSound.frame_rate / x)
     faster_senpai = spinSound._spawn(spinSound.raw_data, overrides={'frame_rate': fr})
@@ -65,10 +74,16 @@ for x in range(6,0,-2):
 
 
 
-
+slider_duration = 0
+arrow_time = 0
+arrow_time_list = []
+countT = 0
 for x in range(len(my_info)):
+
+
     start_index = int(my_info[x].time/1000 * rate)
     if not type(my_info[x].more).__name__ == "Spinner":
+        arrow_time_list = []
         spinSpeedup = 6
         if my_info[x].hitresult == None:
                 continue
@@ -81,14 +96,14 @@ for x in range(len(my_info)):
 
 
     elif type(my_info[x].more).__name__ == "Spinner":
-
+        arrow_time_list = []
         if int(my_info[x].more.rotate) >= 180:
             if my_info[x].time/1000 < spinRotationTime:
                 pass
             else:
-                z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] = speedup_dict["sound_" + str(spinSpeedup)]
+                z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] += speedup_dict["sound_" + str(spinSpeedup)] * 0.5
                 spinRotationTime = my_info[x].time/1000 + length_spin
-                if not spinSpeedup == 2:
+                if spinSpeedup != 2:
                     spinSpeedup -= 2
 
         if my_info[x].more.bonusscore  > 0:
@@ -98,14 +113,17 @@ for x in range(len(my_info)):
                 z[start_index:start_index + len(b)] += b * 0.5
                 spinBonusTime = my_info[x].time/1000 + length_bonus
 
+    if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
+            slider_duration = beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]
+            for a in range(beatmap_info[x]["repeated"]):
+                arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
 
+            if my_info[x].time <  beatmap_info[x]["time"] + slider_duration:
+                    for abc in arrow_time_list:
+                        start_index2 = int(abc/1000 * rate)
+                        z[start_index2:start_index2 + len(s)] += s * 0.5
 
-write('out.wav', rate, z)
-
-
-Ass = AudioSegment.from_wav("out.wav")
-Ass.export("output.mp3",format="mp3")
-
+write('out.mp3', rate, z)
 
 end=time.time()
 print(end-start)
