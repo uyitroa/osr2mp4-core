@@ -1,6 +1,7 @@
 import os
 
 from CheckSystem.checkmain import checkmain
+from Parser.jsonparser import read
 from Parser.osrparser import setupReplay, TIMES
 from create_frames import create_frame
 from Parser.osuparser import *
@@ -44,7 +45,7 @@ def findTime(starttime, endtime, replay, replay_start):
 
 def main():
 
-	data = json.load(open("config.json"))
+	data = read("config.json")
 	skin_path = data["Skin path"]
 	beatmap_file = data[".osu path"]
 	replay_file = data[".osr path"]
@@ -54,6 +55,7 @@ def main():
 	start_time = data["Start time"]
 	end_time = data["End time"]
 	ffmpeg = data["ffmpeg path"]
+
 
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
