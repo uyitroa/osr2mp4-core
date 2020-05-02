@@ -26,8 +26,9 @@ def findTime(starttime, endtime, replay, replay_start):
 	starttime *= 1000
 	starttime += replay_start
 
-	endtime *= 1000
-	endtime += replay_start
+	if endtime != -1:
+		endtime *= 1000
+		endtime += replay_start
 
 	startindex = None
 	endindex = len(replay) - 3
