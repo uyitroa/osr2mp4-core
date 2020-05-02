@@ -1,6 +1,7 @@
 import os
 
 from CheckSystem.checkmain import checkmain
+from Parser.jsonparser import read
 from Parser.osrparser import setupReplay, TIMES
 from create_frames import create_frame
 from Parser.osuparser import *
@@ -20,23 +21,31 @@ MOVE_DOWN = int(HEIGHT * 0.1)
 INPUTOVERLAY_STEP = 23
 
 
-def findTime(starttime, endtime, replay):
+def findTime(starttime, endtime, replay, replay_start):
+
+	starttime *= 1000
+	starttime += replay_start
+
+	endtime *= 1000
+	endtime += replay_start
+
 	startindex = None
 	endindex = len(replay) - 3
 	if endtime == -1:
 		endindex = len(replay) - 3
 	for index, x in enumerate(replay):
-		if x[TIMES] >= starttime * 1000 and startindex is None:
+		if x[TIMES] >= starttime and startindex is None:
 			startindex = index
-		if x[TIMES] >= (endtime+1) * 1000 and endtime != -1:
+		if x[TIMES] >= endtime + 1000 and endtime != -1:
 			endindex = index
 			break
+
 	return startindex, endindex
 
 
 def main():
 
-	data = json.load(open("config.json"))
+	data = read("config.json")
 	skin_path = data["Skin path"]
 	beatmap_file = data[".osu path"]
 	replay_file = data[".osr path"]
@@ -53,7 +62,7 @@ def main():
 	skin = Skin(skin_path)
 	beatmap = read_file(beatmap_file, PLAYFIELD_SCALE, skin.colours)
 	replay_event, cur_time = setupReplay(replay_file, beatmap.start_time, beatmap.end_time)
-	start_index, end_index = findTime(start_time, end_time, replay_event)
+	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 	beatmap.hitobjects.append(
