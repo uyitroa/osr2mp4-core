@@ -83,20 +83,29 @@ for x in range(len(my_info)):
 
     start_index = int(my_info[x].time/1000 * rate)
     if not type(my_info[x].more).__name__ == "Spinner":
-        arrow_time_list = []
-        spinSpeedup = 6
-        if my_info[x].hitresult == None:
-                continue
+        if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
+            arrow_time_list = []
+            print(beatmap_info[x]["time"])
+            for a in range(beatmap_info[x]["repeated"]):
+                arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
 
-        elif my_info[x].hitresult > 0:
-                z[start_index:start_index + len(y)] += y * 0.5
-        elif my_info[x].hitresult == 0:
-                z[start_index:start_index + len(m)] += m * 0.5
+            if my_info[x].time <  beatmap_info[x]["time"] + beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]:
+                    for abc in arrow_time_list:
+                        start_index2 = int(abc/1000 * rate)
+                        z[start_index2:start_index2 + len(s)] += s * 0.5
+        else:
+                spinSpeedup = 6
+                if my_info[x].hitresult == None:
+                        continue
+
+                elif my_info[x].hitresult > 0:
+                        z[start_index:start_index + len(y)] += y * 0.5
+                elif my_info[x].hitresult == 0:
+                        z[start_index:start_index + len(m)] += m * 0.5
 
 
 
     elif type(my_info[x].more).__name__ == "Spinner":
-        arrow_time_list = []
         if int(my_info[x].more.rotate) >= 180:
             if my_info[x].time/1000 < spinRotationTime:
                 pass
@@ -113,15 +122,7 @@ for x in range(len(my_info)):
                 z[start_index:start_index + len(b)] += b * 0.5
                 spinBonusTime = my_info[x].time/1000 + length_bonus
 
-    if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
-            slider_duration = beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]
-            for a in range(beatmap_info[x]["repeated"]):
-                arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
 
-            if my_info[x].time <  beatmap_info[x]["time"] + slider_duration:
-                    for abc in arrow_time_list:
-                        start_index2 = int(abc/1000 * rate)
-                        z[start_index2:start_index2 + len(s)] += s * 0.5
 
 write('out.mp3', rate, z)
 
