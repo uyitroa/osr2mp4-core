@@ -10,6 +10,9 @@ Then
 Download Pillow-SIMD here
 https://www.lfd.uci.edu/~gohlke/pythonlibs/#pillow-simd
 
+Install pillow-simd
+`pip install download-file.whl`
+
 ### ffmpeg
 Download ffmpeg here:
 https://www.ffmpeg.org/download.html#build-windows
