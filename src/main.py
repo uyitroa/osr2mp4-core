@@ -61,15 +61,15 @@ def main():
 
 	resultinfo = checkmain(beatmap, replay_event, cur_time)
 
-	a = open("map.txt", "w")
-	a.write(str(beatmap.hitobjects))
-	a.close()
-	a = open("resultinfo.txt", "w")
-	a.write(str(resultinfo))
-	a.close()
+	# a = open("map.txt", "w")
+	# a.write(str(beatmap.hitobjects))
+	# a.close()
+	# a = open("resultinfo.txt", "w")
+	# a.write(str(resultinfo))
+	# a.close()
 
 	create_frame(output_path, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, multi_process, ffmpeg)
-	#os.system("'{}' -i {} -codec copy output.mp4 -y".format(ffmpeg, output_path))
+	os.system('"{}" -i {} -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 
 
 if __name__ == "__main__":

@@ -349,7 +349,7 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 			conn2.close()
 			writers[i].join()
 
-		os.system("'{}' -safe 0 -f concat -i listvideo.txt -c copy {} -y".format(ffmpeg, filename))
+		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy {} -y'.format(ffmpeg, filename))
 
 	else:
 
