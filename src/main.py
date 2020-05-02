@@ -56,7 +56,6 @@ def main():
 	end_time = data["End time"]
 	ffmpeg = data["ffmpeg path"]
 
-
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
 

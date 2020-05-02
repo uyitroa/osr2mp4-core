@@ -17,5 +17,7 @@ def permissive_json_loads(text):
 
 def read(filename):
 	text = open(filename, "r").read()
+	text = text.replace("\\", "/")
+	print(text)
 	data = permissive_json_loads(text)
 	return data
