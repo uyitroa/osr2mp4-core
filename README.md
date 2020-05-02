@@ -1,14 +1,16 @@
-#Installing
-Do this first:
+# Installing
 ```
 cd src/
 python setup.py
 ```
+
 Then
 
+### Pillow-SIMD
 Download Pillow-SIMD here
 https://www.lfd.uci.edu/~gohlke/pythonlibs/#pillow-simd
 
+### ffmpeg
 Download ffmpeg here:
 https://www.ffmpeg.org/download.html#build-windows
 
