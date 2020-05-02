@@ -1,11 +1,11 @@
 {
-  "Skin path": "../res/skin4",
-  ".osu path": "../res/freedomdive.osu",
-  ".osr path": "../res/fd.osr",
-  "Process": 4,
-  "Video codec": "X264",
-  "Output path": "output.mkv",
-  "Start time": 200,
+  "Skin path": "/Users/yuitora/skin4",
+  ".osu path": "/Users/yuitora/Songs/Freedom dive/Freedom dive.osu",
+  ".osr path": "/Users/yuitora/Replays/freedomdive.osr",
+  "Output path": "output.avi",
+  "Start time": 0,
   "End time": -1,
+  "Video codec": "XVID",
+  "Process": 2,
   "ffmpeg path": "ffmpeg"
 }
