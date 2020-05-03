@@ -21,7 +21,6 @@ class Number(FrameObject):
 		x_pos = x - size//2
 		y_pos = y
 
-
 		for digit in number:
 			self.frame_index = int(digit)
 			super().add_to_frame(background, x_pos, y_pos, alpha=alpha/100)

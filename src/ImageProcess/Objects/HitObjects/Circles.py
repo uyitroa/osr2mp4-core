@@ -48,12 +48,12 @@ class CircleManager(FrameObject):
 			# in case opacity_index exceed list range
 
 			opacity_index = min(circle.frame_i, len(self.slidercircle_frames[color_index]) - 1)
-			return self.slidercircle_frames[color_index][opacity_index]
+			return self.slidercircle_frames[color_index][opacity_index], opacity_index
 
 		else:
 
 			opacity_index = min(circle.frame_i, len(self.circle_frames[color_index]) - 1)
-			return self.circle_frames[color_index][opacity_index]
+			return self.circle_frames[color_index][opacity_index], opacity_index
 
 	def add_to_frame(self, background, i, _):
 		circle = self.circles[i]
@@ -82,9 +82,9 @@ class CircleManager(FrameObject):
 		if circle.x_step:
 			self.notelock(circle)
 
-		img = self.getcircle(circle)
+		img, index = self.getcircle(circle)
 
 		imageproc.add(img, background, circle.x+circle.x_step, circle.y)
-		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, self.alphas[circle.frame_i], number)
+		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, self.alphas[index], number)
 
 

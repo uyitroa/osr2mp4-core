@@ -57,7 +57,7 @@ class HitObjectManager:
 		self.circle_manager.circles[timestamp][9] = 1
 
 	def sliderchangestate(self, followappear, timestamp):
-		index_interval = 0.65
+		index_interval = 1
 
 		if self.slider_manager.sliders[timestamp].sliderb_i != self.slider_manager.slidermax_index:
 			self.slider_manager.sliders[timestamp].sliderb_i = 0
