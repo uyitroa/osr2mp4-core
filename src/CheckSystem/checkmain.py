@@ -1,4 +1,7 @@
 import time
+
+from osrparse.enums import Mod
+
 from CheckSystem.HitObjectChecker import HitObjectChecker
 
 CURSOR_X = 0
@@ -35,20 +38,81 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def checkmain(beatmap, replay_event, cur_time):
+def dtar(value):
+	if value < 5:
+		hitwindow = 1200 + 600 * (5 - value) / 5
+	elif value == 5:
+		hitwindow = 1200
+	else:
+		hitwindow = 1200 - 750 * (value - 5) / 5
+
+	hitwindow /= 1.5
+
+	if hitwindow > 1200:
+		return round((1800 - hitwindow)/120, 2)
+	else:
+		return round((1200 - hitwindow)/150 + 5, 2)
+
+
+def dtod(value):
+	hitwindow = 50 + 30 * (5 - value) / 5 + 0.25  # it works don't ask
+	hitwindow /= 1.5
+	return round((80 - hitwindow)/6, 2)
+
+
+def htod(value):
+	hitwindow = 50 + 30 * (5 - value) / 5 - 0.125  # it works don't ask
+	hitwindow /= 0.75
+	return round((80 - hitwindow)/6, 2)
+
+
+def htar(value):
+	if value < 5:
+		hitwindow = 1200 + 600 * (5 - value) / 5
+	elif value == 5:
+		hitwindow = 1200
+	else:
+		hitwindow = 1200 - 750 * (value - 5) / 5
+
+	hitwindow /= 0.75
+
+	if hitwindow > 1200:
+		return round((1800 - hitwindow)/120, 2)
+	else:
+		return round((1200 - hitwindow)/150 + 5, 2)
+
+
+def diffmod(replay_info, diff):
+	mods = replay_info.mod_combination
+	if Mod.HardRock in mods:
+		diff["ApproachRate"] = min(diff["ApproachRate"] * 1.4, 10)
+		diff["CircleSize"] = min(diff["CircleSize"] * 1.3, 10)
+		diff["HPDrainRate"] = min(diff["HPDrainRate"] * 1.4, 10)
+		diff["OverallDifficulty"] = min(diff["OverallDifficulty"] * 1.4, 10)
+	if Mod.Easy in mods:
+		diff["ApproachRate"] = diff["ApproachRate"] * 0.5
+		diff["CircleSize"] = diff["CircleSize"] * 0.5
+		diff["HPDrainRate"] = diff["HPDrainRate"] * 0.5
+		diff["OverallDifficulty"] = diff["OverallDifficulty"] * 0.5
+	# if Mod.DoubleTime in mods or Mod.Nightcore in mods:
+	# 	diff["ApproachRate"] = dtar(diff["ApproachRate"])
+	# 	diff["OverallDifficulty"] = dtod(diff["OverallDifficulty"])
+	# if Mod.HalfTime in mods:
+	# 	diff["ApproachRate"] = htar(diff["ApproachRate"])
+	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
+
+
+def checkmain(beatmap, replay_info, replay_event, cur_time, settings):
 	osr_index = 0
 	index_hitobject = 0
-	hitobjectchecker = HitObjectChecker(beatmap)
-	FPS = 60
+	diffmod(replay_info, beatmap.diff)
+	hitobjectchecker = HitObjectChecker(beatmap, settings)
 	start_time = time.time()
 
 	while osr_index < len(replay_event) - 3:
 		if time.time() - start_time > 60:
 			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)), cur_time, index_hitobject)
 			start_time = time.time()
-
-
-		next_index = nearer(cur_time + 1000 / FPS, replay_event, osr_index)
 
 		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
 		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][KEYS_PRESSED])
@@ -58,7 +122,7 @@ def checkmain(beatmap, replay_event, cur_time):
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1)
-		cur_time += 1000 / FPS
+		cur_time += settings.timeframe / settings.fps
 
 		osr_index += 1
 	print("check done")
