@@ -18,7 +18,6 @@
 - Add continuos cursortrail (cursormiddle)
 - Score each digit keep changing until that biggest digit get to the real score digit
 - Add mods (HR, DT, HD, EZ)
-- Skin default
 
 # Optimisation
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
