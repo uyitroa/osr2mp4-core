@@ -20,7 +20,7 @@ def prepare_scoreentry(scale, color):
 		number = YImage(scoreentry + str(x), scale)
 		numbers_animation.append([])
 		tmp = imageproc.add_color(number.img, color)
-		for size in range(100, 82, -3):
+		for size in range(95, 77, -3):
 			size /= 100
 			numbers_animation[-1].append(imageproc.change_size(tmp, size, size))
 	return numbers_animation

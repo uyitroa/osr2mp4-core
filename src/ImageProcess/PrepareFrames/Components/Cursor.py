@@ -25,7 +25,7 @@ def prepare_cursortrail(scale):
 	"""
 	yimg = YImage(cursortrail, scale * 0.75)
 	trail_frames = []
-	for x in [0.2, 0.35, 0.55, 0.65, 0.75, 0.9, 1, 0]:
+	for x in [0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1, 0]:
 		img = imageproc.newalpha(yimg.img, x)
 		trail_frames.append(img)
 
