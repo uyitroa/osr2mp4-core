@@ -82,8 +82,8 @@ class GenerateSlider:
 		cv2.polylines(im, [curve_pos], False, (*self.slideroverride, 200), int((self.radius-8)*2*self.scale), cv2.LINE_AA)
 
 		# make shadow color effect
-		for c in range(4, int(self.radius), 2):
-			coefficient = c / self.radius
+		for c in range(4, int(self.radius), 1):
+			coefficient = max(0, (c-6)) / (self.radius * 0.7)
 			cur_slider = to_color * coefficient + np.array(self.slideroverride)
 			cur_slider[cur_slider > 255] = 255
 			cur_slider = tuple(cur_slider)
