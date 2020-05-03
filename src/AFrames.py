@@ -47,14 +47,14 @@ class PreparedFrames:
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 		self.urbar = prepare_bar(settings.scale, check.scorewindow)
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale)
-		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings.fps)
-		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, skin, settings.fps)
+		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings)
+		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, skin, settings)
 		self.spinner = prepare_spinner(settings.playfieldscale)
 
 
 class FrameObjects:
 	def __init__(self, frames, skin, beatmap, check, settings):
-		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings.fps)
+		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)
 
 		self.cursor = Cursor(frames.cursor)
 		self.cursor_trail = Cursortrail(frames.cursor_trail)
@@ -80,7 +80,7 @@ class FrameObjects:
 		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts, opacity_interval)
-		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber)
+		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
 		self.slider = SliderManager(frames.slider, beatmap.diff, skin, settings)
 		self.spinner = SpinnerManager(frames.spinner, settings)
-		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
+		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)

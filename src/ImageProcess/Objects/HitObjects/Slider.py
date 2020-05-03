@@ -34,8 +34,8 @@ class SliderManager:
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 
-		self.interval = 1000 / settings.fps
-		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, settings.fps)
+		self.interval = settings.timeframe / settings.fps
+		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, settings)
 		self.timer = 0
 
 	def get_arrow(self, osu_d):

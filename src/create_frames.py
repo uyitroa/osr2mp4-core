@@ -162,7 +162,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	cursor_event.old_x = cursor_x
 	cursor_event.old_y = cursor_y
 
-	frame_info.cur_time += 1000 / settings.fps
+	frame_info.cur_time += settings.timeframe / settings.fps
 	# choose correct osr index for the current time because in osr file there might be some lag
 	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
 	cursor_event.event = replay_event[frame_info.osr_index]

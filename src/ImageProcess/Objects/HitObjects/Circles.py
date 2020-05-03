@@ -8,11 +8,11 @@ Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fade
 
 
 class CircleManager(FrameObject):
-	def __init__(self, frames, timepreempt, number):
+	def __init__(self, frames, timepreempt, number, settings):
 		self.slidercircle_frames, self.circle_frames, self.circle_fadeout = frames
 		self.number = number
 		self.time_preempt = timepreempt
-		self.interval = 1000/60
+		self.interval = settings.timeframe / settings.fps
 		self.circles = {}
 
 		self.timer = 0

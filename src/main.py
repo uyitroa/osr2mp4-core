@@ -1,5 +1,7 @@
 import os
 
+import osrparse
+from osrparse.enums import Mod
 from recordclass import recordclass
 
 from CheckSystem.checkmain import checkmain
@@ -12,7 +14,7 @@ from Parser.skinparser import Skin
 import time
 
 # const
-Settings = recordclass("Settings", "width height fps scale playfieldscale playfieldwidth playfieldheight movedown moveright")
+Settings = recordclass("Settings", "width height fps scale playfieldscale playfieldwidth playfieldheight movedown moveright timeframe")
 Paths = recordclass("Paths", "skin defaultskin output ffmpeg")
 
 
@@ -73,7 +75,6 @@ def main():
 		default_path += "/"
 
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
-	settings = Settings(width, height, fps, scale, playfield_scale, playfield_width, playfield_height, move_down, move_right)
 	paths = Paths(skin_path, default_path, output_path, ffmpeg)
 
 
@@ -85,15 +86,29 @@ def main():
 	SkinPaths.skin_ini = skin
 	SkinPaths.default_skin_ini = defaultskin
 
-	beatmap = read_file(beatmap_file, playfield_scale, skin.colours)
+	replay_info = osrparse.parse_replay_file(replay_file)
+	hr = Mod.HardRock in replay_info.mod_combination
+
+	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
+
 	replay_event, cur_time = setupReplay(replay_file, beatmap.start_time, beatmap.end_time)
 	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)
+
+	if Mod.DoubleTime in replay_info.mod_combination or Mod.Nightcore in replay_info.mod_combination:
+		time_frame = 1500
+	elif Mod.HalfTime in replay_info.mod_combination:
+		time_frame = 750
+	else:
+		time_frame = 1000
+
+	settings = Settings(width, height, fps, scale, playfield_scale, playfield_width, playfield_height, move_down, move_right, time_frame)
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 	beatmap.hitobjects.append(
 		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
-	resultinfo = checkmain(beatmap, replay_event, cur_time)
+	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time, settings)
+	print(beatmap.diff)
 
 	# a = open("map.txt", "w")
 	# a.write(str(beatmap.hitobjects))

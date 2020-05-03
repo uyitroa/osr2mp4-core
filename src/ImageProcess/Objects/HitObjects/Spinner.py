@@ -23,7 +23,7 @@ class SpinnerManager(FrameObject):
 		self.scale = settings.playfieldscale
 		self.spinners = {}
 
-		self.interval = 1000/60
+		self.interval = settings.timeframe / settings.fps
 		self.timer = 0
 
 	def add_spinner(self, starttime, endtime, curtime):

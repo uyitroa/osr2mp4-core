@@ -7,7 +7,7 @@ SPINNER = 2
 
 class HitObjectManager:
 
-	def __init__(self, circle, slider, spinner, maxtimewindow):
+	def __init__(self, circle, slider, spinner, maxtimewindow, settings):
 
 		self.circle_manager = circle
 		self.slider_manager = slider
@@ -17,7 +17,7 @@ class HitObjectManager:
 
 		self.hitobjects = {}
 		self.objtime = []
-		self.interval = 1000 / 60
+		self.interval = settings.timeframe / settings.fps
 		self.timer = 0
 
 		self.objecttype = {
