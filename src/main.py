@@ -88,6 +88,7 @@ def main():
 
 	replay_info = osrparse.parse_replay_file(replay_file)
 	hr = Mod.HardRock in replay_info.mod_combination
+	hd = Mod.Hidden in replay_info.mod_combination
 
 	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
 
@@ -117,7 +118,7 @@ def main():
 	# a.write(str(resultinfo))
 	# a.close()
 
-	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings)
+	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings, hd)
 	os.system('"{}" -i {} -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 
 

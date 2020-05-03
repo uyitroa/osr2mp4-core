@@ -170,7 +170,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	return img.size[0] != 1
 
 
-def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings):
+def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd):
 	old_cursor_x = int(replay_event[0][CURSOR_X] * settings.playfieldscale) + settings.moveright
 	old_cursor_y = int(replay_event[0][CURSOR_Y] * settings.playfieldscale) + settings.moveright
 
@@ -178,7 +178,7 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 
 	time_preempt = diffcalculator.ar()
 
-	component = FrameObjects(frames, skin, beatmap, diffcalculator, settings)
+	component = FrameObjects(frames, skin, beatmap, diffcalculator, settings, hd)
 
 	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
 
@@ -199,12 +199,12 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, settings):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, settings, hd):
 	asdfasdf = time.time()
 	print("process start")
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-		beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings)
+		beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd)
 	print("setup done")
 	timer = 0
 	timer2 = 0
@@ -286,10 +286,10 @@ def write_frame(shared, conn, filename, codec, settings):
 	print("??? value time:", timer4)
 
 
-def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, mpp, settings):
+def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, mpp, settings, hd):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
-	frames = PreparedFrames(skin, diffcalculator, beatmap, settings)
+	frames = PreparedFrames(skin, diffcalculator, beatmap, settings, hd)
 
 	if mpp >= 1:
 		shared_array = []
@@ -315,7 +315,7 @@ def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_in
 			f = paths.output[:-4] + str(i) + paths.output[-4:]
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, settings))
+				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, settings, hd))
 
 			writer = Process(target=write_frame, args=(shared, conn2, f, codec, settings))
 
@@ -347,7 +347,7 @@ def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_in
 		writer = cv2.VideoWriter(paths.output, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
 
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings)
+			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd)
 		print("setup done")
 
 		print(frame_info.osr_index, end_index)

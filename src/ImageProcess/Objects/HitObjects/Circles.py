@@ -9,7 +9,7 @@ Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fade
 
 class CircleManager(FrameObject):
 	def __init__(self, frames, timepreempt, number, settings):
-		self.slidercircle_frames, self.circle_frames, self.circle_fadeout = frames
+		self.slidercircle_frames, self.circle_frames, self.circle_fadeout, self.alphas = frames
 		self.number = number
 		self.time_preempt = timepreempt
 		self.interval = settings.timeframe / settings.fps
@@ -85,6 +85,6 @@ class CircleManager(FrameObject):
 		img = self.getcircle(circle)
 
 		imageproc.add(img, background, circle.x+circle.x_step, circle.y)
-		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, circle.frame_i, number)
+		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, self.alphas[circle.frame_i], number)
 
 

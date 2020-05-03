@@ -31,7 +31,7 @@ from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, skin, check, beatmap, settings):
+	def __init__(self, skin, check, beatmap, settings, hd):
 		self.cursor = prepare_cursor(settings.scale)
 		self.cursor_trail = prepare_cursortrail(settings.scale)
 		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"])
@@ -47,13 +47,13 @@ class PreparedFrames:
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 		self.urbar = prepare_bar(settings.scale, check.scorewindow)
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale)
-		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings)
+		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings, hd)
 		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, skin, settings)
 		self.spinner = prepare_spinner(settings.playfieldscale)
 
 
 class FrameObjects:
-	def __init__(self, frames, skin, beatmap, check, settings):
+	def __init__(self, frames, skin, beatmap, check, settings, hd):
 		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)
 
 		self.cursor = Cursor(frames.cursor)
@@ -79,8 +79,8 @@ class FrameObjects:
 
 		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
-		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts, opacity_interval)
+		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
 		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
-		self.slider = SliderManager(frames.slider, beatmap.diff, skin, settings)
+		self.slider = SliderManager(frames.slider, beatmap.diff, skin, settings, hd)
 		self.spinner = SpinnerManager(frames.spinner, settings)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
