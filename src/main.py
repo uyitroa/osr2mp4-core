@@ -65,12 +65,12 @@ def main():
 	width = data["Width"]
 	height = data["Height"]
 
+	if skin_path[-1] != "/" and skin_path[-1] != "\\":
+		skin_path += "/"
+
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings = Settings(width, height, fps, scale, playfield_scale, playfield_width, playfield_height, move_down, move_right)
 	paths = Paths(skin_path, default_path, output_path, ffmpeg)
-
-	if skin_path[-1] != "/" and skin_path[-1] != "\\":
-		skin_path += "/"
 
 
 
