@@ -8,8 +8,8 @@ def prepare_combo(scorenumbers):
 	"""
 	score_frames = []
 	score_fadeout = []
-	score_images = scorenumbers.score_images
-	score_images.append(scorenumbers.score_x)
+	score_images = scorenumbers.combo_images
+	score_images.append(scorenumbers.combo_x)
 	for digit in range(len(score_images)):
 		score_frames.append([])
 		score_fadeout.append([])

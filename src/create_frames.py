@@ -289,7 +289,7 @@ def write_frame(shared, conn, filename, codec, settings):
 def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, mpp, settings):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
-	frames = PreparedFrames(paths.skin, skin, diffcalculator, beatmap, settings)
+	frames = PreparedFrames(skin, diffcalculator, beatmap, settings)
 
 	if mpp >= 1:
 		shared_array = []
@@ -347,7 +347,7 @@ def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_in
 		writer = cv2.VideoWriter(paths.output, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
 
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-			beatmap, frames, replay_event, resultinfo, shared, skin, start_index)
+			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings)
 		print("setup done")
 
 		print(frame_info.osr_index, end_index)

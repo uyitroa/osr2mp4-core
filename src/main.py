@@ -3,6 +3,7 @@ import os
 from recordclass import recordclass
 
 from CheckSystem.checkmain import checkmain
+from ImageProcess.PrepareFrames.YImage import SkinPaths
 from Parser.jsonparser import read
 from Parser.osrparser import setupReplay, TIMES
 from create_frames import create_frame
@@ -68,13 +69,22 @@ def main():
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
 
+	if default_path[-1] != "/" and default_path[-1] != "\\":
+		default_path += "/"
+
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings = Settings(width, height, fps, scale, playfield_scale, playfield_width, playfield_height, move_down, move_right)
 	paths = Paths(skin_path, default_path, output_path, ffmpeg)
 
 
-
 	skin = Skin(skin_path)
+	defaultskin = Skin(default_path)
+
+	SkinPaths.path = skin_path
+	SkinPaths.default_path = default_path
+	SkinPaths.skin_ini = skin
+	SkinPaths.default_skin_ini = defaultskin
+
 	beatmap = read_file(beatmap_file, playfield_scale, skin.colours)
 	replay_event, cur_time = setupReplay(replay_file, beatmap.start_time, beatmap.end_time)
 	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)

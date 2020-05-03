@@ -31,25 +31,25 @@ from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, path, skin, check, beatmap, settings):
-		self.cursor = prepare_cursor(path, settings.scale)
-		self.cursor_trail = prepare_cursortrail(path, settings.scale)
-		self.scoreentry = prepare_scoreentry(path, settings.scale, skin.colours["InputOverlayText"])
-		self.inputoverlayBG = prepare_inputoverlaybg(path, settings.scale)
-		self.key = prepare_inputoverlay(path, settings.scale, [255, 255, 0])
-		self.mouse = prepare_inputoverlay(path, settings.scale, [255, 0, 255])
-		self.scorenumbers = ScoreNumbers(skin.fonts, path, settings.scale)
-		self.hitcirclenumber = prepare_hitcirclenumber(path, skin.fonts, beatmap.diff, settings.playfieldscale)
+	def __init__(self, skin, check, beatmap, settings):
+		self.cursor = prepare_cursor(settings.scale)
+		self.cursor_trail = prepare_cursortrail(settings.scale)
+		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"])
+		self.inputoverlayBG = prepare_inputoverlaybg(settings.scale)
+		self.key = prepare_inputoverlay(settings.scale, [255, 255, 0])
+		self.mouse = prepare_inputoverlay(settings.scale, [255, 0, 255])
+		self.scorenumbers = ScoreNumbers(settings.scale)
+		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, settings.playfieldscale)
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers)
-		self.hitresult = prepare_hitresults(path, settings.scale)
+		self.hitresult = prepare_hitresults(settings.scale)
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 		self.urbar = prepare_bar(settings.scale, check.scorewindow)
-		self.fpmanager = prepare_fpmanager(path, settings.playfieldscale)
-		self.circle = prepare_circle(beatmap, path, settings.playfieldscale, skin, settings.fps)
-		self.slider = prepare_slider(path, beatmap.diff, settings.playfieldscale, skin, settings.fps)
-		self.spinner = prepare_spinner(path, settings.playfieldscale)
+		self.fpmanager = prepare_fpmanager(settings.playfieldscale)
+		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings.fps)
+		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, skin, settings.fps)
+		self.spinner = prepare_spinner(settings.playfieldscale)
 
 
 class FrameObjects:

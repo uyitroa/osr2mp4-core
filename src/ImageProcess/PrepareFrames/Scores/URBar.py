@@ -22,8 +22,7 @@ def prepare_bar(scale, scorewindow):
 
 	urbar = Image.new("RGBA", (w, h))
 	for i in range(len(xstart)):
-		urbar.paste(colors[i],
-		                 (xstart[i], barheight * 2, xstart[i] + widths[i], barheight * 3))
+		urbar.paste(colors[i], (xstart[i], barheight * 2, xstart[i] + widths[i], barheight * 3))
 
 	return urbar, bar_images, maxtime
 

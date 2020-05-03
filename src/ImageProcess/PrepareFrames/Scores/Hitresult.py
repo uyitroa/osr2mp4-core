@@ -4,10 +4,10 @@ from ImageProcess.PrepareFrames.YImage import YImage
 hitprefix = "hit"
 
 
-def prepare_hitresults(path, scale):
+def prepare_hitresults(scale):
 	scores_frames = {}
 	for x in [0, 50, 100]:
-		img = YImage(path + hitprefix + str(x), scale, rotate=x == 0)
+		img = YImage(hitprefix + str(x), scale, rotate=x == 0)
 		scores_frames[x] = []
 		end = 125
 		start = 75

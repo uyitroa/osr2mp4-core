@@ -8,7 +8,7 @@ inputoverlay = "inputoverlay-key"
 bg = "inputoverlay-background"
 
 
-def prepare_scoreentry(path, scale, color):
+def prepare_scoreentry(scale, color):
 	"""
 	:param path: string of path, without filename
 	:param scale: float
@@ -17,7 +17,7 @@ def prepare_scoreentry(path, scale, color):
 	"""
 	numbers_animation = []
 	for x in range(10):
-		number = YImage(path + scoreentry + str(x), scale)
+		number = YImage(scoreentry + str(x), scale)
 		numbers_animation.append([])
 		tmp = imageproc.add_color(number.img, color)
 		for size in range(100, 82, -3):
@@ -26,14 +26,13 @@ def prepare_scoreentry(path, scale, color):
 	return numbers_animation
 
 
-def prepare_inputoverlay(path, scale, color):
+def prepare_inputoverlay(scale, color):
 	"""
-	:param path: string of path, without filename
 	:param scale: float
 	:param color: tuple(R, G, B)
 	:return: [PIL.Image]
 	"""
-	yimg = YImage(path + inputoverlay, scale)
+	yimg = YImage(inputoverlay, scale)
 
 	button_frames = [yimg.img]
 	for size in range(97, 82, -3):
@@ -46,13 +45,13 @@ def prepare_inputoverlay(path, scale, color):
 	return button_frames
 
 
-def prepare_inputoverlaybg(path, scale):
+def prepare_inputoverlaybg(scale):
 	"""
 	:param path: string of path, without filename
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	yimg = YImage(path + bg, scale)
+	yimg = YImage(bg, scale)
 	img = yimg.img.transpose(Image.ROTATE_270)
 	frame = [img]
 	return frame

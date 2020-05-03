@@ -13,15 +13,14 @@ default_size = 128
 overlay_scale = 1.05
 
 
-def prepare_approach(path, scale, time_preempt, fps):
+def prepare_approach(scale, time_preempt, fps):
 	"""
-	:param path: string without filename
 	:param scale: float
 	:param time_preempt: the time the circle is on screen
 	:param fps: fps
 	:return: [PIL.Image]
 	"""
-	img = YImage(path + approachcircle).img
+	img = YImage(approachcircle).img
 	approach_frames = []
 	interval = int(1000/fps)
 	time_preempt = round(time_preempt)
@@ -79,15 +78,15 @@ def calculate_ar(ar, fps):
 	return opacity_interval, time_preempt, fade_in
 
 
-def load(path):
-	circle = YImage(path + hitcircle).img
-	c_overlay = YImage(path + hitcircleoverlay).img
-	slider = YImage(path + sliderstartcircle).img
-	s_overlay = YImage(path + sliderstartcircleoverlay).img
+def load():
+	circle = YImage(hitcircle).img
+	c_overlay = YImage(hitcircleoverlay).img
+	slider = YImage(sliderstartcircle, fallback=hitcircle).img
+	s_overlay = YImage(sliderstartcircleoverlay, fallback=hitcircleoverlay).img
 	return circle, c_overlay, slider, s_overlay
 
 
-def prepare_circle(beatmap, path, scale, skin, fps):
+def prepare_circle(beatmap, scale, skin, fps):
 	# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 	# to overlap number, circle overlay and approach circle every single time.
 
@@ -96,8 +95,8 @@ def prepare_circle(beatmap, path, scale, skin, fps):
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	radius_scale = cs * overlay_scale * 2 / default_size
 
-	circle, c_overlay, slider, s_overlay = load(path)
-	approach_frames = prepare_approach(path, radius_scale, time_preempt, fps)
+	circle, c_overlay, slider, s_overlay = load()
+	approach_frames = prepare_approach(radius_scale, time_preempt, fps)
 
 	fadeout = [[], []]  # circle, slider
 	circle_frames = []  # [color][number][alpha]
