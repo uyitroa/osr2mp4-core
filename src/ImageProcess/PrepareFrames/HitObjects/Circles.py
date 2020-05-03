@@ -143,6 +143,7 @@ def prepare_circle(beatmap, scale, skin, settings, hd):
 			# for late tapping
 			slidercircle_frames[-1].append(orig_slider)
 			circle_frames[-1].append(orig_circle)
+			alphas.append(alpha)
 
 		else:
 			interval = int(settings.timeframe / settings.fps)
