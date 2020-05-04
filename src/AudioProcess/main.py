@@ -54,7 +54,7 @@ rate, z = read('Tengaku.mp3')
 rateM, m = read('miss1.wav')
 ratesb, b = read('spinnerbonus.wav')
 ratesc, c = read('spinnerspin.wav')
-#rateS, s = read('slider.wav')
+rateS, s = read('slider.wav')
 
 spinSound = AudioSegment.from_wav("spinnerspin.wav")
 slider12 = AudioSegment.from_wav("slider.wav")
@@ -78,31 +78,56 @@ slider_duration = 0
 arrow_time = 0
 arrow_time_list = []
 countT = 0
+sliderTime = []
+repeatedTime = []
+durationTime = []
+endTime = []
+for bp in range(len(beatmap_info)):
+        if "slider" in beatmap_info[bp]["type"]:
+                sliderTime.append(beatmap_info[bp]["time"])
+                repeatedTime.append(beatmap_info[bp]["repeated"])
+                durationTime.append(beatmap_info[bp]["duration"])
+                endTime.append(beatmap_info[bp]["end time"])
+
 for x in range(len(my_info)):
-
-
     start_index = int(my_info[x].time/1000 * rate)
 
-    if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"] and beatmap_info[x]["repeated"] > 1:
+    '''if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
         spinSpeedup = 6
         arrow_time_list = []    
-        for a in range(beatmap_info[x]["repeated"]):
+        for a in range(0,beatmap_info[x]["repeated"]):
                 arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
         
         if my_info[x].time <  beatmap_info[x]["time"] + beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]:
                 for abc in arrow_time_list:
                         start_index2 = int(abc/1000 * rate)
-                        z[start_index2:start_index2 + len(y)] += y * 0.5
-                
-    elif type(my_info[x].more).__name__ != "Spinner":
-                spinSpeedup = 6
-                if my_info[x].hitresult == None:
-                        pass
+                        z[start_index2:start_index2 + len(s)] += s * 0.5'''
 
-                elif my_info[x].hitresult > 0:
-                        z[start_index:start_index + len(y)] += y * 0.5
-                elif my_info[x].hitresult == 0:
-                        z[start_index:start_index + len(m)] += m * 0.5
+    if type(my_info[x].more).__name__ == "Circle":
+        spinSpeedup = 6
+        if x < len(beatmap_info) and my_info[x].more.sliderhead == True:
+                arrow_time_list = []
+                for a in range(repeatedTime[0]):
+                        arrow_time_list.append(sliderTime[a] + durationTime[a] * a+1)
+                        del repeatedTime[0]
+                        del durationTime[0]
+                        del endTime[0]
+                        del sliderTime[0]
+
+                if my_info[x].time <  endTime[0]:
+                        for abc in arrow_time_list:
+                                print(abc)
+                                start_index2 = int(abc/1000 * rate)
+                                z[start_index2:start_index2 + len(s)] += s * 0.5
+                        endTime.pop(0)
+                continue
+        if my_info[x].hitresult == None:
+                pass
+
+        elif my_info[x].hitresult > 0:
+                z[start_index:start_index + len(y)] += y * 0.5
+        elif my_info[x].hitresult == 0:
+                z[start_index:start_index + len(m)] += m * 0.5
 
 
 
@@ -123,9 +148,10 @@ for x in range(len(my_info)):
                 z[start_index:start_index + len(b)] += b * 0.5
                 spinBonusTime = my_info[x].time/1000 + length_bonus
 
-
-
-write('z.mp3', rate, z[int(0.5*rate):int((len(z)/rate))*rate])
-
+o = open("offset.txt", "r")
+f = float(o.read())
+f = int(f)
+write('z.mp3', rate, z[int(f/1000*rate):int((len(z)/rate))*rate])
+o.close()
 end=time.time()
 print(end-start)
