@@ -19,20 +19,8 @@ CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
-WIDTH = 1920
-HEIGHT = 1080
-FPS = 60
-PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8  # actual playfield is smaller than screen res
-PLAYFIELD_SCALE = PLAYFIELD_WIDTH / 512
-SCALE = HEIGHT / 768
-MOVE_RIGHT = int(WIDTH * 0.2)  # center the playfield
-MOVE_DOWN = int(HEIGHT * 0.1)
-
 FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end")
-Settings = recordclass("Settings", "width height fps scale playfieldscale movedown moveright")
 CursorEvent = recordclass("CursorEvent", "event old_x old_y")
-
-settings = Settings(WIDTH, HEIGHT, FPS, SCALE, PLAYFIELD_SCALE, MOVE_DOWN, MOVE_RIGHT)
 
 
 def nearer(cur_time, replay, index):
@@ -99,16 +87,16 @@ def check_key(component, cursor_event):
 		component.mouse2.clicked(cursor_event.event[TIMES])
 
 
-def get_buffer(img):
+def get_buffer(img, settings):
 	np_img = np.frombuffer(img, dtype=np.uint8)
-	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
-	pbuffer = Image.frombuffer("RGBA", (WIDTH, HEIGHT), np_img, 'raw', "RGBA", 0, 1)
+	np_img = np_img.reshape((settings.height, settings.width, 4))
+	pbuffer = Image.frombuffer("RGBA", (settings.width, settings.height), np_img, 'raw', "RGBA", 0, 1)
 	pbuffer.readonly = False
 	return np_img, pbuffer
 
 
 def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-                preempt_followpoint, replay_event, start_index, time_preempt, updater):
+                preempt_followpoint, replay_event, start_index, time_preempt, updater, settings):
 	if frame_info.osr_index >= start_index:
 		if img.size[0] == 1:
 			img = pbuffer
@@ -117,8 +105,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	check_key(component, cursor_event)
 
 	osu_d = beatmap.hitobjects[frame_info.index_hitobj]
-	x_circle = int(osu_d["x"] * PLAYFIELD_SCALE) + MOVE_RIGHT
-	y_circle = int(osu_d["y"] * PLAYFIELD_SCALE) + MOVE_DOWN
+	x_circle = int(osu_d["x"] * settings.playfieldscale) + settings.moveright
+	y_circle = int(osu_d["y"] * settings.playfieldscale) + settings.movedown
 
 	# check if it's time to draw followpoints
 	if frame_info.cur_time + preempt_followpoint >= frame_info.obj_endtime and frame_info.index_fp + 2 < len(
@@ -150,15 +138,15 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 	updater.update(frame_info.cur_time)
 
-	cursor_x = int(cursor_event.event[CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-	cursor_y = int(cursor_event.event[CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_DOWN
+	cursor_x = int(cursor_event.event[CURSOR_X] * settings.playfieldscale) + settings.moveright
+	cursor_y = int(cursor_event.event[CURSOR_Y] * settings.playfieldscale) + settings.movedown
 
-	component.inputoverlayBG.add_to_frame(img, WIDTH - component.inputoverlayBG.w() // 2, int(320 * SCALE))
+	component.inputoverlayBG.add_to_frame(img, settings.width - component.inputoverlayBG.w() // 2, int(320 * settings.scale))
 	component.urbar.add_to_frame_bar(img)
-	component.key1.add_to_frame(img, WIDTH - int(24 * SCALE), int(350 * SCALE))
-	component.key2.add_to_frame(img, WIDTH - int(24 * SCALE), int(398 * SCALE))
-	component.mouse1.add_to_frame(img, WIDTH - int(24 * SCALE), int(446 * SCALE))
-	component.mouse2.add_to_frame(img, WIDTH - int(24 * SCALE), int(494 * SCALE))
+	component.key1.add_to_frame(img, settings.width - int(24 * settings.scale), int(350 * settings.scale))
+	component.key2.add_to_frame(img, settings.width - int(24 * settings.scale), int(398 * settings.scale))
+	component.mouse1.add_to_frame(img, settings.width - int(24 * settings.scale), int(446 * settings.scale))
+	component.mouse2.add_to_frame(img, settings.width - int(24 * settings.scale), int(494 * settings.scale))
 	component.followpoints.add_to_frame(img, frame_info.cur_time)
 	component.hitobjmanager.add_to_frame(img)
 	component.hitresult.add_to_frame(img)
@@ -174,7 +162,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	cursor_event.old_x = cursor_x
 	cursor_event.old_y = cursor_y
 
-	frame_info.cur_time += 1000 / FPS
+	frame_info.cur_time += settings.timeframe / settings.fps
 	# choose correct osr index for the current time because in osr file there might be some lag
 	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
 	cursor_event.event = replay_event[frame_info.osr_index]
@@ -182,15 +170,15 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	return img.size[0] != 1
 
 
-def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index):
-	old_cursor_x = int(replay_event[0][CURSOR_X] * PLAYFIELD_SCALE) + MOVE_RIGHT
-	old_cursor_y = int(replay_event[0][CURSOR_Y] * PLAYFIELD_SCALE) + MOVE_RIGHT
+def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd):
+	old_cursor_x = int(replay_event[0][CURSOR_X] * settings.playfieldscale) + settings.moveright
+	old_cursor_y = int(replay_event[0][CURSOR_Y] * settings.playfieldscale) + settings.moveright
 
 	diffcalculator = DiffCalculator(beatmap.diff)
 
 	time_preempt = diffcalculator.ar()
 
-	component = FrameObjects(frames, skin, beatmap, diffcalculator, settings)
+	component = FrameObjects(frames, skin, beatmap, diffcalculator, settings, hd)
 
 	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
 
@@ -206,17 +194,17 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 	updater.info_index = frame_info.info_index
 
 	img = Image.new("RGB", (1, 1))
-	np_img, pbuffer = get_buffer(shared)
+	np_img, pbuffer = get_buffer(shared, settings)
 
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, settings, hd):
 	asdfasdf = time.time()
 	print("process start")
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-		beatmap, frames, replay_event, resultinfo, shared, skin, start_index)
+		beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd)
 	print("setup done")
 	timer = 0
 	timer2 = 0
@@ -225,7 +213,7 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 
 		asdf = time.time()
 		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-		                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
+		                     preempt_followpoint, replay_event, start_index, time_preempt, updater, settings)
 		timer += time.time() - asdf
 
 		asdf = time.time()
@@ -250,12 +238,12 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 	print("Changing value time:", timer3)
 
 
-def write_frame(shared, conn, filename, codec):
+def write_frame(shared, conn, filename, codec, settings):
 	asdfasdf = time.time()
 
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
+	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
-	np_img = np_img.reshape((HEIGHT, WIDTH, 4))
+	np_img = np_img.reshape((settings.height, settings.width, 4))
 
 	timer = 0
 
@@ -298,10 +286,10 @@ def write_frame(shared, conn, filename, codec):
 	print("??? value time:", timer4)
 
 
-def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, resultinfo, start_index, end_index, mpp, ffmpeg):
+def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, mpp, settings, hd):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
-	frames = PreparedFrames(skin_path, skin, diffcalculator, beatmap, settings)
+	frames = PreparedFrames(skin, diffcalculator, beatmap, settings, hd)
 
 	if mpp >= 1:
 		shared_array = []
@@ -320,14 +308,16 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 			else:
 				end = start + osr_interval
 
-			shared = RawArray(ctypes.c_uint8, HEIGHT * WIDTH * 4)
+			shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 			conn1, conn2 = Pipe()
 
-			f = filename[:-4] + str(i) + filename[-4:]
+			# extract container
+			f = paths.output[:-4] + str(i) + paths.output[-4:]
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end,))
-			writer = Process(target=write_frame, args=(shared, conn2, f, codec,))
+				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, settings, hd))
+
+			writer = Process(target=write_frame, args=(shared, conn2, f, codec, settings))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))
@@ -349,21 +339,22 @@ def create_frame(filename, codec, beatmap, skin, skin_path, replay_event, result
 			conn2.close()
 			writers[i].join()
 
-		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy {} -y'.format(ffmpeg, filename))
+		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy {} -y'.format(paths.ffmpeg, paths.output))
 
 	else:
 
-		shared = RawArray(ctypes.c_uint8, HEIGHT * WIDTH * 4)
-		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), FPS, (WIDTH, HEIGHT))
+		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
+		writer = cv2.VideoWriter(paths.output, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
+
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-			beatmap, frames, replay_event, resultinfo, shared, skin, start_index)
+			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd)
 		print("setup done")
 
 		print(frame_info.osr_index, end_index)
 
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
+			                     preempt_followpoint, replay_event, start_index, time_preempt, updater, settings)
 
 			if status:
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)

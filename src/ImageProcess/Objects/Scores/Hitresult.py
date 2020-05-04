@@ -9,7 +9,7 @@ class HitResult(FrameObject):
 		self.movedown = settings.movedown
 		self.divide_by_255 = 1 / 255.0
 		self.hitresults = []
-		self.interval = 1000 / 60
+		self.interval = settings.timeframe / settings.fps
 		self.time = 600
 		self.playfieldscale = settings.playfieldscale
 

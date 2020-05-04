@@ -1,7 +1,10 @@
 
 # Circle
+from PIL import Image
+
 from ImageProcess import imageproc
 from ImageProcess.PrepareFrames.YImage import YImage
+from ImageProcess.imageproc import newalpha
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"
@@ -13,17 +16,16 @@ default_size = 128
 overlay_scale = 1.05
 
 
-def prepare_approach(path, scale, time_preempt, fps):
+def prepare_approach(scale, time_preempt, settings):
 	"""
-	:param path: string without filename
 	:param scale: float
 	:param time_preempt: the time the circle is on screen
-	:param fps: fps
+	:param settings: settings
 	:return: [PIL.Image]
 	"""
-	img = YImage(path + approachcircle).img
+	img = YImage(approachcircle).img
 	approach_frames = []
-	interval = int(1000/fps)
+	interval = int(settings.timeframe / settings.fps)
 	time_preempt = round(time_preempt)
 	s = 3.5
 	for time_left in range(time_preempt, 0, -interval):
@@ -64,8 +66,8 @@ def prepare_fadeout(img):
 	return fadeout
 
 
-def calculate_ar(ar, fps):
-	interval = 1000 / fps
+def calculate_ar(ar, settings):
+	interval = settings.timeframe / settings.fps
 	if ar < 5:
 		time_preempt = 1200 + 600 * (5 - ar) / 5
 		fade_in = 800 + 400 * (5 - ar) / 5
@@ -79,58 +81,90 @@ def calculate_ar(ar, fps):
 	return opacity_interval, time_preempt, fade_in
 
 
-def load(path):
-	circle = YImage(path + hitcircle).img
-	c_overlay = YImage(path + hitcircleoverlay).img
-	slider = YImage(path + sliderstartcircle).img
-	s_overlay = YImage(path + sliderstartcircleoverlay).img
+def load():
+	circle = YImage(hitcircle).img
+	c_overlay = YImage(hitcircleoverlay).img
+	slider = YImage(sliderstartcircle, fallback=hitcircle).img
+	s_overlay = YImage(sliderstartcircleoverlay, fallback=hitcircleoverlay).img
 	return circle, c_overlay, slider, s_overlay
 
 
-def prepare_circle(beatmap, path, scale, skin, fps):
+def prepare_circle(beatmap, scale, skin, settings, hd):
 	# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 	# to overlap number, circle overlay and approach circle every single time.
 
-	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"], fps)
+	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"], settings)
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	radius_scale = cs * overlay_scale * 2 / default_size
 
-	circle, c_overlay, slider, s_overlay = load(path)
-	approach_frames = prepare_approach(path, radius_scale, time_preempt, fps)
+	circle, c_overlay, slider, s_overlay = load()
+	if not hd:
+		approach_frames = prepare_approach(radius_scale, time_preempt, settings)
 
 	fadeout = [[], []]  # circle, slider
 	circle_frames = []  # [color][number][alpha]
 	slidercircle_frames = []  # [color][number][alpha]
+	alphas = []
 
 	for c in range(1, skin.colours["ComboNumber"] + 1):
 		color = skin.colours["Combo" + str(c)]
 
 		orig_circle = overlayhitcircle(c_overlay, circle, color, radius_scale)
-		fadeout[0].append(prepare_fadeout(orig_circle))
+
+		if not hd:
+			fadeout[0].append(prepare_fadeout(orig_circle))
+		else:
+			fadeout[0].append([Image.new("RGBA", (1, 1))])
+
 
 		orig_slider = overlayhitcircle(s_overlay, slider, color, radius_scale)
-		fadeout[1].append(prepare_fadeout(orig_slider))
+
+		if not hd:
+			fadeout[1].append(prepare_fadeout(orig_slider))
+		else:
+			fadeout[1].append([Image.new("RGBA", (1, 1))])
 
 		alpha = 0  # alpha for fadein
 		circle_frames.append([])
 		slidercircle_frames.append([])
-		# we also overlay approach circle to circle to avoid multiple add_to_frame call
-		for i in range(len(approach_frames)):
-			approach_circle = imageproc.add_color(approach_frames[i], color)
-			approach_slider = approach_circle.copy()
+		if not hd:
 
-			circle_frames[-1].append(overlayapproach(orig_circle, approach_circle, alpha))
-			slidercircle_frames[-1].append(overlayapproach(orig_slider, approach_slider, alpha))
+			# we also overlay approach circle to circle to avoid multiple add_to_frame call
+			for i in range(len(approach_frames)):
+				approach_circle = imageproc.add_color(approach_frames[i], color)
+				approach_slider = approach_circle.copy()
 
-			alpha = min(100, alpha + opacity_interval)
+				circle_frames[-1].append(overlayapproach(orig_circle, approach_circle, alpha))
+				slidercircle_frames[-1].append(overlayapproach(orig_slider, approach_slider, alpha))
 
-		# for late tapping
-		slidercircle_frames[-1].append(orig_slider)
-		circle_frames[-1].append(orig_circle)
-		#
-		# img = orig_circle.copy()
-		# slider_circle.img = orig_overlay_slider.copy()
+				alpha = min(100, alpha + opacity_interval)
+				alphas.append(alpha)
+			# for late tapping
+			slidercircle_frames[-1].append(orig_slider)
+			circle_frames[-1].append(orig_circle)
+			alphas.append(alpha)
+
+		else:
+			interval = int(settings.timeframe / settings.fps)
+			fade_in = time_preempt * 0.4
+			fade_in_interval = 100 * interval/fade_in
+
+			ii = fade_in_interval
+
+			fade_out = time_preempt * 0.3
+			fade_out_interval = 100 * interval/fade_out
+
+			time_preempt = round(time_preempt)
+			for i in range(time_preempt, 0, -interval):
+				circle_frames[-1].append(newalpha(orig_circle, alpha/100))
+				slidercircle_frames[-1].append(newalpha(orig_slider, alpha/100))
+
+				if alpha == 100:
+					ii = -fade_out_interval
+				alpha = max(0, min(100, alpha + ii))
+				alphas.append(alpha)
+
 	print("done")
 
-	return slidercircle_frames, circle_frames, fadeout
+	return slidercircle_frames, circle_frames, fadeout, alphas

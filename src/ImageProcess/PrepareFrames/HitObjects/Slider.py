@@ -25,27 +25,27 @@ def ballinhole(follow, sliderball):
 	return follow
 
 
-def load(path, scale):
+def load(scale):
 	arrow_frames = []
-	for x in range(100, 80, -4):
-		img = YImage(path + reversearrow, scale * x / 100, rotate=1)
+	for x in range(120, 100, -4):
+		img = YImage(reversearrow, scale * x / 100, rotate=1)
 		arrow_frames.append(img.img)
 
-	sliderb_frames = YImages(path, sliderb, scale).frames
-	sliderfollow_frames = YImages(path, sliderfollowcircle, scale).frames
-	slider_tick = YImage(path + sliderscorepoint, scale).img
+	sliderb_frames = YImages(sliderb, scale).frames
+	sliderfollow_frames = YImages(sliderfollowcircle, scale).frames
+	slider_tick = YImage(sliderscorepoint, scale).img
 	return arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick
 
 
-def prepare_slider(path, diff, scale, skin, fps):
+def prepare_slider(diff, scale, skin, settings):
 
 	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	radius_scale = cs * 2 / default_size
 
-	interval = 1000/fps
+	interval = settings.timeframe / settings.fps
 	follow_fadein = 150  # need 150ms to fadein
 
-	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(path, radius_scale)
+	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale)
 
 	sframes = []
 	sliderfollow_fadeout = []

@@ -1,11 +1,15 @@
 {
-  "Skin path": "/Users/yuitora/skin4",
-  ".osu path": "/Users/yuitora/Songs/Freedom dive/Freedom dive.osu",
-  ".osr path": "/Users/yuitora/Replays/freedomdive.osr",
+  "Skin path": "/Users/Pewdiepie/osu!/Skins/Cockeizii 2019-727/",
+  ".osu path": "/Users/Pewdiepie/osu!/Songs/Big Black/Bigggg Black.osu",
+  ".osr path": "/Users/Pewdiepie/osu!/Replays/okbb.osr",
+  "Default skin path": "/Users/Pewdiepie/Downloads/skin/",
   "Output path": "output.avi",
+  "Width": 1920,
+  "Height": 1080,
+  "FPS": 60,
   "Start time": 0,
   "End time": -1,
   "Video codec": "XVID",
   "Process": 2,
-  "ffmpeg path": "/Users/yuitora/ffmpeg-2020/bin/ffmpeg"
+  "ffmpeg path": "ffmpeg"
 }

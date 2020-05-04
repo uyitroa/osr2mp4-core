@@ -10,7 +10,7 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, mod=1):
+	def __init__(self, beatmap, settings, mod=1):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects) # TODO: put slider image into another list
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -24,8 +24,8 @@ class HitObjectChecker:
 			self.time_preempt = 1200 - 750 * (self.diff["ApproachRate"] - 5) / 5
 			self.fade_in = 800 - 500 * (self.diff["ApproachRate"] - 5) / 5
 
-		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5
-		self.interval = 1000 / 60
+		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5  # - 0.5
+		self.interval = settings.timeframe / settings.fps
 		self.CIRCLE = 0
 		self.SLIDER = 1
 		self.SPINNER = 2
@@ -42,7 +42,7 @@ class HitObjectChecker:
 		self.starthitobjects = 0
 
 	def difficulty_multiplier(self):
-		points = self.diff["OverallDifficulty"] + self.diff["HPDrainRate"] + self.diff["CircleSize"]
+		points = self.diff["BaseOverallDifficulty"] + self.diff["BaseHPDrainRate"] + self.diff["BaseCircleSize"]
 		if points in range(0, 6):
 			return 2
 		if points in range(6, 13):

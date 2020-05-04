@@ -6,7 +6,7 @@ from ImageProcess.Curves.position import Position
 
 
 class Beatmap:
-	def __init__(self, info, scale, colors):
+	def __init__(self, info, scale, colors, hr):
 		self.info = info
 		self.general = {}
 		self.diff = {}
@@ -22,6 +22,7 @@ class Beatmap:
 		# self.sliderborder = colors["SliderBorder"]
 		# self.slideroverride = colors["SliderTrackOverride"]
 		self.ncombo = colors["ComboNumber"]
+		self.hr = hr
 
 		self.parse_general()
 		self.parse_diff()
@@ -53,6 +54,7 @@ class Beatmap:
 			if item != "":
 				my_list = item.split(":")
 				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
 
 	def parse_event(self):
 		event = self.info[5]
@@ -123,6 +125,10 @@ class Beatmap:
 				continue
 			my_dict = {}
 			osuobject = item.split(",")
+
+			if self.hr:
+				osuobject[1] = 384 - int(osuobject[1])
+
 			my_dict["x"] = int(osuobject[0])
 			my_dict["y"] = int(osuobject[1])
 			my_dict["time"] = int(osuobject[2])
@@ -176,6 +182,8 @@ class Beatmap:
 				slider_path = slider_path[1:]
 				for pos in slider_path:
 					pos = pos.split(":")
+					if self.hr:
+						pos[1] = 384 - int(pos[1])
 					ps.append(Position(int(pos[0]), int(pos[1])))
 				my_dict["ps"] = ps
 				my_dict["slider type"] = slider_type
@@ -291,8 +299,8 @@ def split(delimiters, string):
 	return re.split(regrex_pattern, string)
 
 
-def read_file(filename, scale, colors):
-        content = open(filename, "r", encoding="utf-8").read()
-        delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]","[HitObjects]"]
-        info = split(delimiters, content)
-        return Beatmap(info, scale, colors)
+def read_file(filename, scale, colors, hr):
+		content = open(filename, "r", encoding="utf-8").read()
+		delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
+		info = split(delimiters, content)
+		return Beatmap(info, scale, colors, hr)

@@ -2,10 +2,10 @@ from ImageProcess.Objects.FrameObject import FrameObject
 
 
 class Number(FrameObject):
-	def __init__(self, frames, fonts, opacity_interval):
+	def __init__(self, frames, fonts):
 		super().__init__(frames)
 		self.overlap = fonts["HitCircleOverlap"]
-		self.opacity_interval = opacity_interval
+
 
 	def add_to_frame(self, background, x, y, alpha, number):
 		"""
@@ -23,5 +23,5 @@ class Number(FrameObject):
 
 		for digit in number:
 			self.frame_index = int(digit)
-			super().add_to_frame(background, x_pos, y_pos, alpha=alpha * self.opacity_interval / 100)
+			super().add_to_frame(background, x_pos, y_pos, alpha=alpha/100)
 			x_pos += -self.overlap + self.w()

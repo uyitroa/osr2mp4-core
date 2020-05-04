@@ -14,7 +14,7 @@ Slider = recordclass("Slider", "image x y cur_duration opacity color sliderb_i o
 
 
 class SliderManager:
-	def __init__(self, frames, diff, skin, settings):
+	def __init__(self, frames, diff, skin, settings, hd):
 		self.settings = settings
 
 		self.reversearrow, self.sliderb_frames, self.sliderfollow_fadeout, self.slidertick = frames
@@ -34,9 +34,11 @@ class SliderManager:
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 
-		self.interval = 1000 / settings.fps
-		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, settings.fps)
+		self.interval = settings.timeframe / settings.fps
+		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, settings)
 		self.timer = 0
+
+		self.hd = hd
 
 	def get_arrow(self, osu_d):
 		pos1 = osu_d["ps"][-1]
@@ -160,7 +162,11 @@ class SliderManager:
 
 				slider.opacity = max(-self.opacity_interval, slider.opacity - 4 * self.opacity_interval)
 
-		slider.opacity = min(100, slider.opacity + self.opacity_interval)
+		total_cur_duration = max(0, slider.cur_duration + slider.orig_duration * (slider.repeated - slider.cur_repeated) - 50)
+		if total_cur_duration > slider.orig_duration * slider.repeated or not self.hd:
+			slider.opacity = min(100, slider.opacity + self.opacity_interval)
+		else:
+			slider.opacity = total_cur_duration / (slider.orig_duration * slider.repeated) * 100
 		self.draw_slider(slider.image, background, slider.x, slider.y, alpha=slider.opacity/100)
 
 		t = slider.cur_duration / slider.orig_duration

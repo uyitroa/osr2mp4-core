@@ -119,10 +119,13 @@ class Skin:
 		self.fonts['HitCircleOverlap'] = int(self.fonts.get('HitCircleOverlap', -2))
 		self.fonts['ScoreOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
 		self.fonts['ComboOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
+
 		self.fonts['ComboPrefix'] = self.fonts.get('ComboPrefix', 'score')
 		self.fonts['ComboPrefix'] = self.fonts['ComboPrefix'].replace(" ", "")
+
 		self.fonts['ScorePrefix'] = self.fonts.get('ScorePrefix', 'score')
 		self.fonts['ScorePrefix'] = self.fonts['ScorePrefix'].replace(" ", "")
+
 		self.fonts['HitCirclePrefix'] = self.fonts.get('HitCirclePrefix', 'default')
 		self.fonts['HitCirclePrefix'] = self.fonts['HitCirclePrefix'].replace(" ", "")
 

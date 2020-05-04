@@ -8,11 +8,11 @@ Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fade
 
 
 class CircleManager(FrameObject):
-	def __init__(self, frames, timepreempt, number):
-		self.slidercircle_frames, self.circle_frames, self.circle_fadeout = frames
+	def __init__(self, frames, timepreempt, number, settings):
+		self.slidercircle_frames, self.circle_frames, self.circle_fadeout, self.alphas = frames
 		self.number = number
 		self.time_preempt = timepreempt
-		self.interval = 1000/60
+		self.interval = settings.timeframe / settings.fps
 		self.circles = {}
 
 		self.timer = 0
@@ -48,12 +48,12 @@ class CircleManager(FrameObject):
 			# in case opacity_index exceed list range
 
 			opacity_index = min(circle.frame_i, len(self.slidercircle_frames[color_index]) - 1)
-			return self.slidercircle_frames[color_index][opacity_index]
+			return self.slidercircle_frames[color_index][opacity_index], opacity_index
 
 		else:
 
 			opacity_index = min(circle.frame_i, len(self.circle_frames[color_index]) - 1)
-			return self.circle_frames[color_index][opacity_index]
+			return self.circle_frames[color_index][opacity_index], opacity_index
 
 	def add_to_frame(self, background, i, _):
 		circle = self.circles[i]
@@ -82,9 +82,9 @@ class CircleManager(FrameObject):
 		if circle.x_step:
 			self.notelock(circle)
 
-		img = self.getcircle(circle)
+		img, index = self.getcircle(circle)
 
 		imageproc.add(img, background, circle.x+circle.x_step, circle.y)
-		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, circle.frame_i, number)
+		self.number.add_to_frame(background, circle.x+circle.x_step, circle.y, self.alphas[index], number)
 
 

@@ -9,12 +9,11 @@ spinnerapproachcircle = "spinner-approachcircle"
 spinnertop = "spinner-top"
 
 
-def prepare_spinner(path, scale):
+def prepare_spinner(scale):
 	scale = scale * 1.3 * 0.5
-	path = path
 	spinner_images = {}
 	n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle,
 	     spinnertop]
 	for img in n:
-		spinner_images[img] = YImage(path + img, scale).img
+		spinner_images[img] = YImage(img, scale).img
 	return spinner_images
