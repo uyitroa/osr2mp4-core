@@ -162,7 +162,7 @@ class SliderManager:
 
 				slider.opacity = max(-self.opacity_interval, slider.opacity - 4 * self.opacity_interval)
 
-		total_cur_duration = max(0, slider.cur_duration + slider.orig_duration * (slider.repeated - slider.cur_repeated))
+		total_cur_duration = max(0, slider.cur_duration + slider.orig_duration * (slider.repeated - slider.cur_repeated) - 50)
 		if total_cur_duration > slider.orig_duration * slider.repeated or not self.hd:
 			slider.opacity = min(100, slider.opacity + self.opacity_interval)
 		else:
