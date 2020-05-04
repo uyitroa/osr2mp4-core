@@ -8,7 +8,7 @@ start=time.time()
 
 
 
-class Position(namedtuple('Position', 'x y')):
+class Position(namedtuple('Position', 'x y')):  
         pass
 
 
@@ -89,34 +89,27 @@ for bp in range(len(beatmap_info)):
                 repeatedTime.append(beatmap_info[bp]["repeated"])
                 durationTime.append(beatmap_info[bp]["duration"])
                 endTime.append(beatmap_info[bp]["end time"])
-                #print(beatmap_info[bp]["duration"] + beatmap_info[bp]["time"] * beatmap_info[bp]["repeated"])
 for x in range(len(my_info)):
     start_index = int(my_info[x].time/1000 * rate)
-
-    '''if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
-        spinSpeedup = 6
-        arrow_time_list = []    
-        for a in range(0,beatmap_info[x]["repeated"]):
-                arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
-        
-        if my_info[x].time <  beatmap_info[x]["time"] + beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]:
-                for abc in arrow_time_list:
-                        start_index2 = int(abc/1000 * rate)
-                        z[start_index2:start_index2 + len(s)] += s * 0.5'''
 
     if type(my_info[x].more).__name__ == "Circle":
         spinSpeedup = 6
         if my_info[x].more.sliderhead == True:
                 arrow_time_list = []
                 for a in range(repeatedTime[0]):
-                        arrow_time_list.append(sliderTime[a] + durationTime[a] * (a+1))
+                        arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
+                        
+                start_index2 = int(sliderTime[0]/1000 * rate)
+                z[start_index2:start_index2 + len(s)] += s * 0.5
 
+                
                 for abc in arrow_time_list:
-                        print(abc)
+                        print("Added Repeat Circles to:"+ str(abc))
                         start_index2 = int(abc/1000 * rate)
                         z[start_index2:start_index2 + len(s)] += s * 0.5
-                                
-                z[int(sliderTime[a]/1000 * rate): int(sliderTime[a]/1000 * rate+ len(s))] += s * 0.5
+                        
+                start_index2 = int(endTime[0]/1000 * rate)
+                z[start_index2:start_index2 + len(s)] += s * 0.5                
                 durationTime.pop(0)
                 sliderTime.pop(0)
                 endTime.pop(0)
