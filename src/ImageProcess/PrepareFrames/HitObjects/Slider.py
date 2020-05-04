@@ -27,7 +27,7 @@ def ballinhole(follow, sliderball):
 
 def load(scale):
 	arrow_frames = []
-	for x in range(100, 80, -4):
+	for x in range(120, 100, -4):
 		img = YImage(reversearrow, scale * x / 100, rotate=1)
 		arrow_frames.append(img.img)
 
