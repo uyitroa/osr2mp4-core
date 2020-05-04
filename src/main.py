@@ -53,6 +53,19 @@ def get_screensize(width, height):
 	return playfield_scale, playfield_width, playfield_height, scale, move_right, move_down
 
 
+def save_offset(beatmap, start_time, replay_event):
+	diffcalculator = DiffCalculator(beatmap.diff)
+	timepreempt = diffcalculator.ar()
+	to_time, hitobjectindex = search_time(start_time, beatmap.hitobjects)
+	to_time -= timepreempt
+	osr_index = search_osrindex(to_time, replay_event)
+	offset = beatmap.hitobjects[hitobjectindex]["time"] - replay_event[osr_index][TIMES]
+
+	a = open("offset.txt", "w")
+	a.write(str(offset))
+	a.close()
+
+
 def main():
 
 	data = read("config.json")
@@ -121,17 +134,8 @@ def main():
 	a.write(str(resultinfo))
 	a.close()
 
+	save_offset(beatmap, start_time, replay_event)
 
-	diffcalculator = DiffCalculator(beatmap.diff)
-	timepreempt = diffcalculator.ar()
-	to_time, hitobjectindex = search_time(start_time, beatmap.hitobjects)
-	to_time -= timepreempt
-	osr_index = search_osrindex(to_time, replay_event)
-	offset = beatmap.hitobjects[hitobjectindex]["time"] - replay_event[osr_index][TIMES]
-
-	a = open("offset.txt", "w")
-	a.write(str(offset))
-	a.close()
 
 	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings, hd)
 	os.system('"{}" -i {} -codec copy output.mp4 -y'.format(ffmpeg, output_path))
