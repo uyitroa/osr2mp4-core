@@ -8,7 +8,7 @@ start=time.time()
 
 
 
-class Position(namedtuple('Position', 'x y')):
+class Position(namedtuple('Position', 'x y')):  
         pass
 
 
@@ -82,6 +82,7 @@ sliderTime = []
 repeatedTime = []
 durationTime = []
 endTime = []
+        
 for bp in range(len(beatmap_info)):
         if "slider" in beatmap_info[bp]["type"]:
                 sliderTime.append(beatmap_info[bp]["time"])
@@ -91,34 +92,28 @@ for bp in range(len(beatmap_info)):
 for x in range(len(my_info)):
     start_index = int(my_info[x].time/1000 * rate)
 
-    '''if x < len(beatmap_info) and "slider" in beatmap_info[x]["type"]:
-        spinSpeedup = 6
-        arrow_time_list = []    
-        for a in range(0,beatmap_info[x]["repeated"]):
-                arrow_time_list.append(beatmap_info[x]["time"] + beatmap_info[x]["duration"] * a+1)
-        
-        if my_info[x].time <  beatmap_info[x]["time"] + beatmap_info[x]["duration"] * beatmap_info[x]["repeated"]:
-                for abc in arrow_time_list:
-                        start_index2 = int(abc/1000 * rate)
-                        z[start_index2:start_index2 + len(s)] += s * 0.5'''
-
     if type(my_info[x].more).__name__ == "Circle":
         spinSpeedup = 6
-        if x < len(beatmap_info) and my_info[x].more.sliderhead == True:
+        if my_info[x].more.sliderhead == True:
                 arrow_time_list = []
                 for a in range(repeatedTime[0]):
-                        arrow_time_list.append(sliderTime[a] + durationTime[a] * a+1)
+                        arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
+                        
+                start_index2 = int(sliderTime[0]/1000 * rate)
+                z[start_index2:start_index2 + len(s)] += s * 0.5
 
-
-                if my_info[x].time <  endTime[0]:
-                        for abc in arrow_time_list:
-                                start_index2 = int(abc/1000 * rate)
-                                z[start_index2:start_index2 + len(s)] += s * 0.5
-                del durationTime[0]
-                del sliderTime[0]
-                del endTime[0]
-                del repeatedTime[0]
-                print(arrow_time_list)
+                
+                for abc in arrow_time_list:
+                        print("Added Repeat Circles to:"+ str(abc))
+                        start_index2 = int(abc/1000 * rate)
+                        z[start_index2:start_index2 + len(s)] += s * 0.5
+                        
+                start_index2 = int(endTime[0]/1000 * rate)
+                z[start_index2:start_index2 + len(s)] += s * 0.5                
+                durationTime.pop(0)
+                sliderTime.pop(0)
+                endTime.pop(0)
+                repeatedTime.pop(0)
                 continue
         if my_info[x].hitresult == None:
                 pass
