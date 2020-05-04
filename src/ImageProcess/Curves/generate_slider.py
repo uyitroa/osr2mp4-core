@@ -14,11 +14,11 @@ class GenerateSlider:
 		:param radius: float, size of slider
 		:param scale: float, current resolution with 512x384
 		"""
-		self.sliderborder = sliderborder
+		self.sliderborder = list(sliderborder)
 		self.sliderborder[0], self.sliderborder[2] = self.sliderborder[2], self.sliderborder[0]
 		self.sliderborder = tuple(self.sliderborder)
 
-		self.slideroverride = slideroverride
+		self.slideroverride = list(slideroverride)
 		self.slideroverride[0], self.slideroverride[2] = self.slideroverride[2], self.slideroverride[0]
 		self.slideroverride = tuple(self.slideroverride)
 
