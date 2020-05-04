@@ -82,12 +82,14 @@ sliderTime = []
 repeatedTime = []
 durationTime = []
 endTime = []
+        
 for bp in range(len(beatmap_info)):
         if "slider" in beatmap_info[bp]["type"]:
                 sliderTime.append(beatmap_info[bp]["time"])
                 repeatedTime.append(beatmap_info[bp]["repeated"])
                 durationTime.append(beatmap_info[bp]["duration"])
                 endTime.append(beatmap_info[bp]["end time"])
+                #print(beatmap_info[bp]["duration"] + beatmap_info[bp]["time"] * beatmap_info[bp]["repeated"])
 for x in range(len(my_info)):
     start_index = int(my_info[x].time/1000 * rate)
 
@@ -104,21 +106,21 @@ for x in range(len(my_info)):
 
     if type(my_info[x].more).__name__ == "Circle":
         spinSpeedup = 6
-        if x < len(beatmap_info) and my_info[x].more.sliderhead == True:
+        if my_info[x].more.sliderhead == True:
                 arrow_time_list = []
                 for a in range(repeatedTime[0]):
-                        arrow_time_list.append(sliderTime[a] + durationTime[a] * a+1)
+                        arrow_time_list.append(sliderTime[a] + durationTime[a] * (a+1))
 
-
-                if my_info[x].time <  endTime[0]:
-                        for abc in arrow_time_list:
-                                start_index2 = int(abc/1000 * rate)
-                                z[start_index2:start_index2 + len(s)] += s * 0.5
-                del durationTime[0]
-                del sliderTime[0]
-                del endTime[0]
-                del repeatedTime[0]
-                print(arrow_time_list)
+                for abc in arrow_time_list:
+                        print(abc)
+                        start_index2 = int(abc/1000 * rate)
+                        z[start_index2:start_index2 + len(s)] += s * 0.5
+                                
+                z[int(sliderTime[a]/1000 * rate): int(sliderTime[a]/1000 * rate+ len(s))] += s * 0.5
+                durationTime.pop(0)
+                sliderTime.pop(0)
+                endTime.pop(0)
+                repeatedTime.pop(0)
                 continue
         if my_info[x].hitresult == None:
                 pass
