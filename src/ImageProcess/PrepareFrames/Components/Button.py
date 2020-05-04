@@ -1,5 +1,5 @@
 from PIL import Image
-
+import numpy as np
 from ImageProcess.PrepareFrames.YImage import YImage
 from ImageProcess import imageproc
 
@@ -26,19 +26,29 @@ def prepare_scoreentry(scale, color):
 	return numbers_animation
 
 
-def prepare_inputoverlay(scale, color):
+def prepare_inputoverlay(scale, color, index_c):
 	"""
 	:param scale: float
 	:param color: tuple(R, G, B)
+	:param index_c: index of the color that changes (fadeout fadein)
 	:return: [PIL.Image]
 	"""
 	yimg = YImage(inputoverlay, scale)
+	color = np.array(color)
+	color[index_c] += 150
+	color[color > 255] = 255
+
+	start, end, step = 97, 82, -3
+	c_step = int(150*step/(end - start))
+	color[index_c] -= c_step
 
 	button_frames = [yimg.img]
 	for size in range(97, 82, -3):
 		size /= 100
 		yimg.change_size(size, size)
 		img = imageproc.add_color(yimg.img, color)
+		print(color)
+		color[index_c] -= c_step
 
 		button_frames.append(img)
 
