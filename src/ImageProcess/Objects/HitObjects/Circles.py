@@ -26,7 +26,7 @@ class CircleManager(FrameObject):
 		duration = osu_d["time"] - cur_time
 		start_index = int((self.time_preempt - duration)/self.interval + 0.5) - 1
 
-		key = str(osu_d["time"]) + "c"
+		key = str(osu_d["id"]) + "c"
 		self.circles[key] = Circle(x, y, duration, start_index, combo_color, combo_number, object_type, 0, 0, 0, 0)
 
 	def notelock(self, circle):

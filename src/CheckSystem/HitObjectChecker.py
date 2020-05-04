@@ -138,7 +138,7 @@ class HitObjectChecker:
 	def checkspinner(self, i, replay, osr_index):
 		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay[osr_index])
 		combostatus = 0
-		timestamp = self.hitobjects[i]["time"]
+		timestamp = self.hitobjects[i]["id"]
 		self.scorecounter += hitvalue
 		if update:
 			if hitresult is not None:

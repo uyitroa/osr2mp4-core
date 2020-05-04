@@ -132,6 +132,7 @@ class Beatmap:
 			my_dict["x"] = int(osuobject[0])
 			my_dict["y"] = int(osuobject[1])
 			my_dict["time"] = int(osuobject[2])
+			my_dict["id"] = index
 
 			# use next off_set or not
 			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:

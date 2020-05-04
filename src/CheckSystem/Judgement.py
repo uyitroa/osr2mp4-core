@@ -61,8 +61,8 @@ class Check:
 		time_difference = osr[3] - osu_d["time"]
 		dist = math.sqrt((osr[0] - osu_d["x"]) ** 2 + (osr[1] - osu_d["y"]) ** 2)
 
-		if "slider" in osu_d["type"] and osu_d["time"] not in self.sliders_memory:
-			self.sliders_memory[osu_d["time"]] = {"score": 0, "max score": 1, "follow state": 0,
+		if "slider" in osu_d["type"] and osu_d["id"] not in self.sliders_memory:
+			self.sliders_memory[osu_d["id"]] = {"score": 0, "max score": 1, "follow state": 0,
 			                                      "repeated slider": 1, "repeat checked": 0, "ticks index": 0, "done": False,
 			                                      "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0}
 
@@ -81,7 +81,7 @@ class Check:
 				update_hitobj = True
 				score = 0
 
-		return update_hitobj, score, osu_d["time"], osu_d["x"], osu_d["y"], use_click, time_difference
+		return update_hitobj, score, osu_d["id"], osu_d["x"], osu_d["y"], use_click, time_difference
 
 	def checkslider(self, index, replay, osrindex):
 		osr = replay[osrindex]
@@ -90,7 +90,7 @@ class Check:
 		# 	self.sliders_memory[osu_d["time"]] = {"score": 0, "follow state": 0, "repeated slider": 1,
 		# 	                                      "repeat checked": 0,
 		# 	                                      "ticks index": 0, "done": False}
-		slider_d = self.sliders_memory[osu_d["time"]]
+		slider_d = self.sliders_memory[osu_d["id"]]
 		followappear = False
 		hitvalue = combostatus = 0
 		prev_state = slider_d["follow state"]
@@ -113,14 +113,14 @@ class Check:
 				hitresult = 300
 				print("what", slider_d["score"], slider_d["max score"])
 
-			return True, hitresult, osu_d["time"], osu_d["end x"], osu_d["end y"], \
+			return True, hitresult, osu_d["id"], osu_d["end x"], osu_d["end y"], \
 			       False, hitvalue, combostatus, slider_d["tickend"]
 
 		if followappear != prev_state:
 			slider_d["follow state"] = followappear
-			return True, None, osu_d["time"], 0, 0, followappear, hitvalue, combostatus, 0
+			return True, None, osu_d["id"], 0, 0, followappear, hitvalue, combostatus, 0
 
-		return False, None, osu_d["time"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
+		return False, None, osu_d["id"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 

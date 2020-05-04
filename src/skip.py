@@ -79,7 +79,7 @@ def skip(to_time, resultinfo, replayinfo, objectinfo, timepreempt, component):
 	print(to_time)
 	to_time, hitobjectindex = search_time(to_time, objectinfo)
 	to_time -= timepreempt
-	info_index = search_updateindex(objectinfo[hitobjectindex]["time"], resultinfo, component)
+	info_index = search_updateindex(objectinfo[hitobjectindex]["id"], resultinfo, component)
 	# to_time = set_scores(to_time, resultinfo, component)
 	osr_index = search_osrindex(to_time, replayinfo)
 	fp_index, obj_endtime, x_end, y_end = search_fpindex(to_time, objectinfo)

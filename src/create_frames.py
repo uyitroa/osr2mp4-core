@@ -124,7 +124,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 		if "spinner" in osu_d["type"]:
 
 			if frame_info.cur_time + 400 > osu_d["time"]:
-				component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time)
+				component.hitobjmanager.add_spinner(osu_d["time"], osu_d["end time"], frame_info.cur_time, osu_d["id"])
 				frame_info.index_hitobj += 1
 
 		else:

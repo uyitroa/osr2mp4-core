@@ -29,7 +29,7 @@ class HitObjectManager:
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		self.slider_manager.add_slider(osu_d, x_pos, y_pos, cur_time)
 
-		timestamp = str(osu_d["time"]) + "s"
+		timestamp = str(osu_d["id"]) + "s"
 		self.hitobjects[timestamp] = [SLIDER, osu_d["end time"] - cur_time]
 		self.objtime.append(timestamp)
 
@@ -37,13 +37,13 @@ class HitObjectManager:
 		self.circle_manager.add_circle(x, y, cur_time, osu_d)
 		circleduration = osu_d["time"] - cur_time
 
-		timestamp = str(osu_d["time"]) + "c"
+		timestamp = str(osu_d["id"]) + "c"
 		self.hitobjects[timestamp] = [CIRCLE, circleduration]
 		self.objtime.append(timestamp)
 
-	def add_spinner(self, starttime, endtime, curtime):
-		timestamp = str(starttime) + "o"
-		self.spinner_manager.add_spinner(starttime, endtime, curtime)
+	def add_spinner(self, starttime, endtime, curtime, idd):
+		timestamp = str(idd) + "o"
+		self.spinner_manager.add_spinner(starttime, endtime, curtime, idd)
 		self.hitobjects[timestamp] = [SPINNER, endtime - curtime]
 		self.objtime.append(timestamp)
 

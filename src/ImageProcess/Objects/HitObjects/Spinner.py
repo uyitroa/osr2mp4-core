@@ -26,10 +26,10 @@ class SpinnerManager(FrameObject):
 		self.interval = settings.timeframe / settings.fps
 		self.timer = 0
 
-	def add_spinner(self, starttime, endtime, curtime):
+	def add_spinner(self, starttime, endtime, curtime, idd):
 		duration = endtime - starttime
 		# img, duration, startime left, alpha, index, progress
-		self.spinners[str(starttime) + "o"] = Spinner(0, duration, starttime - curtime, 0, 0)
+		self.spinners[str(idd) + "o"] = Spinner(0, duration, starttime - curtime, 0, 0)
 
 	def update_spinner(self, timestamp, angle, progress):
 		# angle = round(angle * 0.9)
