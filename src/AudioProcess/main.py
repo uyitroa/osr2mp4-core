@@ -88,7 +88,6 @@ for bp in range(len(beatmap_info)):
                 repeatedTime.append(beatmap_info[bp]["repeated"])
                 durationTime.append(beatmap_info[bp]["duration"])
                 endTime.append(beatmap_info[bp]["end time"])
-print(repeatedTime)
 for x in range(len(my_info)):
     start_index = int(my_info[x].time/1000 * rate)
 
@@ -109,15 +108,17 @@ for x in range(len(my_info)):
                 arrow_time_list = []
                 for a in range(repeatedTime[0]):
                         arrow_time_list.append(sliderTime[a] + durationTime[a] * a+1)
-                        del durationTime[0]
-                        del sliderTime[0]
+
 
                 if my_info[x].time <  endTime[0]:
                         for abc in arrow_time_list:
                                 start_index2 = int(abc/1000 * rate)
                                 z[start_index2:start_index2 + len(s)] += s * 0.5
+                del durationTime[0]
+                del sliderTime[0]
                 del endTime[0]
                 del repeatedTime[0]
+                print(arrow_time_list)
                 continue
         if my_info[x].hitresult == None:
                 pass
