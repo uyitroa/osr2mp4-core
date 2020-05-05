@@ -4,18 +4,18 @@ from ImageProcess import imageproc
 def img_fade(img, start, end, step):
 	outputs = []
 	for x in range(start, end, step):
-		im = imageproc.newalpha(img, x/100)
+		im = imageproc.newalpha(img, x/1000)
 		outputs.append(im)
 	return outputs
 
 
 def list_fade(img, start, end, step):
 	outputs = []
-	index = 0
-	for x in range(start, end, step):
-		im = imageproc.newalpha(img[index], x / 100)
+	x = start
+	for i in img:
+		im = imageproc.newalpha(i, x/1000)
 		outputs.append(im)
-		index += 1
+		x += step
 	return outputs
 
 
@@ -27,20 +27,21 @@ def fadeout(img, start, end, step):
 	:param step: size coef
 	:return: list of PIL.Image
 	"""
-	start = int(start * 100)
-	end = int(end * 100)
-	step = int(step * 100)
+	start = int(start * 1000)
+	end = int(end * 1000)
+	step = int(step * 1000)
 
 	if type(img).__name__ == 'list':
-		return list_fade(img, end, start, -step)
+		return list_fade(img, start, end, -step)
 	else:
-		return img_fade(img, end, start, -step)
+		return img_fade(img, start, end, -step)
 
 
 def fadein(img, start, end, step):
-	start = int(start * 100)
-	end = int(end * 100)
-	step = int(step * 100)
+	start = int(start * 1000)
+	end = int(end * 1000)
+	step = int(step * 1000)
+
 
 	if type(img).__name__ == 'list':
 		return list_fade(img, start, end, step)

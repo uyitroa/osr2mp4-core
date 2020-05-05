@@ -4,18 +4,18 @@ from ImageProcess import imageproc
 def img_resize(img, start, end, step):
 	outputs = []
 	for x in range(start, end, step):
-		im = imageproc.change_size(img, x/100, x/100)
+		im = imageproc.change_size(img, x/1000, x/1000)
 		outputs.append(im)
 	return outputs
 
 
-def list_reisze(img, start, end, step):
+def list_resize(img, start, end, step):
 	outputs = []
-	index = 0
-	for x in range(start, end, step):
-		im = imageproc.change_size(img[index], x/100, x/100)
+	x = start
+	for i in img:
+		im = imageproc.change_size(i, x/1000, x/1000)
 		outputs.append(im)
-		index += 1
+		x += step
 	return outputs
 
 
@@ -27,23 +27,25 @@ def shrink(img, start, end, step):
 	:param step: size coef
 	:return: list of PIL.Image
 	"""
-	start = int(start * 100)
-	end = int(end * 100)
-	step = int(step * 100)
+	start = int(start * 1000)
+	end = int(end * 1000)
+	step = int(step * 1000)
+
 
 	if type(img).__name__ == 'list':
-		return list_reisze(img, end, start, -step)
+		return list_resize(img, start, end, -step)
 	else:
-		return img_resize(img, end, start, -step)
+		return img_resize(img, start, end, -step)
 
 
 def grow(img, start, end, step):
-	start = int(start * 100)
-	end = int(end * 100)
-	step = int(step * 100)
+	start = int(start * 1000)
+	end = int(end * 1000)
+	step = int(step * 1000)
+
 
 	if type(img).__name__ == 'list':
-		return list_reisze(img, start, end, step)
+		return list_resize(img, start, end, step)
 	else:
-		return list_reisze(img, start, end, step)
+		return img_resize(img, start, end, step)
 
