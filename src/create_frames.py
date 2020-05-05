@@ -30,11 +30,11 @@ def nearer(cur_time, replay, index):
 
 	returnindex = 0
 	key_state = replay[index][KEYS_PRESSED]
-	for x in range(1, 4):
+	for x in range(0, 4):
 		delta_t = abs(replay[index + x][TIMES] - cur_time)
-		if key_state != replay[index + x][KEYS_PRESSED]:
-			if delta_t <= min_time_toskip:
-				return x
+		# if key_state != replay[index + x][KEYS_PRESSED]:
+		# 	if delta_t <= min_time_toskip:
+		# 		return x
 		if delta_t < min_time:
 			min_time = delta_t
 			returnindex = x

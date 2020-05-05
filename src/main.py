@@ -4,6 +4,7 @@ import osrparse
 from osrparse.enums import Mod
 from recordclass import recordclass
 
+from CheckSystem.Judgement import DiffCalculator
 from CheckSystem.checkmain import checkmain
 from ImageProcess.PrepareFrames.YImage import SkinPaths
 from Parser.jsonparser import read
@@ -14,6 +15,8 @@ from Parser.skinparser import Skin
 import time
 
 # const
+from skip import search_time, search_osrindex
+
 Settings = recordclass("Settings", "width height fps scale playfieldscale playfieldwidth playfieldheight movedown moveright timeframe")
 Paths = recordclass("Paths", "skin defaultskin output ffmpeg")
 
@@ -48,6 +51,19 @@ def get_screensize(width, height):
 	move_right = int(width * 0.2)  # center the playfield
 	move_down = int(height * 0.1)
 	return playfield_scale, playfield_width, playfield_height, scale, move_right, move_down
+
+
+def save_offset(beatmap, start_time, replay_event):
+	diffcalculator = DiffCalculator(beatmap.diff)
+	timepreempt = diffcalculator.ar()
+	to_time, hitobjectindex = search_time(start_time, beatmap.hitobjects)
+	to_time -= timepreempt
+	osr_index = search_osrindex(to_time, replay_event)
+	offset = beatmap.hitobjects[hitobjectindex]["time"] - replay_event[osr_index][TIMES]
+
+	a = open("offset.txt", "w")
+	a.write(str(offset))
+	a.close()
 
 
 def main():
@@ -111,12 +127,15 @@ def main():
 	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time, settings)
 	print(beatmap.diff)
 
-	# a = open("map.txt", "w")
-	# a.write(str(beatmap.hitobjects))
-	# a.close()
-	# a = open("resultinfo.txt", "w")
-	# a.write(str(resultinfo))
-	# a.close()
+	a = open("map.txt", "w")
+	a.write(str(beatmap.hitobjects))
+	a.close()
+	a = open("resultinfo.txt", "w")
+	a.write(str(resultinfo))
+	a.close()
+
+	save_offset(beatmap, start_time, replay_event)
+
 
 	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings, hd)
 	os.system('"{}" -i {} -codec copy output.mp4 -y'.format(ffmpeg, output_path))
