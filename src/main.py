@@ -1,9 +1,11 @@
+import hashlib
 import os
 
 import osrparse
 from osrparse.enums import Mod
 from recordclass import recordclass
 
+from AudioProcess.main import processAudio
 from CheckSystem.Judgement import DiffCalculator
 from CheckSystem.checkmain import checkmain
 from ImageProcess.PrepareFrames.YImage import SkinPaths
@@ -53,7 +55,7 @@ def get_screensize(width, height):
 	return playfield_scale, playfield_width, playfield_height, scale, move_right, move_down
 
 
-def save_offset(beatmap, start_index, start_time, replay_event):
+def get_offset(beatmap, start_index, start_time, replay_event):
 	diffcalculator = DiffCalculator(beatmap.diff)
 	print(beatmap.diff)
 	timepreempt = diffcalculator.ar()
@@ -63,9 +65,24 @@ def save_offset(beatmap, start_index, start_time, replay_event):
 	index = max(osr_index, start_index)
 	offset = replay_event[index][TIMES]
 
-	a = open("offset.txt", "w")
-	a.write(str(offset))
-	a.close()
+	return offset
+
+
+def get_osu(path, maphash):
+	filelist = os.listdir(path)
+	for f in filelist[:]:
+		if f.endswith(".osu"):
+			md5 = hashlib.md5()
+			with open(path+f, 'rb') as b:
+				while True:
+					data = b.read(1)
+					if not data:
+						break
+					md5.update(data)
+			m = md5.hexdigest()
+			if maphash == m:
+				return path+f
+
 
 
 def main():
@@ -73,7 +90,7 @@ def main():
 	data = read("config.json")
 
 	skin_path = data["Skin path"]
-	beatmap_file = data[".osu path"]
+	beatmap_path = data["Beatmap path"]
 	replay_file = data[".osr path"]
 	multi_process = data["Process"]
 	codec = data["Video codec"]
@@ -92,6 +109,9 @@ def main():
 	if default_path[-1] != "/" and default_path[-1] != "\\":
 		default_path += "/"
 
+	if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
+		beatmap_path += "/"
+
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	paths = Paths(skin_path, default_path, output_path, ffmpeg)
 
@@ -107,6 +127,8 @@ def main():
 	replay_info = osrparse.parse_replay_file(replay_file)
 	hr = Mod.HardRock in replay_info.mod_combination
 	hd = Mod.Hidden in replay_info.mod_combination
+
+	beatmap_file = get_osu(beatmap_path, replay_info.beatmap_hash)
 
 	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
 
@@ -129,18 +151,16 @@ def main():
 	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time, settings)
 	print(beatmap.diff)
 
-	a = open("map.txt", "w")
-	a.write(str(beatmap.hitobjects))
-	a.close()
-	a = open("resultinfo.txt", "w")
-	a.write(str(resultinfo))
-	a.close()
 
-	save_offset(beatmap, start_index, start_time, replay_event)
+	offset = get_offset(beatmap, start_index, start_time, replay_event)
 
+	processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, default_path, beatmap_path, beatmap.general["AudioFilename"])
 
 	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings, hd)
-	os.system('"{}" -i {} -codec copy output.mp4 -y'.format(ffmpeg, output_path))
+
+	f = paths.output[:-4] + "f" + paths.output[-4:]
+	os.system('"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path))
+	os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 
 
 if __name__ == "__main__":
