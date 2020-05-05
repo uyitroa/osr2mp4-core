@@ -4,7 +4,8 @@ from pydub import AudioSegment
 from collections import namedtuple
 import time
 from collections import namedtuple
-
+import os
+from pathlib import Path
 
 
 class Position(namedtuple('Position', 'x y')):  
@@ -51,15 +52,16 @@ def parseData():
         my_info = eval(a.read())
         return my_info, beatmap_info
 
-def processAudio(my_info,beatmap_info):
+def processAudio(my_info,beatmap_info,skin_path ):
+        skin_path += "/"
         start=time.time()
 
-        ratey, y = read('hit1.wav')
-        rate, z = read('Tengaku.mp3')
-        rateM, m = read('miss1.wav')
-        ratesb, b = read('spinnerbonus.wav')
-        ratesc, c = read('spinnerspin.wav')
-        rateS, s = read('slider.wav')
+        ratey, y = read(skin_path + 'hit1.wav')
+        rate, z = read(skin_path + 'Tengaku.mp3')
+        rateM, m = read(skin_path + 'miss1.wav')
+        ratesb, b = read(skin_path + 'spinnerbonus.wav')
+        ratesc, c = read(skin_path + 'spinnerspin.wav')
+        rateS, s = read(skin_path + 'slider.wav')
 
         spinSound = AudioSegment.from_wav("spinnerspin.wav")
         slider12 = AudioSegment.from_wav("slider.wav")
@@ -161,6 +163,6 @@ def processAudio(my_info,beatmap_info):
         
 if __name__ == '__main__':
         res, beat = parseData()
-        processAudio(res, beat)
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess")
 
 
