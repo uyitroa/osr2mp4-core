@@ -4,56 +4,10 @@ from pydub import AudioSegment
 from collections import namedtuple
 import time
 from collections import namedtuple
-import os
-from pathlib import Path
-
+import os.path
 
 class Position(namedtuple('Position', 'x y')):  
 		pass
-def checkAudio(skin_path,default_skinP):
-        skin_path += "/"
-        default_skinP += "/"
-        print(skin_path + 'normal-hitnormal.wav')
-        try:
-            ratey, y = read(skin_path + 'normal-hitnormal.wav')
-            rate, z = read(skin_path + 'Tengaku.mp3')
-            rateM, m = read(skin_path + 'miss1.wav')
-            ratesb, b = read(skin_path + 'spinnerbonus.wav')
-            ratesc, c = read(skin_path + 'spinnerspin.wav')
-            rateS, s = read(skin_path + 'normal-hitnormal.wav')
-
-            spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.wav")
-        except FileNotFoundError:
-            ratey, y = read(skin_path + 'normal-hitnormal.mp3')
-            rate, z = read(skin_path + 'Tengaku.wav')
-            rateM, m = read(skin_path + 'miss1.mp3')
-            ratesb, b = read(skin_path + 'spinnerbonus.mp3')
-            ratesc, c = read(skin_path + 'spinnerspin.mp3')
-            rateS, s = read(skin_path + 'normal-hitnormal.mp3')
-
-            spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.mp3")
-        '''
-        else:
-            try:
-                ratey, y = read(default_skinP + 'normal-hitnormal.wav')
-                rate, z = read(default_skinP + 'Tengaku.mp3')
-                rateM, m = read(default_skinP + 'miss1.wav')
-                ratesb, b = read(default_skinP + 'spinnerbonus.wav')
-                ratesc, c = read(default_skinP + 'spinnerspin.wav')
-                rateS, s = read(default_skinP + 'normal-hitnormal.wav')
-
-                spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.wav")
-            except FileNotFoundError:
-                ratey, y = read(default_skinP + 'normal-hitnormal.mp3')
-                rate, z = read(default_skinP + 'Tengaku.wav')
-                rateM, m = read(default_skinP + 'miss1.mp3')
-                ratesb, b = read(default_skinP + 'spinnerbonus.mp3')
-                ratesc, c = read(default_skinP + 'spinnerspin.mp3')
-                rateS, s = read(default_skinP + 'normal-hitnormal.mp3')
-
-                spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.mp3")
-        '''
-        return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
 
 def read(f):
 		if f[-1] == "3":
@@ -81,6 +35,39 @@ def pydubtonumpy(a):
                 y = y1
         return a.frame_rate, np.float32(y) / 2**(a.sample_width * 8 - 1)
 
+    
+def checkAudio(sPath,dPath,beatmap,audio_name):
+            song = beatmap + audio_name
+            checked = []
+            fileNames = [sPath + "normal-hitnormal",song,sPath + "miss1",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin"]
+            fileNames2 = [dPath + "normal-hitnormal",song,dPath + "miss1",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
+
+            fileTypes = ".mp3",".wav"
+            
+            for x in range(7):
+                if os.path.exists(fileNames[x] + fileTypes[0]):
+                    checked.append(fileNames[x] + fileTypes[0])
+                elif os.path.exists(fileNames[x] + fileTypes[1]):
+                    checked.append(fileNames[x] + fileTypes[1])
+                else:
+                       if os.path.exists(fileNames2[x] + fileTypes[0]):
+                           checked.append(fileNames2[x] + fileTypes[0])
+                       elif os.path.exists(fileNames2[x] + fileTypes[1]):
+                            checked.append(fileNames2[x] + fileTypes[1])
+        
+            ratey, y = read(checked[0])
+            rate, z = read(checked[1])
+            rateM, m = read(checked[2])
+            ratesb, b = read(checked[3])
+            ratesc, c = read(checked[4])
+            rateS, s = read(checked[5])
+            spinSound = AudioSegment.from_wav(checked[6])
+        
+
+            return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
+
+
+
 def parseData():
 
         a = open("map_thegame.txt", "r")
@@ -96,8 +83,8 @@ def parseData():
         return my_info, beatmap_info
 
 
-def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP):
-        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP)
+def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name):
+        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP,beatmap_path,audio_name)
         start=time.time()
 
         spinBonusTime = 0
@@ -192,7 +179,7 @@ def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP)
         
 if __name__ == '__main__':
         res, beat = parseData()
-        #args = my_info,beatmap_info,skin_path,audio_name,offset,default_skinP)
-        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess","Tengaku.mp3",27431.0,"")
+        #args =(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name):
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/",27431.0,"","C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/","Tengaku")
 
 
