@@ -9,11 +9,12 @@ class ScoreEntry(FrameObject):
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
 		number = str(number)
 		n = len(number) - 1
-		x_start = x_offset - int(n/2 * self.frames[0][index+n].size[0])
+		index = min(len(self.frames[0]) - 1, index+n)
+		x_start = x_offset - int(n/2 * self.frames[0][index].size[0])
 		for digit in number:
 			digit = int(digit)
-			imageproc.add(self.frames[digit][index+n], background, x_start, y_offset)
-			x_start += self.frames[digit][index+n].size[0]
+			imageproc.add(self.frames[digit][index], background, x_start, y_offset)
+			x_start += self.frames[digit][index].size[0]
 
 
 class InputOverlay(FrameObject):
