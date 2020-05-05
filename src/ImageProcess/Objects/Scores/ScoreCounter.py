@@ -39,11 +39,24 @@ class ScoreCounter(FrameObject):
 			super().add_to_frame(background, x, y)
 			x += -self.gap + self.frames[0].size[0]
 
+	def proc_showscore(self):
+		if self.showscore == self.score:
+			return
+
+		delta = str(self.score - self.showscore)
+		# print(delta, self.score, self.showscore)
+		self.showscore += int("1" * (len(delta) - 1))
+		# print(delta, self.score, self.showscore, "\n")
+
+
 	def add_to_frame(self, background, cur_time):
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
 		self.draw_score(score_string, background)
 
+		# self.proc_showscore()
+		if self.showscore < self.score:
+			self.showscore += 1
 		if cur_time >= self.freeze:
 			add_up = max(7.27, (self.score - self.showscore)/12.72)
 			if self.showscore + add_up > self.score:
