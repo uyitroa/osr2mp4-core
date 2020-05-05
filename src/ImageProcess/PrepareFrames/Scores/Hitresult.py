@@ -1,3 +1,4 @@
+from ImageProcess.Animation import size
 from ImageProcess.PrepareFrames.YImage import YImages
 from ImageProcess.imageproc import change_size
 
@@ -14,19 +15,13 @@ def prepare_hitresults(scale, beatmap):
 	scores_frames = {}
 	for x in [0, 50, 100]:
 		img = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0).frames[0]
-		scores_frames[x] = []
-		end = 125
-		start = 75
+		f = []
 		if x != 0:
-			end = 125
-			start = 100
-			for y in range(start, end, -5):
-				a = change_size(img, y / 100, y / 100)
-				scores_frames[x].append(a)
+			f = size.grow(img, 1, 1.25, 0.05)
 
-		for y in range(end, start, -2):
-			a = change_size(img, y / 100, y / 100)
-			if x == 0:
-				a = a.rotate(-10 - (end - y) / 10)
-			scores_frames[x].append(a)
+		f1 = size.shrink(img, 1.25, 1, 0.02)
+		if x == 0:
+			for a in range(len(f1)):
+				f1[a] = f1[a].rotate(10 + a)
+		scores_frames[x] = f+f1
 	return scores_frames

@@ -1,4 +1,5 @@
 from ImageProcess import imageproc
+from ImageProcess.Animation import size, alpha
 
 
 def prepare_combo(scorenumbers):
@@ -11,15 +12,11 @@ def prepare_combo(scorenumbers):
 	score_images = scorenumbers.combo_images
 	score_images.append(scorenumbers.combo_x)
 	for digit in range(len(score_images)):
-		score_frames.append([])
-		score_fadeout.append([])
-		for x in range(100, 131, 3):
-			score_images[digit].change_size(x / 100, x / 100)
-			normal = score_images[digit].img
-			score_frames[-1].append(normal)
+		f = size.grow(score_images[digit].img, 1, 1.2, 0.03)
+		score_frames.append(f)
 
-		for x in range(180, 109, -7):
-			score_images[digit].change_size(x / 100, x / 100)
-			fadeout = imageproc.newalpha(score_images[digit].img, (x / 300))
-			score_fadeout[-1].append(fadeout)
+		f = size.shrink(score_images[digit].img, 1.8, 1.09, 0.07)
+		f = alpha.fadeout(f, 1.8/3, 1.09/3, 0.07/3)
+		score_fadeout.append(f)
+	print(len(score_fadeout[0]))
 	return score_frames, score_fadeout

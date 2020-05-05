@@ -3,6 +3,7 @@
 from PIL import Image
 
 from ImageProcess import imageproc
+from ImageProcess.Animation import alpha, size
 from ImageProcess.PrepareFrames.YImage import YImage
 from ImageProcess.imageproc import newalpha
 
@@ -57,13 +58,9 @@ def overlayapproach(circle, approach, alpha):
 
 
 def prepare_fadeout(img):
-	fadeout = []
-	for x in range(100, 140, 4):
-		size = x / 100
-		im = imageproc.newalpha(img, 1 - (x - 100) / 40)
-		im = imageproc.change_size(im, size, size)
-		fadeout.append(im)
-	return fadeout
+	fade_out = alpha.fadeout(img, 1, 0.0625, 0.075)
+	fade_out = size.grow(fade_out, 1.1, 1.6, 0.04)
+	return fade_out
 
 
 def calculate_ar(ar, settings):

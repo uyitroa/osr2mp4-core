@@ -1,4 +1,7 @@
+from PIL import Image
+
 from ImageProcess import imageproc
+from ImageProcess.Animation.alpha import fadein
 from ImageProcess.PrepareFrames.YImage import YImage
 
 
@@ -23,11 +26,9 @@ def prepare_cursortrail(scale):
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	yimg = YImage(cursortrail, scale * 0.75)
-	trail_frames = []
-	for x in [0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1, 0]:
-		img = imageproc.newalpha(yimg.img, x)
-		trail_frames.append(img)
+	yimg = YImage(cursortrail, scale)
+	trail_frames = fadein(yimg.img, 0.125, 1, 0.125)
+	trail_frames.append(Image.new("RGBA", (1, 1)))
 
 	return trail_frames
 

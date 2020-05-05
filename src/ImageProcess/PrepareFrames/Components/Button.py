@@ -1,5 +1,7 @@
 from PIL import Image
 import numpy as np
+
+from ImageProcess.Animation.size import shrink
 from ImageProcess.PrepareFrames.YImage import YImage
 from ImageProcess import imageproc
 
@@ -35,23 +37,20 @@ def prepare_inputoverlay(scale, color, index_c):
 	"""
 	yimg = YImage(inputoverlay, scale)
 	color = np.array(color)
-	color[index_c] += 25
+	color[index_c] += 200
 	color[color > 255] = 255
 
-	start, end, step = 95, 77, -5
-	c_step = int(25*step/(end - start))
-	color[index_c] -= c_step
+	start, end, step = 1, 0.77, 0.05
+	c_step = int(200*step/(start - end - step * 3))
 
-	button_frames = [yimg.img]
-	for size in range(start, end, step):
-		size /= 100
-		yimg.change_size(size, size)
-		img = imageproc.add_color(yimg.img, color)
+	button_frames = shrink(yimg.img, start, end, step)
+
+	for i, img in enumerate(button_frames):
+		imgc = imageproc.add_color(img, color)
+		button_frames[i] = imgc
 		print(color)
-		color[index_c] -= c_step
-
-		button_frames.append(img)
-
+		color[index_c] = max(0, color[index_c] - c_step)
+	button_frames.insert(0, yimg.img)
 	return button_frames
 
 
