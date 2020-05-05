@@ -4,7 +4,6 @@ from pydub import AudioSegment
 from collections import namedtuple
 import time
 from collections import namedtuple
-start=time.time()
 
 
 
@@ -52,8 +51,9 @@ def parseData():
         my_info = eval(a.read())
         return my_info, beatmap_info
 
-def processAudio():
-        my_info, beatmap_info = parseData()
+def processAudio(my_info,beatmap_info):
+        start=time.time()
+
         ratey, y = read('hit1.wav')
         rate, z = read('Tengaku.mp3')
         rateM, m = read('miss1.wav')
@@ -156,9 +156,11 @@ def processAudio():
         f = int(f)
         write('z.mp3', rate, z[int(f/1000)*rate:int((len(z)/rate))*rate])
         o.close()
+        end=time.time()
+        print(end-start)
         
 if __name__ == '__main__':
-        processAudio()
+        res, beat = parseData()
+        processAudio(res, beat)
 
-end=time.time()
-print(end-start)
+
