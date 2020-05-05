@@ -43,18 +43,29 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
             fileNames2 = [dPath + "normal-hitnormal",song,dPath + "miss1",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
 
             fileTypes = ".mp3",".wav"
-            
+            print(sPath)
             for x in range(7):
-                if os.path.exists(fileNames[x] + fileTypes[0]):
-                    checked.append(fileNames[x] + fileTypes[0])
-                elif os.path.exists(fileNames[x] + fileTypes[1]):
-                    checked.append(fileNames[x] + fileTypes[1])
+                if os.path.exists(sPath):
+                    if os.path.exists(fileNames[x] + fileTypes[0]):
+                        checked.append(fileNames[x] + fileTypes[0])
+                        print("Adding: " + fileNames[x] + fileTypes[0] + "to skin path: " + sPath)
+                    elif os.path.exists(fileNames[x] + fileTypes[1]):
+                        checked.append(fileNames[x] + fileTypes[1])
+                        print("Adding: " + fileNames[x] + fileTypes[1] + "to skin path: " + sPath)
+                    else:
+                       if os.path.exists(fileNames2[x] + fileTypes[0]):
+                           checked.append(fileNames2[x] + fileTypes[0])
+                           print("Adding: " + fileNames2[x] + fileTypes[0] + "to default skin path")
+                       elif os.path.exists(fileNames2[x] + fileTypes[1]):
+                            checked.append(fileNames2[x] + fileTypes[1])
+                            print("Adding: " + fileNames2[x] + fileTypes[1] + "to default skin path")
                 else:
                        if os.path.exists(fileNames2[x] + fileTypes[0]):
                            checked.append(fileNames2[x] + fileTypes[0])
+                           print("Adding: " + fileNames2[x] + fileTypes[0] + "to default skin path")
                        elif os.path.exists(fileNames2[x] + fileTypes[1]):
                             checked.append(fileNames2[x] + fileTypes[1])
-        
+                            print("Adding: " + fileNames2[x] + fileTypes[1] + "to default skin path")
             ratey, y = read(checked[0])
             rate, z = read(checked[1])
             rateM, m = read(checked[2])
@@ -117,8 +128,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                         repeatedTime.append(beatmap_info[bp]["repeated"])
                         durationTime.append(beatmap_info[bp]["duration"])
                         endTime.append(beatmap_info[bp]["end time"])
-        print("Total Slider Length: " + str(len(sliderTime)))
-        sliderCount = 0
         for x in range(len(my_info)):
             start_index = int(my_info[x].time/1000 * rate)
 
@@ -127,19 +136,19 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                 if my_info[x].more.sliderhead == True:
                         
                         arrow_time_list = []
-                        for a in range(repeatedTime[0]):        
-                                arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
-                        start_index2 = int(sliderTime[0]/1000 * rate)
-                        z[start_index2:start_index2 + len(s)] += s * 0.5
-                        for abc in arrow_time_list:
-                                start_index2 = int(abc/1000 * rate)
-                                z[start_index2:start_index2+ len(s)] += s * 0.5
+                        if len(sliderTime) > 0:
+                            for a in range(repeatedTime[0]):
+                                        arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
+                            start_index2 = int(sliderTime[0]/1000 * rate)
+                            z[start_index2:start_index2 + len(s)] += s * 0.5
+                            for abc in arrow_time_list:
+                                    start_index2 = int(abc/1000 * rate)
+                                    z[start_index2:start_index2+ len(s)] += s * 0.5
                             
-                        sliderCount+=1
-                        durationTime.pop(0)
-                        sliderTime.pop(0)
-                        endTime.pop(0)
-                        repeatedTime.pop(0)
+                            durationTime.pop(0)
+                            sliderTime.pop(0)
+                            endTime.pop(0)
+                            repeatedTime.pop(0)
                         continue
                 if my_info[x].hitresult == None:
                         pass
@@ -171,15 +180,15 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                     else:
                         z[start_index:start_index + len(b)] += b * 0.5
                         spinBonusTime = my_info[x].time/1000 + length_bonus
-        print("Total Slider Added: " + str(sliderCount))
         offset = int(offset)
-        write('z.mp3', rate, z[int(offset/1000)*rate:int((len(z)/rate))*rate])
+        write('z.mp3', rate, z[int(offset/1000*rate):int((len(z)/rate))*rate])
+        
         end=time.time()
         print(end-start)
         
 if __name__ == '__main__':
         res, beat = parseData()
         #args =(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name):
-        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/",27431.0,"","C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/","Tengaku")
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/",27431.0,"C:/Users/Shiho/Downloads/Compressed/skin/","C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess/","Tengaku")
 
 
