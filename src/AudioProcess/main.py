@@ -10,7 +10,51 @@ from pathlib import Path
 
 class Position(namedtuple('Position', 'x y')):  
 		pass
+def checkAudio(skin_path,default_skinP):
+        skin_path += "/"
+        default_skinP += "/"
+        try:
+            ratey, y = read(skin_path + 'normal-hitnormal.wav')
+            rate, z = read(skin_path + 'Tengaku.mp3')
+            rateM, m = read(skin_path + 'miss1.wav')
+            ratesb, b = read(skin_path + 'spinnerbonus.wav')
+            ratesc, c = read(skin_path + 'spinnerspin.wav')
+            rateS, s = read(skin_path + 'slider.wav')
 
+            spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.wav")
+            slider12 = AudioSegment.from_wav(skin_path + "slider.wav")
+        except FileNotFoundError:
+            ratey, y = read(skin_path + 'normal-hitnormal.mp3')
+            rate, z = read(skin_path + 'Tengaku.wav')
+            rateM, m = read(skin_path + 'miss1.mp3')
+            ratesb, b = read(skin_path + 'spinnerbonus.mp3')
+            ratesc, c = read(skin_path + 'spinnerspin.mp3')
+            rateS, s = read(skin_path + 'slider.mp3')
+
+            spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.mp3")
+            slider12 = AudioSegment.from_wav(skin_path + "slider.mp3")
+        else:
+            try:
+                ratey, y = read(default_skinP + 'normal-hitnormal.wav')
+                rate, z = read(default_skinP + 'Tengaku.mp3')
+                rateM, m = read(default_skinP + 'miss1.wav')
+                ratesb, b = read(default_skinP + 'spinnerbonus.wav')
+                ratesc, c = read(default_skinP + 'spinnerspin.wav')
+                rateS, s = read(default_skinP + 'slider.wav')
+
+                spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.wav")
+                slider12 = AudioSegment.from_wav(default_skinP + "slider.wav")
+            except FileNotFoundError:
+                ratey, y = read(default_skinP + 'normal-hitnormal.mp3')
+                rate, z = read(default_skinP + 'Tengaku.wav')
+                rateM, m = read(default_skinP + 'miss1.mp3')
+                ratesb, b = read(default_skinP + 'spinnerbonus.mp3')
+                ratesc, c = read(default_skinP + 'spinnerspin.mp3')
+                rateS, s = read(default_skinP + 'slider.mp3')
+
+                spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.mp3")
+                slider12 = AudioSegment.from_wav(default_skinP + "slider.mp3")
+        return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s
 
 def read(f):
 		if f[-1] == "3":
@@ -52,19 +96,10 @@ def parseData():
         my_info = eval(a.read())
         return my_info, beatmap_info
 
-def processAudio(my_info,beatmap_info,skin_path ):
-        skin_path += "/"
+def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP):
+        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s = checkAudio(skin_path,default_skinP)
         start=time.time()
 
-        ratey, y = read(skin_path + 'hit1.wav')
-        rate, z = read(skin_path + 'Tengaku.mp3')
-        rateM, m = read(skin_path + 'miss1.wav')
-        ratesb, b = read(skin_path + 'spinnerbonus.wav')
-        ratesc, c = read(skin_path + 'spinnerspin.wav')
-        rateS, s = read(skin_path + 'slider.wav')
-
-        spinSound = AudioSegment.from_wav("spinnerspin.wav")
-        slider12 = AudioSegment.from_wav("slider.wav")
 
         spinBonusTime = 0
         spinRotationTime = 0
@@ -112,8 +147,6 @@ def processAudio(my_info,beatmap_info,skin_path ):
                         z[start_index2:start_index2 + len(s)] += s * 0.5
                         for abc in arrow_time_list:
                                 start_index2 = int(abc/1000 * rate)
-                                #rate = 44100   
-                                #len = 13320
                                 z[start_index2:start_index2+ len(s)] += s * 0.5
                             
                         sliderCount+=1
@@ -153,10 +186,8 @@ def processAudio(my_info,beatmap_info,skin_path ):
                         z[start_index:start_index + len(b)] += b * 0.5
                         spinBonusTime = my_info[x].time/1000 + length_bonus
         print("Total Slider Added: " + str(sliderCount))
-        o = open("offset.txt", "r")
-        f = float(o.read())
-        f = int(f)
-        write('z.mp3', rate, z[int(f/1000)*rate:int((len(z)/rate))*rate])
+        offset = int(offset)
+        write('z.mp3', rate, z[int(offset/1000)*rate:int((len(z)/rate))*rate])
         o.close()
         end=time.time()
         print(end-start)
