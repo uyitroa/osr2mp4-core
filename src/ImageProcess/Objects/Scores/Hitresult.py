@@ -26,7 +26,7 @@ class HitResult(FrameObject):
 		if scores == 300:
 			return
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y, 0, 20, 0, 3])
+		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
