@@ -68,7 +68,7 @@ class ComboCounter(FrameObject):
 		imageproc.add(img, background, x_offset, y_offset)
 
 	def add_to_frame(self, background):
-		if int(self.fadeout_index) == 10:
+		if int(self.fadeout_index) == len(self.score_fadeout[0]) - 1:
 			self.combo = self.combofadeout
 			self.score_index = 0
 			self.index_step = 1
@@ -79,7 +79,7 @@ class ComboCounter(FrameObject):
 		if self.breaking:
 			self.combo = max(0, self.combo - 1)
 
-		if int(self.score_index) == 10:
+		if int(self.score_index) == len(self.score_frames[0]) - 1:
 			self.index_step = -1
 
 		if ceil(self.score_index) == 0 and self.animate and self.index_step == -1:
