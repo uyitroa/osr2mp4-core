@@ -28,7 +28,7 @@ class InputOverlay(FrameObject):
 		self.scoreentry = scoreentry
 
 		self.holding = False
-		self.oldclick = True
+		self.oldclick = False
 
 		self.n = 0
 
@@ -46,13 +46,15 @@ class InputOverlay(FrameObject):
 		self.holding = True
 
 	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
-		if self.holding:
+		if self.holding or (self.frame_index < len(self.frames) - 1 and self.oldclick):
 			self.frame_index += 1
 			if self.frame_index >= len(self.frames):
 				self.frame_index -= 1
 
-		else:
+		elif self.frame_index >= len(self.frames) - 1:
 			self.oldclick = False
+
+		if not self.oldclick:
 			self.frame_index -= 1
 			if self.frame_index < 0:
 				self.frame_index += 1
