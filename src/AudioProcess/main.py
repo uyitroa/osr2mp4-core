@@ -13,26 +13,26 @@ class Position(namedtuple('Position', 'x y')):
 def checkAudio(skin_path,default_skinP):
         skin_path += "/"
         default_skinP += "/"
+        print(skin_path + 'normal-hitnormal.wav')
         try:
             ratey, y = read(skin_path + 'normal-hitnormal.wav')
             rate, z = read(skin_path + 'Tengaku.mp3')
             rateM, m = read(skin_path + 'miss1.wav')
             ratesb, b = read(skin_path + 'spinnerbonus.wav')
             ratesc, c = read(skin_path + 'spinnerspin.wav')
-            rateS, s = read(skin_path + 'slider.wav')
+            rateS, s = read(skin_path + 'normal-hitnormal.wav')
 
             spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.wav")
-            slider12 = AudioSegment.from_wav(skin_path + "slider.wav")
         except FileNotFoundError:
             ratey, y = read(skin_path + 'normal-hitnormal.mp3')
             rate, z = read(skin_path + 'Tengaku.wav')
             rateM, m = read(skin_path + 'miss1.mp3')
             ratesb, b = read(skin_path + 'spinnerbonus.mp3')
             ratesc, c = read(skin_path + 'spinnerspin.mp3')
-            rateS, s = read(skin_path + 'slider.mp3')
+            rateS, s = read(skin_path + 'normal-hitnormal.mp3')
 
             spinSound = AudioSegment.from_wav(skin_path + "spinnerspin.mp3")
-            slider12 = AudioSegment.from_wav(skin_path + "slider.mp3")
+        '''
         else:
             try:
                 ratey, y = read(default_skinP + 'normal-hitnormal.wav')
@@ -40,21 +40,20 @@ def checkAudio(skin_path,default_skinP):
                 rateM, m = read(default_skinP + 'miss1.wav')
                 ratesb, b = read(default_skinP + 'spinnerbonus.wav')
                 ratesc, c = read(default_skinP + 'spinnerspin.wav')
-                rateS, s = read(default_skinP + 'slider.wav')
+                rateS, s = read(default_skinP + 'normal-hitnormal.wav')
 
                 spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.wav")
-                slider12 = AudioSegment.from_wav(default_skinP + "slider.wav")
             except FileNotFoundError:
                 ratey, y = read(default_skinP + 'normal-hitnormal.mp3')
                 rate, z = read(default_skinP + 'Tengaku.wav')
                 rateM, m = read(default_skinP + 'miss1.mp3')
                 ratesb, b = read(default_skinP + 'spinnerbonus.mp3')
                 ratesc, c = read(default_skinP + 'spinnerspin.mp3')
-                rateS, s = read(default_skinP + 'slider.mp3')
+                rateS, s = read(default_skinP + 'normal-hitnormal.mp3')
 
                 spinSound = AudioSegment.from_wav(default_skinP + "spinnerspin.mp3")
-                slider12 = AudioSegment.from_wav(default_skinP + "slider.mp3")
-        return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s
+        '''
+        return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
 
 def read(f):
 		if f[-1] == "3":
@@ -96,10 +95,10 @@ def parseData():
         my_info = eval(a.read())
         return my_info, beatmap_info
 
-def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP):
-        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s = checkAudio(skin_path,default_skinP)
-        start=time.time()
 
+def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP):
+        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP)
+        start=time.time()
 
         spinBonusTime = 0
         spinRotationTime = 0
@@ -188,12 +187,12 @@ def processAudio(my_info,beatmap_info,skin_path,audio_name,offset,default_skinP)
         print("Total Slider Added: " + str(sliderCount))
         offset = int(offset)
         write('z.mp3', rate, z[int(offset/1000)*rate:int((len(z)/rate))*rate])
-        o.close()
         end=time.time()
         print(end-start)
         
 if __name__ == '__main__':
         res, beat = parseData()
-        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess")
+        #args = my_info,beatmap_info,skin_path,audio_name,offset,default_skinP)
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/src/AudioProcess","Tengaku.mp3",27431.0,"")
 
 
