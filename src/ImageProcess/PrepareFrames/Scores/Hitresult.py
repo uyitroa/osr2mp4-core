@@ -4,7 +4,7 @@ from ImageProcess.imageproc import change_size
 
 hitprefix = "hit"
 default_size = 128
-hitresult_size = 2
+hitresult_size = 1.7
 
 
 def prepare_hitresults(scale, beatmap):
