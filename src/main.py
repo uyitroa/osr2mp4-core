@@ -157,8 +157,9 @@ def main():
 
 
 	offset = get_offset(beatmap, start_index, start_time, replay_event)
+	endtime = replay_event[end_index][TIMES]
 
-	processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, default_path, beatmap_path, beatmap.general["AudioFilename"])
+	processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, endtime, default_path, beatmap_path, beatmap.general["AudioFilename"])
 
 	create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, multi_process, hd)
 

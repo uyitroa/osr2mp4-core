@@ -97,7 +97,7 @@ def parseData():
         return my_info, beatmap_info
 
 
-def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name):
+def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name):
         rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP,beatmap_path,audio_name)
         start=time.time()
 
@@ -194,11 +194,15 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                         spinBonusTime = my_info[x].time/1000 + length_bonus
         offset = int(offset)
         if offset >= 0:
-            out = z[int(offset/1000*rate):int((len(z)/rate))*rate]
+            out = z[int(offset/1000*rate):]
         else:
             offset = -offset
             out = np.zeros((len(z) + int(offset/1000 * rate), 2), dtype=z.dtype)
             out[int(offset/1000 * rate):] = z
+
+        if endtime != -1:
+            out = out[:int(endtime/1000 * rate)]
+
         write('z.mp3', rate, out)
         
         end=time.time()
@@ -207,6 +211,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
 if __name__ == '__main__':
         res, beat = parseData()
         #args = my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name
-        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/",0,"C:/Users/Shiho/Downloads/skin/","C:/Users/Shiho/Downloads/skin/","Tengaku.mp3")
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/",0,-1,"C:/Users/Shiho/Downloads/skin/","C:/Users/Shiho/Downloads/skin/","Tengaku.mp3")
 
 
