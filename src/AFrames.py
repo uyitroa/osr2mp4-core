@@ -16,7 +16,7 @@ from ImageProcess.Objects.Scores.SpinBonusScore import SpinBonusScore
 from ImageProcess.Objects.Scores.URBar import URBar
 from ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, prepare_inputoverlaybg, \
 	prepare_inputoverlay
-from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail
+from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail, prepare_cursormiddle
 from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
 from ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
 from ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
@@ -28,36 +28,39 @@ from ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
 from ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
 from ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
+from global_var import Settings
 
 
 class PreparedFrames:
-	def __init__(self, skin, check, beatmap, settings, hd):
-		self.cursor = prepare_cursor(settings.scale)
-		self.cursor_trail = prepare_cursortrail(settings.scale)
-		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"])
-		self.inputoverlayBG = prepare_inputoverlaybg(settings.scale)
-		self.key = prepare_inputoverlay(settings.scale, [255, 220, 20], 2)
-		self.mouse = prepare_inputoverlay(settings.scale, [220, 0, 220], 1)
-		self.scorenumbers = ScoreNumbers(settings.scale)
-		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, settings.playfieldscale)
+	def __init__(self, skin, check, beatmap, hd):
+		self.cursor, default = prepare_cursor(Settings.scale)
+		self.cursormiddle, self.continuous = prepare_cursormiddle(Settings.scale, default)
+		self.cursor_trail = prepare_cursortrail(Settings.scale, self.continuous)
+		self.scoreentry = prepare_scoreentry(Settings.scale, skin.colours["InputOverlayText"])
+		self.inputoverlayBG = prepare_inputoverlaybg(Settings.scale)
+		self.key = prepare_inputoverlay(Settings.scale, [255, 220, 20], 2)
+		self.mouse = prepare_inputoverlay(Settings.scale, [220, 0, 220], 1)
+		self.scorenumbers = ScoreNumbers(Settings.scale)
+		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, Settings.playfieldscale)
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers)
-		self.hitresult = prepare_hitresults(settings.scale, beatmap)
+		self.hitresult = prepare_hitresults(Settings.scale, beatmap)
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
-		self.urbar = prepare_bar(settings.scale, check.scorewindow)
-		self.fpmanager = prepare_fpmanager(settings.playfieldscale)
-		self.circle = prepare_circle(beatmap, settings.playfieldscale, skin, settings, hd)
-		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, skin, settings)
-		self.spinner = prepare_spinner(settings.playfieldscale)
+		self.urbar = prepare_bar(Settings.scale, check.scorewindow)
+		self.fpmanager = prepare_fpmanager(Settings.playfieldscale)
+		self.circle = prepare_circle(beatmap, Settings.playfieldscale, skin, hd)
+		self.slider = prepare_slider(beatmap.diff, Settings.playfieldscale, skin)
+		self.spinner = prepare_spinner(Settings.playfieldscale)
 
 
 class FrameObjects:
-	def __init__(self, frames, skin, beatmap, check, settings, hd):
-		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)
+	def __init__(self, frames, skin, beatmap, check, hd):
+		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"])
 
+		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
-		self.cursor_trail = Cursortrail(frames.cursor_trail)
+		self.cursor_trail = Cursortrail(frames.cursor_trail, frames.continuous)
 		# self.lifegraph = LifeGraph(skin_path + "scorebar-colour")
 
 		self.scoreentry = ScoreEntry(frames.scoreentry)
@@ -68,19 +71,19 @@ class FrameObjects:
 		self.mouse1 = InputOverlay(frames.mouse, self.scoreentry)
 		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry)
 
-		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
-		self.timepie = TimePie(settings.scale, self.accuracy)
-		self.hitresult = HitResult(frames.hitresult, settings)
-		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
-		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
-		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)
+		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"])
+		self.timepie = TimePie(Settings.scale, self.accuracy)
+		self.hitresult = HitResult(frames.hitresult)
+		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"])
+		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"])
+		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"])
 
-		self.urbar = URBar(frames.urbar, settings)
+		self.urbar = URBar(frames.urbar)
 
-		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
+		self.followpoints = FollowPointsManager(frames.fpmanager)
 
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
-		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
-		self.slider = SliderManager(frames.slider, beatmap.diff, skin, settings, hd)
-		self.spinner = SpinnerManager(frames.spinner, settings)
-		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
+		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber)
+		self.slider = SliderManager(frames.slider, beatmap.diff, skin, hd)
+		self.spinner = SpinnerManager(frames.spinner)
+		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])

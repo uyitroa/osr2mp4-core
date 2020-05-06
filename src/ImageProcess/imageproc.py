@@ -13,6 +13,12 @@ def changealpha(img, alpha):
 	img.putalpha(a)
 
 
+def addalpha(img, alpha):
+	a = img.getchannel('A')
+	a = a.point(lambda i: i + alpha)
+	img.putalpha(a)
+
+
 def newalpha(img, alpha):
 	"""
 	Multiplication of image alpha channel and alpha
