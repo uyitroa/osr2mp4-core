@@ -2,6 +2,7 @@ from CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
 
+from global_var import Settings
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
@@ -10,7 +11,7 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, settings, mod=1):
+	def __init__(self, beatmap, mod=1):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects) # TODO: put slider image into another list
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -25,7 +26,7 @@ class HitObjectChecker:
 			self.fade_in = 800 - 500 * (self.diff["ApproachRate"] - 5) / 5
 
 		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5  # - 0.5
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.CIRCLE = 0
 		self.SLIDER = 1
 		self.SPINNER = 2

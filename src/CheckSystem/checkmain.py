@@ -3,6 +3,7 @@ import time
 from osrparse.enums import Mod
 
 from CheckSystem.HitObjectChecker import HitObjectChecker
+from global_var import Settings
 
 CURSOR_X = 0
 CURSOR_Y = 1
@@ -102,11 +103,11 @@ def diffmod(replay_info, diff):
 	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
 
 
-def checkmain(beatmap, replay_info, replay_event, cur_time, settings):
+def checkmain(beatmap, replay_info, replay_event, cur_time):
 	osr_index = 0
 	index_hitobject = 0
 	diffmod(replay_info, beatmap.diff)
-	hitobjectchecker = HitObjectChecker(beatmap, settings)
+	hitobjectchecker = HitObjectChecker(beatmap)
 	start_time = time.time()
 
 	while osr_index < len(replay_event) - 3:
@@ -122,7 +123,7 @@ def checkmain(beatmap, replay_info, replay_event, cur_time, settings):
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1)
-		cur_time += settings.timeframe / settings.fps
+		cur_time += Settings.timeframe / Settings.fps
 
 		osr_index += 1
 	print("check done")

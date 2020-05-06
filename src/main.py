@@ -17,10 +17,8 @@ from Parser.skinparser import Skin
 import time
 
 # const
+from global_var import Settings, Paths
 from skip import search_time, search_osrindex
-
-Settings = recordclass("Settings", "width height fps scale playfieldscale playfieldwidth playfieldheight movedown moveright timeframe")
-Paths = recordclass("Paths", "skin defaultskin output ffmpeg")
 
 
 def findTime(starttime, endtime, replay, replay_start):
@@ -57,12 +55,12 @@ def get_screensize(width, height):
 
 def get_offset(beatmap, start_index, start_time, replay_event):
 	diffcalculator = DiffCalculator(beatmap.diff)
-	print(beatmap.diff)
 	timepreempt = diffcalculator.ar()
 	to_time, hitobjectindex = search_time(start_time*1000, beatmap.hitobjects)
 	to_time -= timepreempt
 	osr_index = search_osrindex(to_time, replay_event)
 	index = max(osr_index, start_index)
+	# print(replay_event[osr_index][TIMES], replay_event[start_index][TIMES], replay_event[index][TIMES])
 	offset = replay_event[index][TIMES]
 
 	return offset
@@ -112,8 +110,8 @@ def main():
 	if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
 		beatmap_path += "/"
 
-	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
-	paths = Paths(skin_path, default_path, output_path, ffmpeg)
+	Paths.output = output_path
+	Paths.ffmpeg = ffmpeg
 
 
 	skin = Skin(skin_path)
@@ -127,14 +125,6 @@ def main():
 	replay_info = osrparse.parse_replay_file(replay_file)
 	hr = Mod.HardRock in replay_info.mod_combination
 	hd = Mod.Hidden in replay_info.mod_combination
-
-	beatmap_file = get_osu(beatmap_path, replay_info.beatmap_hash)
-
-	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
-
-	replay_event, cur_time = setupReplay(replay_file, beatmap.start_time, beatmap.end_time)
-	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)
-
 	if Mod.DoubleTime in replay_info.mod_combination or Mod.Nightcore in replay_info.mod_combination:
 		time_frame = 1500
 	elif Mod.HalfTime in replay_info.mod_combination:
@@ -142,13 +132,27 @@ def main():
 	else:
 		time_frame = 1000
 
-	settings = Settings(width, height, fps, scale, playfield_scale, playfield_width, playfield_height, move_down, move_right, time_frame)
+
+	beatmap_file = get_osu(beatmap_path, replay_info.beatmap_hash)
+
+	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
+	Settings.width, Settings.height, Settings.scale = width, height, scale
+	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = playfield_scale, playfield_width, playfield_height
+	Settings.fps, Settings.timeframe = fps, time_frame
+	Settings.moveright, Settings.movedown = move_right, move_down
+
+
+	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
+
+	print("Timing:", beatmap.timing_point[0]["Offset"])
+	replay_event, cur_time = setupReplay(replay_file, beatmap)
+	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
-	beatmap.hitobjects.append(
-		{"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
-	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time, settings)
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
+
+	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
 	print(beatmap.diff)
 
 
@@ -156,9 +160,9 @@ def main():
 
 	processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, default_path, beatmap_path, beatmap.general["AudioFilename"])
 
-	create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_index, end_index, multi_process, settings, hd)
+	create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, multi_process, hd)
 
-	f = paths.output[:-4] + "f" + paths.output[-4:]
+	f = Paths.output[:-4] + "f" + Paths.output[-4:]
 	os.system('"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path))
 	os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 

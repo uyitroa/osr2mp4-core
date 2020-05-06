@@ -193,7 +193,13 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                         z[start_index:start_index + len(b)] += b * 0.5
                         spinBonusTime = my_info[x].time/1000 + length_bonus
         offset = int(offset)
-        write('z.mp3', rate, z[int(offset/1000*rate):int((len(z)/rate))*rate])
+        if offset >= 0:
+            out = z[int(offset/1000*rate):int((len(z)/rate))*rate]
+        else:
+            offset = -offset
+            out = np.zeros((len(z) + int(offset/1000 * rate), 2), dtype=z.dtype)
+            out[int(offset/1000 * rate):] = z
+        write('z.mp3', rate, out)
         
         end=time.time()
         print(end-start)
