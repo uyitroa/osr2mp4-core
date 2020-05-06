@@ -213,7 +213,7 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 	timer = 0
 	timer2 = 0
 	timer3 = 0
-	while frame_info.osr_index < end_index:  # len(replay_event) - 3:
+	while frame_info.osr_index < end_index:
 
 		asdf = time.time()
 		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,

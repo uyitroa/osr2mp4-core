@@ -1,5 +1,6 @@
 import hashlib
 import os
+from multiprocessing import Process
 
 import osrparse
 from osrparse.enums import Mod
@@ -159,9 +160,17 @@ def main():
 	offset = get_offset(beatmap, start_index, start_time, replay_event)
 	endtime = replay_event[end_index][TIMES] + 1000
 
-	processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, endtime, default_path, beatmap_path, beatmap.general["AudioFilename"])
+	if multi_process >= 1:
+		audio_args = (resultinfo, beatmap.hitobjects, skin_path, offset, endtime, default_path, beatmap_path, beatmap.general["AudioFilename"],)
+		audio = Process(target=processAudio, args=audio_args)
+		audio.start()
+	else:
+		processAudio(resultinfo, beatmap.hitobjects, skin_path, offset, endtime, default_path, beatmap_path, beatmap.general["AudioFilename"])
 
 	create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, multi_process, hd)
+
+	if multi_process >= 1:
+		audio.join()
 
 	f = Paths.output[:-4] + "f" + Paths.output[-4:]
 	os.system('"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path))
