@@ -155,7 +155,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.scorecounter.add_to_frame(img, cursor_event.event[TIMES])
 	component.accuracy.add_to_frame(img)
 	component.urbar.add_to_frame(img)
-	component.cursor_trail.add_to_frame(img, cursor_event.old_x, cursor_event.old_y)
+	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y)
 	component.cursor.add_to_frame(img, cursor_x, cursor_y)
 	component.timepie.add_to_frame(np_img, frame_info.cur_time, beatmap.end_time)
 
@@ -342,9 +342,9 @@ def create_frame(codec, beatmap, skin, paths, replay_event, resultinfo, start_in
 		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy "{}" -y'.format(paths.ffmpeg, f))
 
 	else:
-
+		f = paths.output[:-4] + "f" + paths.output[-4:]
 		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
-		writer = cv2.VideoWriter(paths.output, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
+		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*codec), settings.fps, (settings.width, settings.height))
 
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
 			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, settings, hd)
