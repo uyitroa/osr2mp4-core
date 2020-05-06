@@ -2,6 +2,7 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.PrepareFrames.YImage import YImage, YImages
+from global_var import Settings
 
 sliderb = "sliderb"
 sliderfollowcircle = "sliderfollowcircle"
@@ -37,12 +38,12 @@ def load(scale):
 	return arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick
 
 
-def prepare_slider(diff, scale, skin, settings):
+def prepare_slider(diff, scale, skin):
 
 	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	radius_scale = cs * 2 / default_size
 
-	interval = settings.timeframe / settings.fps
+	interval = Settings.timeframe / Settings.fps
 	follow_fadein = 150  # need 150ms to fadein
 
 	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale)

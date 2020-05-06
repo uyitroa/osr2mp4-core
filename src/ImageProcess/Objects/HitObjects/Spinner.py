@@ -2,6 +2,7 @@ from recordclass import recordclass
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 spinnercircle = "spinner-circle"
 spinnerbackground = "spinner-background"
@@ -16,14 +17,14 @@ Spinner = recordclass("Spinner", "angle duration starttime_left alpha index")
 
 
 class SpinnerManager(FrameObject):
-	def __init__(self, frames, settings):
+	def __init__(self, frames):
 		super().__init__(frames)
-		self.moveright = settings.moveright
-		self.movedown = settings.movedown
-		self.scale = settings.playfieldscale
+		self.moveright = Settings.moveright
+		self.movedown = Settings.movedown
+		self.scale = Settings.playfieldscale
 		self.spinners = {}
 
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.timer = 0
 
 	def add_spinner(self, starttime, endtime, curtime):

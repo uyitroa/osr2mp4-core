@@ -2,14 +2,15 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class URBar(FrameObject):
-	def __init__(self, frames, settings):
-		self.scale = settings.scale
-		self.w, self.h = int(200 * settings.scale), int(25 * settings.scale)
-		self.y = settings.height - self.h//2
-		self.x = settings.width//2
+	def __init__(self, frames):
+		self.scale = Settings.scale
+		self.w, self.h = int(200 * Settings.scale), int(25 * Settings.scale)
+		self.y = Settings.height - self.h//2
+		self.x = Settings.width//2
 		self.x_offset = self.x - self.w // 2
 
 		self.bars = []
@@ -35,4 +36,4 @@ class URBar(FrameObject):
 	def add_to_frame(self, background):
 		img = self.bar_container
 		imageproc.add(img, background, self.x_offset + self.w//2, self.y)
-		imageproc.changealpha(self.bar_container, 0.999)
+		imageproc.addalpha(self.bar_container, -1)

@@ -2,13 +2,14 @@ from math import ceil
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class ComboCounter(FrameObject):
-	def __init__(self, frames, gap, settings):
+	def __init__(self, frames, gap):
 		self.score_frames, self.score_fadeout = frames
-		self.height = settings.height
-		self.width = settings.width
+		self.height = Settings.height
+		self.width = Settings.width
 
 		self.score_index = 0
 		self.index_step = 1
@@ -20,7 +21,7 @@ class ComboCounter(FrameObject):
 		self.adding = False
 		self.animate = False
 
-		self.gap = int(gap * settings.scale)
+		self.gap = int(gap * Settings.scale)
 
 	def breakcombo(self):
 		self.breaking = True

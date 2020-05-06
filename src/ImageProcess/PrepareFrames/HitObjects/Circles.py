@@ -6,6 +6,7 @@ from ImageProcess import imageproc
 from ImageProcess.Animation import alpha, size
 from ImageProcess.PrepareFrames.YImage import YImage
 from ImageProcess.imageproc import newalpha
+from global_var import Settings
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"
@@ -17,16 +18,15 @@ default_size = 128
 overlay_scale = 1.05
 
 
-def prepare_approach(scale, time_preempt, settings):
+def prepare_approach(scale, time_preempt):
 	"""
 	:param scale: float
 	:param time_preempt: the time the circle is on screen
-	:param settings: settings
 	:return: [PIL.Image]
 	"""
 	img = YImage(approachcircle).img
 	approach_frames = []
-	interval = int(settings.timeframe / settings.fps)
+	interval = int(Settings.timeframe / Settings.fps)
 	time_preempt = round(time_preempt)
 	s = 3.5
 	for time_left in range(time_preempt, 0, -interval):
@@ -63,8 +63,8 @@ def prepare_fadeout(img):
 	return fade_out
 
 
-def calculate_ar(ar, settings):
-	interval = settings.timeframe / settings.fps
+def calculate_ar(ar):
+	interval = Settings.timeframe / Settings.fps
 	if ar < 5:
 		time_preempt = 1200 + 600 * (5 - ar) / 5
 		fade_in = 800 + 400 * (5 - ar) / 5
@@ -86,18 +86,18 @@ def load():
 	return circle, c_overlay, slider, s_overlay
 
 
-def prepare_circle(beatmap, scale, skin, settings, hd):
+def prepare_circle(beatmap, scale, skin, hd):
 	# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 	# to overlap number, circle overlay and approach circle every single time.
 
-	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"], settings)
+	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"])
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	radius_scale = cs * overlay_scale * 2 / default_size
 
 	circle, c_overlay, slider, s_overlay = load()
 	if not hd:
-		approach_frames = prepare_approach(radius_scale, time_preempt, settings)
+		approach_frames = prepare_approach(radius_scale, time_preempt)
 
 	fadeout = [[], []]  # circle, slider
 	circle_frames = []  # [color][number][alpha]
@@ -143,7 +143,7 @@ def prepare_circle(beatmap, scale, skin, settings, hd):
 			alphas.append(alpha)
 
 		else:
-			interval = int(settings.timeframe / settings.fps)
+			interval = int(Settings.timeframe / Settings.fps)
 			fade_in = time_preempt * 0.4
 			fade_in_interval = 100 * interval/fade_in
 
@@ -154,8 +154,12 @@ def prepare_circle(beatmap, scale, skin, settings, hd):
 
 			time_preempt = round(time_preempt)
 			for i in range(time_preempt, 0, -interval):
-				circle_frames[-1].append(newalpha(orig_circle, alpha/100))
-				slidercircle_frames[-1].append(newalpha(orig_slider, alpha/100))
+				if alpha != 0:
+					circle_frames[-1].append(newalpha(orig_circle, alpha/100))
+					slidercircle_frames[-1].append(newalpha(orig_slider, alpha/100))
+				else:
+					circle_frames[-1].append(Image.new("RGBA", (1, 1)))
+					slidercircle_frames[-1].append(Image.new("RGBA", (1, 1)))
 
 				if alpha == 100:
 					ii = -fade_out_interval

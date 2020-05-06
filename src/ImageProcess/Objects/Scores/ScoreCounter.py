@@ -1,16 +1,17 @@
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class ScoreCounter(FrameObject):
-	def __init__(self, frames, diff, gap, settings):
+	def __init__(self, frames, diff, gap):
 		super().__init__(frames)
 		self.freeze = 0
 		self.showscore = 0
 		self.score = 0
 		self.diff = diff
-		self.width = settings.width
-		self.height = settings.height
-		self.gap = int(gap * settings.scale * 0.75)
+		self.width = Settings.width
+		self.height = Settings.height
+		self.gap = int(gap * Settings.scale * 0.75)
 
 	def set_score(self, freeze, score, showscore):
 		"""

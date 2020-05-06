@@ -1,8 +1,9 @@
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class Accuracy(FrameObject):
-	def __init__(self, frames, gap, settings):
+	def __init__(self, frames, gap):
 		"""
 		:param y: int height of the position. Needs to be right under the score
 		:param gap: int
@@ -14,11 +15,11 @@ class Accuracy(FrameObject):
 		self.frames = frames[0]
 
 		self.divide_by_255 = 1 / 255.0
-		self.width = settings.width
+		self.width = Settings.width
 		self.total = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.maxscore = 0
 		self.curscore = 0
-		self.gap = int(gap * settings.scale * 0.5)
+		self.gap = int(gap * Settings.scale * 0.5)
 		self.y = frames[1]
 
 	def update_acc(self, hitresult):

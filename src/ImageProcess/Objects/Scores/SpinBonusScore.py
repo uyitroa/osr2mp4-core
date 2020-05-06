@@ -1,15 +1,16 @@
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class SpinBonusScore(FrameObject):
-	def __init__(self, frames, gap, settings):
+	def __init__(self, frames, gap):
 		super().__init__(frames)
 		self.spinbonuses = ["0", None, None, 10]
-		self.gap = int(gap * settings.scale)
+		self.gap = int(gap * Settings.scale)
 
-		self.x = settings.width//2
-		self.y = settings.height * 2//3
+		self.x = Settings.width//2
+		self.y = Settings.height * 2//3
 
 	def set_bonusscore(self, rotated_bonus):
 		if rotated_bonus*1000 == int(self.spinbonuses[0]):

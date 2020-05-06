@@ -1,17 +1,18 @@
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class HitResult(FrameObject):
-	def __init__(self, frames, settings):
+	def __init__(self, frames):
 		super().__init__(frames)
-		self.moveright = settings.moveright
-		self.movedown = settings.movedown
+		self.moveright = Settings.moveright
+		self.movedown = Settings.movedown
 		self.divide_by_255 = 1 / 255.0
 		self.hitresults = []
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.time = 600
-		self.playfieldscale = settings.playfieldscale
+		self.playfieldscale = Settings.playfieldscale
 
 	def add_result(self, scores, x, y):
 		"""

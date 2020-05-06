@@ -8,15 +8,14 @@ from ImageProcess.Curves.generate_slider import GenerateSlider
 from ImageProcess.Curves.curve import *
 
 from ImageProcess.PrepareFrames.HitObjects.Circles import calculate_ar
+from global_var import Settings
 
 Slider = recordclass("Slider", "image x y cur_duration opacity color sliderb_i orig_duration bezier_info "
                                "cur_repeated repeated appear_f tick_a arrow_i baiser arrow_pos")
 
 
 class SliderManager:
-	def __init__(self, frames, diff, skin, settings, hd):
-		self.settings = settings
-
+	def __init__(self, frames, diff, skin, hd):
 		self.reversearrow, self.sliderb_frames, self.sliderfollow_fadeout, self.slidertick = frames
 		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
 
@@ -29,13 +28,13 @@ class SliderManager:
 
 		self.sliderborder = skin.colours["SliderBorder"]
 		self.slideroverride = skin.colours["SliderTrackOverride"]
-		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, settings.playfieldscale)
+		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, Settings.playfieldscale)
 
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 
-		self.interval = settings.timeframe / settings.fps
-		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, settings)
+		self.interval = Settings.timeframe / Settings.fps
+		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar)
 		self.timer = 0
 
 		self.hd = hd
@@ -97,8 +96,8 @@ class SliderManager:
 		background.paste(img, (x_offset, y_offset), a)
 
 	def to_frame(self, img, background, pos, slider, alpha=1.0):
-		x = int((pos.x + slider.bezier_info[3]) * self.settings.playfieldscale) + self.settings.moveright
-		y = int((pos.y + slider.bezier_info[3]) * self.settings.playfieldscale) + self.settings.movedown
+		x = int((pos.x + slider.bezier_info[3]) * Settings.playfieldscale) + Settings.moveright
+		y = int((pos.y + slider.bezier_info[3]) * Settings.playfieldscale) + Settings.movedown
 
 		imageproc.add(img, background, x, y, alpha=alpha)
 

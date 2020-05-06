@@ -2,15 +2,7 @@ import os
 import numpy as np
 from PIL import Image
 from ImageProcess import imageproc
-
-FORMAT = ".png"
-
-
-class SkinPaths:
-	path = None
-	default_path = None
-	skin_ini = None
-	default_skin_ini = None
+from global_var import SkinPaths
 
 
 class YImage:
@@ -45,11 +37,11 @@ class YImage:
 			path = SkinPaths.path
 
 		try:
-			self.img = Image.open(path + pre + self.filename + FORMAT).convert("RGBA")
+			self.img = Image.open(path + pre + self.filename + SkinPaths.format).convert("RGBA")
 		except FileNotFoundError as e:
 			if fallback is not None:
 				try:
-					self.img = Image.open(path + pre + fallback + FORMAT).convert("RGBA")
+					self.img = Image.open(path + pre + fallback + SkinPaths.format).convert("RGBA")
 					return
 				except FileNotFoundError as er:
 					self.filename = fallback
@@ -57,7 +49,7 @@ class YImage:
 			print(e, "\nTrying default skin files")
 			print(pre, default_pre)
 			try:
-				self.img = Image.open(SkinPaths.default_path + default_pre + self.filename + FORMAT).convert("RGBA")
+				self.img = Image.open(SkinPaths.default_path + default_pre + self.filename + SkinPaths.format).convert("RGBA")
 			except FileNotFoundError as e:
 				print(e, "\nDefault file not found creating blank file")
 				self.img = Image.new("RGBA", (1, 1))
@@ -106,7 +98,7 @@ class YImages:
 		else:
 			path = SkinPaths.path
 
-		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + FORMAT)
+		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + SkinPaths.format)
 		while should_continue:
 
 			img = YImage(self.filename + self.delimiter + str(counter), scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
@@ -114,11 +106,11 @@ class YImages:
 
 			counter += 1
 
-			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + FORMAT)
+			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + SkinPaths.format)
 
 
 		if not self.frames:
-			should_continue = os.path.isfile(path + self.filename + FORMAT)
+			should_continue = os.path.isfile(path + self.filename + SkinPaths.format)
 			if should_continue:
 
 				a = YImage(self.filename, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)

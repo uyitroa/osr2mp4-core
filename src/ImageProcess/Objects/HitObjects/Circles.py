@@ -2,17 +2,17 @@ from recordclass import recordclass
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
-
+from global_var import Settings
 
 Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fadeout_i is_fadeout x_step max_step")
 
 
 class CircleManager(FrameObject):
-	def __init__(self, frames, timepreempt, number, settings):
+	def __init__(self, frames, timepreempt, number):
 		self.slidercircle_frames, self.circle_frames, self.circle_fadeout, self.alphas = frames
 		self.number = number
 		self.time_preempt = timepreempt
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.circles = {}
 
 		self.timer = 0
