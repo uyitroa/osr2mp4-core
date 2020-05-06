@@ -39,12 +39,11 @@ def pydubtonumpy(a):
 def checkAudio(sPath,dPath,beatmap,audio_name):
             song = beatmap + audio_name
             checked = []
-            fileNames = [sPath + "normal-hitnormal",song,sPath + "combobreak",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin"]
-            fileNames2 = [dPath + "normal-hitnormal",song,dPath + "combobreak",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
+            fileNames = [sPath + "normal-hitnormal",sPath + "combobreak",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin"]
+            fileNames2 = [dPath + "normal-hitnormal",dPath + "combobreak",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
 
             fileTypes = ".mp3",".wav"
-            print(fileNames2[0] + fileTypes[0])
-            for x in range(7):
+            for x in range(6):
                 if os.path.exists(sPath):
                     if os.path.exists(fileNames[x] + fileTypes[0]):
                         checked.append(fileNames[x] + fileTypes[0])
@@ -61,22 +60,22 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
                             print("Adding: " + fileNames2[x] + fileTypes[1] + "from default skin path")
                 else:
                        if os.path.exists(fileNames2[x] + fileTypes[0]):
+                           print(x)
                            checked.append(fileNames2[x] + fileTypes[0])
                            print("Adding: " + fileNames2[x] + fileTypes[0] + "from default skin path")
                        elif os.path.exists(fileNames2[x] + fileTypes[1]):
                             checked.append(fileNames2[x] + fileTypes[1])
                             print("Adding: " + fileNames2[x] + fileTypes[1] + "from default skin path")
-            print(checked)
+            rate, z = read(song)
             ratey, y = read(checked[0])
-            rate, z = read(checked[1])
-            rateM, m = read(checked[2])
-            ratesb, b = read(checked[3])
-            ratesc, c = read(checked[4])
-            rateS, s = read(checked[5])
-            if "wav" in checked[6]:
-                spinSound = AudioSegment.from_wav(checked[6])
+            rateM, m = read(checked[1])
+            ratesb, b = read(checked[2])
+            ratesc, c = read(checked[3])
+            rateS, s = read(checked[4])
+            if "wav" in checked[5]:
+                spinSound = AudioSegment.from_wav(checked[5])
             else:
-                spinSound = AudioSegment.from_mp3(checked[6])
+                spinSound = AudioSegment.from_mp3(checked[5])
         
 
             return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
@@ -140,20 +139,29 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
                 if my_info[x].more.sliderhead == True:
                         
                         arrow_time_list = []
-                        if len(sliderTime) > 0:
+                        if len(sliderTime) > 1:
                             for a in range(repeatedTime[0]):
                                         arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
                             start_index2 = int(sliderTime[0]/1000 * rate)
                             z[start_index2:start_index2 + len(s)] += s * 0.5
+
                             for abc in arrow_time_list:
                                     start_index2 = int(abc/1000 * rate)
                                     z[start_index2:start_index2+ len(s)] += s * 0.5
-                            
-                            durationTime.pop(0)
-                            sliderTime.pop(0)
-                            endTime.pop(0)
-                            repeatedTime.pop(0)
+                        durationTime.pop(0)
+                        sliderTime.pop(0)
+                        endTime.pop(0)
+                        repeatedTime.pop(0)
+                        if len(sliderTime) == 1:
+                            start_index2 = int(sliderTime[0]/1000 * rate)
+                            z[start_index2:start_index2 + len(s)] += s * 0.5 
+                            start_index2 = int(endTime[0]/1000 * rate)
+                            z[start_index2:start_index2 + len(s)] += s * 0.5
                         continue
+                        
+
+                        
+
                 if my_info[x].hitresult == None:
                         pass
 
@@ -193,6 +201,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_pat
 if __name__ == '__main__':
         res, beat = parseData()
         #args = my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name
-        processAudio(res, beat,"Libraries\Documents",27431.0,"C:/Users/Shiho/Downloads/Compressed/skin/","C:/Users/Shiho/Downloads/Compressed/skin/","Tengaku")
+        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/",0,"C:/Users/Shiho/Downloads/skin/","C:/Users/Shiho/Downloads/skin/","Tengaku.mp3")
 
 
