@@ -20,7 +20,7 @@ def setupReplay(osrfile, beatmap):
 	total_time = 0
 	start_index = 0
 
-	start_osr = max(0, start_time - 3000)
+	start_osr = start_time - 3000
 
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
@@ -42,6 +42,7 @@ def setupReplay(osrfile, beatmap):
 
 	replay_data = replay_data[start_index:-1]
 	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
+
 	start_time = replay_data[0][TIMES]
 
 	for x in range(10):
