@@ -29,7 +29,7 @@ def prepare_cursormiddle(scale, default=False):
 		path = SkinPaths.path
 
 	exists = os.path.isfile(path + cursormiddle + SkinPaths.format)
-	yimg = YImage(cursormiddle, scale, defaultpath=default)
+	yimg = YImage(cursormiddle, scale, defaultpath=default, fallback="reeeee")
 	frame = [yimg.img]
 
 	return frame, exists
