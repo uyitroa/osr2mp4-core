@@ -49,7 +49,8 @@ class GenerateSlider:
 
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tolerance = {"L": 1, "B": 0.02, "P": 0.025}
+		tol = 1/max(1, baiser_class.req_length/650)
+		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.025 * tol}
 
 		baiser_class(0)
 		t = 0
