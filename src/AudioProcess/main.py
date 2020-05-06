@@ -192,8 +192,9 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                     else:
                         z[start_index:start_index + len(b)] += b * 0.5
                         spinBonusTime = my_info[x].time/1000 + length_bonus
-        offset = int(offset)
+
         if offset >= 0:
+            endtime -= offset
             out = z[int(offset/1000*rate):]
         else:
             offset = -offset
