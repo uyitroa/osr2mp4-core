@@ -60,6 +60,7 @@ class Beatmap:
 		event = self.info[5]
 		event = event.split("//")
 		self.bg = event[1].split("\n")[1].split(",")
+		self.bg[2] = self.bg[2].replace('"', '')
 
 		breakperiods = event[2].split("\n")[1:-1]
 		for period in breakperiods:

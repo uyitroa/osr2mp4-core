@@ -10,6 +10,7 @@ class SkinPaths:
 class Paths:
 	ffmpeg = None
 	output = None
+	beatmap = None
 
 
 class Settings:

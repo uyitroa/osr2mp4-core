@@ -17,7 +17,7 @@ def prepare_cursor(scale):
 	:return: [PIL.Image]
 	"""
 	default = not os.path.isfile(SkinPaths.path + cursor + SkinPaths.format)
-	yimg = YImage(cursor, scale * 0.75)
+	yimg = YImage(cursor, scale)
 	frame = [yimg.img]
 	return frame, default
 

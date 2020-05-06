@@ -113,6 +113,7 @@ def main():
 
 	Paths.output = output_path
 	Paths.ffmpeg = ffmpeg
+	Paths.beatmap = beatmap_path
 
 
 	skin = Skin(skin_path)
@@ -151,10 +152,9 @@ def main():
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 
-	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
 	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
-	print(beatmap.diff)
 
 
 	offset = get_offset(beatmap, start_index, start_time, replay_event)

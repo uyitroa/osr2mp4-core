@@ -21,7 +21,7 @@ CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
-FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end")
+FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end, break_index")
 CursorEvent = recordclass("CursorEvent", "event old_x old_y")
 
 
@@ -100,10 +100,25 @@ def get_buffer(img):
 
 def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
                 preempt_followpoint, replay_event, start_index, time_preempt, updater):
+
+	breakperiod = beatmap.breakperiods[frame_info.break_index]
+	next_break = frame_info.cur_time > breakperiod["End"]
+	if next_break:
+		frame_info.break_index = min(frame_info.break_index+1, len(beatmap.breakperiods)-1)
+		component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
+		breakperiod = beatmap.breakperiods[frame_info.break_index]
+
+	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"])
+	# print(breakperiod, frame_info.cur_time, in_break)
+
 	if frame_info.osr_index >= start_index:
 		if img.size[0] == 1:
 			img = pbuffer
-		np_img.fill(0)
+		# if not in_break:
+		# 	# np_img.fill(0)
+		# 	img.paste((0, 0, 0, 255), (0, 0, img.size[0], img.size[1]))
+
+	component.background.add_to_frame(img, np_img, frame_info.cur_time)
 
 	check_key(component, cursor_event)
 
@@ -139,11 +154,19 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 			frame_info.index_hitobj += 1
 
+	half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"])/2
+	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 1000:
+		component.sections.startbreak(0, breakperiod["Start"])
+
+	if in_break:
+		component.scorebar.startbreak(breakperiod["Start"], breakperiod["End"] - frame_info.cur_time)
+
 	updater.update(frame_info.cur_time)
 
 	cursor_x = int(cursor_event.event[CURSOR_X] * Settings.playfieldscale) + Settings.moveright
 	cursor_y = int(cursor_event.event[CURSOR_Y] * Settings.playfieldscale) + Settings.movedown
 
+	component.scorebar.add_to_frame(img)
 	component.inputoverlayBG.add_to_frame(img, Settings.width - component.inputoverlayBG.w() // 2, int(320 * Settings.scale))
 	component.urbar.add_to_frame_bar(img)
 	component.key1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(350 * Settings.scale))
@@ -161,16 +184,17 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y)
 	component.cursor.add_to_frame(img, cursor_x, cursor_y)
 	component.cursormiddle.add_to_frame(img, cursor_x, cursor_y)
+	component.sections.add_to_frame(img)
 	component.timepie.add_to_frame(np_img, frame_info.cur_time, beatmap.end_time)
 
 	cursor_event.old_x = cursor_x
 	cursor_event.old_y = cursor_y
 
 	frame_info.cur_time += Settings.timeframe / Settings.fps
+
 	# choose correct osr index for the current time because in osr file there might be some lag
 	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
 	cursor_event.event = replay_event[frame_info.osr_index]
-	# print(frame_info.osr_index, frame_info.cur_time, cursor_event.event[TIMES], img.size[0] != 1)
 	return img.size[0] != 1
 
 
@@ -191,7 +215,10 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 	updater = Updater(resultinfo, component)
 
 	simulate = replay_event[start_index][TIMES]
-	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap.hitobjects, time_preempt, component))
+	frame_info = FrameInfo(*skip(simulate, resultinfo, replay_event, beatmap, time_preempt, component))
+
+	print(start_index, frame_info.osr_index)
+	component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
 
 	cursor_event = CursorEvent(replay_event[frame_info.osr_index], old_cursor_x, old_cursor_y)
 
