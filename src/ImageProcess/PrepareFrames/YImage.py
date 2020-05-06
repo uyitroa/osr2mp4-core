@@ -8,24 +8,43 @@ from global_var import SkinPaths
 class YImage:
 	def __init__(self, filename, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None):
 		self.filename = filename
-
+		self.origfile = filename
+		self.x2 = False
 
 		self.loadimg(defaultpath, prefix, fallback)
 
 		if rotate:
 			self.tosquare()
 
-		# if self.img is None or self.img.size[1] == 1 or self.img.size[0] == 1:
-		# 	print(filename, "exists:", self.img is not None)
-		# 	self.img = Image.new('RGBA', (2, 2))
+		if self.x2:
+			# print(self.filename)
+			scale /= 2
+
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
 		self.orig_cols = self.img.size[0]
 		if scale != 1:
-			self.change_size(scale, scale) # make rows and cols even amount
+			self.change_size(scale, scale)  # make rows and cols even amount
 			self.orig_img = self.img.copy()
 			self.orig_rows = self.img.size[1]
 			self.orig_cols = self.img.size[0]
+
+		# print(filename)
+
+	def loadx2(self, path, pre):
+		try:
+			self.img = Image.open(path + pre + self.filename + SkinPaths.x2 + SkinPaths.format).convert("RGBA")
+			self.filename = path + pre + self.filename + SkinPaths.x2 + SkinPaths.format
+			self.x2 = True
+			return True
+		except FileNotFoundError as er:
+			# print(er)
+			try:
+				self.img = Image.open(path + pre + self.filename + SkinPaths.format).convert("RGBA")
+				self.filename = path + pre + self.filename + SkinPaths.format
+				return True
+			except FileNotFoundError as e:
+				return False
 
 	def loadimg(self, defaultpath, prefix, fallback):
 		pre = SkinPaths.skin_ini.fonts.get(prefix, "")
@@ -36,23 +55,23 @@ class YImage:
 		else:
 			path = SkinPaths.path
 
-		try:
-			self.img = Image.open(path + pre + self.filename + SkinPaths.format).convert("RGBA")
-		except FileNotFoundError as e:
-			if fallback is not None:
-				try:
-					self.img = Image.open(path + pre + fallback + SkinPaths.format).convert("RGBA")
-					return
-				except FileNotFoundError as er:
-					self.filename = fallback
+		if self.loadx2(path, pre):
+			return
 
-			print(e, "\nTrying default skin files")
-			print(pre, default_pre)
-			try:
-				self.img = Image.open(SkinPaths.default_path + default_pre + self.filename + SkinPaths.format).convert("RGBA")
-			except FileNotFoundError as e:
-				print(e, "\nDefault file not found creating blank file")
-				self.img = Image.new("RGBA", (1, 1))
+		if fallback is not None:
+			if self.loadx2(path, pre + fallback):
+				return
+			self.filename = fallback
+
+		print("File {} not found\nTrying default skin files".format(self.origfile))
+		print(pre, default_pre)
+
+		if self.loadx2(SkinPaths.default_path, default_pre):
+			return
+
+		print("\nDefault file not found creating blank file")
+		self.filename = "None"
+		self.img = Image.new("RGBA", (1, 1))
 
 	def tosquare(self):
 		"""

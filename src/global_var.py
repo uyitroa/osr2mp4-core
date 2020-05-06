@@ -4,6 +4,7 @@ class SkinPaths:
 	skin_ini = None
 	default_skin_ini = None
 	format = ".png"
+	x2 = "@2x"
 
 
 class Paths:

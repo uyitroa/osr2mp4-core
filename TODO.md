@@ -14,7 +14,6 @@
 - Add break time animation (shows background, pass/fail image)
 - Add leaderboard
 - Implement @x2 images for better result
-- Bezier tolerance depends on the size of the slider
 - Score each digit keep changing until that biggest digit get to the real score digit
 
 # Optimisation
