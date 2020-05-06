@@ -13,7 +13,7 @@
 - Add rotation for sliderb
 - Add break time animation (shows background, pass/fail image)
 - Add leaderboard
-- Implement @x2 images for better result
+- Animation depends on fps
 - Score each digit keep changing until that biggest digit get to the real score digit
 
 # Optimisation
