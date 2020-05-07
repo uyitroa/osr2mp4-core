@@ -11,7 +11,6 @@
 - Add animation for sliderfollow whenever touch slidertick
 - Add default images for missing images in skin
 - Add rotation for sliderb
-- Add break time animation (shows background, pass/fail image)
 - Add leaderboard
 - Animation depends on fps
 - Score each digit keep changing until that biggest digit get to the real score digit
