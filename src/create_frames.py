@@ -233,19 +233,19 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 
 
 def setup_global(settings, paths, skinpaths):
-	Settings.width, Settings.height, Settings.scale = settings.width, settings.height, settings.scale
-	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight
-	Settings.fps, Settings.timeframe = settings.fps, settings.timeframe
-	Settings.moveright, Settings.movedown = settings.moveright, settings.movedown
+	Settings.width, Settings.height, Settings.scale = settings[0], settings[1], settings[2]
+	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = settings[3], settings[4], settings[5]
+	Settings.fps, Settings.timeframe = settings[6], settings[7]
+	Settings.moveright, Settings.movedown = settings[8], settings[9]
 
-	SkinPaths.path = skinpaths.path
-	SkinPaths.default_path = skinpaths.default_path
-	SkinPaths.skin_ini = skinpaths.skin_ini
-	SkinPaths.default_skin_ini = skinpaths.default_skin_ini
+	SkinPaths.path = skinpaths[0]
+	SkinPaths.default_path = skinpaths[1]
+	SkinPaths.skin_ini = skinpaths[2]
+	SkinPaths.default_skin_ini = skinpaths[3]
 
-	Paths.output = paths.output
-	Paths.ffmpeg = paths.ffmpeg
-	Paths.beatmap = paths.beatmap
+	Paths.output = paths[0]
+	Paths.ffmpeg = paths[1]
+	Paths.beatmap = paths[2]
 
 
 def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, hd, settings, paths, skinpaths):
@@ -339,6 +339,28 @@ def write_frame(shared, conn, filename, codec):
 	print("??? value time:", timer4)
 
 
+def getlist():
+	settings = []
+	paths = []
+	skinpaths = []
+
+	settings.extend([Settings.width, Settings.height, Settings.scale])
+	settings.extend([Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight])
+	settings.extend([Settings.fps, Settings.timeframe])
+	settings.extend([Settings.moveright, Settings.movedown])
+
+	skinpaths.append(SkinPaths.path)
+	skinpaths.append(SkinPaths.default_path)
+	skinpaths.append(SkinPaths.skin_ini)
+	skinpaths.append(SkinPaths.default_skin_ini)
+
+	paths.append(Paths.output)
+	paths.append(Paths.ffmpeg)
+	paths.append(Paths.beatmap)
+
+	return settings, paths, skinpaths
+
+
 def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, mpp, hd):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
@@ -367,8 +389,10 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			# extract container
 			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
 
+			globalvars = getlist()
+
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd, Settings, Paths, SkinPaths))
+				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd, *globalvars))
 
 			writer = Process(target=write_frame, args=(shared, conn2, f, codec))
 
