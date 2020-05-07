@@ -174,7 +174,7 @@ def main():
 		audio.join()
 
 	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	os.system('"{}" -i \'{}\' -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path))
+	os.system('"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path))
 	#os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 
 
