@@ -120,7 +120,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 	component.background.add_to_frame(img, np_img, frame_info.cur_time)
 
-	check_key(component, cursor_event)
+	if not in_break:
+		check_key(component, cursor_event)
 
 	osu_d = beatmap.hitobjects[frame_info.index_hitobj]
 	x_circle = int(osu_d["x"] * Settings.playfieldscale) + Settings.moveright
