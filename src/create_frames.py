@@ -291,8 +291,10 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 
 
 
-def write_frame(shared, conn, filename, codec):
+def write_frame(shared, conn, filename, codec, settings, paths, skinpaths):
 	asdfasdf = time.time()
+
+	setup_global(settings, paths, skinpaths)
 
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
@@ -394,7 +396,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			drawer = Process(target=draw_frame, args=(
 				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd, *globalvars))
 
-			writer = Process(target=write_frame, args=(shared, conn2, f, codec))
+			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))
