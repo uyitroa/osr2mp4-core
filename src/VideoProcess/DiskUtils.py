@@ -17,7 +17,7 @@ def cleanup():
 	else:
 		rm_command = "rm"
 
-	mpp = len(open("listvideo.txt", "r").read().split("\n"))
+	mpp = len(open("listvideo.txt", "r").read().split("\n")) - 1
 
 	os.system('{} listvideo.txt'.format(rm_command))
 	for i in range(mpp):

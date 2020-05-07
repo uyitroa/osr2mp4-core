@@ -60,7 +60,7 @@ def keys(n):
 
 
 def check_key(component, cursor_event, in_break):
-	if not in_break:
+	if in_break:
 		return
 
 	k1, k2, m1, m2 = keys(cursor_event.event[KEYS_PRESSED])

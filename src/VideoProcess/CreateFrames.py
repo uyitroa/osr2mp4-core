@@ -1,6 +1,4 @@
 import ctypes
-import time
-
 import cv2
 
 from multiprocessing import Process, Pipe
@@ -11,8 +9,7 @@ from VideoProcess.Draw import draw_frame, render_draw
 from VideoProcess.FrameWriter import write_frame
 from VideoProcess.Setup import getlist, setup_draw
 
-from global_var import Settings, Paths, SkinPaths
-from recordclass import recordclass
+from global_var import Settings, Paths
 
 CURSOR_X = 0
 CURSOR_Y = 1
