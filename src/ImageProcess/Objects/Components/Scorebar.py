@@ -50,4 +50,4 @@ class Scorebar(FrameObject):
 			self.h = 5
 
 		# print(self.duration, self.scrolling, alpha, self.s, "\n")
-		super().add_to_frame(background, Settings.width//2, Settings.height//2 - self.h, alpha=self.alpha)
+		super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
