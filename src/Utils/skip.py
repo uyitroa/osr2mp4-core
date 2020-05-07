@@ -92,7 +92,6 @@ def skip(to_time, resultinfo, replayinfo, beatmap, timepreempt, component):
 	to_time -= timepreempt
 	osr_index = search_osrindex(to_time, replayinfo)
 	info_index = search_updateindex(beatmap.hitobjects[hitobjectindex]["time"], resultinfo, component)
-	# to_time = set_scores(to_time, resultinfo, component)
 	fp_index, obj_endtime, x_end, y_end = search_fpindex(to_time, beatmap.hitobjects)
 	break_index = search_break(to_time, beatmap.breakperiods)
 	return to_time, hitobjectindex, info_index, osr_index, fp_index, obj_endtime, x_end, y_end, break_index

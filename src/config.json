@@ -1,15 +1,15 @@
 {
   "Skin path": "/Users/yuitora./Downloads/shige",
-  "Beatmap path": "/Users/yuitora./Downloads/383070 Grabbitz - Way Too Deep",
-  ".osr path": "/Users/yuitora./Downloads/deep.osr",
+  "Beatmap path": "/Users/yuitora./Downloads/963814 Yorushika - Hachigatsu, Bou, Tsukiakari",
+  ".osr path": "/Users/yuitora./Downloads/hachi2.osr",
   "Default skin path": "/Users/yuitora./Downloads/default",
-  "Output path": "output.avi",
+  "Output path": "output.mkv",
   "Width": 1920,
   "Height": 1080,
   "FPS": 60,
-  "Start time": 0,
-  "End time": -1,
-  "Video codec": "XVID",
+  "Start time": 180,
+  "End time": 200,
+  "Video codec": "X264",
   "Process": 2,
   "ffmpeg path": "ffmpeg"
 }

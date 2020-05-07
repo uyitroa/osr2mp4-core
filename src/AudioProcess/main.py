@@ -1,3 +1,5 @@
+from multiprocessing import Process
+
 from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
@@ -6,7 +8,10 @@ import time
 from collections import namedtuple
 import os.path
 
-class Position(namedtuple('Position', 'x y')):  
+from global_var import Paths, SkinPaths
+
+
+class Position(namedtuple('Position', 'x y')):
 		pass
 
 def read(f):
@@ -208,7 +213,23 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         
         end=time.time()
         print(end-start)
-        
+
+
+def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
+    beatmap_path = Paths.beatmap
+    default_skinP = SkinPaths.default_path
+    skin_path = SkinPaths.path
+
+    if mpp >= 1:
+        audio_args = (my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name,)
+        audio = Process(target=processAudio, args=audio_args)
+        audio.start()
+        return audio
+    else:
+        processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name)
+        return None
+
+
 if __name__ == '__main__':
         res, beat = parseData()
         #args = my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name
