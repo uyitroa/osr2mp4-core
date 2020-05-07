@@ -146,11 +146,12 @@ def main():
 
 	beatmap = read_file(beatmap_file, playfield_scale, skin.colours, hr)
 
-	print("Timing:", beatmap.timing_point[0]["Offset"])
 	replay_event, cur_time = setupReplay(replay_file, beatmap)
 	start_index, end_index = findTime(start_time, end_time, replay_event, cur_time)
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
+
+	beatmap.breakperiods.append({"Start": endtime_fp, "End": endtime_fp})
 
 	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
