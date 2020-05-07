@@ -64,12 +64,12 @@ class HitObjectManager:
 	def sliderchangestate(self, followappear, timestamp):
 		index_interval = 1 # * self.rate
 
-		if self.slider_manager.sliders[timestamp].sliderb_i != self.slider_manager.slidermax_index:
-			self.slider_manager.sliders[timestamp].sliderb_i = 0
+		if self.slider_manager.sliders[timestamp].sliderf_i != self.slider_manager.slidermax_index:
+			self.slider_manager.sliders[timestamp].sliderf_i = 0
 
 		if followappear:
 			index_interval = -0.65 # * self.rate
-			self.slider_manager.sliders[timestamp].sliderb_i = self.slider_manager.slidermax_index - 3
+			self.slider_manager.sliders[timestamp].sliderf_i = self.slider_manager.slidermax_index - 3
 
 		self.slider_manager.sliders[timestamp].appear_f = index_interval
 
