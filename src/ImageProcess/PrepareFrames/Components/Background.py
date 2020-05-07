@@ -24,7 +24,6 @@ def prepare_background(backgroundname):
 
 	scale = width/w
 	img = imageproc.change_size(img, scale, scale)
-	img.save("asdf.png")
 	imgs = [Image.new("RGBA", (1, 1))]
 
 	color = np.array([0, 0, 0])
