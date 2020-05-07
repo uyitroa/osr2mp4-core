@@ -155,8 +155,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 			frame_info.index_hitobj += 1
 
 	half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"])/2
-	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 1000:
-		component.sections.startbreak(0, breakperiod["Start"])
+	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 2000:
+		component.sections.startbreak(1, breakperiod["Start"])
 
 	if in_break:
 		component.scorebar.startbreak(breakperiod["Start"], breakperiod["End"] - frame_info.cur_time)
@@ -226,6 +226,7 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 
 	img = Image.new("RGB", (1, 1))
 	np_img, pbuffer = get_buffer(shared)
+
 
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 

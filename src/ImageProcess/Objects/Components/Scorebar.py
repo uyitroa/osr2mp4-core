@@ -23,14 +23,14 @@ class Scorebar(FrameObject):
 		self.breakk = breakk
 		self.duration = duration - 100
 		self.interval = 1000/Settings.fps
-		self.direction = 1
+		self.direction = 0.5
 
 	def add_to_frame(self, background):
 
 		self.duration -= self.interval
 
 		if self.duration < 0:
-			self.direction = -1
+			self.direction = -0.5
 			self.scrolling = True
 			self.duration = 0
 			self.interval = 0

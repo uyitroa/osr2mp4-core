@@ -11,9 +11,9 @@ class Sections(FrameObject):
 		self.frame_index = self.PASS
 		self.out = 0
 		self.show = False
-		self.fadeouttime = 300
+		self.fadeouttime = 400
 		self.blinktime = 200
-		self.showtime = 600
+		self.showtime = 900
 		self.blink = 0
 		self.breakk = 0
 
@@ -31,7 +31,7 @@ class Sections(FrameObject):
 			return
 		self.out += 1000/Settings.fps
 		self.blink += 1
-		if self.out < self.blinktime and (self.blink % 5 == 0 or self.blink % 3 == 0):
+		if self.out < self.blinktime and (self.blink % 5 <= 2):
 			return
 		if self.out >= self.showtime:
 			self.show = False
