@@ -90,6 +90,8 @@ class Skin:
 		self.general['CursorCentre'] = int(self.general.get('CursorCentre', 0))
 		self.general['HitCircleOverlayAboveNumer'] = int(self.general.get('HitCircleOverlayAboveNumer', 0))
 		self.general['SliderStyle'] = int(self.general.get('SliderStyle', 0))
+		self.general['AllowSliderBallTint'] = int(self.general.get('AllowSliderBallTint', 0))
+		self.general['SliderBallFlip'] = int(self.general.get('SliderBallFlip', 1))
 
 	def parse_colors(self):
 		for key, value in self.colours.items():
