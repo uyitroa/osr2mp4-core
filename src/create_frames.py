@@ -12,7 +12,7 @@ from AFrames import *
 from InfoProcessor import Updater
 import numpy as np
 
-from global_var import Settings, Paths
+from global_var import Settings, Paths, SkinPaths
 from skip import skip
 from recordclass import recordclass
 
@@ -232,9 +232,27 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 	return component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, hd):
+def setup_global(settings, paths, skinpaths):
+	Settings.width, Settings.height, Settings.scale = settings.width, settings.height, settings.scale
+	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight
+	Settings.fps, Settings.timeframe = settings.fps, settings.timeframe
+	Settings.moveright, Settings.movedown = settings.moveright, settings.movedown
+
+	SkinPaths.path = skinpaths.path
+	SkinPaths.default_path = skinpaths.default_path
+	SkinPaths.skin_ini = skinpaths.skin_ini
+	SkinPaths.default_skin_ini = skinpaths.default_skin_ini
+
+	Paths.output = paths.output
+	Paths.ffmpeg = paths.ffmpeg
+	Paths.beatmap = paths.beatmap
+
+
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, hd, settings, paths, skinpaths):
 	asdfasdf = time.time()
 	print("process start")
+
+	setup_global(settings, paths, skinpaths)
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
 		beatmap, frames, replay_event, resultinfo, shared, skin, start_index, hd)
@@ -269,6 +287,8 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 	print("Total time:", time.time() - asdfasdf)
 	print("Waiting time:", timer2)
 	print("Changing value time:", timer3)
+
+
 
 
 def write_frame(shared, conn, filename, codec):
@@ -348,7 +368,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd))
+				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd, Settings, Paths, SkinPaths))
 
 			writer = Process(target=write_frame, args=(shared, conn2, f, codec))
 
@@ -372,7 +392,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			conn2.close()
 			writers[i].join()
 		f = Paths.output[:-4] + "f" + Paths.output[-4:]
-		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy "{}" -y'.format(Paths.ffmpeg, f))
+		os.system('"{}" -safe 0 -f concat -i listvideo.txt -c copy \'{}\' -y'.format(Paths.ffmpeg, f))
 
 	else:
 		f = Paths.output[:-4] + "f" + Paths.output[-4:]
