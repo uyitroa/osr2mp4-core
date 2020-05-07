@@ -36,7 +36,7 @@ class Updater:
 
 		else:
 			timestamp = str(self.info.timestamp) + "o"
-			x, y = 384 * 0.5, 512 * 0.5
+			y, x = 384 * 0.5, 512 * 0.5
 			self.component.spinner.update_spinner(timestamp, self.info.more.rotate, self.info.more.progress)
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 			if self.info.more.bonusscore >= 1:

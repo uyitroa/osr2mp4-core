@@ -148,10 +148,10 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                             for abc in arrow_time_list:
                                     start_index2 = int(abc/1000 * rate)
                                     z[start_index2:start_index2+ len(s)] += s * 0.5
-                        durationTime.pop(0)
-                        sliderTime.pop(0)
-                        endTime.pop(0)
-                        repeatedTime.pop(0)
+                            durationTime.pop(0)
+                            sliderTime.pop(0)
+                            endTime.pop(0)
+                            repeatedTime.pop(0)
                         if len(sliderTime) == 1:
                             start_index2 = int(sliderTime[0]/1000 * rate)
                             z[start_index2:start_index2 + len(s)] += s * 0.5 
