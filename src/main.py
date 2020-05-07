@@ -4,7 +4,6 @@ from multiprocessing import Process
 
 import osrparse
 from osrparse.enums import Mod
-from recordclass import recordclass
 
 from AudioProcess.main import processAudio
 from CheckSystem.Judgement import DiffCalculator
@@ -173,9 +172,20 @@ def main():
 	if multi_process >= 1:
 		audio.join()
 
+
 	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	os.system('""{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y"'.format(ffmpeg, f, output_path))
-	#os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(ffmpeg, output_path))
+	command = '"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(ffmpeg, f, output_path)
+	if os.name == 'nt':
+		rm_command = "del"
+		command = '"' + command + '"'
+	else:
+		rm_command = "rm"
+
+	os.system(command)
+	os.system('{} "{}"'.format(rm_command, f))
+
+	if os.name != 'nt':
+		os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(ffmpeg, output_path))
 
 
 if __name__ == "__main__":

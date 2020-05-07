@@ -417,8 +417,22 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			conn1.close()
 			conn2.close()
 			writers[i].join()
+
+
 		f = Paths.output[:-4] + "f" + Paths.output[-4:]
-		os.system('""{}" -safe 0 -f concat -i listvideo.txt -c copy "{}" -y"'.format(Paths.ffmpeg, f))
+		command = '"{}" -safe 0 -f concat -i listvideo.txt -c copy "{}" -y'.format(Paths.ffmpeg, f)
+		if os.name == 'nt':
+			rm_command = "del"
+			command = '"' + command + '"'
+		else:
+			rm_command = "rm"
+		os.system(command)
+
+		os.system('{} listvideo.txt'.format(rm_command))
+		for i in range(mpp):
+			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
+			os.system('{} "{}"'.format(rm_command, f))
+
 
 	else:
 		f = Paths.output[:-4] + "f" + Paths.output[-4:]
