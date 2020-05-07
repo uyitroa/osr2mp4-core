@@ -54,16 +54,16 @@ def get_screensize(width, height):
 	return playfield_scale, playfield_width, playfield_height, scale, move_right, move_down
 
 
-def get_offset(beatmap, start_index, start_time, replay_event):
+def get_offset(beatmap, start_index, replay_event):
+	start_time = replay_event[start_index][TIMES]
 	diffcalculator = DiffCalculator(beatmap.diff)
 	timepreempt = diffcalculator.ar()
-	to_time, hitobjectindex = search_time(start_time*1000, beatmap.hitobjects)
+	to_time, hitobjectindex = search_time(start_time, beatmap.hitobjects)
 	to_time -= timepreempt
 	osr_index = search_osrindex(to_time, replay_event)
 	index = max(osr_index, start_index)
 	# print(replay_event[osr_index][TIMES], replay_event[start_index][TIMES], replay_event[index][TIMES])
 	offset = replay_event[index][TIMES]
-
 	return offset
 
 
@@ -152,13 +152,13 @@ def main():
 
 	endtime_fp = beatmap.hitobjects[-1]["time"] + 800
 
-	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
+	beatmap.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0, "type": ["end"]})  # to avoid index out of range
 
 	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
 
 
-	offset = get_offset(beatmap, start_index, start_time, replay_event)
-	endtime = replay_event[end_index][TIMES] + 1000
+	offset = get_offset(beatmap, start_index, replay_event)
+	endtime = replay_event[end_index][TIMES] + 100
 
 	if multi_process >= 1:
 		audio_args = (resultinfo, beatmap.hitobjects, skin_path, offset, endtime, default_path, beatmap_path, beatmap.general["AudioFilename"],)
