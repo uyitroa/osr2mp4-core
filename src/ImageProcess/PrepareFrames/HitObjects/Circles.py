@@ -58,7 +58,7 @@ def overlayapproach(circle, approach, alpha):
 
 
 def prepare_fadeout(img):
-	fade_out = alpha.fadeout(img, 1, 0.0625, 0.075)
+	fade_out = alpha.fadeout(img, 1, 0, 0.1)
 	fade_out = size.grow(fade_out, 1.1, 1.6, 0.04)
 	return fade_out
 
@@ -93,7 +93,7 @@ def prepare_circle(beatmap, scale, skin, hd):
 	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"])
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
-	radius_scale = cs * overlay_scale * 2 / default_size
+	radius_scale = cs * 2 / default_size
 
 	circle, c_overlay, slider, s_overlay = load()
 	if not hd:
