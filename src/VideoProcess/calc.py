@@ -116,11 +116,17 @@ def check_break(beatmap, component, frame_info):
 		frame_info.break_index = min(frame_info.break_index + 1, len(beatmap.breakperiods) - 1)
 		component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
 		breakperiod = beatmap.breakperiods[frame_info.break_index]
-	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"])
+
+	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"]) and breakperiod["Start"] != -500
+
 	half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
-	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 2000:
+	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 2000 and in_break:
 		component.sections.startbreak(1, breakperiod["Start"])
+
 	if in_break:
 		component.scorebar.startbreak(breakperiod["Start"], breakperiod["End"] - frame_info.cur_time)
+
+	if frame_info.cur_time > breakperiod["End"] - 700 and in_break:
+		component.arrowwarning.startbreak(breakperiod["Start"])
 
 	return in_break
