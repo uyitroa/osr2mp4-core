@@ -20,7 +20,8 @@ def prepare_background(backgroundname):
 
 	w = min(img.size[0], int(img.size[1] * ratiow))
 	h = min(img.size[1], int(img.size[0] * ratioh))
-	img = img.crop((0, 0, w, h))
+	x, y = (img.size[0] - w)//2, (img.size[1] - h)//2
+	img = img.crop((x, y, x + w, y + h))
 
 	scale = width/w
 	img = imageproc.change_size(img, scale, scale)
