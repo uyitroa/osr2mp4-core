@@ -89,4 +89,4 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 				writer.write(im)
 
 		writer.release()
-		return None
+		return None, None, None
