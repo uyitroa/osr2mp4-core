@@ -9,7 +9,7 @@ class ScoreEntry(FrameObject):
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
 		number = str(number)
 		n = len(number) - 1
-		index = min(len(self.frames[0]) - 1, index+n)
+		index = max(0, min(len(self.frames[0]) - 1, index+n-1))
 		x_start = x_offset - int(n/2 * self.frames[0][index].size[0])
 		for digit in number:
 			digit = int(digit)
