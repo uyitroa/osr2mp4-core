@@ -67,7 +67,7 @@ class HitObjectChecker:
 				state = 1
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
-					info = Info(replay[osr_index][3], -1, 0, self.scorecounter, -1, -1, self.clicks, None,
+					info = Info(replay[osr_index][3], -1, 0, self.scorecounter, self.scorecounter, copy.copy(self.results), self.clicks, None,
 					            timestamp, circle)
 					self.info.append(info)
 					return note_lock, sum_newclick, i
