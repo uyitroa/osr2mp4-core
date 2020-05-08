@@ -3,8 +3,9 @@ from ImageProcess.Objects.FrameObject import FrameObject
 
 class Number(FrameObject):
 	def __init__(self, frames, fonts):
-		super().__init__(frames)
-		self.overlap = fonts["HitCircleOverlap"]
+		super().__init__(frames[0])
+		scale = frames[1]
+		self.overlap = int(fonts["HitCircleOverlap"]*scale)
 
 
 	def add_to_frame(self, background, x, y, alpha, number):
