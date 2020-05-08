@@ -15,7 +15,7 @@ class Sections(FrameObject):
 		self.blinktime = 200
 		self.showtime = 900
 		self.blink = 0
-		self.breakk = 0
+		self.breakk = None
 
 	def startbreak(self, status, breakk):
 		if self.breakk == breakk:
@@ -30,7 +30,7 @@ class Sections(FrameObject):
 		if not self.show:
 			return
 		self.out += 1000/Settings.fps
-		self.blink += 1
+		self.blink += 60/Settings.fps
 		if self.out < self.blinktime and (self.blink % 5 <= 2):
 			return
 		if self.out >= self.showtime:

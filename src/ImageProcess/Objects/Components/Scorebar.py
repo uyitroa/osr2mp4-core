@@ -8,7 +8,7 @@ class Scorebar(FrameObject):
 		self.scrolltime = 100
 		self.s = 0
 		self.scrolling = False
-		self.breakk = 0
+		self.breakk = None
 		self.direction = 1
 		self.duration = 0
 		self.interval = 0

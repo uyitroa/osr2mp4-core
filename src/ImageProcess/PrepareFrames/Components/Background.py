@@ -27,7 +27,7 @@ def prepare_background(backgroundname):
 	imgs = [Image.new("RGBA", (1, 1))]
 
 	color = np.array([0, 0, 0])
-	interval = int(650/Settings.fps)
+	interval = int(1000/Settings.fps)
 	c_interval = 100/interval
 	for x in range(interval):
 		color[:] = color[:] + c_interval

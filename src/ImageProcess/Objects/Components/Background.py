@@ -17,6 +17,14 @@ class Background(FrameObject):
 		self.end_time = event["End"]
 		self.fadeout = False
 
+		if event["Start"] == -500:
+			self.frame_index = len(self.frames) - 1
+
+	def setalpha(self, cur_time):
+		i = min(1, max(0, (cur_time - self.start_time)/self.fade_time))
+		i = i * min(1, max(0, (self.end_time - cur_time)/self.fade_time))
+		self.frame_index = round(i * (len(self.frames) - 1))
+
 	def add_to_frame(self, background, np, cur_time):
 
 		self.frame_index = max(0, min(len(self.frames) - 1, self.frame_index + self.step))

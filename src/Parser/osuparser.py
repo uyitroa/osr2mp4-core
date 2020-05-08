@@ -33,7 +33,7 @@ class Beatmap:
 
 
 		endtime_fp = self.hitobjects[-1]["time"] + 800
-		self.breakperiods.append({"Start": endtime_fp, "End": endtime_fp})
+		self.breakperiods.insert(0, {"Start": -500, "End": self.hitobjects[0]["time"]})
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
 		                           "type": ["end"]})  # to avoid index out of range
 
