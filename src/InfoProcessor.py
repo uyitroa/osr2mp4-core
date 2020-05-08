@@ -32,6 +32,8 @@ class Updater:
 			followbit = self.info.more.followstate
 			if int(followbit[0]):
 				self.component.hitobjmanager.sliderchangestate(int(followbit[1]), timestamp)
+			if self.info.more.hitvalue == 10:
+				self.component.hitobjmanager.slidertouchtick(timestamp)
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
