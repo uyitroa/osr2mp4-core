@@ -6,13 +6,15 @@ def get_offset(beatmap, start_index, end_index, replay_event):
 	start_time = replay_event[start_index][3]
 	diffcalculator = DiffCalculator(beatmap.diff)
 	timepreempt = diffcalculator.ar()
-	to_time, hitobjectindex = search_time(start_time, beatmap.hitobjects)
-	to_time -= timepreempt
+	hitobjectindex = search_time(start_time, beatmap.hitobjects)
+	to_time = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, start_time)
 	osr_index = search_osrindex(to_time, replay_event)
+	print(replay_event[start_index][3], replay_event[osr_index][3])
 	index = max(osr_index, start_index)
 	# print(replay_event[osr_index][TIMES], replay_event[start_index][TIMES], replay_event[index][TIMES])
 	offset = replay_event[index][3]
 	endtime = replay_event[end_index][3] + 100
+	print("\n\nOFFSET:", offset)
 	return offset, endtime
 
 

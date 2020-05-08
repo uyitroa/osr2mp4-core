@@ -203,6 +203,7 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
             out = z[int(offset/1000*rate):]
         else:
             offset = -offset
+            endtime += offset
             out = np.zeros((len(z) + int(offset/1000 * rate), 2), dtype=z.dtype)
             out[int(offset/1000 * rate):] = z
 
