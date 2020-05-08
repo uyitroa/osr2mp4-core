@@ -1,3 +1,4 @@
+from ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from ImageProcess.Objects.Components.Background import Background
 from ImageProcess.Objects.Components.Scorebar import Scorebar
 from ImageProcess.Objects.Components.Sections import Sections
@@ -17,6 +18,7 @@ from ImageProcess.Objects.Components.Button import InputOverlay, InputOverlayBG,
 from ImageProcess.Objects.Components.Cursor import Cursor, Cursortrail
 from ImageProcess.Objects.Scores.SpinBonusScore import SpinBonusScore
 from ImageProcess.Objects.Scores.URBar import URBar
+from ImageProcess.PrepareFrames.Components.ArrowWarning import prepare_arrowwarning
 from ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, prepare_inputoverlaybg, \
 	prepare_inputoverlay
 from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail, prepare_cursormiddle
@@ -61,6 +63,7 @@ class PreparedFrames:
 		self.bg = prepare_background(Paths.beatmap + beatmap.bg[2])
 		self.sections = prepare_sections(Settings.scale)
 		self.scorebar = prepare_scorebar(Settings.scale)
+		self.arrowwarning = prepare_arrowwarning(Settings.scale)
 
 
 class FrameObjects:
@@ -100,3 +103,4 @@ class FrameObjects:
 		self.background = Background(frames.bg)
 		self.sections = Sections(frames.sections)
 		self.scorebar = Scorebar(frames.scorebar)
+		self.arrowwarning = ArrowWarning(frames.arrowwarning)
