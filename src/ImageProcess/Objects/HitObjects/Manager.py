@@ -75,6 +75,7 @@ class HitObjectManager:
 
 	def slidertouchtick(self, timestamp):
 		self.slider_manager.sliders[timestamp].sliderf_i = 2
+		self.slider_manager.sliders[timestamp].appear_f = -0.3
 
 	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):
