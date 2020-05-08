@@ -59,6 +59,9 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 	:param alpha: float between 0 and 1
 	:return:
 	"""
+	if img.size[0] == 1 and img.size[1] == 1:
+		return
+
 	if not topleft:
 		y_offset = y_offset - img.size[1]//2
 		x_offset = x_offset - img.size[0]//2
