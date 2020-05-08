@@ -93,7 +93,7 @@ def prepare_circle(beatmap, scale, skin, hd):
 	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"])
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
-	radius_scale = cs * 2 / default_size
+	radius_scale = cs * overlay_scale * 2 / default_size
 
 	circle, c_overlay, slider, s_overlay = load()
 	if not hd:
