@@ -59,7 +59,7 @@ class ScoreCounter(FrameObject):
 		if self.showscore < self.score:
 			self.showscore += 1
 		if cur_time >= self.freeze:
-			add_up = max(7.27, (self.score - self.showscore)/12.72)
+			add_up = max(7.27, (self.score - self.showscore)/12.72) * 60/Settings.fps
 			if self.showscore + add_up > self.score:
 				self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
 			else:
