@@ -1,6 +1,6 @@
 from ImageProcess.Animation import size
 from ImageProcess.PrepareFrames.YImage import YImages
-from ImageProcess.imageproc import change_size
+from global_var import Settings
 
 hitprefix = "hit"
 default_size = 128
@@ -13,15 +13,20 @@ def prepare_hitresults(scale, beatmap):
 	scale = cs * 2 * hitresult_size / default_size
 
 	scores_frames = {}
-	for x in [0, 50, 100]:
-		img = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0).frames[0]
+	for x in [0, 50, 100, 300]:
+		yimg = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0)
 		f = []
-		if x != 0:
-			f = size.grow(img, 1, 1.25, 0.05)
+		f1 = yimg.frames
+		if yimg.unanimate:
+			img = yimg.frames[0]
+			f = []
+			if x != 0:
+				f = size.grow(img, 0.8, 1.1, 0.05)
 
-		f1 = size.shrink(img, 1.25, 1, 0.02)
+			f1 = size.shrink(img, 1.1, 0.9, 0.02)
 		if x == 0:
 			for a in range(len(f1)):
 				f1[a] = f1[a].rotate(10 + a)
 		scores_frames[x] = f+f1
+
 	return scores_frames
