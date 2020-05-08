@@ -23,7 +23,7 @@ class GenerateSlider:
 		self.slideroverride = tuple(self.slideroverride)
 
 		self.radius = radius
-		self.scale = scale
+		self.scale = scale * 0.95
 		self.extended = 2 * self.radius * self.scale
 
 	def convert_string(self, slider_code):
