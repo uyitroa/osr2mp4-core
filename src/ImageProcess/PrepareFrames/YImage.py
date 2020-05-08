@@ -31,17 +31,19 @@ class YImage:
 
 		# print(filename)
 
-	def loadx2(self, path, pre):
+	def loadx2(self, path, pre, filename=None):
+		if filename is None:
+			filename = self.filename
 		try:
-			self.img = Image.open(path + pre + self.filename + SkinPaths.x2 + SkinPaths.format).convert("RGBA")
-			self.filename = path + pre + self.filename + SkinPaths.x2 + SkinPaths.format
+			self.img = Image.open(path + pre + filename + SkinPaths.x2 + SkinPaths.format).convert("RGBA")
+			self.filename = path + pre + filename + SkinPaths.x2 + SkinPaths.format
 			self.x2 = True
 			return True
 		except FileNotFoundError as er:
 			# print(er)
 			try:
-				self.img = Image.open(path + pre + self.filename + SkinPaths.format).convert("RGBA")
-				self.filename = path + pre + self.filename + SkinPaths.format
+				self.img = Image.open(path + pre + filename + SkinPaths.format).convert("RGBA")
+				self.filename = path + pre + filename + SkinPaths.format
 				return True
 			except FileNotFoundError as e:
 				return False
@@ -59,11 +61,11 @@ class YImage:
 			return
 
 		if fallback is not None:
-			if self.loadx2(path, pre + fallback):
+			if self.loadx2(path, pre, fallback):
 				return
 			self.filename = fallback
 
-		print("File {} not found\nTrying default skin files".format(self.origfile))
+		print("File {} not found\nTrying default skin files {}".format(self.origfile, self.filename))
 		print(pre, default_pre)
 
 		if self.loadx2(SkinPaths.default_path, default_pre):
@@ -103,6 +105,7 @@ class YImages:
 		self.frames = []
 		self.rotate = rotate
 		self.n_frame = 0
+		self.unanimate = False
 
 		self.load(defaultpath=False)
 		if self.n_frame == 0:
@@ -131,6 +134,7 @@ class YImages:
 		if not self.frames:
 			should_continue = os.path.isfile(path + self.filename + SkinPaths.format)
 			if should_continue:
+				self.unanimate = True
 
 				a = YImage(self.filename, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
 				self.frames.append(a.img)
