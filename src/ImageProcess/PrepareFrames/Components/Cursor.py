@@ -4,6 +4,7 @@ from PIL import Image
 
 from ImageProcess.Animation.alpha import fadein
 from ImageProcess.PrepareFrames.YImage import YImage, SkinPaths
+from global_var import Settings
 
 cursor = "cursor"
 cursormiddle = "cursormiddle"
@@ -47,7 +48,7 @@ def prepare_cursortrail(scale, continuous):
 	else:
 		end = 1
 	yimg = YImage(cursortrail, scale)
-	trail_frames = fadein(yimg.img, 0.1, end, 0.1)
+	trail_frames = fadein(yimg.img, 0.1, end, 0.1 * 60/Settings.fps)
 	trail_frames.append(Image.new("RGBA", (1, 1)))
 
 	return trail_frames

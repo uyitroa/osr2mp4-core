@@ -8,7 +8,6 @@
 
 # Implement features
 - Add leaderboard
-- Animation depends on fps
 - Score each digit keep changing until that biggest digit get to the real score digit
 
 # Optimisation

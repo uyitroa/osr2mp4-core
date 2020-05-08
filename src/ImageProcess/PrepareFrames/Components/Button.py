@@ -4,6 +4,7 @@ import numpy as np
 from ImageProcess.Animation.size import shrink
 from ImageProcess.PrepareFrames.YImage import YImage
 from ImageProcess import imageproc
+from global_var import Settings
 
 scoreentry = "scoreentry-"
 inputoverlay = "inputoverlay-key"
@@ -20,11 +21,8 @@ def prepare_scoreentry(scale, color):
 	numbers_animation = []
 	for x in range(10):
 		number = YImage(scoreentry + str(x), scale)
-		numbers_animation.append([])
 		tmp = imageproc.add_color(number.img, color)
-		for size in range(95, 50, -5):
-			size /= 100
-			numbers_animation[-1].append(imageproc.change_size(tmp, size, size))
+		numbers_animation.append(shrink(tmp, 1, 0.3, 0.05 * 60/Settings.fps))
 	return numbers_animation
 
 
@@ -40,11 +38,10 @@ def prepare_inputoverlay(scale, color, index_c):
 	color[index_c] += 200
 	color[color > 255] = 255
 
-	start, end, step = 1, 0.77, 0.05
-	c_step = int(200*step/(start - end - step * 3))
+	start, end, step = 1, 0.77, 0.05 * 60/Settings.fps
+	c_step = int(200*step/(start - end - step))
 
 	button_frames = shrink(yimg.img, start, end, step)
-
 	for i, img in enumerate(button_frames):
 		imgc = imageproc.add_color(img, color)
 		button_frames[i] = imgc

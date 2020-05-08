@@ -24,7 +24,7 @@ class Cursortrail(FrameObject):
 			self.trail = (0, 0)
 			self.blank = Image.new("RGBA", (Settings.width, Settings.height))
 		else:
-			self.trail = [[0, 0]] * 8
+			self.trail = [[0, 0]] * len(self.frames)
 		self.timer = 0
 		self.timer2 = 0
 

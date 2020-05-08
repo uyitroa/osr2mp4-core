@@ -24,8 +24,8 @@ class HitResult(FrameObject):
 		x = int(x * self.playfieldscale) + self.moveright
 		y = int(y * self.playfieldscale) + self.movedown
 
-		if scores == 300:
-			return
+		# if scores == 300:
+		# 	return
 		# [score, x, y, index, alpha, time, go down]
 		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
 
@@ -45,12 +45,12 @@ class HitResult(FrameObject):
 
 			if score == 0:
 				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
-				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2)
+				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2 * 60/Settings.fps)
 
-			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1)
-			self.hitresults[i][5] += self.interval
+			self.hitresults[i][3] = int(min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/Settings.fps))
+			self.hitresults[i][5] += self.interval * 60/Settings.fps
 
 			if self.hitresults[i][5] >= self.time - self.interval * 10:
-				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10)
+				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10 * 60/Settings.fps)
 			else:
-				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20)
+				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/Settings.fps)

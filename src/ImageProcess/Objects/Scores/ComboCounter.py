@@ -57,14 +57,17 @@ class ComboCounter(FrameObject):
 		y_offset = y + img.size[1] // 2
 		return x, x_offset, y_offset
 
-	def draw_combo(self, combo, background, x, y, frames, index):
+	def draw_combo(self, combo, background, frames, index):
+		x = 0
 		for digit in str(combo):
 			digit = int(digit)
 			img = frames[digit][int(index)]
+			y = self.height - img.size[1]
 			x, x_offset, y_offset = self.next_pos(x, y, img)
 			imageproc.add(img, background, x_offset, y_offset)
 
 		img = frames[10][int(index)]
+		y = self.height - img.size[1]
 		x, x_offset, y_offset = self.next_pos(x, y, img)
 		imageproc.add(img, background, x_offset, y_offset)
 
@@ -87,15 +90,11 @@ class ComboCounter(FrameObject):
 			self.animate = False
 
 		if self.adding:
-			x = 0
-			y = self.height - self.score_fadeout[0][int(self.fadeout_index)].size[1]
-			self.draw_combo(self.combofadeout, background, x, y, self.score_fadeout, self.fadeout_index)
+			self.draw_combo(self.combofadeout, background, self.score_fadeout, self.fadeout_index)
 
 			self.fadeout_index += 1
 
-		x = 0
-		y = self.height - self.score_frames[0][int(self.score_index)].size[1]
-		self.draw_combo(self.combo, background, x, y, self.score_frames, self.score_index)
+		self.draw_combo(self.combo, background, self.score_frames, self.score_index)
 
 		if self.animate:
 			self.score_index += self.index_step

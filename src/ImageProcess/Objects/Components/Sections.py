@@ -29,7 +29,7 @@ class Sections(FrameObject):
 	def add_to_frame(self, background):
 		if not self.show:
 			return
-		self.out += 1000/Settings.fps
+		self.out += 1000/Settings.fps * 60/Settings.fps
 		self.blink += 60/Settings.fps
 		if self.out < self.blinktime and (self.blink % 5 <= 2):
 			return

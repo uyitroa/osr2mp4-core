@@ -30,10 +30,10 @@ class Background(FrameObject):
 		self.frame_index = max(0, min(len(self.frames) - 1, self.frame_index + self.step))
 
 		if self.start_time < cur_time < self.end_time:
-			self.step = self.interval
+			self.step = self.interval * 60/Settings.fps
 		if (cur_time > self.end_time - 500 and int(self.frame_index) >= len(self.frames) - 1) or self.fadeout:
 			self.fadeout = True
-			self.step = -self.interval
+			self.step = -self.interval * 60/Settings.fps
 
 		if int(self.frame_index) <= 0:
 			np.fill(0)
