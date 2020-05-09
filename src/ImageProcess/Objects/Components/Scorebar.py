@@ -1,53 +1,51 @@
-from ImageProcess.Objects.FrameObject import FrameObject
+from CheckSystem.Health import HealthProcessor
+from ImageProcess import imageproc
+from ImageProcess.PrepareFrames.Components.AScorebar import AScorebar
 from global_var import Settings
 
 
-class Scorebar(FrameObject):
-	def __init__(self, frames):
-		super().__init__(frames)
-		self.scrolltime = 100
-		self.s = 0
-		self.scrolling = False
-		self.breakk = None
-		self.direction = 1
-		self.duration = 0
-		self.interval = 0
-		self.alpha = 1
-		self.h = 5
+class Scorebar(AScorebar):
+	def __init__(self, frames, beatmap):
+		AScorebar.__init__(self, frames)
+		self.healthprocessor = HealthProcessor(beatmap, beatmap.health_processor.drain_rate)
+		self.lasttime = None
+		self.endtime = None
+		self.hp = 1
+		self.step = 0
+
+		self.x = 5 * Settings.scale
+		self.y = 16 * Settings.scale
 
 	def startbreak(self, breakk, duration):
-		if self.breakk == breakk:
-			return
-		self.s = 0
-		self.scrolling = True
-		self.breakk = breakk
-		self.duration = duration - 100
-		self.interval = 1000/Settings.fps
-		self.direction = 0.5 * 60/Settings.fps
+		self.endtime = breakk["End"]
+		AScorebar.startbreak(self, breakk, duration)
 
-	def add_to_frame(self, background):
+	def set_hp(self, hp):
+		self.healthprocessor.health_value = hp
+		self.hp = hp
 
-		self.duration -= self.interval
+	def to_hp(self, hp):
+		self.healthprocessor.health_value = hp
+		self.step = (hp - self.hp)/5
 
-		if self.duration < 0:
-			self.direction = -0.5 * 60/Settings.fps
-			self.scrolling = True
-			self.duration = 0
-			self.interval = 0
+	def updatehp(self, hitresult, objtype):
+		self.healthprocessor.updatehp(hitresult, objtype)
 
-		# print(self.duration, self.scrolling, alpha, self.s)
+	def drainhp(self, cur_time):
+		if self.lasttime is None:
+			self.lasttime = cur_time
+		in_break = self.breakk is not None and self.breakk <= cur_time <= self.endtime
+		self.healthprocessor.drainhp(cur_time, self.lasttime, in_break)
+		self.lasttime = cur_time
 
-		if self.scrolling:
-			self.s += 1000/Settings.fps * self.direction
-			self.alpha = min(1.0, max(0.0, 1 - self.s/self.scrolltime))
-			self.h = int(self.s * Settings.fps/1000 * 5)
+	def add_to_frame(self, background, cur_time):
+		AScorebar.animate(self)
 
-			if self.alpha == 0 or self.alpha == 1:
-				self.scrolling = False
+		self.frame_index += 60/Settings.fps
+		self.frame_index = int(self.frame_index % len(self.frames))
 
-		if not self.scrolling and self.interval == 0:
-			self.alpha = 1
-			self.h = 5
+		self.drainhp(cur_time)
 
-		# print(self.duration, self.scrolling, alpha, self.s, "\n")
-		super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
+		img = self.frames[self.frame_index]
+		img = img.crop((0, 0, int(img.size[0] * self.healthprocessor.health_value), img.size[1]))
+		imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)

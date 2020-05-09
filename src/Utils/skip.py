@@ -15,6 +15,7 @@ def search_updateindex(idd, resultinfo, component):
 	component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
 	component.accuracy.set_acc(info.accuracy)
 	component.combocounter.set_combo(info.combo)
+	component.scorebar.set_hp(info.hp)
 
 	component.key1.set_freeze(resultinfo[cur_index].time, info.clicks[0])
 	component.key2.set_freeze(resultinfo[cur_index].time, info.clicks[1])

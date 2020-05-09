@@ -1,7 +1,6 @@
-from ImageProcess.PrepareFrames.YImage import YImage
+from ImageProcess.PrepareFrames.YImage import YImage, YImages
 
-
-scorebar = "scorebar-bg"
+scorebar = "scorebar-colour"
 
 
 def prepare_scorebar(scale):
@@ -9,6 +8,6 @@ def prepare_scorebar(scale):
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	img = YImage(scorebar, scale).img
+	img = YImages(scorebar, scale, delimiter="-").frames
 
-	return [img]
+	return img

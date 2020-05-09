@@ -1,6 +1,7 @@
 from ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from ImageProcess.Objects.Components.Background import Background
 from ImageProcess.Objects.Components.Scorebar import Scorebar
+from ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
 from ImageProcess.Objects.Components.Sections import Sections
 from ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
 from ImageProcess.Objects.Components.Followpoints import FollowPointsManager
@@ -25,6 +26,7 @@ from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare
 from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
 from ImageProcess.PrepareFrames.Components.Background import prepare_background
 from ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
+from ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
 from ImageProcess.PrepareFrames.Components.Sections import prepare_sections
 from ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
 from ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
@@ -62,6 +64,7 @@ class PreparedFrames:
 		self.spinner = prepare_spinner(Settings.playfieldscale)
 		self.bg = prepare_background(Paths.beatmap + beatmap.bg[2])
 		self.sections = prepare_sections(Settings.scale)
+		self.scorebarbg = prepare_scorebarbg(Settings.scale)
 		self.scorebar = prepare_scorebar(Settings.scale)
 		self.arrowwarning = prepare_arrowwarning(Settings.scale)
 
@@ -73,7 +76,7 @@ class FrameObjects:
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
 		self.cursor_trail = Cursortrail(frames.cursor_trail, frames.continuous)
-		# self.lifegraph = LifeGraph(skin_path + "scorebar-colour")
+		# self.lifegraph = LifeGraph(skin_path + "scorebarbg-colour")
 
 		self.scoreentry = ScoreEntry(frames.scoreentry)
 
@@ -102,5 +105,6 @@ class FrameObjects:
 
 		self.background = Background(frames.bg, beatmap.start_time - timepreempt)
 		self.sections = Sections(frames.sections)
-		self.scorebar = Scorebar(frames.scorebar)
+		self.scorebarbg = ScorebarBG(frames.scorebarbg)
+		self.scorebar = Scorebar(frames.scorebar, beatmap)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)

@@ -1,6 +1,7 @@
 import math
 import re
 
+from CheckSystem.Health import HealthProcessor
 from CheckSystem.Judgement import DiffCalculator
 from ImageProcess.Curves.curve import Curve
 from ImageProcess.Curves.position import Position
@@ -32,13 +33,14 @@ class Beatmap:
 		self.parse_hitobject()
 		self.stack_position()
 
-
 		endtime_fp = self.hitobjects[-1]["time"] + 800
 		# diffcalculator = DiffCalculator(self.diff)
 		# timepreempt = int(diffcalculator.ar() + 500)
 		self.breakperiods.append({"Start": endtime_fp, "End": endtime_fp})
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
 		                           "type": ["end"]})  # to avoid index out of range
+
+		self.health_processor = HealthProcessor(self)
 
 
 	def parse_general(self):

@@ -33,7 +33,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 
 	component.background.add_to_frame(img, np_img, frame_info.cur_time)
-	component.scorebar.add_to_frame(img)
+	component.scorebarbg.add_to_frame(img)
+	component.scorebar.add_to_frame(img, frame_info.cur_time)
 	component.arrowwarning.add_to_frame(img, frame_info.cur_time)
 	component.inputoverlayBG.add_to_frame(img, Settings.width - component.inputoverlayBG.w() // 2, int(320 * Settings.scale))
 	component.urbar.add_to_frame_bar(img)

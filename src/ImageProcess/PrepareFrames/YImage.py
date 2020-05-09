@@ -121,6 +121,8 @@ class YImages:
 			path = SkinPaths.path
 
 		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + SkinPaths.format)
+		should_continue = should_continue or os.path.isfile(path + self.filename + self.delimiter + str(0) + SkinPaths.x2 + SkinPaths.format)
+
 		while should_continue:
 
 			img = YImage(self.filename + self.delimiter + str(counter), scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
@@ -129,6 +131,7 @@ class YImages:
 			counter += 1
 
 			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + SkinPaths.format)
+			should_continue = should_continue or os.path.isfile(path + self.filename + self.delimiter + str(counter) + SkinPaths.x2 + SkinPaths.format)
 
 
 		if not self.frames:
