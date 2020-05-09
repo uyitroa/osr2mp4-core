@@ -3,9 +3,11 @@ from global_var import Settings
 
 
 class Background(FrameObject):
-	def __init__(self, bg):
+	def __init__(self, bg, start_time):
 		super().__init__(bg)
 		self.start_time = 0
+		self.map_start = start_time
+		self.starting = False
 		self.end_time = 0
 		self.fade_time = 650
 		self.interval = len(self.frames) / (self.fade_time * Settings.fps / 1000)
@@ -26,6 +28,14 @@ class Background(FrameObject):
 		self.frame_index = round(i * (len(self.frames) - 1))
 
 	def add_to_frame(self, background, np, cur_time):
+
+		if cur_time <= self.map_start:
+			i = max(0, min(1, (1 - (cur_time+1000)/(self.map_start+1000))))
+			self.frame_index = round(i * len(self.frames) - 1)
+			self.starting = True
+		elif self.starting:
+			self.frame_index = 0
+			self.starting = False
 
 		self.frame_index = max(0, min(len(self.frames) - 1, self.frame_index + self.step))
 
