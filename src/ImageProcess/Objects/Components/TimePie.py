@@ -7,7 +7,8 @@ class TimePie:
 		self.scale = scale
 		self.y = int(accuracy.y + accuracy.frames[0].size[1]//2)
 		# frames[10[ is percent
-		self.x = int(accuracy.width*0.99 - accuracy.frames[10].size[0] - (-accuracy.gap + accuracy.frames[0].size[0]) * 7)
+		size = accuracy.frames[1].size[0] + (accuracy.frames[0].size[0] - accuracy.gap) * 4 + accuracy.frames[11].size[0] - accuracy.gap
+		self.x = int(accuracy.width * 0.99 - accuracy.frames[10].size[0] - size)
 
 	def add_to_frame(self, background, cur_time, end_time):
 		ratio = cur_time/end_time

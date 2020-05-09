@@ -2,20 +2,25 @@ import osrparse
 
 
 # index for replay_event
+from CheckSystem.Judgement import DiffCalculator
+
 CURSOR_X = 0
 CURSOR_Y = 1
 KEYS_PRESSED = 2
 TIMES = 3
 
 
-def setupReplay(osrfile, start_time, end_time):
+# noinspection PyTypeChecker
+def setupReplay(osrfile, beatmap):
 	replay_info = osrparse.parse_replay_file(osrfile)
 	replay_data = [None] * len(replay_info.play_data)
+
+	start_time = beatmap.start_time
 
 	total_time = 0
 	start_index = 0
 
-	start_osr = max(0, start_time - 3000)
+	start_osr = start_time - 3000
 
 	for index in range(len(replay_data)):
 		times = replay_info.play_data[index].time_since_previous_action
@@ -37,12 +42,21 @@ def setupReplay(osrfile, start_time, end_time):
 
 	replay_data = replay_data[start_index:-1]
 	replay_data.sort(key=lambda x: x[TIMES])  # sort replay data based on time
+
 	start_time = replay_data[0][TIMES]
 
 	for x in range(10):
 		replay_data.append([replay_data[-1][CURSOR_X], replay_data[-1][CURSOR_Y], 0, int(replay_data[-1][TIMES]+17)])
 
+	diffcalculator = DiffCalculator(beatmap.diff)
+	timepreempt = diffcalculator.ar()
+	if replay_data[0][TIMES] > beatmap.hitobjects[0]["time"] - timepreempt:
+		replay_data.insert(0, [*replay_data[0][0:TIMES], beatmap.hitobjects[0]["time"]-timepreempt])
+
+
 	replay_data.append([0, 0, 0, replay_data[-1][3] * 5])
 	replay_data.append([0, 0, 0, replay_data[-1][3] * 5])
+
+	start_time = replay_data[0][TIMES]
 
 	return replay_data, start_time

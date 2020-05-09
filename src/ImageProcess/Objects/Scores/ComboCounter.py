@@ -2,13 +2,14 @@ from math import ceil
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class ComboCounter(FrameObject):
-	def __init__(self, frames, gap, settings):
+	def __init__(self, frames, gap):
 		self.score_frames, self.score_fadeout = frames
-		self.height = settings.height
-		self.width = settings.width
+		self.height = Settings.height
+		self.width = Settings.width
 
 		self.score_index = 0
 		self.index_step = 1
@@ -20,7 +21,7 @@ class ComboCounter(FrameObject):
 		self.adding = False
 		self.animate = False
 
-		self.gap = int(gap * settings.scale)
+		self.gap = int(gap * Settings.scale)
 
 	def breakcombo(self):
 		self.breaking = True
@@ -56,19 +57,22 @@ class ComboCounter(FrameObject):
 		y_offset = y + img.size[1] // 2
 		return x, x_offset, y_offset
 
-	def draw_combo(self, combo, background, x, y, frames, index):
+	def draw_combo(self, combo, background, frames, index):
+		x = 0
 		for digit in str(combo):
 			digit = int(digit)
 			img = frames[digit][int(index)]
+			y = self.height - img.size[1]
 			x, x_offset, y_offset = self.next_pos(x, y, img)
 			imageproc.add(img, background, x_offset, y_offset)
 
 		img = frames[10][int(index)]
+		y = self.height - img.size[1]
 		x, x_offset, y_offset = self.next_pos(x, y, img)
 		imageproc.add(img, background, x_offset, y_offset)
 
 	def add_to_frame(self, background):
-		if int(self.fadeout_index) == 10:
+		if int(self.fadeout_index) == len(self.score_fadeout[0]) - 1:
 			self.combo = self.combofadeout
 			self.score_index = 0
 			self.index_step = 1
@@ -79,22 +83,18 @@ class ComboCounter(FrameObject):
 		if self.breaking:
 			self.combo = max(0, self.combo - 1)
 
-		if int(self.score_index) == 10:
+		if int(self.score_index) == len(self.score_frames[0]) - 1:
 			self.index_step = -1
 
 		if ceil(self.score_index) == 0 and self.animate and self.index_step == -1:
 			self.animate = False
 
 		if self.adding:
-			x = 0
-			y = self.height - self.score_fadeout[0][int(self.fadeout_index)].size[1]
-			self.draw_combo(self.combofadeout, background, x, y, self.score_fadeout, self.fadeout_index)
+			self.draw_combo(self.combofadeout, background, self.score_fadeout, self.fadeout_index)
 
 			self.fadeout_index += 1
 
-		x = 0
-		y = self.height - self.score_frames[0][int(self.score_index)].size[1]
-		self.draw_combo(self.combo, background, x, y, self.score_frames, self.score_index)
+		self.draw_combo(self.combo, background, self.score_frames, self.score_index)
 
 		if self.animate:
 			self.score_index += self.index_step

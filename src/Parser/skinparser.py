@@ -17,6 +17,30 @@ def del_comment(line):
 	return line.strip()
 
 
+escape_dict = {'\a': '/a',
+               '\b': '/b',
+               '\c': '/c',
+               '\f': '/f',
+               '\n': '/n',
+               '\r': '/r',
+               '\t': '/t',
+               '\v': '/v',
+               '\'': "/'",
+               '\"': '/"',
+               '\\': '/'}
+
+
+def raw(text):
+	"""Returns a raw string representation of text"""
+	new_string = ''
+	for char in text:
+		try:
+			new_string += escape_dict[char]
+		except KeyError:
+			new_string += char
+	return new_string
+
+
 settings = {}  # why not put all sections into it at the end ?
 
 
@@ -90,6 +114,8 @@ class Skin:
 		self.general['CursorCentre'] = int(self.general.get('CursorCentre', 0))
 		self.general['HitCircleOverlayAboveNumer'] = int(self.general.get('HitCircleOverlayAboveNumer', 0))
 		self.general['SliderStyle'] = int(self.general.get('SliderStyle', 0))
+		self.general['AllowSliderBallTint'] = int(self.general.get('AllowSliderBallTint', 0))
+		self.general['SliderBallFlip'] = int(self.general.get('SliderBallFlip', 1))
 
 	def parse_colors(self):
 		for key, value in self.colours.items():
@@ -111,7 +137,8 @@ class Skin:
 		self.colours["InputOverlayText"] = self.colours.get("InputOverlayText", (0, 0, 0))
 		self.colours["SliderBall"] = self.colours.get("SliderBall", (2, 170, 255))
 		self.colours["SliderBorder"] = self.colours.get("SliderBorder", (255, 255, 255))
-		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
+		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride",
+		                                                       (0, 0, 0))  # TODO: use current combo color
 		self.colours["SpinnerBackground"] = self.colours.get("SpinnerBackground", (100, 100, 100))
 		self.colours["ComboNumber"] = cur_combo - 1
 
@@ -122,12 +149,15 @@ class Skin:
 
 		self.fonts['ComboPrefix'] = self.fonts.get('ComboPrefix', 'score')
 		self.fonts['ComboPrefix'] = self.fonts['ComboPrefix'].replace(" ", "")
+		self.fonts['ComboPrefix'] = raw(self.fonts['ComboPrefix'])
 
 		self.fonts['ScorePrefix'] = self.fonts.get('ScorePrefix', 'score')
 		self.fonts['ScorePrefix'] = self.fonts['ScorePrefix'].replace(" ", "")
+		self.fonts['ScorePrefix'] = raw(self.fonts['ScorePrefix'])
 
 		self.fonts['HitCirclePrefix'] = self.fonts.get('HitCirclePrefix', 'default')
 		self.fonts['HitCirclePrefix'] = self.fonts['HitCirclePrefix'].replace(" ", "")
+		self.fonts['HitCirclePrefix'] = raw(self.fonts['HitCirclePrefix'])
 
 
 if __name__ == "__main__":

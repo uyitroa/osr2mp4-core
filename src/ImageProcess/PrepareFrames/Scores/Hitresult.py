@@ -1,26 +1,32 @@
-from ImageProcess.PrepareFrames.YImage import YImage, YImages
-from ImageProcess.imageproc import change_size
+from ImageProcess.Animation import size
+from ImageProcess.PrepareFrames.YImage import YImages
+from global_var import Settings
 
 hitprefix = "hit"
+default_size = 128
+hitresult_size = 1.7
 
 
-def prepare_hitresults(scale):
+def prepare_hitresults(scale, beatmap):
+
+	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
+	scale = cs * 2 * hitresult_size / default_size
+
 	scores_frames = {}
-	for x in [0, 50, 100]:
-		img = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0).frames[0]
-		scores_frames[x] = []
-		end = 125
-		start = 75
-		if x != 0:
-			end = 125
-			start = 100
-			for y in range(start, end, -5):
-				a = change_size(img, y / 100, y / 100)
-				scores_frames[x].append(a)
+	for x in [0, 50, 100, 300]:
+		yimg = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0)
+		f = []
+		f1 = yimg.frames
+		if yimg.unanimate:
+			img = yimg.frames[0]
+			f = []
+			if x != 0:
+				f = size.grow(img, 0.8, 1.1, 0.05)
 
-		for y in range(end, start, -2):
-			a = change_size(img, y / 100, y / 100)
-			if x == 0:
-				a = a.rotate(-10 - (end - y) / 10)
-			scores_frames[x].append(a)
+			f1 = size.shrink(img, 1.1, 0.9, 0.02)
+		if x == 0:
+			for a in range(len(f1)):
+				f1[a] = f1[a].rotate(10 + a)
+		scores_frames[x] = f+f1
+
 	return scores_frames

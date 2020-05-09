@@ -8,11 +8,13 @@ class ScoreEntry(FrameObject):
 
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
 		number = str(number)
-		x_start = x_offset - int((len(number)-1)/2 * self.frames[0][index].size[0])
+		n = len(number) - 1
+		index = max(0, min(len(self.frames[0]) - 1, index+n-1))
+		x_start = x_offset - int(n/2 * self.frames[0][index].size[0])
 		for digit in number:
 			digit = int(digit)
 			imageproc.add(self.frames[digit][index], background, x_start, y_offset)
-			x_start += self.frames[digit][self.frame_index].size[0]
+			x_start += self.frames[digit][index].size[0]
 
 
 class InputOverlay(FrameObject):
@@ -26,7 +28,7 @@ class InputOverlay(FrameObject):
 		self.scoreentry = scoreentry
 
 		self.holding = False
-		self.oldclick = True
+		self.oldclick = False
 
 		self.n = 0
 
@@ -44,13 +46,15 @@ class InputOverlay(FrameObject):
 		self.holding = True
 
 	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
-		if self.holding:
+		if self.holding or (self.frame_index < len(self.frames) - 1 and self.oldclick):
 			self.frame_index += 1
 			if self.frame_index >= len(self.frames):
 				self.frame_index -= 1
 
-		else:
+		elif self.frame_index >= len(self.frames) - 1:
 			self.oldclick = False
+
+		if not self.oldclick:
 			self.frame_index -= 1
 			if self.frame_index < 0:
 				self.frame_index += 1

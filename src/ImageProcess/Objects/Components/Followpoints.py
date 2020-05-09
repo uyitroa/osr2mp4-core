@@ -2,6 +2,7 @@ from ImageProcess.Objects.FrameObject import FrameObject
 import numpy as np
 from recordclass import recordclass
 from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fp
+from global_var import Settings
 
 followpoints = "followpoint"
 
@@ -55,13 +56,13 @@ class Followpoint(FrameObject):
 
 
 class FollowPointsManager:
-	def __init__(self, fp, settings):
+	def __init__(self, fp):
 		self.followpoints = []
 		self.pointdistance = 32
 		self.alpha_tdelta = 200
-		self.scale = settings.playfieldscale
-		self.movedown = settings.movedown
-		self.moveright = settings.moveright
+		self.scale = Settings.playfieldscale
+		self.movedown = Settings.movedown
+		self.moveright = Settings.moveright
 		self.preempt = 800
 		self.fp = fp
 

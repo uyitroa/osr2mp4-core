@@ -32,12 +32,17 @@ class Updater:
 			followbit = self.info.more.followstate
 			if int(followbit[0]):
 				self.component.hitobjmanager.sliderchangestate(int(followbit[1]), idd)
+
+			if self.info.more.hitvalue == 10:
+				self.component.hitobjmanager.slidertouchtick(idd)
+
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
 			idd = str(self.info.id) + "o"
-			x, y = 384 * 0.5, 512 * 0.5
+			y, x = 384 * 0.5, 512 * 0.5
 			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress)
+
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 			if self.info.more.bonusscore >= 1:
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
@@ -52,7 +57,8 @@ class Updater:
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
 			return
-		self.info = self.resultinfo[self.info_index]
-		self.process_combo()
-		self.process_acc()
-		self.info_index += 1
+		while self.info_index < len(self.resultinfo) and self.resultinfo[self.info_index].time < cur_time:
+			self.info = self.resultinfo[self.info_index]
+			self.process_combo()
+			self.process_acc()
+			self.info_index += 1

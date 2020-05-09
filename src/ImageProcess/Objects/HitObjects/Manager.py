@@ -1,5 +1,9 @@
 import time
 
+import cv2
+
+from global_var import Settings
+
 CIRCLE = 0
 SLIDER = 1
 SPINNER = 2
@@ -7,7 +11,7 @@ SPINNER = 2
 
 class HitObjectManager:
 
-	def __init__(self, circle, slider, spinner, maxtimewindow, settings):
+	def __init__(self, circle, slider, spinner, maxtimewindow):
 
 		self.circle_manager = circle
 		self.slider_manager = slider
@@ -17,9 +21,9 @@ class HitObjectManager:
 
 		self.hitobjects = {}
 		self.objtime = []
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.timer = 0
-		self.rate = settings.timeframe/1000
+		self.rate = Settings.timeframe/1000
 
 		self.objecttype = {
 			CIRCLE: [self.circle_manager, self.circle_manager.circles, -self.maxtimewindow - self.interval * 2],
@@ -33,17 +37,19 @@ class HitObjectManager:
 		self.hitobjects[idd] = [SLIDER, osu_d["end time"] - cur_time]
 		self.objtime.append(idd)
 
-	def add_circle(self, x, y, cur_time, osu_d):
-		self.circle_manager.add_circle(x, y, cur_time, osu_d)
+	def add_circle(self, osu_d, x, y, cur_time):
+		self.circle_manager.add_circle(osu_d, x, y, cur_time)
 		circleduration = osu_d["time"] - cur_time
 
 		idd = str(osu_d["id"]) + "c"
 		self.hitobjects[idd] = [CIRCLE, circleduration]
 		self.objtime.append(idd)
 
-	def add_spinner(self, starttime, endtime, curtime, idd):
-		idd = str(idd) + "o"
-		self.spinner_manager.add_spinner(starttime, endtime, curtime, idd)
+	def add_spinner(self, osu_d, curtime):
+		starttime = osu_d["time"]
+		endtime = osu_d["end time"]
+		idd = str(osu_d["id"]) + "o"
+		self.spinner_manager.add_spinner(osu_d, curtime)
 		self.hitobjects[idd] = [SPINNER, endtime - curtime]
 		self.objtime.append(idd)
 
@@ -58,16 +64,20 @@ class HitObjectManager:
 		self.circle_manager.circles[idd][9] = 1
 
 	def sliderchangestate(self, followappear, idd):
-		index_interval = 0.65 * self.rate
+		index_interval = 0.65
 
-		if self.slider_manager.sliders[idd].sliderb_i != self.slider_manager.slidermax_index:
-			self.slider_manager.sliders[idd].sliderb_i = 0
+		if self.slider_manager.sliders[idd].sliderf_i != self.slider_manager.slidermax_index:
+			self.slider_manager.sliders[idd].sliderf_i = 0
 
 		if followappear:
-			index_interval = -0.65 * self.rate
-			self.slider_manager.sliders[idd].sliderb_i = self.slider_manager.slidermax_index - 3
+			index_interval = -0.65
+			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3
 
 		self.slider_manager.sliders[idd].appear_f = index_interval
+
+	def slidertouchtick(self, idd):
+		self.slider_manager.sliders[idd].sliderf_i = 2
+		self.slider_manager.sliders[idd].appear_f = -0.3
 
 	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):
@@ -92,3 +102,12 @@ class HitObjectManager:
 				continue
 
 			hitobj[0].add_to_frame(background, key, len(self.objtime) == 1)
+		#
+		# if len(self.objtime) == 0:
+		# 	return
+		# a = self.hitobjects[self.objtime[0]]
+		# if a[0] == SLIDER:
+		# 	key = self.objtime[0]
+		# 	l = self.objecttype[SLIDER][1][key].baiser.req_length
+		# 	cv2.putText(np_img, str(l), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
+		# 	            (255, 255, 255, 255), 2)

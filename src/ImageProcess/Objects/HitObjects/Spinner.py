@@ -2,6 +2,7 @@ from recordclass import recordclass
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 spinnercircle = "spinner-circle"
 spinnerbackground = "spinner-background"
@@ -16,20 +17,25 @@ Spinner = recordclass("Spinner", "angle duration starttime_left alpha index")
 
 
 class SpinnerManager(FrameObject):
-	def __init__(self, frames, settings):
+	def __init__(self, frames):
 		super().__init__(frames)
-		self.moveright = settings.moveright
-		self.movedown = settings.movedown
-		self.scale = settings.playfieldscale
+		self.moveright = Settings.moveright
+		self.movedown = Settings.movedown
+		self.scale = Settings.playfieldscale
+		self.width = Settings.playfieldwidth
+		self.height = Settings.playfieldheight
 		self.spinners = {}
 
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.timer = 0
 
-	def add_spinner(self, starttime, endtime, curtime, idd):
+	def add_spinner(self, osu_d, curtime):
+		starttime = osu_d["time"]
+		endtime = osu_d["end time"]
+		idd = str(osu_d["id"]) + "o"
 		duration = endtime - starttime
 		# img, duration, startime left, alpha, index, progress
-		self.spinners[str(idd) + "o"] = Spinner(0, duration, starttime - curtime, 0, 0)
+		self.spinners[idd] = Spinner(0, duration, starttime - curtime, 0, 0)
 
 	def update_spinner(self, idd, angle, progress):
 		# angle = round(angle * 0.9)
@@ -59,14 +65,17 @@ class SpinnerManager(FrameObject):
 				self.spinners[i].alpha = 1
 
 		img = self.frames[spinnerbackground]
-		imageproc.add(img, background,  background.size[0]//2, background.size[1]//2, alpha=self.spinners[i].alpha)
+		imageproc.add(img, background, self.width/2 + self.moveright, self.height/2 + self.movedown, alpha=self.spinners[i].alpha)
 
 		img = self.frames[spinnercircle].rotate(self.spinners[i].angle)
-		imageproc.add(img, background, background.size[0] // 2, int(198.5 * self.scale) + self.movedown, alpha=self.spinners[i].alpha)
+		imageproc.add(img, background, self.width/2 + self.moveright, 198 * self.scale + self.movedown, alpha=self.spinners[i].alpha)
 
 		height = self.frames[spinnermetre].size[1]
 		y_start = height - self.spinners[i].index * height // 10
 		width = self.frames[spinnermetre].size[0]
 		img = self.frames[spinnermetre].crop((0, y_start, width, height))
-		imageproc.add(img, background, background.size[0]//2, 46 + img.size[1]//2 + y_start, alpha=self.spinners[i].alpha)
+
+		x = self.width/2 + self.moveright - width/2
+		y = 46/height * 692 + y_start
+		imageproc.add(img, background, x, y, alpha=self.spinners[i].alpha, topleft=True)
 

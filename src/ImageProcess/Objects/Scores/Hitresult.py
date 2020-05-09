@@ -1,17 +1,18 @@
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import Settings
 
 
 class HitResult(FrameObject):
-	def __init__(self, frames, settings):
+	def __init__(self, frames):
 		super().__init__(frames)
-		self.moveright = settings.moveright
-		self.movedown = settings.movedown
+		self.moveright = Settings.moveright
+		self.movedown = Settings.movedown
 		self.divide_by_255 = 1 / 255.0
 		self.hitresults = []
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.time = 600
-		self.playfieldscale = settings.playfieldscale
+		self.playfieldscale = Settings.playfieldscale
 
 	def add_result(self, scores, x, y):
 		"""
@@ -23,10 +24,10 @@ class HitResult(FrameObject):
 		x = int(x * self.playfieldscale) + self.moveright
 		y = int(y * self.playfieldscale) + self.movedown
 
-		if scores == 300:
-			return
+		# if scores == 300:
+		# 	return
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y, 0, 20, 0, 3])
+		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
@@ -44,12 +45,12 @@ class HitResult(FrameObject):
 
 			if score == 0:
 				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
-				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2)
+				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2 * 60/Settings.fps)
 
-			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1)
-			self.hitresults[i][5] += self.interval
+			self.hitresults[i][3] = int(min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/Settings.fps))
+			self.hitresults[i][5] += self.interval * 60/Settings.fps
 
 			if self.hitresults[i][5] >= self.time - self.interval * 10:
-				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10)
+				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10 * 60/Settings.fps)
 			else:
-				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20)
+				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/Settings.fps)

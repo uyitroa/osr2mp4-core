@@ -96,7 +96,7 @@ class SliderManager:
 
 		baiser = Curve.from_kind_and_points(*b_info[0:3])
 
-		key = str(osu_d["time"]) + "s"
+		key = str(osu_d["id"]) + "s"
 		self.sliders[key] = Slider(img, x_pos, y_pos, duration, 0, color, self.slidermax_index, 0, osu_d["duration"], b_info,
 		                           1, osu_d["repeated"], 0, ticks_a, 0, baiser, osu_d["arrow pos"], Position(x_pos, y_pos))
 

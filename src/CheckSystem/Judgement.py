@@ -227,7 +227,7 @@ class Check:
 			return False, None, None, None, 0, 0
 
 		if osr[3] >= osu_d["end time"]:
-			spin_d = self.spinners_memory[osu_d["time"]]
+			spin_d = self.spinners_memory[osu_d["id"]]
 			progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 			print(progress)
 			if progress > 1:

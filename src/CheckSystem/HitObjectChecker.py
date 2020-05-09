@@ -2,6 +2,7 @@ from CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
 
+from global_var import Settings
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
@@ -10,7 +11,7 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, settings, mod=1):
+	def __init__(self, beatmap, mod=1):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -25,7 +26,7 @@ class HitObjectChecker:
 			self.fade_in = 800 - 500 * (self.diff["ApproachRate"] - 5) / 5
 
 		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5  # - 0.5
-		self.interval = settings.timeframe / settings.fps
+		self.interval = Settings.timeframe / Settings.fps
 		self.CIRCLE = 0
 		self.SLIDER = 1
 		self.SPINNER = 2
@@ -66,7 +67,7 @@ class HitObjectChecker:
 				state = 1
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
-					info = Info(replay[osr_index][3], -1, 0, self.scorecounter, -1, -1, self.clicks, None,
+					info = Info(replay[osr_index][3], self.combo, 0, self.scorecounter, self.scorecounter, copy.copy(self.results), copy.copy(self.clicks), None,
 					            timestamp, idd, circle)
 					self.info.append(info)
 					return note_lock, sum_newclick, i

@@ -3,6 +3,7 @@ import time
 from osrparse.enums import Mod
 
 from CheckSystem.HitObjectChecker import HitObjectChecker
+from global_var import Settings
 
 CURSOR_X = 0
 CURSOR_Y = 1
@@ -102,28 +103,35 @@ def diffmod(replay_info, diff):
 	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
 
 
-def checkmain(beatmap, replay_info, replay_event, cur_time, settings):
+def checkmain(beatmap, replay_info, replay_event, cur_time):
 	osr_index = 0
-	index_hitobject = 0
 	diffmod(replay_info, beatmap.diff)
-	hitobjectchecker = HitObjectChecker(beatmap, settings)
-	start_time = time.time()
+	hitobjectchecker = HitObjectChecker(beatmap)
+	break_index = 0
+	breakperiod = beatmap.breakperiods[break_index]
+	in_break = int(replay_event[osr_index][TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
 	while osr_index < len(replay_event) - 3:
-		if time.time() - start_time > 60:
-			print(time.time() - start_time, str(osr_index) + "/" + str(len(replay_event)), cur_time, index_hitobject)
-			start_time = time.time()
-
 		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
-		f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][KEYS_PRESSED])
+		if not in_break:
+			f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][KEYS_PRESSED])
+		else:
+			f_k1, f_k2, f_m1, f_m2 = False, False, False, False
 
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1)
-		cur_time += settings.timeframe / settings.fps
 
 		osr_index += 1
+
+		breakperiod = beatmap.breakperiods[break_index]
+		next_break = replay_event[osr_index][TIMES] > breakperiod["End"]
+		if next_break:
+			break_index = min(break_index + 1, len(beatmap.breakperiods) - 1)
+			breakperiod = beatmap.breakperiods[break_index]
+		in_break = int(replay_event[osr_index][TIMES]) in range(breakperiod["Start"], breakperiod["End"])
+
 	print("check done")
 	return hitobjectchecker.info

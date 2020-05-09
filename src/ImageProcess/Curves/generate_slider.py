@@ -14,11 +14,11 @@ class GenerateSlider:
 		:param radius: float, size of slider
 		:param scale: float, current resolution with 512x384
 		"""
-		self.sliderborder = sliderborder
+		self.sliderborder = list(sliderborder)
 		self.sliderborder[0], self.sliderborder[2] = self.sliderborder[2], self.sliderborder[0]
 		self.sliderborder = tuple(self.sliderborder)
 
-		self.slideroverride = slideroverride
+		self.slideroverride = list(slideroverride)
 		self.slideroverride[0], self.slideroverride[2] = self.slideroverride[2], self.slideroverride[0]
 		self.slideroverride = tuple(self.slideroverride)
 
@@ -49,7 +49,8 @@ class GenerateSlider:
 
 	def get_pos_from_class(self, baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tolerance = {"L": 1, "B": 0.02, "P": 0.025}
+		tol = 1/max(1, baiser_class.req_length/650)
+		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.025 * tol}
 
 		baiser_class(0)
 		t = 0

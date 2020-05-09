@@ -1,6 +1,7 @@
 import math
 import re
 
+from CheckSystem.Judgement import DiffCalculator
 from ImageProcess.Curves.curve import Curve
 from ImageProcess.Curves.position import Position
 
@@ -19,25 +20,26 @@ class Beatmap:
 		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
-		# self.sliderborder = colors["SliderBorder"]
-		# self.slideroverride = colors["SliderTrackOverride"]
+
 		self.ncombo = colors["ComboNumber"]
 		self.hr = hr
 
 		self.parse_general()
 		self.parse_diff()
-		# cs = (54.4 - 4.48 * self.diff["CircleSize"])
-		# self.gs = GenerateSlider(self.sliderborder, self.slideroverride, cs, self.scale)
+
 		self.parse_event()
 		self.parse_timingpoints()
 		self.parse_hitobject()
 		self.stack_position()
 
-	# print("General:", self.general)
-	# print("\n\nDiff:", self.diff)
-	# print("\n\nBreak Periods:", self.breakperiods)
-	# print("\n\nTiming points:", self.timing_point)
-	# print("\n\nHitObjects:", self.hitobjects)
+
+		endtime_fp = self.hitobjects[-1]["time"] + 800
+		# diffcalculator = DiffCalculator(self.diff)
+		# timepreempt = int(diffcalculator.ar() + 500)
+		self.breakperiods.append({"Start": endtime_fp, "End": endtime_fp})
+		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
+		                           "type": ["end"]})  # to avoid index out of range
+
 
 	def parse_general(self):
 		general = self.info[1]
@@ -60,6 +62,7 @@ class Beatmap:
 		event = self.info[5]
 		event = event.split("//")
 		self.bg = event[1].split("\n")[1].split(",")
+		self.bg[2] = self.bg[2].replace('"', '')
 
 		breakperiods = event[2].split("\n")[1:-1]
 		for period in breakperiods:

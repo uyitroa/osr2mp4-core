@@ -13,6 +13,12 @@ def changealpha(img, alpha):
 	img.putalpha(a)
 
 
+def addalpha(img, alpha):
+	a = img.getchannel('A')
+	a = a.point(lambda i: i + alpha)
+	img.putalpha(a)
+
+
 def newalpha(img, alpha):
 	"""
 	Multiplication of image alpha channel and alpha
@@ -43,7 +49,7 @@ def add_color(image, color):
 	return out
 
 
-def add(img, background, x_offset, y_offset, alpha=1, channel=3):
+def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 	"""
 	Add image to the background
 	:param img: PIL.Image
@@ -53,8 +59,15 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3):
 	:param alpha: float between 0 and 1
 	:return:
 	"""
-	y1 = y_offset - img.size[1]//2
-	x1 = x_offset - img.size[0]//2
+	if img.size[0] == 1 and img.size[1] == 1:
+		return
+
+	if not topleft:
+		y_offset = y_offset - img.size[1]/2
+		x_offset = x_offset - img.size[0]/2
+
+	x_offset, y_offset = round(x_offset), round(y_offset)
+
 	if channel == 3:
 
 		a = img
@@ -63,13 +76,13 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3):
 			a = a.point(lambda i: i * alpha)
 		if alpha == 0:
 			return
-		background.paste(img, (x1, y1), a)
+		background.paste(img, (x_offset, y_offset), a)
 
 	elif channel == 4:
 
-		b = background.crop((x1, y1, x1 + img.size[0], y1 + img.size[1]))
+		b = background.crop((x_offset, y_offset, x_offset + img.size[0], y_offset + img.size[1]))
 		c = Image.alpha_composite(b, img)
-		background.paste(c, (x1, y1))
+		background.paste(c, (x_offset, y_offset))
 
 
 def change_size(img, scale_row, scale_col, rows=None, cols=None):
@@ -94,5 +107,5 @@ def change_size(img, scale_row, scale_col, rows=None, cols=None):
 def rotate_images(frames, angle):
 	images = [None] * len(frames)
 	for x in range(len(frames)):
-		images[x] = frames[x].rotate(angle)
+		images[x] = frames[x].rotate(angle, resample=Image.BILINEAR)
 	return images

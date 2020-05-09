@@ -1,7 +1,7 @@
 {
-  "Skin path": "/Users/yuitora./Downloads/shige",
-  "Beatmap path": "/Users/yuitora./Downloads/thegame/",
-  ".osr path": "../res/thegame.osr",
+  "Skin path": "/Users/yuitora./Downloads/dt",
+  "Beatmap path": "/Users/yuitora./Downloads/tool/",
+  ".osr path": "../res/tool.osr",
   "Default skin path": "/Users/yuitora./Downloads/default",
   "Output path": "output.mkv",
   "Width": 1920,
@@ -9,7 +9,7 @@
   "FPS": 60,
   "Start time": 0,
   "End time": -1,
-  "Video codec": "XVID",
+  "Video codec": "X264",
   "Process": 2,
   "ffmpeg path": "ffmpeg"
 }

@@ -2,38 +2,51 @@ import os
 import numpy as np
 from PIL import Image
 from ImageProcess import imageproc
-
-FORMAT = ".png"
-
-
-class SkinPaths:
-	path = None
-	default_path = None
-	skin_ini = None
-	default_skin_ini = None
+from global_var import SkinPaths
 
 
 class YImage:
 	def __init__(self, filename, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None):
 		self.filename = filename
-
+		self.origfile = filename
+		self.x2 = False
 
 		self.loadimg(defaultpath, prefix, fallback)
 
 		if rotate:
 			self.tosquare()
 
-		# if self.img is None or self.img.size[1] == 1 or self.img.size[0] == 1:
-		# 	print(filename, "exists:", self.img is not None)
-		# 	self.img = Image.new('RGBA', (2, 2))
+		if self.x2:
+			# print(self.filename)
+			scale /= 2
+
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
 		self.orig_cols = self.img.size[0]
 		if scale != 1:
-			self.change_size(scale, scale) # make rows and cols even amount
+			self.change_size(scale, scale)  # make rows and cols even amount
 			self.orig_img = self.img.copy()
 			self.orig_rows = self.img.size[1]
 			self.orig_cols = self.img.size[0]
+
+		# print(filename)
+
+	def loadx2(self, path, pre, filename=None):
+		if filename is None:
+			filename = self.filename
+		try:
+			self.img = Image.open(path + pre + filename + SkinPaths.x2 + SkinPaths.format).convert("RGBA")
+			self.filename = path + pre + filename + SkinPaths.x2 + SkinPaths.format
+			self.x2 = True
+			return True
+		except FileNotFoundError as er:
+			# print(er)
+			try:
+				self.img = Image.open(path + pre + filename + SkinPaths.format).convert("RGBA")
+				self.filename = path + pre + filename + SkinPaths.format
+				return True
+			except FileNotFoundError as e:
+				return False
 
 	def loadimg(self, defaultpath, prefix, fallback):
 		pre = SkinPaths.skin_ini.fonts.get(prefix, "")
@@ -44,23 +57,23 @@ class YImage:
 		else:
 			path = SkinPaths.path
 
-		try:
-			self.img = Image.open(path + pre + self.filename + FORMAT).convert("RGBA")
-		except FileNotFoundError as e:
-			if fallback is not None:
-				try:
-					self.img = Image.open(path + pre + fallback + FORMAT).convert("RGBA")
-					return
-				except FileNotFoundError as er:
-					self.filename = fallback
+		if self.loadx2(path, pre):
+			return
 
-			print(e, "\nTrying default skin files")
-			print(pre, default_pre)
-			try:
-				self.img = Image.open(SkinPaths.default_path + default_pre + self.filename + FORMAT).convert("RGBA")
-			except FileNotFoundError as e:
-				print(e, "\nDefault file not found creating blank file")
-				self.img = Image.new("RGBA", (1, 1))
+		if fallback is not None:
+			if self.loadx2(path, pre, fallback):
+				return
+			self.filename = fallback
+
+		print("File {} not found\nTrying default skin files {}".format(self.origfile, self.filename))
+		print(pre, default_pre)
+
+		if self.loadx2(SkinPaths.default_path, default_pre):
+			return
+
+		print("\nDefault file not found creating blank file")
+		self.filename = "None"
+		self.img = Image.new("RGBA", (1, 1))
 
 	def tosquare(self):
 		"""
@@ -92,6 +105,7 @@ class YImages:
 		self.frames = []
 		self.rotate = rotate
 		self.n_frame = 0
+		self.unanimate = False
 
 		self.load(defaultpath=False)
 		if self.n_frame == 0:
@@ -106,7 +120,7 @@ class YImages:
 		else:
 			path = SkinPaths.path
 
-		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + FORMAT)
+		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + SkinPaths.format)
 		while should_continue:
 
 			img = YImage(self.filename + self.delimiter + str(counter), scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
@@ -114,12 +128,13 @@ class YImages:
 
 			counter += 1
 
-			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + FORMAT)
+			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + SkinPaths.format)
 
 
 		if not self.frames:
-			should_continue = os.path.isfile(path + self.filename + FORMAT)
+			should_continue = os.path.isfile(path + self.filename + SkinPaths.format)
 			if should_continue:
+				self.unanimate = True
 
 				a = YImage(self.filename, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
 				self.frames.append(a.img)
