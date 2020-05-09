@@ -92,7 +92,7 @@ def parseData():
         a = open("map_thegame.txt", "r")
 
         beatmap_info = eval(a.read())
-        Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id more")
+        Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp more")
         Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
         Slider = namedtuple("Slider", "followstate hitvalue tickend x y")
         Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
