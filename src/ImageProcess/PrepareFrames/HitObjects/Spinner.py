@@ -1,3 +1,4 @@
+from ImageProcess import imageproc
 from ImageProcess.PrepareFrames.YImage import YImage
 
 spinnercircle = "spinner-circle"
@@ -15,5 +16,5 @@ def prepare_spinner(scale):
 	n = [spinnercircle, spinnerbackground, spinnerbottom, spinnerspin, spinnermetre, spinnerapproachcircle,
 	     spinnertop]
 	for img in n:
-		spinner_images[img] = YImage(img, scale).img
+		spinner_images[img] = imageproc.newalpha(YImage(img, scale).img, 0.75)
 	return spinner_images
