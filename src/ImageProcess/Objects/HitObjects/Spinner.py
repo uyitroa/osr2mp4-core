@@ -22,6 +22,8 @@ class SpinnerManager(FrameObject):
 		self.moveright = Settings.moveright
 		self.movedown = Settings.movedown
 		self.scale = Settings.playfieldscale
+		self.width = Settings.playfieldwidth
+		self.height = Settings.playfieldheight
 		self.spinners = {}
 
 		self.interval = Settings.timeframe / Settings.fps
@@ -60,14 +62,17 @@ class SpinnerManager(FrameObject):
 				self.spinners[i].alpha = 1
 
 		img = self.frames[spinnerbackground]
-		imageproc.add(img, background,  background.size[0]//2, background.size[1]//2, alpha=self.spinners[i].alpha)
+		imageproc.add(img, background, self.width/2 + self.moveright, self.height/2 + self.movedown, alpha=self.spinners[i].alpha)
 
 		img = self.frames[spinnercircle].rotate(self.spinners[i].angle)
-		imageproc.add(img, background, background.size[0] // 2, int(198.5 * self.scale) + self.movedown, alpha=self.spinners[i].alpha)
+		imageproc.add(img, background, self.width//2 + self.moveright, int(198.5 * self.scale) + self.movedown, alpha=self.spinners[i].alpha)
 
 		height = self.frames[spinnermetre].size[1]
 		y_start = height - self.spinners[i].index * height // 10
 		width = self.frames[spinnermetre].size[0]
 		img = self.frames[spinnermetre].crop((0, y_start, width, height))
-		imageproc.add(img, background, background.size[0]//2, 46 + img.size[1]//2 + y_start, alpha=self.spinners[i].alpha)
+
+		x = self.width/2 + self.moveright - width/2
+		y = 46/height * 692 + y_start
+		imageproc.add(img, background, x, y, alpha=self.spinners[i].alpha, topleft=True)
 
