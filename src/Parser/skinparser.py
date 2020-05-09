@@ -34,9 +34,9 @@ class Skin:
 		self.parse_colors()
 		self.parse_fonts()
 
-		print(self.general)
-		print(self.colours)
-		print(self.fonts)
+		# print(self.general)
+		# print(self.colours)
+		# print(self.fonts)
 
 	def read(self):
 		General = {}

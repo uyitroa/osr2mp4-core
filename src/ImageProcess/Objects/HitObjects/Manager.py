@@ -29,45 +29,45 @@ class HitObjectManager:
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		self.slider_manager.add_slider(osu_d, x_pos, y_pos, cur_time)
 
-		timestamp = str(osu_d["id"]) + "s"
-		self.hitobjects[timestamp] = [SLIDER, osu_d["end time"] - cur_time]
-		self.objtime.append(timestamp)
+		idd = str(osu_d["id"]) + "s"
+		self.hitobjects[idd] = [SLIDER, osu_d["end time"] - cur_time]
+		self.objtime.append(idd)
 
 	def add_circle(self, x, y, cur_time, osu_d):
 		self.circle_manager.add_circle(x, y, cur_time, osu_d)
 		circleduration = osu_d["time"] - cur_time
 
-		timestamp = str(osu_d["id"]) + "c"
-		self.hitobjects[timestamp] = [CIRCLE, circleduration]
-		self.objtime.append(timestamp)
+		idd = str(osu_d["id"]) + "c"
+		self.hitobjects[idd] = [CIRCLE, circleduration]
+		self.objtime.append(idd)
 
 	def add_spinner(self, starttime, endtime, curtime, idd):
-		timestamp = str(idd) + "o"
+		idd = str(idd) + "o"
 		self.spinner_manager.add_spinner(starttime, endtime, curtime, idd)
-		self.hitobjects[timestamp] = [SPINNER, endtime - curtime]
-		self.objtime.append(timestamp)
+		self.hitobjects[idd] = [SPINNER, endtime - curtime]
+		self.objtime.append(idd)
 
-	def delete_circle(self, timestamp):
-		self.hitobjects[timestamp][1] = -self.maxtimewindow - self.interval * 2
+	def delete_circle(self, idd):
+		self.hitobjects[idd][1] = -self.maxtimewindow - self.interval * 2
 
-	def fadeout_circle(self, timestamp):
-		self.hitobjects[timestamp][1] = -self.maxtimewindow - self.interval * 2 + 175
-		self.circle_manager.circles[timestamp][8] = 1
+	def fadeout_circle(self, idd):
+		self.hitobjects[idd][1] = -self.maxtimewindow - self.interval * 2 + 175
+		self.circle_manager.circles[idd][8] = 1
 
-	def notelock_circle(self, timestamp):
-		self.circle_manager.circles[timestamp][9] = 1
+	def notelock_circle(self, idd):
+		self.circle_manager.circles[idd][9] = 1
 
-	def sliderchangestate(self, followappear, timestamp):
+	def sliderchangestate(self, followappear, idd):
 		index_interval = 0.65 * self.rate
 
-		if self.slider_manager.sliders[timestamp].sliderb_i != self.slider_manager.slidermax_index:
-			self.slider_manager.sliders[timestamp].sliderb_i = 0
+		if self.slider_manager.sliders[idd].sliderb_i != self.slider_manager.slidermax_index:
+			self.slider_manager.sliders[idd].sliderb_i = 0
 
 		if followappear:
 			index_interval = -0.65 * self.rate
-			self.slider_manager.sliders[timestamp].sliderb_i = self.slider_manager.slidermax_index - 3
+			self.slider_manager.sliders[idd].sliderb_i = self.slider_manager.slidermax_index - 3
 
-		self.slider_manager.sliders[timestamp].appear_f = index_interval
+		self.slider_manager.sliders[idd].appear_f = index_interval
 
 	# manager of circle add_to_frame and slider add_to_frame
 	def add_to_frame(self, background):

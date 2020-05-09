@@ -31,21 +31,21 @@ class SpinnerManager(FrameObject):
 		# img, duration, startime left, alpha, index, progress
 		self.spinners[str(idd) + "o"] = Spinner(0, duration, starttime - curtime, 0, 0)
 
-	def update_spinner(self, timestamp, angle, progress):
+	def update_spinner(self, idd, angle, progress):
 		# angle = round(angle * 0.9)
 		# n_rot = int(angle/90)
 		# index = int(angle - 90*n_rot)
 		# n_rot = n_rot % 4 + 1
 
-		self.spinners[timestamp].angle = angle
+		self.spinners[idd].angle = angle
 		# if n_rot != 1:
-		# 	self.spinners[timestamp][0] = self.spinners[timestamp][0].transpose(n_rot)
+		# 	self.spinners[idd][0] = self.spinners[idd][0].transpose(n_rot)
 
 		progress = progress * 10
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
 			progress -= 1
 
-		self.spinners[timestamp][4] = min(10, int(progress))
+		self.spinners[idd][4] = min(10, int(progress))
 
 	def add_to_frame(self, background, i, _):
 		if self.spinners[i].starttime_left > 0:

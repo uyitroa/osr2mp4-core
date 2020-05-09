@@ -81,7 +81,7 @@ class Check:
 				update_hitobj = True
 				score = 0
 
-		return update_hitobj, score, osu_d["id"], osu_d["x"], osu_d["y"], use_click, time_difference
+		return update_hitobj, score, osu_d["time"], osu_d["id"],osu_d["x"], osu_d["y"], use_click, time_difference
 
 	def checkslider(self, index, replay, osrindex):
 		osr = replay[osrindex]
@@ -113,14 +113,14 @@ class Check:
 				hitresult = 300
 				print("what", slider_d["score"], slider_d["max score"])
 
-			return True, hitresult, osu_d["id"], osu_d["end x"], osu_d["end y"], \
+			return True, hitresult, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], \
 			       False, hitvalue, combostatus, slider_d["tickend"]
 
 		if followappear != prev_state:
 			slider_d["follow state"] = followappear
-			return True, None, osu_d["id"], 0, 0, followappear, hitvalue, combostatus, 0
+			return True, None, osu_d["time"], osu_d["id"], 0, 0, followappear, hitvalue, combostatus, 0
 
-		return False, None, osu_d["id"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
+		return False, None, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 
@@ -245,11 +245,11 @@ class Check:
 		spinning = osr[2] != 0
 		angle = -np.rad2deg(np.arctan2(osr[1] - self.height / 2, osr[0] - self.width / 2))
 
-		if osu_d["time"] not in self.spinners_memory:
-			self.spinners_memory[osu_d["time"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0,
+		if osu_d["id"] not in self.spinners_memory:
+			self.spinners_memory[osu_d["id"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0,
 			                                       "progress": 0, "extra": 0}
 
-		spin_d = self.spinners_memory[osu_d["time"]]
+		spin_d = self.spinners_memory[osu_d["id"]]
 		if not spin_d["spinning"] and spinning:
 			spin_d["angle"] = angle
 		spin_d["spinning"] = spinning

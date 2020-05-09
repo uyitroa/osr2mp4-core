@@ -1,5 +1,5 @@
 class Info:
-	def __init__(self, time, combo, combostatus, showscore, score, accuracy, clicks, hitresult, timestamp, more):
+	def __init__(self, time, combo, combostatus, showscore, score, accuracy, clicks, hitresult, timestamp, idd, more):
 		self.more = more
 		self.timestamp = timestamp
 		self.hitresult = hitresult
@@ -10,6 +10,7 @@ class Info:
 		self.combostatus = combostatus
 		self.combo = combo
 		self.time = time
+		self.idd = idd
 
 
 class Circle:

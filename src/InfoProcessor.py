@@ -15,29 +15,29 @@ class Updater:
 	def process_acc(self):
 		objtype = type(self.info.more).__name__
 		if objtype == "Circle":
-			timestamp = str(self.info.timestamp) + "c"
+			idd = str(self.info.id) + "c"
 			x, y = self.info.more.x, self.info.more.y
 			if self.info.more.state == 1:
-				self.component.hitobjmanager.notelock_circle(timestamp)
+				self.component.hitobjmanager.notelock_circle(idd)
 			elif self.info.more.state == 2:
-				self.component.hitobjmanager.fadeout_circle(timestamp)
+				self.component.hitobjmanager.fadeout_circle(idd)
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
 				if self.info.more.sliderhead:
 					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate,
-					                                               str(self.info.timestamp) + "s")
+					                                               str(self.info.id) + "s")
 
 		elif objtype == "Slider":
-			timestamp = str(self.info.timestamp) + "s"
+			idd = str(self.info.id) + "s"
 			x, y = self.info.more.x, self.info.more.y
 			followbit = self.info.more.followstate
 			if int(followbit[0]):
-				self.component.hitobjmanager.sliderchangestate(int(followbit[1]), timestamp)
+				self.component.hitobjmanager.sliderchangestate(int(followbit[1]), idd)
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
-			timestamp = str(self.info.timestamp) + "o"
+			idd = str(self.info.id) + "o"
 			x, y = 384 * 0.5, 512 * 0.5
-			self.component.spinner.update_spinner(timestamp, self.info.more.rotate, self.info.more.progress)
+			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress)
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 			if self.info.more.bonusscore >= 1:
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
