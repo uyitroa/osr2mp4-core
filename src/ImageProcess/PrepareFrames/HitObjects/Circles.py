@@ -135,8 +135,8 @@ def prepare_circle(beatmap, scale, skin, hd):
 				circle_frames[-1].append(overlayapproach(orig_circle, approach_circle, alpha))
 				slidercircle_frames[-1].append(overlayapproach(orig_slider, approach_slider, alpha))
 
-				alpha = min(100, alpha + opacity_interval)
 				alphas.append(alpha)
+				alpha = min(100, alpha + opacity_interval)
 			# for late tapping
 			slidercircle_frames[-1].append(orig_slider)
 			circle_frames[-1].append(orig_circle)
@@ -163,8 +163,9 @@ def prepare_circle(beatmap, scale, skin, hd):
 
 				if alpha == 100:
 					ii = -fade_out_interval
-				alpha = max(0, min(100, alpha + ii))
+
 				alphas.append(alpha)
+				alpha = max(0, min(100, alpha + ii))
 
 	print("done")
 
