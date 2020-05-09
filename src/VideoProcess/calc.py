@@ -102,9 +102,9 @@ def add_followpoints(beatmap, component, frame_info, preempt_followpoint):
 	if frame_info.cur_time + preempt_followpoint >= frame_info.obj_endtime and frame_info.index_fp + 2 < len(
 			beatmap.hitobjects):
 		frame_info.index_fp += 1
-
-		component.followpoints.add_fp(frame_info.x_end, frame_info.y_end, frame_info.obj_endtime,
-		                              beatmap.hitobjects[frame_info.index_fp])
+		if "new combo" not in beatmap.hitobjects[frame_info.index_fp]["type"]:
+			component.followpoints.add_fp(frame_info.x_end, frame_info.y_end, frame_info.obj_endtime,
+			                              beatmap.hitobjects[frame_info.index_fp])
 
 		find_followp_target(beatmap, frame_info)
 
