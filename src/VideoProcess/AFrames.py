@@ -100,7 +100,7 @@ class FrameObjects:
 		self.spinner = SpinnerManager(frames.spinner)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
 
-		self.background = Background(frames.bg)
+		self.background = Background(frames.bg, beatmap.start_time - timepreempt)
 		self.sections = Sections(frames.sections)
 		self.scorebar = Scorebar(frames.scorebar)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
