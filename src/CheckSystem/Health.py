@@ -38,7 +38,10 @@ class HealthProcessor:
 
 	def health_increase_for(self, hitresult):
 		default_max_health_increase = 0.05
-		return self.multiplier[hitresult] * default_max_health_increase - self.hpstat
+		gain = self.multiplier[hitresult] * default_max_health_increase
+		if 0 < gain < self.hpstat:
+			return gain * 0.1
+		return gain - self.hpstat
 
 	def compute_drainrate(self):
 		if len(self.beatmap) == 0:
