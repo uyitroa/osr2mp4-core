@@ -35,8 +35,12 @@ class Scorebar(AScorebar):
 		if self.lasttime is None:
 			self.lasttime = cur_time
 		in_break = self.breakk is not None and self.breakk <= cur_time <= self.endtime
+		tmp = self.healthprocessor.health_value
 		self.healthprocessor.drainhp(cur_time, self.lasttime, in_break)
 		self.lasttime = cur_time
+
+		diff = self.healthprocessor.health_value - tmp
+		self.hp += diff
 
 	def add_to_frame(self, background, cur_time):
 		AScorebar.animate(self)
@@ -46,6 +50,12 @@ class Scorebar(AScorebar):
 
 		self.drainhp(cur_time)
 
+		self.hp = max(0, min(1, self.hp + self.step))
+		if self.step >= 0 and self.hp > self.healthprocessor.health_value:
+			self.hp = self.healthprocessor.health_value
+		elif self.step <= 0 and self.hp < self.healthprocessor.health_value:
+			self.hp = self.healthprocessor.health_value
+
 		img = self.frames[self.frame_index]
-		img = img.crop((0, 0, int(img.size[0] * self.healthprocessor.health_value), img.size[1]))
+		img = img.crop((0, 0, int(img.size[0] * self.hp), img.size[1]))
 		imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)

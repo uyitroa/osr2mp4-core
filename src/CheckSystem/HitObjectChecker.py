@@ -43,7 +43,8 @@ class HitObjectChecker:
 		self.info = []
 		self.starthitobjects = 0
 
-		self.health_processor = beatmap.health_processor
+		self.health_processor = HealthProcessor(beatmap)
+		beatmap.health_processor = self.health_processor
 		self.drainrate = self.health_processor.drain_rate
 		self.health_value = 1
 
@@ -59,9 +60,16 @@ class HitObjectChecker:
 			return 5
 		return 6
 
-	def update_score(self, hitresult, objtype):
-		combo = max(0, self.combo - 1)
-		self.scorecounter += int(hitresult + (hitresult * ((combo * self.diff_multiplier * self.mod) / 25)))
+	def update_score(self, hitresult, objtype, usecombo=True):
+		if usecombo:
+			combo = max(0, self.combo - 1)
+			self.scorecounter += int(hitresult + (hitresult * ((combo * self.diff_multiplier * self.mod) / 25)))
+		else:
+			self.scorecounter += hitresult
+			if hitresult == 0:
+				return
+			objtype = []  # no bonus score for new combo
+			hitresult += 5
 		self.health_processor.updatehp(hitresult, objtype)
 
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
@@ -115,7 +123,7 @@ class HitObjectChecker:
 
 	def checkslider(self, i, replay, osr_index):
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend = self.check.checkslider(i, replay, osr_index)
-		self.scorecounter += hitvalue
+		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if combostatus == 1:
 			self.combo += 1
 		if combostatus == -1:
@@ -147,7 +155,7 @@ class HitObjectChecker:
 		combostatus = 0
 		idd = self.hitobjects[i]["id"]
 		timestamp = self.hitobjects[i]["time"]
-		self.scorecounter += hitvalue
+		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
 				self.results[hitresult] += 1

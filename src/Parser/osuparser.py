@@ -40,7 +40,7 @@ class Beatmap:
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
 		                           "type": ["end"]})  # to avoid index out of range
 
-		self.health_processor = HealthProcessor(self)
+		self.health_processor = None
 
 
 	def parse_general(self):

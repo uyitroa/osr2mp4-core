@@ -36,6 +36,9 @@ class Updater:
 			if self.info.more.hitvalue == 10:
 				self.component.hitobjmanager.slidertouchtick(idd)
 
+			if self.info.more.hitvalue != 0:
+				self.component.scorebar.to_hp(self.info.hp)
+
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
@@ -48,7 +51,7 @@ class Updater:
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
 
 		if self.info.hitresult is not None:
-			self.component.scorebar.set_hp(self.info.hp)
+			self.component.scorebar.to_hp(self.info.hp)
 			if not (objtype == "Circle" and self.info.more.sliderhead):
 				self.component.hitresult.add_result(self.info.hitresult, x, y)
 				self.component.accuracy.update_acc(self.info.hitresult)

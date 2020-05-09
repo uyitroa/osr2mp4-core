@@ -1,11 +1,3 @@
-MULTIPLIER = {0: -1, 50: 0.05, 100: 0.01, 300: 1}
-
-
-def health_increase_for(hitresult):
-	default_max_health_increase = 0.05
-	return MULTIPLIER[hitresult] * default_max_health_increase
-
-
 def diffcultyrange(difficulty, mini, mid, maxi):
 	if difficulty > 5:
 		return mid + (maxi - mid) * (difficulty - 5) / 5
@@ -24,6 +16,7 @@ def sign(a):
 
 class HealthProcessor:
 	def __init__(self, beatmap, drainrate=None):
+		self.multiplier = {0: -1, 50: -0.05, 105: 0.2, 15: 0.5, 35: 1, 100: 0.5, 300: 1}
 		self.minimum_health_error = 0.01
 		self.min_health_target = 0.95
 		self.mid_health_target = 0.70
@@ -32,14 +25,20 @@ class HealthProcessor:
 		self.drain_starttime = beatmap.start_time
 		self.drain_endtime = beatmap.end_time
 		self.breakperiods = beatmap.breakperiods[:-1]
+		print("HP Drain Rate:", beatmap.diff["HPDrainRate"])
+		self.hpstat = (beatmap.diff["HPDrainRate"]/50)**2
 		self.target_min_health = diffcultyrange(beatmap.diff["HPDrainRate"], self.min_health_target, self.mid_health_target, self.max_health_target)
 		self.drain_rate = 1
 		self.health_value = 1
-		self.increase_step = health_increase_for(300)
+		self.increase_step = self.health_increase_for(300)
 		if drainrate is None:
 			self.drain_rate = self.compute_drainrate()
 		else:
 			self.drain_rate = drainrate
+
+	def health_increase_for(self, hitresult):
+		default_max_health_increase = 0.05
+		return self.multiplier[hitresult] * default_max_health_increase - self.hpstat
 
 	def compute_drainrate(self):
 		if len(self.beatmap) == 0:
@@ -90,5 +89,5 @@ class HealthProcessor:
 		self.health_value -= self.drain_rate * (cur_time - last_time)
 
 	def updatehp(self, hitresult, obj_type):
-		h = health_increase_for(hitresult) * (1 + 0.05 * int("type" in obj_type))
-		self.health_value = min(1, self.health_value + h)
+		h = self.health_increase_for(hitresult) * (1 + 0.05 * int("type" in obj_type))
+		self.health_value = max(0, min(1, self.health_value + h))
