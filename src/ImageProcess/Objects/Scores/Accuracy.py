@@ -20,6 +20,7 @@ class Accuracy(FrameObject):
 		self.maxscore = 0
 		self.curscore = 0
 		self.gap = int(gap * Settings.scale * 0.5)
+		self.sizegap = self.gap - self.frames[0].size[0]
 		self.y = frames[1]
 
 	def update_acc(self, hitresult):
@@ -47,7 +48,7 @@ class Accuracy(FrameObject):
 		self.frame_index = 10  # score_percent
 		y = self.y + self.h()//2
 		super().add_to_frame(background, x, y)
-		x = x - self.w() + self.gap
+		x = x + self.gap - self.w()
 
 		for digit in acc[::-1]:
 			if digit == '.':
@@ -56,7 +57,7 @@ class Accuracy(FrameObject):
 				self.frame_index = int(digit)
 			y = self.y + self.h() // 2
 			super().add_to_frame(background, x, y)
-			x += self.gap - self.w()
+			x += self.sizegap
 
 	def add_to_frame(self, background):
 		if self.maxscore == 0:
