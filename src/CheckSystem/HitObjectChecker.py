@@ -49,7 +49,8 @@ class HitObjectChecker:
 		self.health_value = 1
 
 	def difficulty_multiplier(self):
-		points = int(self.diff["BaseOverallDifficulty"] + self.diff["BaseHPDrainRate"] + self.diff["BaseCircleSize"])
+		points = int(self.diff["BaseOverallDifficulty"] + self.diff["BaseHPDrainRate"] + self.diff["BaseCircleSize"] + self.diff["ApproachRate"])
+		points -= round(self.diff["ApproachRate"])
 		if points in range(0, 6):
 			return 2
 		if points in range(6, 13):
