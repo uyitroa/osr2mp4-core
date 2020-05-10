@@ -6,15 +6,21 @@ from global_var import Settings
 
 class Scorebar(AScorebar):
 	def __init__(self, frames, beatmap):
-		AScorebar.__init__(self, frames)
+		AScorebar.__init__(self, frames[0])
+		self.marker = frames[1]
+		self.hasmarker = frames[2]
 		self.healthprocessor = HealthProcessor(beatmap, beatmap.health_processor.drain_rate)
 		self.lasttime = None
 		self.endtime = None
 		self.hp = 1
 		self.step = 0
 
-		self.x = 5 * Settings.scale
-		self.y = 16 * Settings.scale
+		if not self.hasmarker:
+			self.x = 5 * Settings.scale
+			self.y = 16 * Settings.scale
+		else:
+			self.x = 12 * Settings.scale
+			self.y = 12 * Settings.scale
 
 	def startbreak(self, breakk, duration):
 		self.endtime = breakk["End"]
@@ -59,3 +65,6 @@ class Scorebar(AScorebar):
 		img = self.frames[self.frame_index]
 		img = img.crop((0, 0, int(img.size[0] * self.hp), img.size[1]))
 		imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)
+
+		if self.hasmarker:
+			imageproc.add(self.marker, background, self.x + img.size[0], 16 * Settings.scale-self.h, alpha=self.alpha)

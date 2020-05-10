@@ -1,13 +1,21 @@
+from EEnum.EImageFrom import ImageFrom
 from ImageProcess.PrepareFrames.YImage import YImage, YImages
 
 scorebar = "scorebar-colour"
-
+scorebarmarker = "scorebar-marker"
 
 def prepare_scorebar(scale):
 	"""
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	img = YImages(scorebar, scale, delimiter="-").frames
+	yimg = YImages(scorebar, scale, delimiter="-")
+	img = yimg.frames
 
-	return img
+	defaultpath = yimg.imgfrom == ImageFrom.DEFAULT_X or yimg.imgfrom == ImageFrom.DEFAULT_X2
+	print(yimg.imgfrom)
+	print("\n\ndefaultpath:", defaultpath, "\n\n")
+	yimgmarker = YImage(scorebarmarker, scale, defaultpath=defaultpath, fallback="reeee")
+	marker = yimgmarker.img
+	hasmarker = yimgmarker.imgfrom != ImageFrom.BLANK
+	return img, marker, hasmarker

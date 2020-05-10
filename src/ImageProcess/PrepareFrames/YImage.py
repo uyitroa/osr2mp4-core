@@ -1,6 +1,8 @@
 import os
 import numpy as np
 from PIL import Image
+
+from EEnum.EImageFrom import ImageFrom
 from ImageProcess import imageproc
 from global_var import SkinPaths
 
@@ -10,6 +12,7 @@ class YImage:
 		self.filename = filename
 		self.origfile = filename
 		self.x2 = False
+		self.imgfrom = None
 
 		self.loadimg(defaultpath, prefix, fallback)
 
@@ -58,22 +61,25 @@ class YImage:
 			path = SkinPaths.path
 
 		if self.loadx2(path, pre):
+			if defaultpath:
+				self.imgfrom = ImageFrom.DEFAULT_X2 if self.x2 else ImageFrom.DEFAULT_X
+			else:
+				self.imgfrom = ImageFrom.SKIN_X2 if self.x2 else ImageFrom.SKIN_X
 			return
 
 		if fallback is not None:
 			if self.loadx2(path, pre, fallback):
+				self.imgfrom = ImageFrom.FALLBACK_X2 if self.x2 else ImageFrom.FALLBACK_X
 				return
 			self.filename = fallback
 
-		print("File {} not found\nTrying default skin files {}".format(self.origfile, self.filename))
-		print(pre, default_pre)
-
 		if self.loadx2(SkinPaths.default_path, default_pre):
+			self.imgfrom = ImageFrom.DEFAULT_X2 if self.x2 else ImageFrom.DEFAULT_X
 			return
 
-		print("\nDefault file not found creating blank file")
 		self.filename = "None"
 		self.img = Image.new("RGBA", (1, 1))
+		self.imgfrom = ImageFrom.BLANK
 
 	def tosquare(self):
 		"""
@@ -106,6 +112,7 @@ class YImages:
 		self.rotate = rotate
 		self.n_frame = 0
 		self.unanimate = False
+		self.imgfrom = None
 
 		self.load(defaultpath=False)
 		if self.n_frame == 0:
@@ -126,6 +133,7 @@ class YImages:
 		while should_continue:
 
 			img = YImage(self.filename + self.delimiter + str(counter), scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
+			self.imgfrom = img.imgfrom
 			self.frames.append(img.img)
 
 			counter += 1
@@ -140,6 +148,7 @@ class YImages:
 				self.unanimate = True
 
 				a = YImage(self.filename, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
+				self.imgfrom = a.imgfrom
 				self.frames.append(a.img)
 
 
