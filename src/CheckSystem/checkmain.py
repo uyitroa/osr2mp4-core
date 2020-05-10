@@ -3,24 +3,19 @@ import time
 from osrparse.enums import Mod
 
 from CheckSystem.HitObjectChecker import HitObjectChecker
-from global_var import Settings
-
-CURSOR_X = 0
-CURSOR_Y = 1
-KEYS_PRESSED = 2
-TIMES = 3
+from EEnum.EReplay import Replays
 
 
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the cur_time
-	min_time = abs(replay[index][TIMES] - cur_time)
-	min_time_toskip = min(min_time, abs(replay[index+1][TIMES] - cur_time))
+	min_time = abs(replay[index][Replays.TIMES] - cur_time)
+	min_time_toskip = min(min_time, abs(replay[index+1][Replays.TIMES] - cur_time))
 
 	returnindex = 0
-	key_state = replay[index][KEYS_PRESSED]
+	key_state = replay[index][Replays.KEYS_PRESSED]
 	for x in range(1, 4):
-		delta_t = abs(replay[index + x][TIMES] - cur_time)
-		if key_state != replay[index + x][KEYS_PRESSED]:
+		delta_t = abs(replay[index + x][Replays.TIMES] - cur_time)
+		if key_state != replay[index + x][Replays.KEYS_PRESSED]:
 			if delta_t <= min_time_toskip:
 				return x
 		if delta_t < min_time:
@@ -109,12 +104,12 @@ def checkmain(beatmap, replay_info, replay_event, cur_time):
 	hitobjectchecker = HitObjectChecker(beatmap)
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
-	in_break = int(replay_event[osr_index][TIMES]) in range(breakperiod["Start"], breakperiod["End"])
+	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
 	while osr_index < len(replay_event) - 3:
-		k1, k2, m1, m2 = keys(replay_event[osr_index][KEYS_PRESSED])
+		k1, k2, m1, m2 = keys(replay_event[osr_index][Replays.KEYS_PRESSED])
 		if not in_break:
-			f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][KEYS_PRESSED])
+			f_k1, f_k2, f_m1, f_m2 = keys(replay_event[osr_index + 1][Replays.KEYS_PRESSED])
 		else:
 			f_k1, f_k2, f_m1, f_m2 = False, False, False, False
 
@@ -127,11 +122,11 @@ def checkmain(beatmap, replay_info, replay_event, cur_time):
 		osr_index += 1
 
 		breakperiod = beatmap.breakperiods[break_index]
-		next_break = replay_event[osr_index][TIMES] > breakperiod["End"]
+		next_break = replay_event[osr_index][Replays.TIMES] > breakperiod["End"]
 		if next_break:
 			break_index = min(break_index + 1, len(beatmap.breakperiods) - 1)
 			breakperiod = beatmap.breakperiods[break_index]
-		in_break = int(replay_event[osr_index][TIMES]) in range(breakperiod["Start"], breakperiod["End"])
+		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
 	print("check done")
 	return hitobjectchecker.info

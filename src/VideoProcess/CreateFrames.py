@@ -4,18 +4,13 @@ import cv2
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 from CheckSystem.Judgement import DiffCalculator
+from EEnum.EReplay import Replays
 from VideoProcess.AFrames import *
 from VideoProcess.Draw import draw_frame, render_draw
 from VideoProcess.FrameWriter import write_frame
 from VideoProcess.Setup import getlist, setup_draw
 
 from global_var import Settings, Paths
-
-CURSOR_X = 0
-CURSOR_Y = 1
-KEYS_PRESSED = 2
-TIMES = 3
-
 
 
 def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, mpp, hd):
@@ -83,7 +78,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
-			cv2.putText(np_img, str(replay_event[frame_info.osr_index][TIMES]), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255), 2)
+			cv2.putText(np_img, str(replay_event[frame_info.osr_index][Replays.TIMES]), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255), 2)
 			if status:
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)

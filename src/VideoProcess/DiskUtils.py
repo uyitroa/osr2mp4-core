@@ -17,12 +17,14 @@ def cleanup():
 	else:
 		rm_command = "rm"
 
-	mpp = len(open("listvideo.txt", "r").read().split("\n")) - 1
-
-	os.system('{} listvideo.txt'.format(rm_command))
-	for i in range(mpp):
-		f = Paths.output[:-4] + str(i) + Paths.output[-4:]
-		os.system('{} "{}"'.format(rm_command, f))
+	try:
+		mpp = len(open("listvideo.txt", "r").read().split("\n")) - 1
+		os.system('{} listvideo.txt'.format(rm_command))
+		for i in range(mpp):
+			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
+			os.system('{} "{}"'.format(rm_command, f))
+	except FileNotFoundError:
+		pass
 
 	f = Paths.output[:-4] + "f" + Paths.output[-4:]
 	os.system('{} "{}"'.format(rm_command, f))

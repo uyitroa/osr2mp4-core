@@ -1,22 +1,19 @@
+from EEnum.EReplay import Replays
 from global_var import Settings
 
-CURSOR_X = 0
-CURSOR_Y = 1
-KEYS_PRESSED = 2
-TIMES = 3
 
 
 def nearer(cur_time, replay, index):
 	# decide the next replay_data index, by finding the closest to the frame_info.cur_time
-	min_time = abs(replay[index][TIMES] - cur_time)
-	min_time_toskip = min(min_time, abs(replay[index + 1][TIMES] - cur_time))
+	min_time = abs(replay[index][Replays.TIMES] - cur_time)
+	min_time_toskip = min(min_time, abs(replay[index + 1][Replays.TIMES] - cur_time))
 
 	returnindex = 0
-	key_state = replay[index][KEYS_PRESSED]
+	key_state = replay[index][Replays.KEYS_PRESSED]
 	end = min(10, len(replay) - index - 1)
 	for x in range(0, end):
-		delta_t = abs(replay[index + x][TIMES] - cur_time)
-		# if key_state != replay[index + x][KEYS_PRESSED]:
+		delta_t = abs(replay[index + x][Replays.TIMES] - cur_time)
+		# if key_state != replay[index + x][Replays.KEYS_PRESSED]:
 		# 	if delta_t <= min_time_toskip:
 		# 		return x
 		if delta_t <= min_time:
@@ -63,15 +60,15 @@ def check_key(component, cursor_event, in_break):
 	if in_break:
 		return
 
-	k1, k2, m1, m2 = keys(cursor_event.event[KEYS_PRESSED])
+	k1, k2, m1, m2 = keys(cursor_event.event[Replays.KEYS_PRESSED])
 	if k1:
-		component.key1.clicked(cursor_event.event[TIMES])
+		component.key1.clicked(cursor_event.event[Replays.TIMES])
 	if k2:
-		component.key2.clicked(cursor_event.event[TIMES])
+		component.key2.clicked(cursor_event.event[Replays.TIMES])
 	if m1:
-		component.mouse1.clicked(cursor_event.event[TIMES])
+		component.mouse1.clicked(cursor_event.event[Replays.TIMES])
 	if m2:
-		component.mouse2.clicked(cursor_event.event[TIMES])
+		component.mouse2.clicked(cursor_event.event[Replays.TIMES])
 
 
 def add_hitobjects(beatmap, component, frame_info, time_preempt):

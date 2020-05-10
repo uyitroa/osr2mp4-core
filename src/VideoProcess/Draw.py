@@ -1,14 +1,9 @@
 import time
 
+from EEnum.EReplay import Replays
 from VideoProcess.Setup import setup_global, setup_draw
 from VideoProcess.calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
 from global_var import Settings
-
-
-CURSOR_X = 0
-CURSOR_Y = 1
-KEYS_PRESSED = 2
-TIMES = 3
 
 
 def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
@@ -28,8 +23,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	updater.update(frame_info.cur_time)
 
 
-	cursor_x = int(cursor_event.event[CURSOR_X] * Settings.playfieldscale) + Settings.moveright
-	cursor_y = int(cursor_event.event[CURSOR_Y] * Settings.playfieldscale) + Settings.movedown
+	cursor_x = int(cursor_event.event[Replays.CURSOR_X] * Settings.playfieldscale) + Settings.moveright
+	cursor_y = int(cursor_event.event[Replays.CURSOR_Y] * Settings.playfieldscale) + Settings.movedown
 
 
 	component.background.add_to_frame(img, np_img, frame_info.cur_time)
@@ -41,13 +36,13 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.key1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(350 * Settings.scale))
 	component.key2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(398 * Settings.scale))
 	component.mouse1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(446 * Settings.scale))
-	component.mouse2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(494 * Settings.scale))
+	component.mouse2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(492 * Settings.scale))
 	component.followpoints.add_to_frame(img, frame_info.cur_time)
 	component.hitobjmanager.add_to_frame(img)
 	component.hitresult.add_to_frame(img)
 	component.spinbonus.add_to_frame(img)
 	component.combocounter.add_to_frame(img)
-	component.scorecounter.add_to_frame(img, cursor_event.event[TIMES])
+	component.scorecounter.add_to_frame(img, cursor_event.event[Replays.TIMES])
 	component.accuracy.add_to_frame(img)
 	component.urbar.add_to_frame(img)
 	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y)

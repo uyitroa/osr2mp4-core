@@ -44,8 +44,8 @@ def setupglobals(data, replay_info):
 	Paths.beatmap = beatmap_path
 
 
-	skin = Skin(skin_path)
-	defaultskin = Skin(default_path)
+	skin = Skin(skin_path, default_path)
+	defaultskin = Skin(default_path, default_path)
 
 	SkinPaths.path = skin_path
 	SkinPaths.default_path = default_path
