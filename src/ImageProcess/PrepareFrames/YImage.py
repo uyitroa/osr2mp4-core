@@ -8,7 +8,7 @@ from global_var import SkinPaths
 
 
 class YImage:
-	def __init__(self, filename, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None):
+	def __init__(self, filename, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None, scaley=None):
 		self.filename = filename
 		self.origfile = filename
 		self.x2 = False
@@ -19,15 +19,20 @@ class YImage:
 		if rotate:
 			self.tosquare()
 
+		if scaley is None:
+			scaley = scale
+
 		if self.x2:
 			# print(self.filename)
 			scale /= 2
+			scaley /= 2
+
 
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
 		self.orig_cols = self.img.size[0]
 		if scale != 1:
-			self.change_size(scale, scale)  # make rows and cols even amount
+			self.change_size(scale, scaley)
 			self.orig_img = self.img.copy()
 			self.orig_rows = self.img.size[1]
 			self.orig_cols = self.img.size[0]

@@ -20,8 +20,6 @@ def prepare_scoreentry(scale, color):
 	:return: [PIL.Image]
 	"""
 	numbers_animation = []
-	imagedraw = None
-	img = None
 	for x in range(10):
 		number = YImage(scoreentry + str(x), scale)
 		if number.imgfrom == ImageFrom.BLANK:
@@ -29,11 +27,11 @@ def prepare_scoreentry(scale, color):
 			imagedraw = ImageDraw.Draw(img)
 			size = imagedraw.getfont().getsize(str(x))
 			imagedraw.text((0, 0), str(x), (255, 255, 255, 255))
-			img = imageproc.change_size(img.crop((0, 0, size[0], size[1])), scale * 1.2, scale * 1.2)
+			img = imageproc.change_size(img.crop((0, 0, size[0], size[1])), scale * 1.3, scale * 1.3)
 		else:
 			img = number.img
 		tmp = imageproc.add_color(img, color)
-		numbers_animation.append(shrink(tmp, 1, 0.3, 0.05 * 60/Settings.fps))
+		numbers_animation.append(shrink(tmp, 0.9, 0.3, 0.05 * 60/Settings.fps))
 	return numbers_animation
 
 
@@ -68,7 +66,7 @@ def prepare_inputoverlaybg(scale):
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	yimg = YImage(bg, scale * 1.05)
+	yimg = YImage(bg, scale, scaley=scale * 1.05)
 	img = yimg.img.transpose(Image.ROTATE_270)
 	frame = [img]
 	return frame
