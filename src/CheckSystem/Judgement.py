@@ -52,7 +52,7 @@ class Check:
 		self.sliders_memory = {}
 		self.spinners_memory = {}
 
-	def checkcircle(self, index, replay, osrindex, clicked):
+	def checkcircle(self, index, replay, osrindex, clicked, combo):
 		osr = replay[osrindex]
 		update_hitobj = False
 		use_click = False
@@ -63,8 +63,10 @@ class Check:
 
 		if "slider" in osu_d["type"] and osu_d["id"] not in self.sliders_memory:
 			self.sliders_memory[osu_d["id"]] = {"score": 0, "max score": 1, "follow state": 0,
-			                                      "repeated slider": 1, "repeat checked": 0, "ticks index": 0, "done": False,
-			                                      "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0}
+			                                    "repeated slider": 1, "repeat checked": 0, "ticks index": 0,
+			                                    "done": False,
+			                                    "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0,
+			                                    "combo": combo}
 
 		if dist <= self.diff.max_distance and clicked:
 			update_hitobj = True
@@ -81,7 +83,7 @@ class Check:
 				update_hitobj = True
 				score = 0
 
-		return update_hitobj, score, osu_d["time"], osu_d["id"],osu_d["x"], osu_d["y"], use_click, time_difference
+		return update_hitobj, score, osu_d["time"], osu_d["id"], osu_d["x"], osu_d["y"], use_click, time_difference
 
 	def checkslider(self, index, replay, osrindex):
 		osr = replay[osrindex]
@@ -97,13 +99,13 @@ class Check:
 
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
 			if slider_d["last osr index"] == -1:
-				slider_d["last osr index"] = osrindex-1
+				slider_d["last osr index"] = osrindex - 1
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, replay, osrindex, slider_d)
 
 		if osr[3] > osu_d["end time"]:
 			if slider_d["score"] == 0:
 				hitresult = 0
-			elif slider_d["score"] < slider_d["max score"]/2:
+			elif slider_d["score"] < slider_d["max score"] / 2:
 				hitresult = 50
 			elif slider_d["score"] < slider_d["max score"]:
 				hitresult = 100
@@ -134,17 +136,15 @@ class Check:
 			hasreversetick = True
 			slider_d["repeated slider"] = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 
-
 		going_forward = slider_d["repeated slider"] % 2 == 1
 
 		time_difference = (osr[3] - osu_d["time"]) - (slider_d["repeated slider"] - 1) * osu_d["duration"]
-
 
 		slider_leniency = min(36, osu_d["duration"] / 2)
 		hasendtick = time_difference > osu_d["duration"] - slider_leniency
 		hasendtick = hasendtick and osu_d["repeated"] == slider_d["repeated slider"]
 		if hasendtick:
-			t = (osu_d["duration"] - slider_leniency)/osu_d["duration"]
+			t = (osu_d["duration"] - slider_leniency) / osu_d["duration"]
 		elif hasreversetick:
 			t = 0
 		else:
@@ -155,14 +155,14 @@ class Check:
 		hastick, tickadd, t = self.tickover(t, osu_d, slider_d, hasreversetick)
 		slider_d["ticks index"] += tickadd
 
-
 		hasreverse = slider_d["repeated slider"] < osu_d["repeated"]
 
 		baiser = Curve.from_kind_and_points(osu_d["slider type"], osu_d["ps"], osu_d["pixel length"])
 
-		posr = replay[osr_index-1]
-		if (posr[3] - osu_d["time"]) - (slider_d["repeated slider"] - 1) * osu_d["duration"] > osu_d["duration"] - slider_leniency:
-			posr = replay[osr_index-2]
+		posr = replay[osr_index - 1]
+		if (posr[3] - osu_d["time"]) - (slider_d["repeated slider"] - 1) * osu_d["duration"] > osu_d[
+			"duration"] - slider_leniency:
+			posr = replay[osr_index - 2]
 		pos = baiser(t)
 		prevdist = math.sqrt((posr[0] - pos.x + osu_d["stacking"]) ** 2 + (posr[1] - pos.y + osu_d["stacking"]) ** 2)
 		prev_inball = prevdist <= slider_d["dist"] and posr[2] != 0
@@ -219,8 +219,6 @@ class Check:
 			return True, -1, osu_d["slider ticks"][ticks_index]
 		return False, 0, t
 
-
-
 	def checkspinner(self, index, osr):
 		osu_d = self.hitobjects[index]
 		if osr[3] < osu_d["time"]:
@@ -247,7 +245,7 @@ class Check:
 
 		if osu_d["id"] not in self.spinners_memory:
 			self.spinners_memory[osu_d["id"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0,
-			                                       "progress": 0, "extra": 0}
+			                                     "progress": 0, "extra": 0}
 
 		spin_d = self.spinners_memory[osu_d["id"]]
 		if not spin_d["spinning"] and spinning:
@@ -269,7 +267,7 @@ class Check:
 		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
 
 		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"]))
-		bonus = max(0, bonus+2)
+		bonus = max(0, bonus + 2)
 
 		hitvalue = 0
 		if spin_d["extra"] >= 360 and progress <= 1:

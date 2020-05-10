@@ -98,10 +98,21 @@ def diffmod(replay_info, diff):
 	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
 
 
+def getmultiplier(mods):
+	multiplier = {Mod.Easy: 0.5, Mod.NoFail: 0.5, Mod.HalfTime: 0.3,
+	              Mod.HardRock: 1.06, Mod.SuddenDeath: 1, Mod.Perfect: 1, Mod.DoubleTime: 1.12, Mod.Nightcore: 1.12, Mod.Hidden: 1.06, Mod.Flashlight: 1.12,
+	              Mod.Relax: 0, Mod.Autopilot: 0, Mod.SpunOut: 0.9, Mod.Autoplay: 1}
+	result = 1
+	for m in mods:
+		result *= multiplier[m]
+	return result
+
+
 def checkmain(beatmap, replay_info, replay_event, cur_time):
 	osr_index = 0
 	diffmod(replay_info, beatmap.diff)
-	hitobjectchecker = HitObjectChecker(beatmap)
+	mod = getmultiplier(replay_info.mod_combination)
+	hitobjectchecker = HitObjectChecker(beatmap, mod)
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
