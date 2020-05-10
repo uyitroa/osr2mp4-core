@@ -44,6 +44,16 @@ def raw(text):
 	return new_string
 
 
+def iint(text):
+	new_string = ''
+	for char in str(text):
+		if char.isdigit() or char == '-':
+			new_string += char
+		else:
+			break
+	return int(new_string)
+
+
 def getsection(line):
 	for s in ['[General]', '[Colours]', '[Fonts]', '[CatchTheBeat]', '[Mania]']:
 		if s in line:
@@ -120,13 +130,13 @@ class Skin:
 		self.mania = Mania
 
 	def parse_general(self):
-		self.general['CursorRotate'] = int(self.general.get('CursorRotate', 0))
-		self.general['CursorExpand'] = int(self.general.get('CursorExpand', 0))
-		self.general['CursorCentre'] = int(self.general.get('CursorCentre', 0))
-		self.general['HitCircleOverlayAboveNumer'] = int(self.general.get('HitCircleOverlayAboveNumer', 0))
-		self.general['SliderStyle'] = int(self.general.get('SliderStyle', 0))
-		self.general['AllowSliderBallTint'] = int(self.general.get('AllowSliderBallTint', 0))
-		self.general['SliderBallFlip'] = int(self.general.get('SliderBallFlip', 1))
+		self.general['CursorRotate'] = iint(self.general.get('CursorRotate', 0))
+		self.general['CursorExpand'] = iint(self.general.get('CursorExpand', 0))
+		self.general['CursorCentre'] = iint(self.general.get('CursorCentre', 0))
+		self.general['HitCircleOverlayAboveNumer'] = iint(self.general.get('HitCircleOverlayAboveNumer', 0))
+		self.general['SliderStyle'] = iint(self.general.get('SliderStyle', 0))
+		self.general['AllowSliderBallTint'] = iint(self.general.get('AllowSliderBallTint', 0))
+		self.general['SliderBallFlip'] = iint(self.general.get('SliderBallFlip', 1))
 
 	def parse_colors(self):
 		for key, value in self.colours.items():
@@ -154,9 +164,9 @@ class Skin:
 		self.colours["ComboNumber"] = cur_combo - 1
 
 	def parse_fonts(self):
-		self.fonts['HitCircleOverlap'] = int(self.fonts.get('HitCircleOverlap', -2))
-		self.fonts['ScoreOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
-		self.fonts['ComboOverlap'] = int(self.fonts.get('ScoreOverlap', -2))
+		self.fonts['HitCircleOverlap'] = iint(self.fonts.get('HitCircleOverlap', -2))
+		self.fonts['ScoreOverlap'] = iint(self.fonts.get('ScoreOverlap', -2))
+		self.fonts['ComboOverlap'] = iint(self.fonts.get('ScoreOverlap', -2))
 
 		self.fonts['ComboPrefix'] = self.fonts.get('ComboPrefix', 'score')
 		self.fonts['ComboPrefix'] = self.fonts['ComboPrefix'].replace(" ", "")
