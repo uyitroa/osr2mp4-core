@@ -1,5 +1,6 @@
 # done by Kysan the gay pp farmer thanks
 
+
 # return pos of the first char of the  comment or -1 if there is no comment
 def detect_comments(line):
 	ancient_char = ''
@@ -27,7 +28,9 @@ escape_dict = {'\a': '/a',
                '\v': '/v',
                '\'': "/'",
                '\"': '/"',
-               '\\': '/'}
+               '\\': '/',
+               ' ': '',
+               '\ufeff': ''}
 
 
 def raw(text):
@@ -41,18 +44,26 @@ def raw(text):
 	return new_string
 
 
+def getsection(line):
+	for s in ['[General]', '[Colours]', '[Fonts]', '[CatchTheBeat]', '[Mania]']:
+		if s in line:
+			return s[1:-1]
+	return None
+
+
 settings = {}  # why not put all sections into it at the end ?
 
 
 class Skin:
-	def __init__(self, skin_path):
+	def __init__(self, skin_path, default_path):
 		# sections
-		self.general = None
-		self.colours = None
-		self.fonts = None
-		self.catchTheBeat = None
-		self.mania = None
+		self.general = {}
+		self.colours = {}
+		self.fonts = {}
+		self.catchTheBeat = {}
+		self.mania = {}
 		self.skin_path = skin_path
+		self.default_path = default_path
 		self.read()
 		self.parse_general()
 		self.parse_colors()
@@ -69,12 +80,17 @@ class Skin:
 		CatchTheBeat = {}
 		Mania = {}
 
-		with open(self.skin_path + 'skin.ini', 'rb') as file:
-			lines = file.readlines()
+		try:
+			with open(self.skin_path + 'skin.ini', 'rb') as file:
+				lines = file.readlines()
+		except FileNotFoundError:
+			with open(self.default_path + 'skin.ini', 'rb') as file:
+				lines = file.readlines()
 
 		for line in lines:
 			# remove shit like `\r\n` and leading and trailling whitespaces
 			line = line.decode().strip()
+			line = raw(line)
 
 			# removing comments
 			line = del_comment(line)
@@ -84,14 +100,9 @@ class Skin:
 				continue
 
 			# if section tag
-			if line.startswith('[') and line.endswith(']'):
-
-				if line in ['[General]',
-				            '[Colours]',
-				            '[Fonts]',
-				            '[CatchTheBeat]',
-				            '[Mania]']:
-					section = line[1:-1]
+			if '[' in line and ']' in line:
+				section = getsection(line)
+				if section is not None:
 					continue
 				else:
 					raise Exception('invalid section name found: ' + line[1:-1])
@@ -161,4 +172,4 @@ class Skin:
 
 
 if __name__ == "__main__":
-	skin = Skin("../../res/skin1/")
+	skin = Skin("../../res/skin1/", "../../res/skin1/")
