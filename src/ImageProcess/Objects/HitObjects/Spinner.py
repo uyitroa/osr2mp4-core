@@ -68,7 +68,7 @@ class SpinnerManager(FrameObject):
 		imageproc.add(img, background, self.width/2 + self.moveright, self.height/2 + self.movedown, alpha=self.spinners[i].alpha)
 
 		img = self.frames[spinnercircle].rotate(self.spinners[i].angle)
-		imageproc.add(img, background, self.width/2 + self.moveright, 198 * self.scale + self.movedown, alpha=self.spinners[i].alpha)
+		imageproc.add(img, background, self.width/2 + self.moveright, 194 * self.scale + self.movedown, alpha=self.spinners[i].alpha)
 
 		height = self.frames[spinnermetre].size[1]
 		y_start = height - self.spinners[i].index * height // 10
