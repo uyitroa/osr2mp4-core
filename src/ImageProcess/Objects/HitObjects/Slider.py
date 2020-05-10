@@ -130,7 +130,7 @@ class SliderManager:
 			sum_y = (1 - t) * slider.bezier_info[1][0].y + t * slider.arrow_pos.y
 			cur_pos = Position(sum_x, sum_y)
 
-		vector_x1, vector_y1 = slider.prev_pos.x - cur_pos.x, slider.prev_pos.y - cur_pos.y
+		vector_x1, vector_y1 = -(slider.prev_pos.x - cur_pos.x), -(slider.prev_pos.y - cur_pos.y)
 
 		if slider.cur_repeated % 2 == 0 and self.flip:
 			ball = self.sliderb_frames[color][slider.sliderb_i].transpose(Image.FLIP_LEFT_RIGHT)
