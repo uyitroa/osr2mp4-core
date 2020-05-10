@@ -16,7 +16,7 @@ def sign(a):
 
 class HealthProcessor:
 	def __init__(self, beatmap, drainrate=None):
-		self.multiplier = {0: -1, 50: -0.05, 105: 0.2, 15: 0.5, 35: 1, 100: 0.5, 300: 1}
+		self.multiplier = {0: -1, 50: -0.05, 105: 0.2, 15: 0.35, 35: 0.5, 100: 0.5, 300: 1}
 		self.minimum_health_error = 0.01
 		self.min_health_target = 0.95
 		self.mid_health_target = 0.70
@@ -71,6 +71,10 @@ class HealthProcessor:
 				step = self.increase_step * (1 + 0.05 * int("new combo" in self.beatmap[i]["type"]))
 
 				currentHealth = min(1, currentHealth + step)
+
+				if "slider" in self.beatmap[i]["type"]:
+					step = len(self.beatmap[i]["ticks pos"]) * self.health_increase_for(15)
+					currentHealth = min(1, currentHealth + step)
 
 				if lowestHealth < 0:
 					break
