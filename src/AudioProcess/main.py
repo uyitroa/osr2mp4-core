@@ -107,7 +107,7 @@ def parseData():
 def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name):
         rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP,beatmap_path,audio_name)
         start=time.time()
-
+        tmpVal = 0
         spinBonusTime = 0
         spinRotationTime = 0
         length_bonus = len(b)/ratesb
@@ -189,18 +189,24 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                     if my_info[x].time/1000 < spinRotationTime:
                         pass
                     else:
-                        print(my_info[x].time)
                         z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] += speedup_dict["sound_" + str(spinSpeedup)] * 0.5
                         spinRotationTime = my_info[x].time/1000 + length_spin
                         if spinSpeedup != 2:
                             spinSpeedup -= 2
 
                 if my_info[x].more.bonusscore  > 0:
-                    if my_info[x].time/1000 < spinBonusTime:
-                        continue
-                    else:
+                    
+                    if my_info[x].more.bonusscore != tmpVal:
+                        tmpVal = my_info[x].more.bonusscore
+                        print("Added Hit sounds to {} that ends at {}".format(my_info[x].time,my_info[x].time + len(b)))
                         z[start_index:start_index + len(b)] += b * 0.5
-                        spinBonusTime = my_info[x].time/1000 + length_bonus
+                        '''
+                   else:
+                            if x <= len(my_info) - 1 and my_info[x+1].more.bonusscore == 0:
+                                print("ELSE: Added Hit sounds to {} that ends at {}".format(my_info[x].time,my_info[x].time + len(b)))
+                                z[start_index:start_index + len(b)] += b * 0.5
+                                spinBonusTime = my_info[x].time/1000 + length_bonus
+                            continue'''
 
         if offset >= 0:
             rendtime = endtime - offset
@@ -239,6 +245,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", 218664, -1,
-                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "audio.mp3")
+    processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", 258320, -1,
+                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
 
