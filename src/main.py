@@ -18,6 +18,7 @@ import time
 
 # const
 from global_var import Settings, Paths
+from write_data import write_data
 
 
 def main():
@@ -51,6 +52,7 @@ def main():
 
 	offset, endtime = get_offset(beatmap, start_index, end_index, replay_event)
 
+	write_data(beatmap, resultinfo)
 
 	audio = create_audio(resultinfo, beatmap.hitobjects, offset, endtime, beatmap.general["AudioFilename"], multi_process)
 	drawers, writers, pipes = create_frame(codec, beatmap, SkinPaths.skin_ini, replay_event, resultinfo, start_index, end_index, multi_process, hd)

@@ -3,12 +3,10 @@ from multiprocessing import Process
 from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
-from collections import namedtuple
 import time
 from collections import namedtuple
 import os.path
 
-from global_var import Paths, SkinPaths
 
 
 class Position(namedtuple('Position', 'x y')):
@@ -89,7 +87,7 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
 
 def parseData():
 
-        a = open("map_thegame.txt", "r")
+        a = open("../beatmap.txt", "r")
 
         beatmap_info = eval(a.read())
         Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp more")
@@ -97,7 +95,7 @@ def parseData():
         Slider = namedtuple("Slider", "followstate hitvalue tickend x y")
         Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
-        a = open("tengaku.txt", "r")
+        a = open("../resultinfo.txt", "r")
         my_info = eval(a.read())
         return my_info, beatmap_info
 
@@ -217,6 +215,7 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
 
 
 def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
+    from global_var import Paths, SkinPaths
     beatmap_path = Paths.beatmap
     default_skinP = SkinPaths.default_path
     skin_path = SkinPaths.path
@@ -230,10 +229,9 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
         processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name)
         return None
 
-
 if __name__ == '__main__':
-        res, beat = parseData()
-        #args = my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name
-        processAudio(res, beat,"C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/",0,-1,"C:/Users/Shiho/Downloads/skin/","C:/Users/Shiho/Downloads/skin/","Tengaku.mp3")
-
+	res, beat = parseData()
+	# args = my_info,beatmap_info,skin_path,offset,default_skinP,beatmap_path,audio_name
+	processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", 0, -1,
+	             "C:/Users/Shiho/Downloads/skin/", "C:/Users/Shiho/Downloads/skin/", "Tengaku.mp3")
 
