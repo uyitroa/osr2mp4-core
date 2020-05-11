@@ -1,7 +1,6 @@
 ### Fix
 - Slidercircle not in sync
 - Totori skin bug
-- Spin bonusscore hitsound not correct
 
 ### Implement
 - Section pass fail sounds
