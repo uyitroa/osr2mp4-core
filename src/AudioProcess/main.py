@@ -149,7 +149,7 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                         if len(sliderTime) > 0:
                             for a in range(repeatedTime[0]):
                                         arrow_time_list.append(sliderTime[0] + durationTime[0] * (a+1))
-                            start_index2 = int(sliderTime[0]/1000 * rate)
+                            start_index2 = int(my_info[x].time/1000 * rate)
                             z[start_index2:start_index2 + len(s)] += s * 0.5
 
                             for abc in arrow_time_list:
@@ -245,6 +245,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", 258320, -1,
+    processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", -60, -1,
                  "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
 
