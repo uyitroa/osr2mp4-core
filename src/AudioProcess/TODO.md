@@ -1,5 +1,5 @@
 ### Fix
-- Totori skin bug
+- Challenge me sir
 
 ### Implement
 - Section pass fail sounds
