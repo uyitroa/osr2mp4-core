@@ -3,10 +3,14 @@ from multiprocessing import Process
 from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
+from pydub import exceptions
 import time
 from collections import namedtuple
 import os.path
 
+Empty = AudioSegment.empty()
+Empty = AudioSegment.silent(duration=1)
+Empty.export("blank.mp3",format="mp3")
 
 
 class Position(namedtuple('Position', 'x y')):
@@ -42,46 +46,60 @@ def pydubtonumpy(a):
                 y = y1
         return a.frame_rate, np.float32(y) / 2**(a.sample_width * 8 - 1)
 
-    
+def tryCatch(audio,audio1,checked):
+        try:
+                audio, audio1 = read(checked,"")
+        except exceptions.CouldntDecodeError:
+                audio, audio1 = read("blank.mp3","")
+        return audio,audio1
 def checkAudio(sPath,dPath,beatmap,audio_name):
             song = beatmap + audio_name
             checked = []
             fileNames = [sPath + "normal-hitnormal",sPath + "combobreak",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin"]
             fileNames2 = [dPath + "normal-hitnormal",dPath + "combobreak",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
-            print("Audio Directory: " + song)
             fileTypes = ".mp3",".wav"
             for x in range(6):
                 if os.path.exists(sPath):
                     if os.path.exists(fileNames[x] + fileTypes[0]):
                         checked.append(fileNames[x] + fileTypes[0])
-                        print("Adding: " + fileNames[x] + fileTypes[0] + "from skin path: " + sPath)
+                        print("Adding: " + fileNames[x] + fileTypes[0] + " from skin path: " )
+                        
                     elif os.path.exists(fileNames[x] + fileTypes[1]):
                         checked.append(fileNames[x] + fileTypes[1])
-                        print("Adding: " + fileNames[x] + fileTypes[1] + "from skin path: " + sPath)
+                        print("Adding: " + fileNames[x] + fileTypes[1] + " from skin path: ")
                     else:
                        if os.path.exists(fileNames2[x] + fileTypes[0]):
                            checked.append(fileNames2[x] + fileTypes[0])
-                           print("Adding: " + fileNames2[x] + fileTypes[0] + "from default skin path")
+                           print("Adding: " + fileNames2[x] + fileTypes[0] + " from default skin path")
                        elif os.path.exists(fileNames2[x] + fileTypes[1]):
                             checked.append(fileNames2[x] + fileTypes[1])
-                            print("Adding: " + fileNames2[x] + fileTypes[1] + "from default skin path")
+                            print("Adding: " + fileNames2[x] + fileTypes[1] + " from default skin path")
                 else:
                        if os.path.exists(fileNames2[x] + fileTypes[0]):
                            print(x)
                            checked.append(fileNames2[x] + fileTypes[0])
-                           print("Adding: " + fileNames2[x] + fileTypes[0] + "from default skin path")
+                           print("Adding: " + fileNames2[x] + fileTypes[0] + " from default skin path")
                        elif os.path.exists(fileNames2[x] + fileTypes[1]):
                             checked.append(fileNames2[x] + fileTypes[1])
-                            print("Adding: " + fileNames2[x] + fileTypes[1] + "from default skin path")
+                            print("Adding: " + fileNames2[x] + fileTypes[1] + " from default skin path")
+
             rate, z = read(song,"song")
-            ratey, y = read(checked[0],"")
-            rateM, m = read(checked[1],"")
-            ratesb, b = read(checked[2],"")
-            ratesc, c = read(checked[3],"")
-            rateS, s = read(checked[4],"")
+            ratey, y = 2,2
+            rateM, m = 3,3
+            ratesb, b = 4,4
+            ratesc, c = 5,5
+            rateS, s = 6,6
+            
+            ratey, y  = tryCatch(ratey,y,checked[0])
+            rateM, m = tryCatch(rateM,m,checked[1])
+            ratesb, b = tryCatch(ratesb,b,checked[2])
+            ratesc, c = tryCatch(ratesc,c,checked[3])
+            rateS, s = tryCatch(rateS,s,checked[4])
+
             if "wav" in checked[5]:
-                spinSound = AudioSegment.from_wav(checked[5])
-            else:
+                    
+                spinSound = AudioSegment.from_wav(checked[5]) 
+            else:  
                 spinSound = AudioSegment.from_mp3(checked[5])
         
 
@@ -245,6 +263,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:/Users/Shiho/Desktop/Projects/osr2mp4/res/skin/", -60, -1,
+    processAudio(res, beat, "C:\\Users\\Shiho\\Downloads\\Totori-2018-04-01\\", -60, -1,
                  "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
 
