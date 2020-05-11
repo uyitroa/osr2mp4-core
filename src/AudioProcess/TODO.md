@@ -1,7 +1,6 @@
 ### Fix
 - Slidercircle not in sync
 - Totori skin bug
-- Last slider arrow no hitsound
 - Spin bonusscore hitsound not correct
 
 ### Implement
