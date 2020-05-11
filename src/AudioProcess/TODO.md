@@ -1,5 +1,4 @@
 ### Fix
-- Slidercircle not in sync
 - Totori skin bug
 
 ### Implement
