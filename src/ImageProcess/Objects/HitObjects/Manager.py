@@ -96,6 +96,7 @@ class HitObjectManager:
 
 				if self.hitobjects[key][0] == SLIDER:
 					del self.slider_manager.arrows[key]
+					del self.slider_manager.curves[key]
 
 				del self.hitobjects[key]
 				del self.objtime[i]

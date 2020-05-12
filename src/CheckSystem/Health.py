@@ -50,7 +50,8 @@ class HealthProcessor:
 		adjustment = 1
 		result = 1
 
-		while adjustment > 0:
+		limit = 2**30
+		while adjustment < limit:
 			currentHealth = 1
 			lowestHealth = 1
 			currentbreak = -1

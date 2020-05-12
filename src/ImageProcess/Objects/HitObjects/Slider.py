@@ -4,6 +4,7 @@ from recordclass import recordclass
 from PIL import Image
 
 from ImageProcess import imageproc
+from ImageProcess.Curves.adjustcurve import next_t
 from ImageProcess.Curves.generate_slider import GenerateSlider
 from ImageProcess.Curves.curve import *
 
@@ -11,12 +12,12 @@ from ImageProcess.PrepareFrames.HitObjects.Circles import calculate_ar
 from global_var import Settings
 
 Slider = recordclass("Slider", "image x y cur_duration opacity color sliderf_i sliderb_i orig_duration bezier_info "
-                               "cur_repeated repeated appear_f tick_a arrow_i baiser arrow_pos prev_pos")
+                               "cur_repeated repeated appear_f tick_a arrow_i baiser arrow_pos prev_pos t cur_dist")
 
 
-def almost_equal(pos1, pos2):
-	x = abs(pos1.x - pos2.x) < 1
-	y = abs(pos1.y - pos2.y) < 1
+def almost_equal(pos1, pos2, places=0):
+	x = abs(pos1.x - pos2.x) < 1 * (10**-places)
+	y = abs(pos1.y - pos2.y) < 1 * (10**-places)
 	return x and y
 
 
@@ -29,6 +30,7 @@ class SliderManager:
 
 		self.arrows = {}
 		self.sliders = {}
+		self.curves = {}
 
 		self.cs = (54.4 - 4.48 * diff["CircleSize"])
 
@@ -74,9 +76,9 @@ class SliderManager:
 		return img1, img2
 
 	def get_slider_img(self, b_info):
-		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
+		image, x_offset, y_offset, curve = self.gs.get_slider_img(*b_info[0:3])
 		image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
-		return Image.fromarray(image), x_offset, y_offset
+		return Image.fromarray(image), x_offset, y_offset, curve
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
@@ -85,7 +87,7 @@ class SliderManager:
 		# function, but we add stack to reduce sliders list size
 		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"], osu_d["ticks pos"])
 
-		img, x_offset, y_offset = self.get_slider_img(b_info)
+		img, x_offset, y_offset, curve = self.get_slider_img(b_info)
 
 		x_pos -= x_offset
 		y_pos -= y_offset
@@ -98,10 +100,12 @@ class SliderManager:
 
 		key = str(osu_d["id"]) + "s"
 		self.sliders[key] = Slider(img, x_pos, y_pos, duration, 0, color, self.slidermax_index, 0, osu_d["duration"], b_info,
-		                           1, osu_d["repeated"], 0, ticks_a, 0, baiser, osu_d["arrow pos"], Position(x_pos, y_pos))
+		                           1, osu_d["repeated"], 0, ticks_a, 0, baiser, osu_d["arrow pos"], Position(x_pos, y_pos), 0, 0)
 
 		img1, img2 = self.get_arrow(osu_d, baiser)
 		self.arrows[key] = [img2, img1]
+
+		self.curves[key] = curve
 
 	def draw_slider(self, img, background, x_offset, y_offset, alpha=1.0):
 		a = img
@@ -125,12 +129,13 @@ class SliderManager:
 
 		if slider.bezier_info[0] != "L":
 			cur_pos = slider.baiser(round(t, 3))
+			# cur_pos = Position(int(t * len(sel    f.curves)))
 		else:
 			sum_x = (1 - t) * slider.bezier_info[1][0].x + t * slider.arrow_pos.x
 			sum_y = (1 - t) * slider.bezier_info[1][0].y + t * slider.arrow_pos.y
 			cur_pos = Position(sum_x, sum_y)
 
-		vector_x1, vector_y1 = -(slider.prev_pos.x - cur_pos.x), -(slider.prev_pos.y - cur_pos.y)
+		vector_x1, vector_y1 = slider.prev_pos.x - cur_pos.x, slider.prev_pos.y - cur_pos.y
 
 		if slider.cur_repeated % 2 == 0 and self.flip:
 			ball = self.sliderb_frames[color][slider.sliderb_i].transpose(Image.FLIP_LEFT_RIGHT)
@@ -201,11 +206,18 @@ class SliderManager:
 			slider.opacity = total_cur_duration / (slider.orig_duration * slider.repeated) * 100
 		self.draw_slider(slider.image, background, slider.x, slider.y, alpha=slider.opacity/100)
 
-		t = slider.cur_duration / slider.orig_duration
 
-		# if sliderball is going forward
-		if going_forward:
-			t = 1 - t
+		if slider.bezier_info[0] == "B":
+			if going_forward:
+				delta_time = slider.orig_duration - slider.cur_duration
+			else:
+				delta_time = slider.cur_duration
+			t, slider.cur_dist = next_t(self.curves[i], slider.t, slider.bezier_info[2] * Settings.playfieldscale / slider.orig_duration * delta_time, slider.cur_dist, going_forward)
+		else:
+			t = 1 - slider.cur_duration/slider.orig_duration
+
+			if not going_forward:
+				t = 1 - t
 
 		self.draw_ticks(slider, background, going_forward, t)
 
@@ -214,3 +226,5 @@ class SliderManager:
 
 		if slider.cur_repeated < slider.repeated:
 			self.draw_arrow(slider, background, going_forward, i)
+
+		slider.t = t

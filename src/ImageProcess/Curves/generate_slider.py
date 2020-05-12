@@ -24,11 +24,11 @@ class GenerateSlider:
 
 		self.radius = radius
 		self.scale = scale
-		self.extended = 2 * self.radius * self.scale
+		self.extended = self.radius * self.scale * 2
 
 	def convert_string(self, slider_code):
 		string = slider_code.split(",")
-		ps = [Position(int(string[0]) * self.scale + self.extended, int(string[1]) * self.scale + self.extended)]
+		ps = [Position(int(string[0]), int(string[1]))]
 		slider_path = string[5]
 		slider_path = slider_path.split("|")
 		slider_type = slider_path[0]
@@ -36,41 +36,43 @@ class GenerateSlider:
 
 		for pos in slider_path:
 			pos = pos.split(":")
-			ps.append(Position(int(pos[0]) * self.scale + self.extended, int(pos[1]) * self.scale + self.extended))
+			ps.append(Position(int(pos[0]), int(pos[1])))
 
 		pixel_length = float(string[7])
-		return ps, pixel_length * self.scale, slider_type
+		return ps, pixel_length, slider_type
 
 	def convert(self, ps_unscale):
 		ps = []
 		for pos in ps_unscale:
-			ps.append(Position(pos.x * self.scale + self.extended, pos.y * self.scale + self.extended))
+			ps.append(Position(int(pos.x * self.scale + self.extended), int(pos.y * self.scale + self.extended)))
 		return ps
 
-	def get_pos_from_class(self, baiser_class, slider_type):
+	@staticmethod
+	def get_pos_from_class(baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tol = 1/max(1, baiser_class.req_length/650)
+		tol = 1/max(1, baiser_class.req_length/500)
 		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.025 * tol}
 
 		baiser_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
 		curve_pos = []
+		# c_pos = []
 		while t <= 1:
 			cur_pos = baiser_class(t)
-			curve_pos.append([int(cur_pos.x), int(cur_pos.y)])
+			x, y = int(cur_pos.x), int(cur_pos.y)
+			curve_pos.append([x, y])
+			# c_pos.append(Position(x - self.extended, y - self.extended))
 			t += tolerance[slider_type]
 		return curve_pos
 
-	def get_min_max(self, curve_pos):
+	@staticmethod
+	def get_min_max(curve_pos):
 		# get pos where slider start drawing and end drawing, basically reduce image size without touching the slider
-		min_x, min_y, max_x, max_y = curve_pos[0][0], curve_pos[0][1], curve_pos[0][0], curve_pos[0][1]
-		for index in range(0, len(curve_pos)):
-			min_x = min(min_x, curve_pos[index][0])
-			min_y = min(min_y, curve_pos[index][1])
-
-			max_x = max(max_x, curve_pos[index][0])
-			max_y = max(max_y, curve_pos[index][1])
+		min_x = min(curve_pos, key=lambda i: i[0])[0]
+		min_y = min(curve_pos, key=lambda i: i[1])[1]
+		max_x = max(curve_pos, key=lambda i: i[0])[0]
+		max_y = max(curve_pos, key=lambda i: i[1])[1]
 
 		return min_x, min_y, max_x, max_y
 
@@ -99,6 +101,7 @@ class GenerateSlider:
 		curve_pos = self.get_pos_from_class(baiser, slider_type)
 
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
+
 		img = self.draw(curve_pos)
 
 		# crop useless part of image
@@ -112,7 +115,7 @@ class GenerateSlider:
 		x_offset = int((ps[0].x - left_x_corner))
 		y_offset = int((ps[0].y - left_y_corner))
 
-		return img, x_offset, y_offset
+		return img, x_offset, y_offset, curve_pos
 
 
 if __name__ == "__main__":
@@ -129,7 +132,8 @@ if __name__ == "__main__":
 	playfield_width, playfield_height = WIDTH * 0.8 * 3 / 4, HEIGHT * 0.8
 	scale = playfield_width/512
 	gs = GenerateSlider([255, 69, 0], [0, 60, 120], 36.48, scale)
-	img, x, y = gs.get_slider_img(slidercode)
+	stype, ps, length = gs.convert_string(slidercode)
+	img, x, y = gs.get_slider_img(stype, ps, length)
 	square = np.full((2, 2, 4), 255)
 	img[y-1:y+1, x-1:x+1] = square
 	cv2.imwrite("test.png", img)

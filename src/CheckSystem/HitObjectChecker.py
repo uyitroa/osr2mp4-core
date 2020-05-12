@@ -132,6 +132,7 @@ class HitObjectChecker:
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend = self.check.checkslider(i, replay, osr_index)
 
 		if update:
+			# print(hitvalue, len(self.info), timestamp)
 			self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 			if hitresult is not None:
 				self.results[hitresult] += 1

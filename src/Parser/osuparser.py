@@ -3,7 +3,9 @@ import re
 
 from CheckSystem.Health import HealthProcessor
 from CheckSystem.Judgement import DiffCalculator
+from ImageProcess.Curves.adjustcurve import next_t
 from ImageProcess.Curves.curve import Curve
+from ImageProcess.Curves.generate_slider import GenerateSlider
 from ImageProcess.Curves.position import Position
 
 
@@ -194,6 +196,9 @@ class Beatmap:
 				my_dict["ps"] = ps
 				my_dict["slider type"] = slider_type
 				my_dict["pixel length"] = float(osuobject[7])
+				baiser = Curve.from_kind_and_points(my_dict["slider type"], ps, my_dict["pixel length"])
+				my_dict["curves"] = GenerateSlider.get_pos_from_class(baiser, slider_type)
+
 
 				my_dict["stacking"] = 0
 
@@ -202,7 +207,6 @@ class Beatmap:
 						100 * self.diff["SliderMultiplier"])
 				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
 
-				baiser = Curve.from_kind_and_points(my_dict["slider type"], ps, my_dict["pixel length"])
 				end_goingforward = my_dict["repeated"] % 2 == 1
 				endpos = baiser(int(end_goingforward))
 				my_dict["end x"] = int(endpos.x)
@@ -216,12 +220,23 @@ class Beatmap:
 				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
 				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
 
-				d = tickdistance
-				while d < my_dict["pixel length"] - mindist_fromend:
-					pathprogress = d / my_dict["pixel length"]
-					my_dict["slider ticks"].append(pathprogress)
-					my_dict["ticks pos"].append(baiser(round(pathprogress, 3)))
-					d += tickdistance
+				if slider_type == "B":
+					d = tickdistance
+					prev = 0
+					cur_dist = 0
+					while d < my_dict["pixel length"] - mindist_fromend:
+						t, cur_dist = next_t(my_dict["curves"], prev, d, cur_dist, True)
+						my_dict["slider ticks"].append(t)
+						my_dict["ticks pos"].append(baiser(t))
+						d += tickdistance
+						prev = t
+				else:
+					d = tickdistance
+					while d < my_dict["pixel length"] - mindist_fromend:
+						pathprogress = d / my_dict["pixel length"]
+						my_dict["slider ticks"].append(pathprogress)
+						my_dict["ticks pos"].append(baiser(pathprogress))
+						d += tickdistance
 
 				if len(osuobject) > 9:
 					my_dict["edgeSounds"] = osuobject[8]
