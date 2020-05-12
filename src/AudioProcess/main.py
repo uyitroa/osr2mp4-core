@@ -154,7 +154,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         tmpSpinVal = 0
         for bp in range(len(beatmap_info)):
                 if "slider" in beatmap_info[bp]["type"]:
-                        #print(beatmap_info[bp]['slider ticks'])
                         sliderTime.append(beatmap_info[bp]["time"])
                         repeatedTime.append(beatmap_info[bp]["repeated"])
                         durationTime.append(beatmap_info[bp]["duration"])
@@ -164,10 +163,11 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
             if type(my_info[x].more).__name__ == "Slider":
                 if my_info[x].more.hitvalue==10:
                         z[start_index:start_index + len(tick)] += tick * 0.5
-                        print(my_info[x].time)  
             if type(my_info[x].more).__name__ == "Circle":
                 spinSpeedup = 6
                 if my_info[x].more.sliderhead == True:
+                        if my_info[x].combostatus == -1 or my_info[x].combo>20:
+                                z[start_index:start_index + len(m)] += m * 0.5
                         arrow_time_list = []
                         if len(sliderTime) > 0:
                             for a in range(repeatedTime[0]):
@@ -197,12 +197,10 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                         pass
 
                 elif my_info[x].hitresult > 0:
-                        
 
                         z[start_index:start_index + len(y)] += y * 0.5
                 elif my_info[x].hitresult == 0:
                         
-
                         z[start_index:start_index + len(m)] += m * 0.5
 
 
@@ -223,13 +221,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                     if my_info[x].more.bonusscore != tmpVal:
                         tmpVal = my_info[x].more.bonusscore
                         z[start_index:start_index + len(b)] += b * 0.5
-                        '''
-                   else:
-                            if x <= len(my_info) - 1 and my_info[x+1].more.bonusscore == 0:
-                                print("ELSE: Added Hit sounds to {} that ends at {}".format(my_info[x].time,my_info[x].time + len(b)))
-                                z[start_index:start_index + len(b)] += b * 0.5
-                                spinBonusTime = my_info[x].time/1000 + length_bonus
-                            continue'''
 
         if offset >= 0:
             rendtime = endtime - offset
@@ -268,6 +259,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", -550, -1,
-                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Tengaku.mp3")
+    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", -1, -1,
+                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
 
