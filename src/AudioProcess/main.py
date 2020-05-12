@@ -161,12 +161,16 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         for x in range(len(my_info)):
             start_index = int(my_info[x].time/1000 * rate)
             if type(my_info[x].more).__name__ == "Slider":
+                if my_info[x].combostatus == -1 and my_info[x-1].combo>20 and x != 0:
+                        print(my_info[x].time)
+                        z[start_index:start_index + len(m)] += m * 0.5
                 if my_info[x].more.hitvalue==10:
                         z[start_index:start_index + len(tick)] += tick * 0.5
             if type(my_info[x].more).__name__ == "Circle":
                 spinSpeedup = 6
                 if my_info[x].more.sliderhead == True:
-                        if my_info[x].combostatus == -1 or my_info[x].combo>20:
+                        if my_info[x].combostatus == -1 and my_info[x-1].combo>20 and x != 0:
+                                print(my_info[x].time)
                                 z[start_index:start_index + len(m)] += m * 0.5
                         arrow_time_list = []
                         if len(sliderTime) > 0:
@@ -199,9 +203,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                 elif my_info[x].hitresult > 0:
 
                         z[start_index:start_index + len(y)] += y * 0.5
-                elif my_info[x].hitresult == 0:
-                        
-                        z[start_index:start_index + len(m)] += m * 0.5
 
 
 
@@ -259,6 +260,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", -1, -1,
-                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
+    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", 208668, -1,
+                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "audio.mp3")
 
