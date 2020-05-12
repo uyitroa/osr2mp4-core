@@ -56,8 +56,8 @@ def tryCatch(audio,audio1,checked):
 def checkAudio(sPath,dPath,beatmap,audio_name):
             song = beatmap + audio_name
             checked = []
-            fileNames = [sPath + "normal-hitnormal",sPath + "combobreak",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin"]
-            fileNames2 = [dPath + "normal-hitnormal",dPath + "combobreak",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin"]
+            fileNames = [sPath + "normal-hitnormal",sPath + "combobreak",sPath + "spinnerbonus",sPath + "spinnerspin",sPath + "normal-hitnormal",sPath+"spinnerspin",sPath+"soft-slidertick"]
+            fileNames2 = [dPath + "normal-hitnormal",dPath + "combobreak",dPath + "spinnerbonus",dPath + "spinnerspin",dPath + "normal-hitnormal",dPath+"spinnerspin",dPath+"soft-slidertick"]
             fileTypes = ".mp3",".wav"
             for x in range(6):
                 if os.path.exists(sPath):
@@ -91,12 +91,13 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
             ratesb, b = 4,4
             ratesc, c = 5,5
             rateS, s = 6,6
-            
+            rateT, t = 7,7
             ratey, y  = tryCatch(ratey,y,checked[0])
             rateM, m = tryCatch(rateM,m,checked[1])
             ratesb, b = tryCatch(ratesb,b,checked[2])
             ratesc, c = tryCatch(ratesc,c,checked[3])
             rateS, s = tryCatch(rateS,s,checked[4])
+            rateT, t = tryCatch(rateT,t,checked[5])
 
             if "wav" in checked[5]:
                     
@@ -104,7 +105,7 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
             else:  
                 spinSound = AudioSegment.from_mp3(checked[5])
 
-            return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
+            return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound,rateT,t
         
 
 
@@ -125,7 +126,7 @@ def parseData():
 
 
 def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name):
-        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound = checkAudio(skin_path,default_skinP,beatmap_path,audio_name)
+        rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound,rateT,tick = checkAudio(skin_path,default_skinP,beatmap_path,audio_name)
         start=time.time()
         tmpVal = 0
         spinBonusTime = 0
@@ -141,10 +142,6 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
             faster_senpai_export = faster_senpai.set_frame_rate(44100)
             faster_rate , faster_c = pydubtonumpy(faster_senpai_export)
             speedup_dict["sound_" + str(x)] =  faster_c
-            faster_senpai_export.export("faster" + str(x) + ".mp3",format="mp3")
-            print(len(faster_senpai))
-
-
 
         slider_duration = 0
         arrow_time = 0
@@ -157,17 +154,20 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         tmpSpinVal = 0
         for bp in range(len(beatmap_info)):
                 if "slider" in beatmap_info[bp]["type"]:
+                        #print(beatmap_info[bp]['slider ticks'])
                         sliderTime.append(beatmap_info[bp]["time"])
                         repeatedTime.append(beatmap_info[bp]["repeated"])
                         durationTime.append(beatmap_info[bp]["duration"])
                         endTime.append(beatmap_info[bp]["end time"])
         for x in range(len(my_info)):
             start_index = int(my_info[x].time/1000 * rate)
-
+            if type(my_info[x].more).__name__ == "Slider":
+                if my_info[x].more.hitvalue==10:
+                        z[start_index:start_index + len(tick)] += tick * 0.5
+                        print(my_info[x].time)  
             if type(my_info[x].more).__name__ == "Circle":
                 spinSpeedup = 6
                 if my_info[x].more.sliderhead == True:
-                        
                         arrow_time_list = []
                         if len(sliderTime) > 0:
                             for a in range(repeatedTime[0]):
@@ -215,9 +215,7 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                         z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] += speedup_dict["sound_" + str(spinSpeedup)] * 0.5
                         spinRotationTime = my_info[x].time/1000 + length_spin
                         if my_info[x].more.progress > tmpSpinVal + 0.1 and spinSpeedup > 2:
-                            print("Decrease {} by 2".format(spinSpeedup))
                             spinSpeedup -= 2
-                            print(spinSpeedup)
                         tmpSpinVal = my_info[x].more.progress
 
                 if my_info[x].more.bonusscore  > 0:
@@ -270,6 +268,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", 183677, -1,
-                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
+    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", -550, -1,
+                 "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Tengaku.mp3")
 
