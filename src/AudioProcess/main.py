@@ -51,6 +51,7 @@ def tryCatch(audio,audio1,checked):
                 audio, audio1 = read(checked,"")
         except exceptions.CouldntDecodeError:
                 audio, audio1 = read("blank.mp3","")
+                print("Decoding Error: Now Creating a blank file.mp3")
         return audio,audio1
 def checkAudio(sPath,dPath,beatmap,audio_name):
             song = beatmap + audio_name
@@ -61,6 +62,7 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
             for x in range(6):
                 if os.path.exists(sPath):
                     if os.path.exists(fileNames[x] + fileTypes[0]):
+                        print("true")
                         checked.append(fileNames[x] + fileTypes[0])
                         print("Adding: " + fileNames[x] + fileTypes[0] + " from skin path: " )
                         
@@ -101,9 +103,9 @@ def checkAudio(sPath,dPath,beatmap,audio_name):
                 spinSound = AudioSegment.from_wav(checked[5]) 
             else:  
                 spinSound = AudioSegment.from_mp3(checked[5])
-        
 
             return rate,y,rate,z,rateM,m,ratesb,b,ratesc,c,rateS,s,spinSound
+        
 
 
 
@@ -132,12 +134,15 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         length_spin = len(c)/ratesc
         spinSpeedup = 6
         speedup_dict = {}
+        
         for x in range(6,0,-2):
-            fr = spinSound.frame_rate + int(spinSound.frame_rate / x)
+            fr = spinSound.frame_rate + int(spinSound.frame_rate / (x - 0.5))
             faster_senpai = spinSound._spawn(spinSound.raw_data, overrides={'frame_rate': fr})
             faster_senpai_export = faster_senpai.set_frame_rate(44100)
             faster_rate , faster_c = pydubtonumpy(faster_senpai_export)
             speedup_dict["sound_" + str(x)] =  faster_c
+            faster_senpai_export.export("faster" + str(x) + ".mp3",format="mp3")
+            print(len(faster_senpai))
 
 
 
@@ -149,7 +154,7 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         repeatedTime = []
         durationTime = []
         endTime = []
-            
+        tmpSpinVal = 0
         for bp in range(len(beatmap_info)):
                 if "slider" in beatmap_info[bp]["type"]:
                         sliderTime.append(beatmap_info[bp]["time"])
@@ -203,20 +208,22 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
 
 
             elif type(my_info[x].more).__name__ == "Spinner":
-                if int(my_info[x].more.rotate) >= 180:
+                if int(my_info[x].more.rotate) >= 180 or int(my_info[x].more.rotate) <= -180:
                     if my_info[x].time/1000 < spinRotationTime:
                         pass
                     else:
                         z[start_index:start_index + len(speedup_dict["sound_" + str(spinSpeedup)])] += speedup_dict["sound_" + str(spinSpeedup)] * 0.5
                         spinRotationTime = my_info[x].time/1000 + length_spin
-                        if spinSpeedup != 2:
+                        if my_info[x].more.progress > tmpSpinVal + 0.1 and spinSpeedup > 2:
+                            print("Decrease {} by 2".format(spinSpeedup))
                             spinSpeedup -= 2
+                            print(spinSpeedup)
+                        tmpSpinVal = my_info[x].more.progress
 
                 if my_info[x].more.bonusscore  > 0:
                     
                     if my_info[x].more.bonusscore != tmpVal:
                         tmpVal = my_info[x].more.bonusscore
-                        print("Added Hit sounds to {} that ends at {}".format(my_info[x].time,my_info[x].time + len(b)))
                         z[start_index:start_index + len(b)] += b * 0.5
                         '''
                    else:
@@ -263,6 +270,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:\\Users\\Shiho\\Downloads\\Totori-2018-04-01\\", -60, -1,
+    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", 183677, -1,
                  "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "Audio.mp3")
 
