@@ -142,8 +142,7 @@ class Check:
 		hasreversetick = False
 		cur_repeated = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 		if cur_repeated > slider_d["repeated slider"]:
-			slider_d["repeated slider"] = cur_repeated
-			hasreversetick = osu_d["repeated"] != slider_d["repeated slider"]
+			hasreversetick = osu_d["repeated"] != cur_repeated
 
 		going_forward = slider_d["repeated slider"] % 2 == 1
 
@@ -157,8 +156,8 @@ class Check:
 			dist = int(not going_forward) * osu_d["pixel length"]
 		else:
 			delta_time = (osr[3] - osu_d["time"]) % osu_d["duration"]
-			# if hasendtick:
-			# 	delta_time = osu_d["duration"] - slider_leniency
+			if hasendtick:
+				delta_time = osu_d["duration"] - slider_leniency
 			if not going_forward:
 				delta_time = osu_d["duration"] - delta_time
 
@@ -177,7 +176,7 @@ class Check:
 
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)  # or self.cursor_inslider(slider_d, replay, osr_index-1, pos) or self.cursor_inslider(slider_d, replay, osr_index+1, pos)
 
-		# print(hasendtick, dist, t, osr[0], osr[1], slider_d["dist"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), pos, osr[3], osu_d["duration"])
+		# print(hasreversetick, dist, t, osr[0], osr[1], hastick, math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), pos, osr[3], osu_d["duration"], slider_d["follow state"], slider_d["repeated slider"], osu_d["repeated"])
 
 		in_ball = tick_inball  # self.cursor_inslider(slider_d, replay, osr_index, t)
 		if in_ball:
@@ -198,8 +197,8 @@ class Check:
 		slider_d["max score"] += hastick or hasendtick or hasreversetick
 
 		slider_d["done"] = hasendtick
-		slider_d["repeat checked"] += hasendtick or hasreversetick
-
+		slider_d["repeat checked"] += hasendtick or (int(hasreversetick) * (cur_repeated - slider_d["repeated slider"]))
+		slider_d["repeated slider"] = cur_repeated
 		# baiser.update(t, dist)
 
 		if touchtick or touchend or touchreverse:
@@ -210,11 +209,10 @@ class Check:
 			slider_d["score"] += touchtick or touchend or touchreverse
 			return in_ball, hitvalue, int(touchend or touchtick or touchreverse)
 
-
 		return in_ball, 0, -((hastick and not touchtick) or (hasreversetick and not touchreverse))
 
 	def tickover(self, t, osu_d, slider_d, reverse):
-		goingforward = slider_d["repeat checked"] % 2 == 0
+		goingforward = slider_d["repeated slider"] % 2 == 1
 
 		ticks_index = slider_d["ticks index"]
 		if ticks_index < 0:

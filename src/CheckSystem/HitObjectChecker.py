@@ -123,8 +123,8 @@ class HitObjectChecker:
 				if hitresult != 0:
 					self.check.sliders_memory[idd]["score"] += 1
 					self.check.sliders_memory[idd]["combo"] += 1
-					# if replay[osr_index][3] <= timestamp:
-					# self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
+					if replay[osr_index][3] <= timestamp:
+						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
 		else:
