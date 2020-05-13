@@ -1,4 +1,4 @@
-from CheckSystem.Health import HealthProcessor
+from CheckSystem.Health import HealthProcessor, HealthDummy
 from CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
@@ -12,7 +12,7 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, mod=1):
+	def __init__(self, beatmap, mod=1, tests=False):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -42,8 +42,10 @@ class HitObjectChecker:
 
 		self.info = []
 		self.starthitobjects = 0
-
-		self.health_processor = HealthProcessor(beatmap)
+		if not tests:
+			self.health_processor = HealthProcessor(beatmap)
+		else:
+			self.health_processor = HealthDummy(beatmap)
 		beatmap.health_processor = self.health_processor
 		self.drainrate = self.health_processor.drain_rate
 		self.health_value = 1
@@ -77,6 +79,7 @@ class HitObjectChecker:
 
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index, sum_newclick, self.combo)
+		update = update and (deltat > 0 or abs(deltat) <= self.time_preempt)
 		if update:
 			state = 0
 			sum_newclick = max(0, sum_newclick - reduceclick)
@@ -120,8 +123,8 @@ class HitObjectChecker:
 				if hitresult != 0:
 					self.check.sliders_memory[idd]["score"] += 1
 					self.check.sliders_memory[idd]["combo"] += 1
-					if replay[osr_index][3] <= timestamp:
-						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
+					# if replay[osr_index][3] <= timestamp:
+					# self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
 		else:

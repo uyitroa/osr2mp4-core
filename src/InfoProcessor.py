@@ -58,10 +58,24 @@ class Updater:
 			if objtype != "Slider" or self.info.more.tickend:
 				self.component.scorecounter.update_score(self.info.score)
 
+			# if self.info.hitresult == 0:
+			# 	key = idd
+			# 	if key not in self.component.hitobjmanager.hitobjects:
+			# 		return
+			#
+			# 	del self.component.hitobjmanager.objecttype[self.component.hitobjmanager.hitobjects[key][0]][1][key]
+			#
+			# 	if self.component.hitobjmanager.hitobjects[key][0] == 1:  # slider
+			# 		del self.component.hitobjmanager.slider_manager.arrows[key]
+			#
+			# 	del self.component.hitobjmanager.hitobjects[key]
+			# 	del self.component.hitobjmanager.objtime[i]
+
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
 			return
 		while self.info_index < len(self.resultinfo) and self.resultinfo[self.info_index].time < cur_time:
+			# print(self.resultinfo[self.info_index].time, cur_time)
 			self.info = self.resultinfo[self.info_index]
 			self.process_combo()
 			self.process_acc()

@@ -1,9 +1,9 @@
 import cv2
 
 try:
-	from ImageProcess.Curves.curve import *
+	from ImageProcess.Curves.curve2 import *
 except Exception:
-		from .curve import *
+		from .curve2 import *
 
 
 class GenerateSlider:
@@ -28,7 +28,7 @@ class GenerateSlider:
 
 	def convert_string(self, slider_code):
 		string = slider_code.split(",")
-		ps = [Position(int(string[0]), int(string[1]))]
+		ps = [[int(string[0]) * self.scale + self.extended, int(string[1]) * self.scale + self.extended]]
 		slider_path = string[5]
 		slider_path = slider_path.split("|")
 		slider_type = slider_path[0]
@@ -36,7 +36,7 @@ class GenerateSlider:
 
 		for pos in slider_path:
 			pos = pos.split(":")
-			ps.append(Position(int(pos[0]), int(pos[1])))
+			ps.append([int(pos[0]) * self.scale + self.extended, int(pos[1]) * self.scale + self.extended])
 
 		pixel_length = float(string[7])
 		return ps, pixel_length, slider_type
@@ -44,14 +44,15 @@ class GenerateSlider:
 	def convert(self, ps_unscale):
 		ps = []
 		for pos in ps_unscale:
-			ps.append(Position(int(pos.x * self.scale + self.extended), int(pos.y * self.scale + self.extended)))
+			ps.append([int(pos.x * self.scale + self.extended), int(pos.y * self.scale + self.extended)])
 		return ps
 
 	@staticmethod
 	def get_pos_from_class(baiser_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tol = 1/max(1, baiser_class.req_length/500)
-		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.025 * tol}
+		tol = 1/max(1, baiser_class.req_length/400)
+
+		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.05 * tol}
 
 		baiser_class(0)
 		t = 0
@@ -94,12 +95,7 @@ class GenerateSlider:
 			cv2.polylines(im, [curve_pos], False, (*cur_slider, 200), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 		return im
 
-	def get_slider_img(self, slider_type, ps, pixel_length):
-		ps = self.convert(ps)
-		pixel_length = pixel_length * self.scale
-		baiser = Curve.from_kind_and_points(slider_type, ps, pixel_length)  # get the right curve class
-		curve_pos = self.get_pos_from_class(baiser, slider_type)
-
+	def get_slider_img(self, curve_pos):
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 
 		img = self.draw(curve_pos)
@@ -112,10 +108,10 @@ class GenerateSlider:
 
 		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
 
-		x_offset = int((ps[0].x - left_x_corner))
-		y_offset = int((ps[0].y - left_y_corner))
+		x_offset = int((curve_pos[0][0] - left_x_corner))
+		y_offset = int((curve_pos[0][1] - left_y_corner))
 
-		return img, x_offset, y_offset, curve_pos
+		return img, x_offset, y_offset
 
 
 if __name__ == "__main__":

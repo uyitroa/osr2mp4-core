@@ -80,7 +80,7 @@ class HitObjectManager:
 		self.slider_manager.sliders[idd].appear_f = -0.3
 
 	# manager of circle add_to_frame and slider add_to_frame
-	def add_to_frame(self, background):
+	def add_to_frame(self, background, _):
 		i = len(self.objtime)
 		while i > 0:  # > 0 because we do i-=1 at the beginning so if it's > -1 it would be "out of range"
 			i -= 1
@@ -96,13 +96,12 @@ class HitObjectManager:
 
 				if self.hitobjects[key][0] == SLIDER:
 					del self.slider_manager.arrows[key]
-					del self.slider_manager.curves[key]
 
 				del self.hitobjects[key]
 				del self.objtime[i]
 				continue
 
-			hitobj[0].add_to_frame(background, key, len(self.objtime) == 1)
+			hitobj[0].add_to_frame(background, key, _)
 		#
 		# if len(self.objtime) == 0:
 		# 	return

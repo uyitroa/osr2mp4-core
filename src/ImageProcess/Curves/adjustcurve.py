@@ -1,7 +1,7 @@
 import math
 
 
-def dist(pos1, pos2):
+def diste(pos1, pos2):
 	return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
 
 
@@ -22,7 +22,10 @@ def next_t(curve, prev_t, distance, cur_dist, going_forward, debug=False, precis
 		sign = 1
 	prev_t = round(prev_t * (len(curve)-1))
 	i = prev_t
+	prev_dist, prev_i = cur_dist, i
 	while (cur_dist - distance) * sign < 0:
+		prev_i = i
+		prev_dist = cur_dist
 		i += 1 * sign
 		if i >= len(curve):
 			i -= 1
@@ -30,12 +33,19 @@ def next_t(curve, prev_t, distance, cur_dist, going_forward, debug=False, precis
 		if i < 0:
 			i = 0
 			break
-		cur_dist += dist(curve[prev_t], curve[i]) * sign
+		cur_dist += diste(curve[prev_t], curve[i]) * sign
 		prev_t = i
 		if debug:
-			print(i, prev_t, cur_dist, going_forward, distance)
+			print(i, prev_t, cur_dist, going_forward, distance, cur_dist - prev_dist)
+
+	if debug:
+		print(prev_t, i, cur_dist, distance, diste(curve[prev_t], curve[i]))
 
 	if precise:
 		pass
+	# cur_dist = prev_dist
+	# i = prev_i
+	# if (cur_dist - distance) * sign > 0:
+	# 	print(cur_dist, distance, going_forward)
 
 	return i/(len(curve)-1), cur_dist

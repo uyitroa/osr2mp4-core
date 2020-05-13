@@ -190,9 +190,26 @@ if __name__ == "__main__":
 	ps, length, stype = gs.convert_string(slidercode)
 	print(ps, length)
 	a = approximate_bezier(ps)
-	img, x, y, curvepos = gs.get_slider_img(stype, ps, length)
-	square = np.full((2, 2, 4), 255)
-	img[y-1:y+1, x-1:x+1] = square
-	cv2.imwrite("test.png", img)
+	# print(a)
+	# img, x, y, curvepos = gs.get_slider_img(stype, a, length)
+	# square = np.full((2, 2, 4), 255)
+	# img[y-1:y+1, x-1:x+1] = square
+	# cv2.imwrite("test.png", img)
+	#
+	# print(curvepos)
 
-	print(curvepos)
+
+	import matplotlib
+
+	matplotlib.use('TkAgg')
+	import matplotlib.pyplot as plt
+
+	plt.ion()
+	plt.figure()
+	plt.show()
+
+	plt.subplot(2, 3, 3)
+	plt.cla()
+	plt.axis('equal')
+	plt.plot(a[:, 0], a[:, 1], color="green")
+	plt.savefig('myfilename.png')

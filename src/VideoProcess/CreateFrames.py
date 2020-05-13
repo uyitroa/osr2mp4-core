@@ -78,7 +78,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
-			cv2.putText(np_img, str(resultinfo[min(len(resultinfo) - 1, updater.info_index)].more), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)
+			cv2.putText(np_img, str(resultinfo[min(len(resultinfo) - 1, updater.info_index)].timestamp), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)
 			if status:
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)
