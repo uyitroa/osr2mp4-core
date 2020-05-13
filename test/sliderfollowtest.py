@@ -37,18 +37,23 @@ class TestSliderfollow(unittest.TestCase):
 	def setUpClass(cls):
 		cls.tests = []
 		cls.custom = []
-		cls.custom_expect100 = [0, 1]
-		cls.custom_expect50 = [0, 0]
+		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0]
+		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0]
 		Settings.timeframe = 1000
 		Settings.fps = 60
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
 		cls.tests.append(getinfos("../test/resources/", "tool"))
 		# cls.tests.append(getinfos("../test/resources/", "2tool"))
-		# cls.tests.append(getinfos("../test/resources/", "2yomi"))
+		cls.tests.append(getinfos("../test/resources/", "2yomi"))
 		cls.tests.append(getinfos("../test/resources/", "3yomi"))
 		cls.tests.append(getinfos("../test/resources/", "4yomi"))
 		cls.custom.append(getinfos("../test/resources/", "69tool"))
 		cls.custom.append(getinfos("../test/resources/", "69yomi", True))
+		cls.custom.append(getinfos("../test/resources/", "70tool"))
+		cls.custom.append(getinfos("../test/resources/", "71tool"))
+		cls.custom.append(getinfos("../test/resources/", "69kikoku"))
+		cls.custom.append(getinfos("../test/resources/", "70kikoku"))
+		cls.custom.append(getinfos("../test/resources/", "71kikoku"))
 
 
 	def test_sliderfollow(self):
@@ -65,8 +70,8 @@ class TestSliderfollow(unittest.TestCase):
 			case = self.custom[i]
 			for x in range(len(case[1])):
 				resultinfo = checkmain(case[0], case[2][x], case[1][x], 0, True)
-				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg="replay {} case {}".format(str(x), str(i)))
-				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg="replay {} case {}".format(str(x), str(i)))
+				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg="custom replay {} case {}".format(str(x), str(i)))
+				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg="custom replay {} case {}".format(str(x), str(i)))
 
 
 
