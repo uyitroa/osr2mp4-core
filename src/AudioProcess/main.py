@@ -203,8 +203,10 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
                         z[start_index:start_index + len(y)] += y * 0.5
 
 
-
             elif type(my_info[x].more).__name__ == "Spinner":
+                if my_info[x].combostatus == -1:
+                        print(my_info[x].combostatus)
+                        z[start_index:start_index + len(m)] += m * 0.5
                 if int(my_info[x].more.rotate) >= 180 or int(my_info[x].more.rotate) <= -180:
                     if my_info[x].time/1000 < spinRotationTime:
                         pass
@@ -258,6 +260,6 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 if __name__ == '__main__':
     res, beat = parseData()
     #args = my_info,beatmap_info,skin_path,offset,endtime,default_skinP,beatmap_path,audio_name
-    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", 208668, -1,
+    processAudio(res, beat, "C:\\Users\\Shiho\\Desktop\\Projects\\osr2mp4\\res\\skin\\", -1, -1,
                  "C:/Users/Shiho/Downloads/skin/", "C:\\Users\\Shiho\\Downloads\\Compressed\\F\\", "audio.mp3")
 
