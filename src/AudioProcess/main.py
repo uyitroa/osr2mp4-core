@@ -161,16 +161,14 @@ def processAudio(my_info,beatmap_info,skin_path,offset,endtime,default_skinP,bea
         for x in range(len(my_info)):
             start_index = int(my_info[x].time/1000 * rate)
             if type(my_info[x].more).__name__ == "Slider":
-                if my_info[x].combostatus == -1 and my_info[x-1].combo>20 and x != 0:
-                        print(my_info[x].time)
+                if x<len(my_info) - 1 and my_info[x].combo > 20 and my_info[x+1].combostatus == -1 :
                         z[start_index:start_index + len(m)] += m * 0.5
                 if my_info[x].more.hitvalue==10:
                         z[start_index:start_index + len(tick)] += tick * 0.5
             if type(my_info[x].more).__name__ == "Circle":
                 spinSpeedup = 6
                 if my_info[x].more.sliderhead == True:
-                        if my_info[x].combostatus == -1 and my_info[x-1].combo>20 and x != 0:
-                                print(my_info[x].time)
+                        if x<len(my_info) -1 and my_info[x].combo > 20 and my_info[x+1].combostatus == -1 :
                                 z[start_index:start_index + len(m)] += m * 0.5
                         arrow_time_list = []
                         if len(sliderTime) > 0:
