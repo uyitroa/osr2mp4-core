@@ -24,7 +24,7 @@ class GenerateSlider:
 
 		self.radius = radius
 		self.scale = scale
-		self.extended = self.radius * self.scale * 2
+		self.extended = self.radius * self.scale
 
 	def convert_string(self, slider_code):
 		string = slider_code.split(",")
@@ -79,7 +79,7 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(390 * self.scale + self.extended * 2), int(520 * self.scale + self.extended * 2), 4), dtype=np.uint8)
+		im = np.zeros((int(484 * self.scale + self.extended * 2), int(612 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
 		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 200), int(self.radius*2*self.scale), cv2.LINE_AA)
@@ -96,6 +96,9 @@ class GenerateSlider:
 		return im
 
 	def get_slider_img(self, curve_pos):
+		curve_pos = np.array(curve_pos)
+		curve_pos += 100
+		curve_pos = (curve_pos * self.scale).astype(dtype=np.int32)
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 
 		img = self.draw(curve_pos)
