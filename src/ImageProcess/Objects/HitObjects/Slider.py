@@ -174,7 +174,7 @@ class SliderManager:
 			# if the slider is repeated
 			if slider.cur_repeated < slider.repeated:
 				slider.cur_repeated += math.ceil((slider.cur_duration % slider.orig_duration)/slider.orig_duration)
-				slider.cur_duration = slider.orig_duration  # reset
+				slider.cur_duration = slider.orig_duration  + slider.cur_duration# reset
 				going_forward = not going_forward
 
 			else:
