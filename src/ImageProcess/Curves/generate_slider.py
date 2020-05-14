@@ -1,5 +1,7 @@
 import cv2
 
+from ImageProcess.Curves.curves import getclass
+
 try:
 	from ImageProcess.Curves.curve2 import *
 except Exception:
@@ -44,7 +46,7 @@ class GenerateSlider:
 	def convert(self, ps_unscale):
 		ps = []
 		for pos in ps_unscale:
-			ps.append([int(pos.x * self.scale + self.extended), int(pos.y * self.scale + self.extended)])
+			ps.append([(pos[0] + 100) * self.scale, (pos[1] + 100) * self.scale])
 		return ps
 
 	@staticmethod
@@ -95,10 +97,10 @@ class GenerateSlider:
 			cv2.polylines(im, [curve_pos], False, (*cur_slider, 200), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 		return im
 
-	def get_slider_img(self, curve_pos):
-		curve_pos = np.array(curve_pos)
-		curve_pos += 100
-		curve_pos = (curve_pos * self.scale).astype(dtype=np.int32)
+	def get_slider_img(self, slidertype, ps, pixel_length):
+		ps = self.convert(ps)
+		baiser = getclass(slidertype, ps, pixel_length * self.scale)
+		curve_pos = np.int32(baiser.pos)
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 
 		img = self.draw(curve_pos)

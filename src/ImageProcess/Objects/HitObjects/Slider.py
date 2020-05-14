@@ -74,8 +74,8 @@ class SliderManager:
 		img2 = imageproc.rotate_images(self.reversearrow, angle2)
 		return img1, img2
 
-	def get_slider_img(self, curves):
-		image, x_offset, y_offset = self.gs.get_slider_img(np.int32(curves))
+	def get_slider_img(self, b_info):
+		image, x_offset, y_offset = self.gs.get_slider_img(*b_info[0:3])
 		image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
 		return Image.fromarray(image), x_offset, y_offset
 
@@ -86,7 +86,7 @@ class SliderManager:
 		# function, but we add stack to reduce sliders list size
 		b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"], osu_d["ticks pos"])
 
-		img, x_offset, y_offset = self.get_slider_img(osu_d["baiser"].pos)
+		img, x_offset, y_offset = self.get_slider_img(b_info)
 
 		x_pos -= x_offset
 		y_pos -= y_offset
@@ -174,11 +174,11 @@ class SliderManager:
 			# if the slider is repeated
 			if slider.cur_repeated < slider.repeated:
 				slider.cur_repeated += math.ceil((slider.cur_duration % slider.orig_duration)/slider.orig_duration)
-				slider.cur_duration = slider.orig_duration  + slider.cur_duration# reset
+				slider.cur_duration = slider.orig_duration + slider.cur_duration  # reset
 				going_forward = not going_forward
 
 			else:
-				cur_pos, t = baiser.at(int(going_forward) * slider.bezier_info[2], None)  # if going_foward is true then t = 1 otherwise it's 0
+				cur_pos, t = baiser.at(int(going_forward) * slider.bezier_info[2], going_forward)  # if going_foward is true then t = 1 otherwise it's 0
 				index = int(slider.sliderf_i)
 				self.to_frame(self.sliderfollow_fadeout[index], background, cur_pos, slider)
 

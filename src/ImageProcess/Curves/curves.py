@@ -2,10 +2,10 @@ import math
 
 import cv2
 
-from ImageProcess.Curves.adjustcurve import next_t
-from ImageProcess.Curves.generate_slider import GenerateSlider
+from ImageProcess.Curves.adjustcurve import next_t, diste
 import numpy as np
 from ImageProcess.Curves import constants, mathhelper
+from ImageProcess.Curves.curve2 import LinearB
 
 
 class ASlider:
@@ -26,7 +26,13 @@ class ASlider:
 class Linear(ASlider):  # Because it made sense at the time...
 	def __init__(self, points, pixel_length):
 		super().__init__(points, pixel_length)
-		self.pos = points
+		self.calc_points()
+
+	def calc_points(self):
+		self.pos = [self.points[0]]
+		l = LinearB(self.points, self.pixel_length)
+		endpos = l(1)
+		self.pos.append([endpos.x, endpos.y])
 
 	def at(self, dist, forward):
 		t = dist/self.pixel_length
@@ -40,6 +46,10 @@ class Bezier(ASlider):
 		super().__init__(points, pixel_length)
 		self.order = len(self.points)
 		self.pos = []
+
+		self.pos_prev = None
+		self.dist_cur = 0
+		self.endslicedraw = None
 		self.calc_points()
 
 	def calc_points(self):
@@ -72,7 +82,14 @@ class Bezier(ASlider):
 				x += a * points[p][0]
 				y += a * points[p][1]
 
-			point =[x, y]
+			point = [x, y]
+
+			if self.pos_prev is not None:
+				self.dist_cur += diste(self.pos_prev, point)
+			self.pos_prev = point
+			if self.dist_cur > self.pixel_length:
+				break
+
 			self.pos.append(point)
 			i += step
 
@@ -233,4 +250,3 @@ if __name__ == "__main__":
 	square = np.full((2, 2, 4), 255)
 	img[y-1:y+1, x-1:x+1] = square
 	cv2.imwrite("asdf.png", img)
-

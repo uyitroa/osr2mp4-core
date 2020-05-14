@@ -1,3 +1,5 @@
+import math
+
 from CheckSystem.Health import HealthProcessor, HealthDummy
 from CheckSystem.Judgement import Check
 from collections import namedtuple
@@ -99,34 +101,47 @@ class HitObjectChecker:
 			else:
 				self.update_score(30, self.hitobjects[i]["type"], usecombo=False)
 
-			followappear = False
 			if hitresult > 0:
 				self.combo += 1
 				combostatus = 1
 				state = 2
-				followappear = True
 			else:
 				combostatus = -1
 				self.combo = 0
 
-			circle = Circle(state, deltat, followappear, "slider" in self.hitobjects[i]["type"], x, y)
-			info = Info(replay[osr_index][3], self.combo, combostatus,
-			            self.scorecounter, self.scorecounter,
-			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd, self.health_processor.health_value, circle)
-			self.info.append(info)
-
 			if "circle" in self.hitobjects[i]["type"]:
+				circle = Circle(state, deltat, False, False, x, y)
 				del self.hitobjects[i]
 				i -= 1
 			else:
+				followappear = False
 				self.hitobjects[i]["head not done"] = False
 				if hitresult != 0:
 					self.check.sliders_memory[idd]["score"] += 1
 					self.check.sliders_memory[idd]["combo"] += 1
-					if replay[osr_index][3] <= timestamp:
+
+					if replay[osr_index][3] > timestamp:
+						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i]["duration"])
+						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
+						pos, t = self.hitobjects[i]["baiser"].at(dist, True)  # TODO: what if kick slider too fast and clicked too late
+						in_ball = math.sqrt((replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= self.check.diff.max_distance
+					else:
+						in_ball = True
+					if in_ball:
 						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
+						# self.check.sliders_memory[idd]["follow state"] = True
+						followappear = True
+					else:
+						self.check.sliders_memory[idd]["dist"] = self.check.diff.max_distance
+					self.hitobjects[i]["baiser"].clear()
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
+				circle = Circle(state, deltat, followappear, True, x, y)
+
+			info = Info(replay[osr_index][3], self.combo, combostatus,
+			            self.scorecounter, self.scorecounter,
+			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd, self.health_processor.health_value, circle)
+			self.info.append(info)
 		else:
 			note_lock = True
 		return note_lock, sum_newclick, i
@@ -170,6 +185,7 @@ class HitObjectChecker:
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
+				hitresult = 300
 				self.results[hitresult] += 1
 
 				if hitresult > 0:

@@ -131,6 +131,16 @@ class Check:
 		dist = math.sqrt((rep[0] - pos[0]) ** 2 + (rep[1] - pos[1]) ** 2)
 		return dist <= slider_d["dist"] and rep[2] != 0
 
+	def closestreplay(self, replay, index, curtime):
+		prev_index = max(0, index - 1)
+		prevtime = abs(round(replay[prev_index][3]) - curtime)
+		ctime = abs(round(replay[index][3]) - curtime)
+		print(prevtime, ctime)
+		if prevtime > ctime:
+			return 0
+		else:
+			return -1
+
 
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 
@@ -142,9 +152,9 @@ class Check:
 		hasreversetick = False
 		cur_repeated = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
 		if cur_repeated > slider_d["repeated slider"]:
-			hasreversetick = osu_d["repeated"] != cur_repeated
+			hasreversetick = osu_d["repeated"] != slider_d["repeated slider"]
 
-		going_forward = slider_d["repeated slider"] % 2 == 1
+		going_forward = cur_repeated % 2 == 1
 
 		time_difference = (osr[3] - osu_d["time"]) % osu_d["duration"]
 
@@ -152,16 +162,20 @@ class Check:
 		hasendtick = time_difference > osu_d["duration"] - slider_leniency
 		hasendtick = hasendtick and osu_d["repeated"] == slider_d["repeated slider"]
 
-		if hasreversetick:
-			dist = int(not going_forward) * osu_d["pixel length"]
+		if hasreversetick:  # shrug
+			dist = int(int(not going_forward) * osu_d["pixel length"])
+			osr_index -= 1 #self.closestreplay(replay, osr_index, osu_d["time"] + osu_d["duration"] * slider_d["repeated slider"])
+			osr = replay[osr_index]
 		else:
 			delta_time = (osr[3] - osu_d["time"]) % osu_d["duration"]
 			if hasendtick:
 				delta_time = osu_d["duration"] - slider_leniency
+				osr_index -= 1 #self.closestreplay(replay, osr_index, osu_d["time"] + osu_d["duration"] - slider_leniency)
+				osr = replay[osr_index]
 			if not going_forward:
 				delta_time = osu_d["duration"] - delta_time
 
-			dist = osu_d["pixel length"] / osu_d["duration"] * delta_time
+			dist = int(osu_d["pixel length"] / osu_d["duration"] * delta_time)
 
 		baiser = osu_d["baiser"]
 		pos, t = baiser.at(dist, going_forward)
@@ -174,9 +188,9 @@ class Check:
 		slider_d["ticks index"] += tickadd
 
 
-		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)  # or self.cursor_inslider(slider_d, replay, osr_index-1, pos) or self.cursor_inslider(slider_d, replay, osr_index+1, pos)
+		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)  #or self.cursor_inslider(slider_d, replay, osr_index-1, pos) #or self.cursor_inslider(slider_d, replay, osr_index+1, pos)
 
-		# print(hasreversetick, dist, t, osr[0], osr[1], hastick, math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), pos, osr[3], osu_d["duration"], slider_d["follow state"], slider_d["repeated slider"], osu_d["repeated"])
+		# print(hasendtick, dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["duration"], pos, osr)
 
 		in_ball = tick_inball  # self.cursor_inslider(slider_d, replay, osr_index, t)
 		if in_ball:
@@ -250,7 +264,7 @@ class Check:
 				hitresult = 0
 			return True, spin_d["cur rotation"], progress, hitresult, 0, 0
 
-		spinning = osr[2] != 0
+		spinning = osr[2] != 0 # True  # osr[2] != 0
 		angle = -np.rad2deg(np.arctan2(osr[1] - self.height / 2, osr[0] - self.width / 2))
 
 		if osu_d["id"] not in self.spinners_memory:
@@ -258,6 +272,7 @@ class Check:
 			                                     "progress": 0, "extra": 0}
 
 		spin_d = self.spinners_memory[osu_d["id"]]
+		# angle = spin_d["angle"] + 30
 		if not spin_d["spinning"] and spinning:
 			spin_d["angle"] = angle
 		spin_d["spinning"] = spinning

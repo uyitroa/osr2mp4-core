@@ -232,7 +232,7 @@ class MultiBezier(_MetaCurveMixin, Curve):
             yield tail
 
 
-class Linear(_MetaCurveMixin, Curve):
+class LinearB(_MetaCurveMixin, Curve):
     """Linear curves traverse the line segments between the given points.
 
     Parameters
@@ -250,7 +250,7 @@ class Linear(_MetaCurveMixin, Curve):
         ]
 
 
-class Perfect(Curve):
+class PerfectB(Curve):
     """Perfect curves traverse the circumference of the circle that passes
     through the given points.
 
