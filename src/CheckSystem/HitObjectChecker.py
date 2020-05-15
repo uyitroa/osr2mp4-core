@@ -121,9 +121,10 @@ class HitObjectChecker:
 					self.check.sliders_memory[idd]["combo"] += 1
 
 					if replay[osr_index][3] > timestamp:
+						print(replay[osr_index], timestamp)
 						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i]["duration"])
 						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
-						pos, t = self.hitobjects[i]["baiser"].at(dist, True)  # TODO: what if kick slider too fast and clicked too late
+						pos, t = self.hitobjects[i]["baiser"].at(dist, True, alone=True)  # TODO: what if kick slider too fast and clicked too late
 						in_ball = math.sqrt((replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= self.check.diff.max_distance
 					else:
 						in_ball = True
@@ -133,7 +134,7 @@ class HitObjectChecker:
 						followappear = True
 					else:
 						self.check.sliders_memory[idd]["dist"] = self.check.diff.max_distance
-					self.hitobjects[i]["baiser"].clear()
+					# self.hitobjects[i]["baiser"].clear()
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
 				circle = Circle(state, deltat, followappear, True, x, y)
@@ -185,7 +186,6 @@ class HitObjectChecker:
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
-				hitresult = 300
 				self.results[hitresult] += 1
 
 				if hitresult > 0:

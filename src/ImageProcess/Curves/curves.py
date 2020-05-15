@@ -34,7 +34,7 @@ class Linear(ASlider):  # Because it made sense at the time...
 		endpos = l(1)
 		self.pos.append([endpos.x, endpos.y])
 
-	def at(self, dist, forward):
+	def at(self, dist, forward, alone=None):
 		t = dist/self.pixel_length
 		sum_x = (1 - t) * self.pos[0][0] + t * self.pos[-1][0]
 		sum_y = (1 - t) * self.pos[0][1] + t * self.pos[-1][1]
@@ -93,19 +93,20 @@ class Bezier(ASlider):
 			self.pos.append(point)
 			i += step
 
-	def at(self, dist, forward, debug=False):
+	def at(self, dist, forward, alone=None):
 		if forward is None:
 			t = dist/self.pixel_length
 			return self.pos[int(t * (len(self.pos)-1))], t
 
-		if debug:
-			print(self.cur_t, dist, self.cur_dist, forward, debug, len(self.pos))
-			prev = self.pos[round(self.cur_t * (len(self.pos) - 1))]
-		t, cur_dst = next_t(self.pos, self.cur_t, dist, self.cur_dist, forward, debug)
+		if alone:
+			t, cur_dst = next_t(self.pos, 0, dist, 0, forward)
+			i = round(t * (len(self.pos) - 1))
+			return self.pos[i], t
+
+		t, cur_dst = next_t(self.pos, self.cur_t, dist, self.cur_dist, forward)
 		i = round(t * (len(self.pos) - 1))
 		self.update(t, cur_dst)
-		if debug:
-			print(self.pos[i])
+
 		return self.pos[i], t
 
 	def update(self, t, dist):
@@ -178,7 +179,7 @@ class Perfect(ASlider):
 			self.pos.append(pos)
 			t += tol
 
-	def at(self, dist, forward):
+	def at(self, dist, forward, alone=None):
 		radians = dist / self.radius
 		t = dist/self.pixel_length
 		return rotate(self.cx, self.cy, self.points[0], radians), t
