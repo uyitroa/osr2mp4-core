@@ -37,8 +37,8 @@ class TestSliderfollow(unittest.TestCase):
 	def setUpClass(cls):
 		cls.tests = []
 		cls.custom = []
-		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
-		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		Settings.timeframe = 1000
 		Settings.fps = 60
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
@@ -60,6 +60,10 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("../test/resources/", "75yomi", True))
 		cls.custom.append(getinfos("../test/resources/", "76yomi", True))
 		cls.custom.append(getinfos("../test/resources/", "77yomi", True))
+		cls.custom.append(getinfos("../test/resources/", "72tool"))
+		cls.custom.append(getinfos("../test/resources/", "73tool"))
+		cls.custom.append(getinfos("../test/resources/", "74tool"))
+		cls.custom.append(getinfos("../test/resources/", "75tool"))
 
 
 	def test_sliderfollow(self):
