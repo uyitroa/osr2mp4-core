@@ -21,11 +21,11 @@ def get_offset(beatmap, start_index, end_index, replay_event):
 def find_time(starttime, endtime, replay, replay_start):
 
 	starttime *= 1000
-	starttime += replay_start
+	# starttime += replay_start
 
 	if endtime != -1:
 		endtime *= 1000
-		endtime += replay_start
+		# endtime += replay_start
 
 	startindex = None
 	endindex = len(replay) - 3

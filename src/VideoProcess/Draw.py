@@ -1,5 +1,7 @@
 import time
 
+import cv2
+
 from EEnum.EReplay import Replays
 from VideoProcess.Setup import setup_global, setup_draw
 from VideoProcess.calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
@@ -38,7 +40,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.mouse1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(446 * Settings.scale))
 	component.mouse2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(492 * Settings.scale))
 	component.followpoints.add_to_frame(img, frame_info.cur_time)
-	component.hitobjmanager.add_to_frame(img)
+	component.hitobjmanager.add_to_frame(img, np_img)
 	component.hitresult.add_to_frame(img)
 	component.spinbonus.add_to_frame(img)
 	component.combocounter.add_to_frame(img)
@@ -53,6 +55,10 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 
 	frame_info.cur_time += Settings.timeframe / Settings.fps
+
+	# print(cursor_event.event[Replays.CURSOR_X], cursor_event.event[Replays.CURSOR_Y])
+	# cv2.putText(np_img, str(cursor_event.event[Replays.CURSOR_X]) + " " + str(cursor_event.event[Replays.CURSOR_Y]), (100, 100),
+	#             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)
 
 
 	# choose correct osr index for the current time because in osr file there might be some lag

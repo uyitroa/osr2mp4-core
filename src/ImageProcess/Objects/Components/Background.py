@@ -30,7 +30,7 @@ class Background(FrameObject):
 	def add_to_frame(self, background, np, cur_time):
 
 		if cur_time <= self.map_start:
-			i = max(0, min(1, (1 - (cur_time+1000)/(self.map_start+1000))))
+			i = max(0, min(1, (self.map_start - cur_time)/1000))
 			self.frame_index = round(i * len(self.frames) - 1)
 			self.starting = True
 		elif self.starting:

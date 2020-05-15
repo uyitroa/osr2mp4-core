@@ -1,4 +1,6 @@
-from CheckSystem.Health import HealthProcessor
+import math
+
+from CheckSystem.Health import HealthProcessor, HealthDummy
 from CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
@@ -12,7 +14,7 @@ Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, mod=1):
+	def __init__(self, beatmap, mod=1, tests=False):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -42,8 +44,10 @@ class HitObjectChecker:
 
 		self.info = []
 		self.starthitobjects = 0
-
-		self.health_processor = HealthProcessor(beatmap)
+		if not tests:
+			self.health_processor = HealthProcessor(beatmap)
+		else:
+			self.health_processor = HealthDummy(beatmap)
 		beatmap.health_processor = self.health_processor
 		self.drainrate = self.health_processor.drain_rate
 		self.health_value = 1
@@ -77,6 +81,7 @@ class HitObjectChecker:
 
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index, sum_newclick, self.combo)
+		update = update and (deltat > 0 or abs(deltat) <= self.time_preempt)
 		if update:
 			state = 0
 			sum_newclick = max(0, sum_newclick - reduceclick)
@@ -96,34 +101,43 @@ class HitObjectChecker:
 			else:
 				self.update_score(30, self.hitobjects[i]["type"], usecombo=False)
 
-			followappear = False
 			if hitresult > 0:
 				self.combo += 1
 				combostatus = 1
 				state = 2
-				followappear = True
 			else:
 				combostatus = -1
 				self.combo = 0
 
-			circle = Circle(state, deltat, followappear, "slider" in self.hitobjects[i]["type"], x, y)
-			info = Info(replay[osr_index][3], self.combo, combostatus,
-			            self.scorecounter, self.scorecounter,
-			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd, self.health_processor.health_value, circle)
-			self.info.append(info)
-
 			if "circle" in self.hitobjects[i]["type"]:
+				circle = Circle(state, deltat, False, False, x, y)
 				del self.hitobjects[i]
 				i -= 1
 			else:
+				followappear = False
 				self.hitobjects[i]["head not done"] = False
 				if hitresult != 0:
 					self.check.sliders_memory[idd]["score"] += 1
 					self.check.sliders_memory[idd]["combo"] += 1
-					if replay[osr_index][3] <= timestamp:
+
+					if replay[osr_index][3] > timestamp:
+						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i]["duration"])
+						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
+						pos, t = self.hitobjects[i]["baiser"].at(dist, True, alone=True)  # TODO: what if kick slider too fast and clicked too late
+						in_ball = math.sqrt((replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= self.check.sliders_memory[idd]["dist"]
+					else:
+						in_ball = True
+					if in_ball:
 						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
+						followappear = True
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
+				circle = Circle(state, deltat, followappear, True, x, y)
+
+			info = Info(replay[osr_index][3], self.combo, combostatus,
+			            self.scorecounter, self.scorecounter,
+			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd, self.health_processor.health_value, circle)
+			self.info.append(info)
 		else:
 			note_lock = True
 		return note_lock, sum_newclick, i
@@ -132,6 +146,7 @@ class HitObjectChecker:
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend = self.check.checkslider(i, replay, osr_index)
 
 		if update:
+			# print(hitvalue, len(self.info), timestamp)
 			self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 			if hitresult is not None:
 				self.results[hitresult] += 1
@@ -166,6 +181,7 @@ class HitObjectChecker:
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
+				hitresult = 300
 				self.results[hitresult] += 1
 
 				if hitresult > 0:

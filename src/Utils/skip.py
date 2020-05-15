@@ -8,6 +8,8 @@ def search_time(to_time, hitobjects):
 
 
 def search_updateindex(idd, resultinfo, component):
+	if idd == -1:
+		return len(resultinfo)-1
 	cur_index = 0
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].id != idd:
 		cur_index += 1

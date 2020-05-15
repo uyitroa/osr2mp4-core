@@ -14,6 +14,22 @@ def sign(a):
 		return -1
 
 
+class HealthDummy:
+	def __init__(self, _, __=None):
+		self.health_value = 1
+		self.drain_rate = 1
+
+
+	def compute_drainrate(self):
+		pass
+
+	def updatehp(self, _, __):
+		pass
+
+	def drainhp(self, _, __, ___):
+		pass
+
+
 class HealthProcessor:
 	def __init__(self, beatmap, drainrate=None):
 		self.multiplier = {0: -1, 50: -0.05, 105: 0.2, 15: 0.35, 35: 0.5, 100: 0.5, 300: 1}
@@ -50,7 +66,8 @@ class HealthProcessor:
 		adjustment = 1
 		result = 1
 
-		while adjustment > 0:
+		limit = 2**30
+		while adjustment < limit:
 			currentHealth = 1
 			lowestHealth = 1
 			currentbreak = -1

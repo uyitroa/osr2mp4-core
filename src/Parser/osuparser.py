@@ -3,7 +3,10 @@ import re
 
 from CheckSystem.Health import HealthProcessor
 from CheckSystem.Judgement import DiffCalculator
-from ImageProcess.Curves.curve import Curve
+from ImageProcess.Curves.adjustcurve import next_t
+from ImageProcess.Curves.curve2 import Curve
+from ImageProcess.Curves.curves import getclass
+from ImageProcess.Curves.generate_slider import GenerateSlider
 from ImageProcess.Curves.position import Position
 
 
@@ -38,7 +41,7 @@ class Beatmap:
 		# timepreempt = int(diffcalculator.ar() + 500)
 		self.breakperiods.append({"Start": endtime_fp, "End": endtime_fp})
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
-		                           "type": ["end"]})  # to avoid index out of range
+		                           "type": ["end"], "id": -1})  # to avoid index out of range
 
 		self.health_processor = None
 
@@ -190,10 +193,12 @@ class Beatmap:
 					pos = pos.split(":")
 					if self.hr:
 						pos[1] = 384 - int(pos[1])
-					ps.append(Position(int(pos[0]), int(pos[1])))
+					ps.append([int(pos[0]), int(pos[1])])
 				my_dict["ps"] = ps
 				my_dict["slider type"] = slider_type
 				my_dict["pixel length"] = float(osuobject[7])
+				baiser = getclass(slider_type, ps, my_dict["pixel length"])
+				my_dict["baiser"] = baiser
 
 				my_dict["stacking"] = 0
 
@@ -202,26 +207,30 @@ class Beatmap:
 						100 * self.diff["SliderMultiplier"])
 				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
 
-				baiser = Curve.from_kind_and_points(my_dict["slider type"], ps, my_dict["pixel length"])
 				end_goingforward = my_dict["repeated"] % 2 == 1
-				endpos = baiser(int(end_goingforward))
-				my_dict["end x"] = int(endpos.x)
-				my_dict["end y"] = int(endpos.y)
+				endpos, _ = baiser.at(int(end_goingforward) * my_dict["pixel length"], None)
+				my_dict["end x"] = int(endpos[0])
+				my_dict["end y"] = int(endpos[1])
 
 				my_dict["slider ticks"] = []
 				my_dict["ticks pos"] = []
-				my_dict["arrow pos"] = baiser(1)
+				my_dict["arrow pos"], _ = baiser.at(my_dict["pixel length"], None)
 				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
 				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
 
+				my_dict["ticks dist"] = []
 				d = tickdistance
 				while d < my_dict["pixel length"] - mindist_fromend:
-					pathprogress = d / my_dict["pixel length"]
-					my_dict["slider ticks"].append(pathprogress)
-					my_dict["ticks pos"].append(baiser(round(pathprogress, 3)))
+					pos, t = baiser.at(d, True)
+					my_dict["slider ticks"].append(t)
+					my_dict["ticks pos"].append(pos)
+					my_dict["ticks dist"].append(d)
 					d += tickdistance
+				# print(len(my_dict["slider ticks"]))
+
+				baiser.clear()
 
 				if len(osuobject) > 9:
 					my_dict["edgeSounds"] = osuobject[8]
@@ -306,7 +315,9 @@ def split(delimiters, string):
 
 
 def read_file(filename, scale, colors, hr):
-		content = open(filename, "r", encoding="utf-8").read()
-		delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
-		info = split(delimiters, content)
-		return Beatmap(info, scale, colors, hr)
+	fiel = open(filename, "r", encoding="utf-8")
+	content = fiel.read()
+	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
+	info = split(delimiters, content)
+	fiel.close()
+	return Beatmap(info, scale, colors, hr)

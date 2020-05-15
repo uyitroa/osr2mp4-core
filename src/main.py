@@ -35,11 +35,11 @@ def main():
 
 	upsidedown = Mod.HardRock in replay_info.mod_combination
 	hd = Mod.Hidden in replay_info.mod_combination
+	print(replay_info.timestamp)
 
 	setupglobals(data, replay_info)
 
 	beatmap_file = get_osu(Paths.beatmap, replay_info.beatmap_hash)
-
 
 	beatmap = read_file(beatmap_file, Settings.playfieldscale, SkinPaths.skin_ini.colours, upsidedown)
 
@@ -47,8 +47,8 @@ def main():
 
 	start_index, end_index = find_time(start_time, end_time, replay_event, cur_time)
 
-	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
 
+	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
 
 	offset, endtime = get_offset(beatmap, start_index, end_index, replay_event)
 

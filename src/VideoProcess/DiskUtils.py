@@ -25,10 +25,10 @@ def cleanup():
 			os.system('{} "{}"'.format(rm_command, f))
 	except FileNotFoundError:
 		pass
-
-	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	os.system('{} "{}"'.format(rm_command, f))
-	os.system('{} z.mp3'.format(rm_command))
+	#
+	# f = Paths.output[:-4] + "f" + Paths.output[-4:]
+	# os.system('{} "{}"'.format(rm_command, f))
+	# os.system('{} z.mp3'.format(rm_command))
 
 
 def mix_video_audio():

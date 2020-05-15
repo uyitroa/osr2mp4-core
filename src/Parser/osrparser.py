@@ -16,7 +16,7 @@ def setupReplay(osrfile, beatmap):
 	start_time = beatmap.start_time
 
 	total_time = 0
-	start_index = 0
+	start_index = 1
 
 	start_osr = start_time - 3000
 
@@ -29,7 +29,7 @@ def setupReplay(osrfile, beatmap):
 		# end_index += 1
 
 		if total_time < start_osr:
-			start_index = index + 1  # to crop later, everything before we can ignore
+			start_index += + 1  # to crop later, everything before we can ignore
 			continue
 
 		replay_data[index] = [None, None, None, None]
