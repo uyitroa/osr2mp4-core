@@ -189,7 +189,7 @@ class Check:
 
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)  #or self.cursor_inslider(slider_d, replay, osr_index-1, pos) #or self.cursor_inslider(slider_d, replay, osr_index+1, pos)
 
-		print(hasreversetick, slider_d["tickend"], dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["time"], osr[3] + slider_leniency, pos, osr, osu_d["repeated"], osu_d["duration"])
+		print(hasendtick, slider_d["tickend"], dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["time"], osr[3] + slider_leniency, pos, osr, osu_d["duration"])
 
 		in_ball = tick_inball  # self.cursor_inslider(slider_d, replay, osr_index, t)
 		if in_ball:

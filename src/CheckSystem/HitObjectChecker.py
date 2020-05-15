@@ -132,8 +132,6 @@ class HitObjectChecker:
 						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
 						# self.check.sliders_memory[idd]["follow state"] = True
 						followappear = True
-					else:
-						self.check.sliders_memory[idd]["dist"] = self.check.diff.max_distance
 					# self.hitobjects[i]["baiser"].clear()
 				elif hitresult == 0:
 					self.check.sliders_memory[idd]["combo"] = 0
