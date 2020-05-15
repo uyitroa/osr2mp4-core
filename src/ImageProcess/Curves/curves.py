@@ -103,7 +103,7 @@ class Bezier(ASlider):
 			return self.pos[int(t * (len(self.pos)-1))], t
 
 		if alone:
-			t, cur_dst = next_t(self.pos, 0, dist, 0, forward)
+			t, cur_dst = next_t(self.pos, int(not forward), dist, int(not forward) * self.pixel_length, forward)
 			i = round(t * (len(self.pos) - 1))
 			return self.pos[i], t
 

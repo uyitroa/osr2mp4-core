@@ -35,6 +35,7 @@ def getinfos(path, mapname, upsidedown=False):
 class TestSliderfollow(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
+		cls.real = []
 		cls.tests = []
 		cls.custom = []
 		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1]
@@ -45,12 +46,9 @@ class TestSliderfollow(unittest.TestCase):
 		cls.tests.append(getinfos("../test/resources/", "tool"))
 		cls.tests.append(getinfos("../test/resources/", "2tool"))
 		cls.tests.append(getinfos("../test/resources/", "2yomi"))
-		cls.tests.append(getinfos("../test/resources/", "3yomi"))
+		# cls.tests.append(getinfos("../test/resources/", "3yomi"))
 		cls.tests.append(getinfos("../test/resources/", "4yomi"))
-		cls.tests.append(getinfos("../test/resources/", "realtool"))
-		cls.tests.append(getinfos("../test/resources/", "realyomi", True))
-		cls.tests.append(getinfos("../test/resources/", "realkikoku"))
-		# cls.tests.append(getinfos("../test/resources/", "realmagnolia"))
+
 		cls.custom.append(getinfos("../test/resources/", "69tool"))
 		cls.custom.append(getinfos("../test/resources/", "69yomi", True))
 		cls.custom.append(getinfos("../test/resources/", "70tool"))
@@ -71,6 +69,11 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("../test/resources/", "76tool"))
 		cls.custom.append(getinfos("../test/resources/", "72kikoku"))
 
+		cls.real.append(getinfos("../test/resources/", "realtool"))
+		cls.real.append(getinfos("../test/resources/", "realyomi", True))
+		cls.real.append(getinfos("../test/resources/", "realkikoku"))
+		cls.real.append(getinfos("../test/resources/", "realmagnolia"))
+
 
 	def test_sliderfollow(self):
 		for i in range(len(self.tests)):
@@ -89,6 +92,15 @@ class TestSliderfollow(unittest.TestCase):
 				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg="custom replay {} case {}".format(str(x), str(i)))
 				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg="custom replay {} case {}".format(str(x), str(i)))
 
+
+	def test_real(self):
+		for i in range(len(self.real)):
+			case = self.real[i]
+			for x in range(len(case[1])):
+				resultinfo = checkmain(case[0], case[2][x], case[1][x], 0, True)
+				self.assertEqual(case[2][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
+				self.assertEqual(case[2][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
+				self.assertEqual(case[2][x].number_50s, resultinfo[-1].accuracy[50], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
 
 
 
