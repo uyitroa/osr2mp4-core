@@ -168,11 +168,6 @@ class Check:
 
 
 		delta_time = (osr[3] - osu_d["time"]) % osu_d["duration"]
-		# if hasendtick:
-		# 	if osr[3] + slider_leniency > int(osu_d["end time"]):
-		# 		osr_index -= 1
-		# 		osr = replay[osr_index]
-		# 	delta_time = max(0, osu_d["duration"] - slider_leniency)
 		if not going_forward:
 			delta_time = osu_d["duration"] - delta_time
 		dist = osu_d["pixel length"] / osu_d["duration"] * delta_time
