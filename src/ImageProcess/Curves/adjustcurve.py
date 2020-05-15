@@ -5,7 +5,7 @@ def diste(pos1, pos2):
 	return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
 
 
-def next_t(curve, prev_t, distance, cur_dist, going_forward, debug=False, precise=False):
+def next_t(curve, prev_t, distance, cur_dist, going_forward, precise=False):
 	"""
 	Slider should have the same speed but right now with the current Bezier at() method it doesn't have the same speed bezier(0)-bezier(0.1) and bezier(0.5-0.6)
 	:param curve: list of position
@@ -35,11 +35,6 @@ def next_t(curve, prev_t, distance, cur_dist, going_forward, debug=False, precis
 			break
 		cur_dist += diste(curve[prev_t], curve[i]) * sign
 		prev_t = i
-		if debug:
-			print(i, prev_t, cur_dist, going_forward, distance, cur_dist - prev_dist)
-
-	if debug:
-		print(prev_t, i, cur_dist, distance, diste(curve[prev_t], curve[i]))
 
 	if precise:
 		pass

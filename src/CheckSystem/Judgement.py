@@ -168,8 +168,8 @@ class Check:
 			#osr = replay[osr_index]
 		else:
 			delta_time = (osr[3] - osu_d["time"]) % osu_d["duration"]
-			if hasendtick:
-				delta_time = max(0, osu_d["duration"] - slider_leniency)
+			# if hasendtick:
+			# 	delta_time = max(0, osu_d["duration"] - slider_leniency)
 				#osr_index -= 1 #self.closestreplay(replay, osr_index, osu_d["time"] + osu_d["duration"] - slider_leniency)
 				#osr = replay[osr_index]
 			if not going_forward:
@@ -189,7 +189,7 @@ class Check:
 
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)  #or self.cursor_inslider(slider_d, replay, osr_index-1, pos) #or self.cursor_inslider(slider_d, replay, osr_index+1, pos)
 
-		print(hasendtick, slider_d["tickend"], dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["time"], osr[3] + slider_leniency, pos, osr, osu_d["duration"])
+		# print(hasendtick, slider_d["tickend"], dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["time"], osr[3], pos, osr, osu_d["duration"], replay[osr_index + 1])
 
 		in_ball = tick_inball  # self.cursor_inslider(slider_d, replay, osr_index, t)
 		if in_ball:

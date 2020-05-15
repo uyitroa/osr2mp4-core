@@ -73,10 +73,15 @@ class Bezier(ASlider):
 		step = 0.25/constants.SLIDER_QUALITY/order  # Normaly 0.0025
 		i = 0
 		n = order - 1
+		reachend = False
 		while i < 1 + step:
+			# if reachend:
+			# 	break
+			# if i >= 1:
+			# 	i = 1
+			# 	reachend = True
 			x = 0
 			y = 0
-
 			for p in range(n + 1):
 				a = mathhelper.cpn(p, n) * pow((1 - i), (n - p)) * pow(i, p)
 				x += a * points[p][0]
@@ -89,7 +94,6 @@ class Bezier(ASlider):
 			self.pos_prev = point
 			if self.dist_cur > self.pixel_length:
 				break
-
 			self.pos.append(point)
 			i += step
 

@@ -121,7 +121,6 @@ class HitObjectChecker:
 					self.check.sliders_memory[idd]["combo"] += 1
 
 					if replay[osr_index][3] > timestamp:
-						print(replay[osr_index], timestamp)
 						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i]["duration"])
 						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
 						pos, t = self.hitobjects[i]["baiser"].at(dist, True, alone=True)  # TODO: what if kick slider too fast and clicked too late
@@ -184,6 +183,7 @@ class HitObjectChecker:
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
+				hitresult = 300
 				self.results[hitresult] += 1
 
 				if hitresult > 0:
