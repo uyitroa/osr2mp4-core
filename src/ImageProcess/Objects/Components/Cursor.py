@@ -19,6 +19,8 @@ class Cursortrail(FrameObject):
 		self.continuous = continuous
 		self.radius = Settings.scale * 3
 		self.alphas = []  # for continuous trail
+		self.updatetime = Settings.timeframe/Settings.fps/2
+		self.oldtime = 0
 		if self.continuous:
 			self.frame_index = len(self.frames) - 2
 			self.trail = (0, 0)
@@ -28,15 +30,23 @@ class Cursortrail(FrameObject):
 		self.timer = 0
 		self.timer2 = 0
 
-	def set_cursor(self, cursor_x, cursor_y):
+	def set_cursor(self, cursor_x, cursor_y, cursor_time):
 		if self.continuous:
 			return
 		self.trail = [[cursor_x, cursor_y] for _ in range(len(self.frames))]
+		self.oldtime = cursor_time
 
-	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
+	def add_to_frame(self, background, x_offset, y_offset, cursor_time, alpha=1):
 		# snake algorithm, previous takes the next's one place, etc... the first one takes (x_offset, y_offset) pos.
 		if not self.continuous:
-			self.trail[-1][0], self.trail[-1][1] = x_offset, y_offset
+			deltat = cursor_time - self.oldtime
+			if deltat < self.updatetime:
+				update = False
+			else:
+				update = True
+				self.oldtime = cursor_time
+				self.trail[-1][0], self.trail[-1][1] = x_offset, y_offset
+
 			for x in range(len(self.trail) - 1):
 				self.trail[x][0], self.trail[x][1] = self.trail[x + 1][0], self.trail[x + 1][1]
 				self.frame_index = x

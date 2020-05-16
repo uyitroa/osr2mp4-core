@@ -1,8 +1,7 @@
 import time
 
-import cv2
-
 from EEnum.EReplay import Replays
+from VideoProcess.smoothing import smoothcursor
 from VideoProcess.Setup import setup_global, setup_draw
 from VideoProcess.calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
 from global_var import Settings
@@ -47,7 +46,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.scorecounter.add_to_frame(img, cursor_event.event[Replays.TIMES])
 	component.accuracy.add_to_frame(img)
 	component.urbar.add_to_frame(img)
-	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y)
+	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y, cursor_event.event[Replays.TIMES])
 	component.cursor.add_to_frame(img, cursor_x, cursor_y)
 	component.cursormiddle.add_to_frame(img, cursor_x, cursor_y)
 	component.sections.add_to_frame(img)
@@ -62,8 +61,12 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 
 	# choose correct osr index for the current time because in osr file there might be some lag
-	frame_info.osr_index += nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
-	cursor_event.event = replay_event[frame_info.osr_index]
+	tt = nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
+	if tt == 0:
+		cursor_event.event = smoothcursor(replay_event, frame_info.osr_index, cursor_event)
+	else:
+		frame_info.osr_index += tt
+		cursor_event.event = replay_event[frame_info.osr_index]
 	return img.size[0] != 1
 
 

@@ -69,7 +69,7 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 
 	component = FrameObjects(frames, skin, beatmap, diffcalculator, hd)
 
-	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y)
+	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 
 	preempt_followpoint = 800
 
