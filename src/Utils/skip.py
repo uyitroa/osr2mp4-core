@@ -16,7 +16,7 @@ def search_updateindex(idd, resultinfo, component):
 	# cur_index = max(0, cur_index - 1)
 	if cur_index == 0:
 		return 0
-	info = resultinfo[cur_index]
+	info = resultinfo[max(0, cur_index-1)]
 	component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
 	component.accuracy.set_acc(info.accuracy)
 	component.combocounter.set_combo(info.combo)
