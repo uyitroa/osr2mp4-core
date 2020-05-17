@@ -64,18 +64,19 @@ class Beatmap:
 				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
 
 	def parse_event(self):
-		event = self.info[5]
-		event = event.split("//")
-		self.bg = event[1].split("\n")[1].split(",")
-		self.bg[2] = self.bg[2].replace('"', '')
+		event = self.info[5].split("\n")
 
-		breakperiods = event[2].split("\n")[1:-1]
-		for period in breakperiods:
-			my_dict = {}
-			items = period.split(",")
-			my_dict["Start"] = int(items[1])
-			my_dict["End"] = int(items[2])
-			self.breakperiods.append(my_dict)
+		for line in event:
+			if line.startswith("0"):
+				self.bg = line.split(",")
+				self.bg[2] = self.bg[2].replace('"', '')
+				print(self.bg)
+			if line.startswith("2"):
+				my_dict = {}
+				items = line.split(",")
+				my_dict["Start"] = int(items[1])
+				my_dict["End"] = int(items[2])
+				self.breakperiods.append(my_dict)
 
 	def parse_timingpoints(self):
 		timing = self.info[6]

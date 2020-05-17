@@ -13,7 +13,10 @@ def search_updateindex(idd, resultinfo, component):
 	cur_index = 0
 	while cur_index <= len(resultinfo)-1 and resultinfo[cur_index].id != idd:
 		cur_index += 1
-	info = resultinfo[max(0, cur_index-1)]
+	# cur_index = max(0, cur_index - 1)
+	if cur_index == 0:
+		return 0
+	info = resultinfo[cur_index]
 	component.scorecounter.set_score(resultinfo[cur_index].time, info.score, info.showscore)
 	component.accuracy.set_acc(info.accuracy)
 	component.combocounter.set_combo(info.combo)
@@ -23,7 +26,7 @@ def search_updateindex(idd, resultinfo, component):
 	component.key2.set_freeze(resultinfo[cur_index].time, info.clicks[1])
 	component.mouse1.set_freeze(resultinfo[cur_index].time, info.clicks[2])
 	component.mouse2.set_freeze(resultinfo[cur_index].time, info.clicks[3])
-	urindex = max(0, cur_index-1)
+	urindex = cur_index
 	diff = 0
 	while diff < 3400:
 		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
