@@ -69,7 +69,7 @@ class Check:
 			                                    "repeated slider": 1, "repeat checked": 0, "ticks index": 0,
 			                                    "done": False,
 			                                    "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0,
-			                                    "combo": combo, "added": False}
+			                                    "combo": combo}
 
 		if dist <= self.diff.max_distance and clicked:
 			update_hitobj = True
@@ -93,22 +93,24 @@ class Check:
 
 		slider_d = self.sliders_memory[osu_d["id"]]
 
-		followappear = False
 		hitvalue = combostatus = 0
-		prev_state = slider_d["follow state"]
+		followappear = prev_state = slider_d["follow state"]
 
 		if osu_d["end time"] > osr[3] > osu_d["time"]:
 			if slider_d["last osr index"] == -1:
 				slider_d["last osr index"] = osrindex - 1
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, replay, osrindex, slider_d)
-		elif osr[3] > osu_d["time"] - self.diff.score[2]/2:
+		elif osu_d["time"] - self.diff.score[2]/2 < osr[3] <= osu_d["time"]:
 			pos, _ = osu_d["baiser"].at(0, True, alone=True)
 			in_ball = self.cursor_inslider(slider_d, replay, osrindex, pos)
 			if in_ball:
 				slider_d["dist"] = self.diff.slidermax_distance
+			else:
+				slider_d["dist"] - self.diff.max_distance
 
-		if osr[3] > osu_d["end time"] and not slider_d["added"]:
-			slider_d["added"] = True
+		updatefollow = followappear != slider_d["follow state"]
+
+		if osr[3] > osu_d["end time"]:
 			if slider_d["score"] == 0:
 				hitresult = 0
 			elif slider_d["score"] < slider_d["max score"] / 2:
@@ -122,13 +124,13 @@ class Check:
 				print("what", slider_d["score"], slider_d["max score"])
 
 			return True, hitresult, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], \
-			       False, hitvalue, combostatus, slider_d["tickend"]
+			       False, hitvalue, combostatus, slider_d["tickend"], True
 
 		if followappear != prev_state or hitvalue != 0:
 			slider_d["follow state"] = followappear
-			return True, None, osu_d["time"], osu_d["id"], 0, 0, followappear, hitvalue, combostatus, 0
+			return True, None, osu_d["time"], osu_d["id"], 0, 0, followappear, hitvalue, combostatus, 0, updatefollow
 
-		return False, None, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], False, hitvalue, combostatus, 0
+		return False, None, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], followappear, hitvalue, combostatus, 0, False
 
 	def cursor_inslider(self, slider_d, replay, osr_index, pos):
 		osr_index = max(0, min(len(replay)-1, osr_index))
@@ -151,7 +153,7 @@ class Check:
 		osr = replay[osr_index]
 
 		if slider_d["done"]:
-			return False, 0, 0
+			return slider_d["follow state"], 0, 0
 
 		hasreversetick = False
 		cur_repeated = math.ceil((osr[3] - osu_d["time"]) / osu_d["duration"])
@@ -196,11 +198,7 @@ class Check:
 		touchend = hasendtick and tick_inball
 		touchreverse = hasreversetick and tick_inball
 
-		if touchtick == touchend and touchend:
-			print(tickt, t, dist, osu_d["slider ticks"][slider_d["ticks index"]-1])
-			print("true fuck")
-
-		slider_d["max score"] += hastick or hasendtick or hasreversetick
+		slider_d["max score"] += hastick + hasendtick + hasreversetick
 
 		slider_d["done"] = osr[3] + slider_leniency >= int(osu_d["end time"]) and osu_d["repeated"] == slider_d["repeated slider"]
 		slider_d["repeat checked"] += hasendtick or (int(hasreversetick) * (cur_repeated - slider_d["repeated slider"]))
@@ -209,11 +207,12 @@ class Check:
 
 		if touchtick or touchend or touchreverse:
 			hitvalue = touchtick * 10
-			hitvalue += (touchend or touchreverse) * 30
+			hitvalue += (touchend + touchreverse) * 30
 			slider_d["tickend"] = touchend or slider_d["tickend"]
 			# hitvalue *= not slider_d["done"]
-			slider_d["score"] += touchtick or touchend or touchreverse
-			return in_ball, hitvalue, int(touchend or touchtick or touchreverse)
+			slider_d["score"] += touchtick + touchend + touchreverse
+			# touchend and touchreverse can be true both same time in case slider is too fast
+			return in_ball, hitvalue, touchend + touchtick + touchreverse
 
 		return in_ball, 0, -((hastick and not touchtick) or (hasreversetick and not touchreverse))
 
