@@ -29,7 +29,7 @@ class ComboCounter(FrameObject):
 		self.animate = False
 		self.combofadeout = 0
 
-	def add_combo(self):
+	def add_combo(self, combo=None):
 		if self.breaking:
 			self.combo = 0
 		if self.adding:
@@ -42,7 +42,10 @@ class ComboCounter(FrameObject):
 		self.adding = True
 
 		self.fadeout_index = 0
-		self.combofadeout += 1
+		if combo is None:
+			self.combofadeout += 1
+		else:
+			self.combofadeout = combo
 
 	def get_combo(self):
 		return max(0, self.combofadeout-1)
@@ -58,7 +61,7 @@ class ComboCounter(FrameObject):
 		return x, x_offset, y_offset
 
 	def draw_combo(self, combo, background, frames, index):
-		x = 0
+		x = 10 * Settings.scale
 		for digit in str(combo):
 			digit = int(digit)
 			img = frames[digit][int(index)]

@@ -8,7 +8,7 @@ class Updater:
 
 	def process_combo(self):
 		if self.info.combostatus == 1:
-			self.component.combocounter.add_combo()
+			self.component.combocounter.add_combo(combo=self.info.combo)
 		elif self.info.combostatus == -1:
 			self.component.combocounter.breakcombo()
 
@@ -17,7 +17,7 @@ class Updater:
 		if objtype == "Circle":
 			idd = str(self.info.id) + "c"
 			x, y = self.info.more.x, self.info.more.y
-			if self.info.more.state == 1:
+			if self.info.more.state == 1 and self.info.more.sliderhead is False:
 				self.component.hitobjmanager.notelock_circle(idd)
 			elif self.info.more.state == 2:
 				self.component.hitobjmanager.fadeout_circle(idd)
@@ -58,18 +58,6 @@ class Updater:
 			if objtype != "Slider" or self.info.more.tickend:
 				self.component.scorecounter.update_score(self.info.score)
 
-			# if self.info.hitresult == 0:
-			# 	key = idd
-			# 	if key not in self.component.hitobjmanager.hitobjects:
-			# 		return
-			#
-			# 	del self.component.hitobjmanager.objecttype[self.component.hitobjmanager.hitobjects[key][0]][1][key]
-			#
-			# 	if self.component.hitobjmanager.hitobjects[key][0] == 1:  # slider
-			# 		del self.component.hitobjmanager.slider_manager.arrows[key]
-			#
-			# 	del self.component.hitobjmanager.hitobjects[key]
-			# 	del self.component.hitobjmanager.objtime[i]
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
