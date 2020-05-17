@@ -70,7 +70,6 @@ class Beatmap:
 			if line.startswith("0"):
 				self.bg = line.split(",")
 				self.bg[2] = self.bg[2].replace('"', '')
-				print(self.bg)
 			if line.startswith("2"):
 				my_dict = {}
 				items = line.split(",")
@@ -183,9 +182,8 @@ class Beatmap:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
 				my_dict["head not done"] = True  # for judgement
-				# self.sliderimg[my_dict["time"]], my_dict["x offset"], my_dict["y offset"] = self.gs.get_slider_img(item)
 
-				ps = [Position(my_dict["x"], my_dict["y"])]
+				ps = [[my_dict["x"], my_dict["y"]]]
 				slider_path = osuobject[5]
 				slider_path = slider_path.split("|")
 				slider_type = slider_path[0]

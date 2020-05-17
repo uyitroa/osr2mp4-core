@@ -69,7 +69,7 @@ class Check:
 			                                    "repeated slider": 1, "repeat checked": 0, "ticks index": 0,
 			                                    "done": False,
 			                                    "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0,
-			                                    "combo": combo}
+			                                    "combo": combo, "added": False}
 
 		if dist <= self.diff.max_distance and clicked:
 			update_hitobj = True
@@ -92,6 +92,7 @@ class Check:
 		osu_d = self.hitobjects[index]
 
 		slider_d = self.sliders_memory[osu_d["id"]]
+
 		followappear = False
 		hitvalue = combostatus = 0
 		prev_state = slider_d["follow state"]
@@ -100,13 +101,14 @@ class Check:
 			if slider_d["last osr index"] == -1:
 				slider_d["last osr index"] = osrindex - 1
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, replay, osrindex, slider_d)
-		elif osr[3] > osu_d["time"] - self.diff.score[0]/2:
+		elif osr[3] > osu_d["time"] - self.diff.score[2]/2:
 			pos, _ = osu_d["baiser"].at(0, True, alone=True)
 			in_ball = self.cursor_inslider(slider_d, replay, osrindex, pos)
 			if in_ball:
 				slider_d["dist"] = self.diff.slidermax_distance
 
-		if osr[3] > osu_d["end time"]:
+		if osr[3] > osu_d["end time"] and not slider_d["added"]:
+			slider_d["added"] = True
 			if slider_d["score"] == 0:
 				hitresult = 0
 			elif slider_d["score"] < slider_d["max score"] / 2:

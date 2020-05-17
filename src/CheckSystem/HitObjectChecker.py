@@ -54,7 +54,7 @@ class HitObjectChecker:
 
 	def difficulty_multiplier(self):
 		points = int(self.diff["BaseOverallDifficulty"] + self.diff["BaseHPDrainRate"] + self.diff["BaseCircleSize"] + self.diff["BaseApproachRate"])
-		points -= int(self.diff["BaseApproachRate"]+1)
+		points -= int(self.diff["BaseApproachRate"]+1)  # math.ceil but cooler
 		if points in range(0, 6):
 			return 2
 		if points in range(6, 13):
@@ -67,12 +67,10 @@ class HitObjectChecker:
 
 	def update_score(self, hitresult, objtype, usecombo=True, combo=None):
 		# Always update score after updating combo
-		print(self.scorecounter)
 		if usecombo:
 			if combo is None:
 				combo = self.combo - 2
 			combo = max(0, combo)
-			print(hitresult, (hitresult * ((combo * self.diff_multiplier * self.mod) / 25)), combo, self.mod, self.diff_multiplier)
 			self.scorecounter += int(hitresult + (hitresult * ((combo * self.diff_multiplier * self.mod) / 25)))
 		else:
 			self.scorecounter += int(hitresult)
@@ -85,6 +83,7 @@ class HitObjectChecker:
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index, sum_newclick, self.combo)
 		update = update and (deltat > 0 or abs(deltat) <= self.time_preempt)
+
 		if update:
 			state = 0
 			sum_newclick = max(0, sum_newclick - reduceclick)
@@ -112,12 +111,11 @@ class HitObjectChecker:
 			else:
 				self.update_score(30 * int(hitresult is not None and hitresult > 0), self.hitobjects[i]["type"], usecombo=False)
 
-
 			if "circle" in self.hitobjects[i]["type"]:
 				circle = Circle(state, deltat, False, False, x, y)
 				del self.hitobjects[i]
 				i -= 1
-			else:
+			elif "slider" in self.hitobjects[i]["type"]:
 				followappear = False
 				self.hitobjects[i]["head not done"] = False
 				if hitresult != 0:
@@ -149,7 +147,6 @@ class HitObjectChecker:
 	def checkslider(self, i, replay, osr_index):
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend = self.check.checkslider(i, replay, osr_index)
 
-
 		if combostatus == 1:
 			self.combo += 1
 		if combostatus == -1:
@@ -163,13 +160,6 @@ class HitObjectChecker:
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
 
-				# if tickend:
-				# 	self.update_score(30, self.hitobjects[i]["type"], usecombo=False)
-
-				del self.hitobjects[i]
-				del self.check.sliders_memory[idd]
-				i -= 1
-
 		if update or combostatus != 0:
 			followstate = str(int(update)) + str(int(followappear))
 			slider = Slider(followstate, hitvalue, tickend, x, y)
@@ -177,6 +167,12 @@ class HitObjectChecker:
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd, self.health_processor.health_value, slider)
 			self.info.append(info)
+
+
+		if not self.hitobjects[i]["head not done"] and self.check.sliders_memory[idd]["added"]:
+			del self.hitobjects[i]
+			del self.check.sliders_memory[idd]
+			i -= 1
 
 		return i
 
@@ -202,7 +198,7 @@ class HitObjectChecker:
 				i -= 1
 
 			if bonusscore >= 1:
-				self.scorecounter += bonusscore * 1000  # TODO: fix score
+				self.scorecounter += bonusscore * 1000
 
 			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue)
 			info = Info(replay[osr_index][3], self.combo, combostatus,

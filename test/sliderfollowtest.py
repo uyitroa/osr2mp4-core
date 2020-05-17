@@ -11,8 +11,8 @@ class TestSliderfollow(unittest.TestCase):
 		cls.real = []
 		cls.tests = []
 		cls.custom = []
-		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0]
-		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0]
+		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		Settings.timeframe = 1000
 		Settings.fps = 60
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
@@ -43,6 +43,7 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("../test/resources/", "72kikoku"))
 		cls.custom.append(getinfos("../test/resources/", "blends"))
 		cls.custom.append(getinfos("../test/resources/", "date"))
+		# cls.custom.append(getinfos("../test/resources/", "69reimei"))
 		# cls.custom.append(getinfos("../test/resources/", "73kikoku")) ## TODO: fix these commented cases
 		# cls.custom.append(getinfos("../test/resources/", "74kikoku"))
 
