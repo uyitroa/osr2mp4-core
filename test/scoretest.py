@@ -14,6 +14,7 @@ class TestScore(unittest.TestCase):
 		cls.tests.append(getinfos("../test/resources/", "dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "2dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "3dearbrave"))
+		cls.tests.append(getinfos("../test/resources/", "4dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
 		cls.tests.append(getinfos("../test/resources/", "tool"))
 		cls.tests.append(getinfos("../test/resources/", "2tool"))
@@ -31,7 +32,6 @@ class TestScore(unittest.TestCase):
 			case = self.tests[i]
 			for x in range(len(case[1])):
 				resultinfo = checkmain(case[0], case[2][x], case[1][x], 0, True)
-				print(case[2][x].score, int(resultinfo[-1].score))
 				self.assertEqual(case[2][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
 				self.assertEqual(case[2][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
 				self.assertEqual(case[2][x].number_50s, resultinfo[-1].accuracy[50], msg="replay {} case {} {}".format(str(x), str(i), str(case[2][x].timestamp)))
