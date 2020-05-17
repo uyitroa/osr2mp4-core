@@ -1,35 +1,8 @@
-import os
 import unittest
 
-import osrparse
-
 from CheckSystem.checkmain import checkmain
-from Parser.osrparser import setupReplay
-from Parser.osuparser import read_file
-from Parser.skinparser import Skin
 from global_var import Settings
-
-
-def getinfos(path, mapname, upsidedown=False):
-	skin = Skin("{}".format(path), "{}".format(path))
-	bmap = read_file("{}{}.osu".format(path, mapname), 1, skin.colours, upsidedown)
-
-	replays = []
-	replay_infos = []
-	should_continue = True
-	x = 0
-	fname = ''
-	while should_continue:
-		replay_event, cur_time = setupReplay("{}{}{}.osr".format(path, mapname, fname), bmap)
-		replays.append(replay_event)
-		replay_info = osrparse.parse_replay_file("{}{}{}.osr".format(path, mapname, fname))
-		replay_infos.append(replay_info)
-
-		x += 1
-		fname = str(x)
-		should_continue = os.path.isfile("{}{}{}.osr".format(path, mapname, fname))
-
-	return bmap, replays, replay_infos
+from test.utils import getinfos
 
 
 class TestSliderfollow(unittest.TestCase):
@@ -38,8 +11,8 @@ class TestSliderfollow(unittest.TestCase):
 		cls.real = []
 		cls.tests = []
 		cls.custom = []
-		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0]
-		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		cls.custom_expect100 = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0]
+		cls.custom_expect50 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		Settings.timeframe = 1000
 		Settings.fps = 60
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
@@ -68,12 +41,14 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("../test/resources/", "75tool"))
 		cls.custom.append(getinfos("../test/resources/", "76tool"))
 		cls.custom.append(getinfos("../test/resources/", "72kikoku"))
+		cls.custom.append(getinfos("../test/resources/", "blends"))
+		cls.custom.append(getinfos("../test/resources/", "date"))
 		# cls.custom.append(getinfos("../test/resources/", "73kikoku")) ## TODO: fix these commented cases
 		# cls.custom.append(getinfos("../test/resources/", "74kikoku"))
 
 		cls.real.append(getinfos("../test/resources/", "realtool"))
 		cls.real.append(getinfos("../test/resources/", "realyomi", True))
-		cls.real.append(getinfos("../test/resources/", "realkikoku"))
+		# cls.real.append(getinfos("../test/resources/", "realkikoku"))
 		cls.real.append(getinfos("../test/resources/", "realmagnolia"))
 
 
