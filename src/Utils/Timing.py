@@ -28,6 +28,10 @@ def find_time(starttime, endtime, replay, replay_start):
 		# endtime += replay_start
 
 	startindex = None
+
+	if starttime == 0:
+		startindex = 0
+
 	endindex = len(replay) - 3
 	if endtime == -1:
 		endindex = len(replay) - 3
