@@ -15,6 +15,7 @@ class TestScore(unittest.TestCase):
 		cls.tests.append(getinfos("../test/resources/", "2dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "3dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "4dearbrave"))
+		cls.tests.append(getinfos("../test/resources/", "5dearbrave"))
 		cls.tests.append(getinfos("../test/resources/", "yomi"))
 		cls.tests.append(getinfos("../test/resources/", "tool"))
 		cls.tests.append(getinfos("../test/resources/", "2tool"))
