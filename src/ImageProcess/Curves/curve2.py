@@ -35,7 +35,7 @@ class Curve(metaclass=ABCMeta):
         if kind == 'B':
             return MultiBezier(points, req_length)
         if kind == 'L':
-            return Linear(points, req_length)
+            return LinearB(points, req_length)
         if kind == 'C':
             return Catmull(points, req_length)
         if kind == 'P':
@@ -52,7 +52,7 @@ class Curve(metaclass=ABCMeta):
                 # osu! also falls back to a bezier here
                 return MultiBezier(points, req_length)
 
-            return Perfect(points, req_length, _center=center)
+            return PerfectB(points, req_length, _center=center)
 
         raise ValueError(f'unknown curve kind: {kind!r}')
 

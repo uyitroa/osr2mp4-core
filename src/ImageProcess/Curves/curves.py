@@ -5,7 +5,7 @@ import cv2
 from ImageProcess.Curves.adjustcurve import next_t, diste
 import numpy as np
 from ImageProcess.Curves import constants, mathhelper
-from ImageProcess.Curves.curve2 import LinearB
+from ImageProcess.Curves.curve2 import LinearB, PerfectB, Curve
 
 
 class ASlider:
@@ -169,24 +169,21 @@ class Perfect(ASlider):
 	def __init__(self, points, pixel_length):
 		super().__init__(points, pixel_length)
 		self.pos = []
+		self.c = Curve.from_kind_and_points("P", self.points, self.pixel_length)
 		self.setup_path()
 
 	def setup_path(self):
-		self.cx, self.cy, self.radius = get_circum_circle(self.points)
-		if is_left(self.points):
-			self.radius *= -1
-
 		tol = 0.025
 		t = 0
 		while t <= 1:
-			pos, _ = self.at(t * self.pixel_length, None)
-			self.pos.append(pos)
+			pos = self.c(t)
+			self.pos.append([pos.x, pos.y])
 			t += tol
 
 	def at(self, dist, forward, alone=None):
-		radians = dist / self.radius
 		t = dist/self.pixel_length
-		return rotate(self.cx, self.cy, self.points[0], radians), t
+		pos = self.c(t)
+		return [pos.x, pos.y], t
 
 
 def get_point(p, length):
