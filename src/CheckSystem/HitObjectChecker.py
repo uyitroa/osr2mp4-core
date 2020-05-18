@@ -5,6 +5,7 @@ from CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
 
+from EEnum.EState import States
 from global_var import Settings
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp more")
@@ -89,10 +90,10 @@ class HitObjectChecker:
 		update = update and (deltat > 0 or abs(deltat) <= self.time_preempt)
 
 		if update:
-			state = 0
+			state = States.NORMAL
 			sum_newclick = max(0, sum_newclick - reduceclick)
 			if note_lock:
-				state = 1
+				state = States.NOTELOCK
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
 					info = Info(replay[osr_index][3], self.combo, 0, self.scorecounter, self.scorecounter,
@@ -104,7 +105,7 @@ class HitObjectChecker:
 			if hitresult > 0:
 				self.combo += 1
 				combostatus = 1
-				state = 2
+				state = States.FADEOUT
 			else:
 				combostatus = -1
 				self.combo = 0
