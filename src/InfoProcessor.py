@@ -1,3 +1,4 @@
+from EEnum.EState import States
 
 
 class Updater:
@@ -17,9 +18,9 @@ class Updater:
 		if objtype == "Circle":
 			idd = str(self.info.id) + "c"
 			x, y = self.info.more.x, self.info.more.y
-			if self.info.more.state == 1 and self.info.more.sliderhead is False:
+			if self.info.more.state == States.NOTELOCK and self.info.more.sliderhead is False:
 				self.component.hitobjmanager.notelock_circle(idd)
-			elif self.info.more.state == 2:
+			elif self.info.more.state == States.FADEOUT:
 				self.component.hitobjmanager.fadeout_circle(idd)
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
 				if self.info.more.sliderhead:
