@@ -51,7 +51,7 @@ class ScoreCounter(FrameObject):
 
 
 	def add_to_frame(self, background, cur_time):
-		score_string = str(int(self.showscore))
+		score_string = str(int(self.score))
 		score_string = "0" * (8 - len(score_string)) + score_string
 		self.draw_score(score_string, background)
 

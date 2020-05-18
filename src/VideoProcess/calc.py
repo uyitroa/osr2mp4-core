@@ -13,9 +13,6 @@ def nearer(cur_time, replay, index):
 	end = min(10, len(replay) - index - 1)
 	for x in range(0, end):
 		delta_t = abs(replay[index + x][Replays.TIMES] - cur_time)
-		# if key_state != replay[index + x][Replays.KEYS_PRESSED]:
-		# 	if delta_t <= min_time_toskip:
-		# 		return x
 		if delta_t <= min_time:
 			min_time = delta_t
 			returnindex = x
@@ -114,7 +111,7 @@ def check_break(beatmap, component, frame_info):
 		component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
 		breakperiod = beatmap.breakperiods[frame_info.break_index]
 
-	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"]) and breakperiod["Start"] != -500
+	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"])
 
 	half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
 	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 2000 and in_break:
@@ -124,7 +121,7 @@ def check_break(beatmap, component, frame_info):
 		component.scorebarbg.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
 		component.scorebar.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
 
-	if frame_info.cur_time > breakperiod["End"] - 700 and in_break:
+	if frame_info.cur_time > breakperiod["End"] - 700 and in_break and breakperiod["Arrow"]:
 		component.arrowwarning.startbreak(breakperiod["Start"])
 
 	return in_break

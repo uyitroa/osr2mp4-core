@@ -1,6 +1,4 @@
-from ImageProcess.Objects.FrameObject import FrameObject
-from ImageProcess.PrepareFrames.Components.AScorebar import AScorebar
-from global_var import Settings
+from ImageProcess.Objects.Components.AScorebar import AScorebar
 
 
 class ScorebarBG(AScorebar):

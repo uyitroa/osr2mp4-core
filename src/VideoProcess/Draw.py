@@ -84,7 +84,6 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 	timer2 = 0
 	timer3 = 0
 	while frame_info.osr_index < end_index:
-
 		asdf = time.time()
 		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 		                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
@@ -92,15 +91,11 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, st
 
 		asdf = time.time()
 		if status:
-			# print("send")
 			conn.send(1)
-			# print("sent")
 			timer3 += time.time() - asdf
 
 			asdf = time.time()
-			# print("wait")
 			i = conn.recv()
-			# print("received")
 			timer2 += time.time() - asdf
 		# print("unlocked", timer2)
 

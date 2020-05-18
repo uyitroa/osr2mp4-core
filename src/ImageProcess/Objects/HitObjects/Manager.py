@@ -65,7 +65,6 @@ class HitObjectManager:
 
 	def sliderchangestate(self, followappear, idd):
 		index_interval = 0.65
-
 		if self.slider_manager.sliders[idd].sliderf_i != self.slider_manager.slidermax_index:
 			self.slider_manager.sliders[idd].sliderf_i = 0
 

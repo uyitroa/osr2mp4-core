@@ -11,7 +11,6 @@ def smoothcursor(replay, osrindex, cursor_event):
 
 	keys = cursor_event.event[Replays.KEYS_PRESSED]
 	newtime = cursor_event.event[Replays.TIMES] * 0.6 + replay[osrindex+1][Replays.TIMES] * 0.4
-	print(newtime)
 	newcursorevent = [None, None, None, None]
 	newcursorevent[Replays.CURSOR_X] = newx
 	newcursorevent[Replays.CURSOR_Y] = newy

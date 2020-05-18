@@ -1,6 +1,6 @@
 from CheckSystem.Health import HealthProcessor
 from ImageProcess import imageproc
-from ImageProcess.PrepareFrames.Components.AScorebar import AScorebar
+from ImageProcess.Objects.Components.AScorebar import AScorebar
 from global_var import Settings
 
 
