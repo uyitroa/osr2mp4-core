@@ -19,9 +19,10 @@ class Accuracy(FrameObject):
 		self.total = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.maxscore = 0
 		self.curscore = 0
-		self.gap = int(gap * Settings.scale * 0.5)
+		self.gap = gap * Settings.scale
 		self.sizegap = self.gap - self.frames[0].size[0]
-		self.y = frames[1]
+		self.y = 67 * Settings.scale
+		self.startx = 1342 * Settings.scale
 
 	def update_acc(self, hitresult):
 		self.maxscore += 300
@@ -46,7 +47,7 @@ class Accuracy(FrameObject):
 		:return:
 		"""
 		self.frame_index = 10  # score_percent
-		y = self.y + self.h()//2
+		y = self.y + self.h()/2
 		super().add_to_frame(background, x, y)
 		x = x + self.gap - self.w()
 
@@ -55,7 +56,7 @@ class Accuracy(FrameObject):
 				self.frame_index = 11  # score_dot
 			else:
 				self.frame_index = int(digit)
-			y = self.y + self.h() // 2
+			y = self.y + self.h() / 2
 			super().add_to_frame(background, x, y)
 			x += self.sizegap
 
@@ -64,5 +65,4 @@ class Accuracy(FrameObject):
 			acc = '100.00'
 		else:
 			acc = "{:.2f}".format(self.curscore/self.maxscore * 100)
-		startx = int(self.width * 0.99)
-		self.draw_acc(acc, background, startx)
+		self.draw_acc(acc, background, self.startx)

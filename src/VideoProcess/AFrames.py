@@ -87,7 +87,7 @@ class FrameObjects:
 		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry)
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"])
-		self.timepie = TimePie(Settings.scale, self.accuracy, beatmap.start_time, beatmap.end_time)
+		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time)
 		self.hitresult = HitResult(frames.hitresult)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"])
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"])
