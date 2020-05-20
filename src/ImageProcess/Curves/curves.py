@@ -173,7 +173,8 @@ class Perfect(ASlider):
 		self.setup_path()
 
 	def setup_path(self):
-		tol = 0.025
+		tol = 1 / max(1, self.pixel_length / 650)
+		tol = 0.025 * tol
 		t = 0
 		while t <= 1:
 			pos = self.c(t)

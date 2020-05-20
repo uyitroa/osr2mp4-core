@@ -195,18 +195,12 @@ class SliderManager:
 		self.draw_slider(slider.image, background, slider.x, slider.y, alpha=slider.opacity/100)
 
 
-		# if slider.osu_d["slider type] == "B":
 		if going_forward:
 			delta_time = slider.osu_d["duration"] - slider.cur_duration
 		else:
 			delta_time = slider.cur_duration
 		delta_time = min(slider.osu_d["duration"], max(0, delta_time))
 		dist = slider.osu_d["pixel length"] / slider.osu_d["duration"] * delta_time
-		# else:
-		# 	t = 1 - slider.cur_duration/slider.osu_d["duration"]
-		#
-		# 	if not going_forward:
-		# 		t = 1 - t
 
 		pos, t = slider.osu_d["baiser"].at(dist, going_forward)
 
