@@ -59,6 +59,8 @@ class Updater:
 			if objtype != "Slider" or self.info.more.tickend:
 				self.component.scorecounter.update_score(self.info.score)
 
+		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
+
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
