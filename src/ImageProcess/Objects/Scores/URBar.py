@@ -36,4 +36,4 @@ class URBar(FrameObject):
 	def add_to_frame(self, background):
 		img = self.bar_container
 		imageproc.add(img, background, self.x_offset + self.w//2, self.y)
-		imageproc.addalpha(self.bar_container, -1)
+		imageproc.addalpha(self.bar_container, -0.01)

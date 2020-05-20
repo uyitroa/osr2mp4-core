@@ -63,7 +63,7 @@ def prepare_slider(diff, scale, skin):
 			bframes[-1].append(color_sb)
 
 
-	scale_interval = round(0.35 * interval/follow_fadein, 2)
+	scale_interval = round(0.25 * interval/follow_fadein, 2)
 	cur_scale = 1
 	alpha_interval = round(interval / follow_fadein, 2)
 	cur_alpha = 1
