@@ -36,6 +36,11 @@ def main():
 	upsidedown = Mod.HardRock in replay_info.mod_combination
 	hd = Mod.Hidden in replay_info.mod_combination
 	print(replay_info.timestamp)
+	print(replay_info.number_300s)
+	print(replay_info.number_100s)
+	print(replay_info.number_50s)
+	print(replay_info.misses)
+	print(replay_info.score)
 
 	setupglobals(data, replay_info)
 
@@ -49,13 +54,14 @@ def main():
 
 
 	resultinfo = checkmain(beatmap, replay_info, replay_event, cur_time)
+	print(resultinfo[-1].accuracy)
 
 	offset, endtime = get_offset(beatmap, start_index, end_index, replay_event)
 
 	write_data(beatmap, resultinfo)
 
 	audio = create_audio(resultinfo, beatmap.hitobjects, offset, endtime, beatmap.general["AudioFilename"], multi_process)
-	drawers, writers, pipes = create_frame(codec, beatmap, SkinPaths.skin_ini, replay_event, resultinfo, start_index, end_index, multi_process, hd)
+	drawers, writers, pipes = create_frame(codec, beatmap, SkinPaths.skin_ini, replay_event, replay_info, resultinfo, start_index, end_index, multi_process, hd)
 
 
 	if multi_process >= 1:

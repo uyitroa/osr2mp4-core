@@ -13,7 +13,7 @@ from VideoProcess.Setup import getlist, setup_draw
 from global_var import Settings, Paths
 
 
-def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, end_index, mpp, hd):
+def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, start_index, end_index, mpp, hd):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
 	frames = PreparedFrames(skin, diffcalculator, beatmap, hd)
@@ -44,7 +44,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 			globalvars = getlist()
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, resultinfo, start, end, hd, *globalvars))
+				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars))
 
 			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars))
 
@@ -70,7 +70,7 @@ def create_frame(codec, beatmap, skin, replay_event, resultinfo, start_index, en
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 
 		component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-			beatmap, frames, replay_event, resultinfo, shared, skin, start_index, hd)
+			beatmap, frames, replay_event, replay_info, resultinfo, shared, skin, start_index, hd)
 		print("setup done")
 
 		print(frame_info.osr_index, end_index)

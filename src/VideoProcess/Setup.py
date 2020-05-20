@@ -59,7 +59,7 @@ def getlist():
 	return settings, paths, skinpaths
 
 
-def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_index, hd):
+def setup_draw(beatmap, frames, replay_event, replay_info, resultinfo, shared, skin, start_index, hd):
 	old_cursor_x = int(replay_event[0][Replays.CURSOR_X] * Settings.playfieldscale) + Settings.moveright
 	old_cursor_y = int(replay_event[0][Replays.CURSOR_Y] * Settings.playfieldscale) + Settings.moveright
 
@@ -67,7 +67,7 @@ def setup_draw(beatmap, frames, replay_event, resultinfo, shared, skin, start_in
 
 	time_preempt = diffcalculator.ar()
 
-	component = FrameObjects(frames, skin, beatmap, diffcalculator, hd)
+	component = FrameObjects(frames, skin, beatmap, replay_info, diffcalculator, hd)
 
 	component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 

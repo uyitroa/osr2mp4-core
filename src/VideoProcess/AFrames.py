@@ -1,3 +1,4 @@
+from ImageProcess.Objects.Components.Scoreboard import Scoreboard
 from ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from ImageProcess.Objects.Components.Background import Background
 from ImageProcess.Objects.Components.Scorebar import Scorebar
@@ -27,7 +28,9 @@ from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
 from ImageProcess.PrepareFrames.Components.Background import prepare_background
 from ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
 from ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
+from ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
 from ImageProcess.PrepareFrames.Components.Sections import prepare_sections
+from ImageProcess.PrepareFrames.Effects.ScoreboardEffect import prepare_scoreboardeffect
 from ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
 from ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
 from ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
@@ -36,6 +39,7 @@ from ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
 from ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
 from ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
 from ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
+from ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
 from ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 from global_var import Settings, Paths
@@ -46,31 +50,43 @@ class PreparedFrames:
 		self.cursor, default = prepare_cursor(Settings.scale)
 		self.cursormiddle, self.continuous = prepare_cursormiddle(Settings.scale, default)
 		self.cursor_trail = prepare_cursortrail(Settings.scale, self.continuous)
+
 		self.scoreentry = prepare_scoreentry(Settings.scale, skin.colours["InputOverlayText"])
 		self.inputoverlayBG = prepare_inputoverlaybg(Settings.scale)
 		self.key = prepare_inputoverlay(Settings.scale, [255, 220, 20], 2)
 		self.mouse = prepare_inputoverlay(Settings.scale, [220, 0, 220], 1)
+
 		self.scorenumbers = ScoreNumbers(Settings.scale)
 		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, Settings.playfieldscale)
+
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers)
 		self.hitresult = prepare_hitresults(Settings.scale, beatmap)
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
+
 		self.urbar = prepare_bar(Settings.scale, check.scorewindow)
+
 		self.fpmanager = prepare_fpmanager(Settings.playfieldscale)
+
 		self.circle = prepare_circle(beatmap, Settings.playfieldscale, skin, hd)
 		self.slider = prepare_slider(beatmap.diff, Settings.playfieldscale, skin)
 		self.spinner = prepare_spinner(Settings.playfieldscale)
+
 		self.bg = prepare_background(Paths.beatmap + beatmap.bg[2])
+
 		self.sections = prepare_sections(Settings.scale)
 		self.scorebarbg = prepare_scorebarbg(Settings.scale)
 		self.scorebar = prepare_scorebar(Settings.scale)
 		self.arrowwarning = prepare_arrowwarning(Settings.scale)
 
+		self.scoreboardscore = prepare_scoreboardscore(Settings.scale)
+		self.scoreboard = prepare_scoreboard(Settings.scale)
+		self.scoreboardeffect = prepare_scoreboardeffect(Settings.scale)
+
 
 class FrameObjects:
-	def __init__(self, frames, skin, beatmap, check, hd):
+	def __init__(self, frames, skin, beatmap, replay_info, check, hd):
 		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"])
 
 		self.cursormiddle = Cursor(frames.cursormiddle)
@@ -108,3 +124,5 @@ class FrameObjects:
 		self.scorebarbg = ScorebarBG(frames.scorebarbg)
 		self.scorebar = Scorebar(frames.scorebar, beatmap)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
+
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info.player_name)

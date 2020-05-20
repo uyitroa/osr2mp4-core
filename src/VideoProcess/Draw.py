@@ -1,5 +1,7 @@
 import time
 
+import cv2
+
 from EEnum.EReplay import Replays
 from VideoProcess.smoothing import smoothcursor
 from VideoProcess.Setup import setup_global, setup_draw
@@ -51,6 +53,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.cursor.add_to_frame(img, cursor_x, cursor_y)
 	component.cursormiddle.add_to_frame(img, cursor_x, cursor_y)
 	component.sections.add_to_frame(img)
+	component.scoreboard.add_to_frame(np_img, img)
 
 
 	frame_info.cur_time += Settings.timeframe / Settings.fps
@@ -70,14 +73,14 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	return img.size[0] != 1
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, resultinfo, start_index, end_index, hd, settings, paths, skinpaths):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths):
 	asdfasdf = time.time()
 	print("process start")
 
 	setup_global(settings, paths, skinpaths)
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-		beatmap, frames, replay_event, resultinfo, shared, skin, start_index, hd)
+		beatmap, frames, replay_event, replay_info, resultinfo, shared, skin, start_index, hd)
 
 	print("setup done")
 	timer = 0
