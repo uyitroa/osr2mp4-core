@@ -12,6 +12,8 @@ class HitResult(FrameObject):
 		self.hitresults = []
 		self.interval = Settings.timeframe / Settings.fps
 		self.time = 600
+		self.misscount = 0
+		self.multiplieranimation = {0: 2, 50: 1, 100: 1, 300: 1}
 		self.playfieldscale = Settings.playfieldscale
 
 	def add_result(self, scores, x, y):
@@ -24,8 +26,11 @@ class HitResult(FrameObject):
 		x = int(x * self.playfieldscale) + self.moveright
 		y = int(y * self.playfieldscale) + self.movedown
 
-		# if scores == 300:
-		# 	return
+		if scores == 0:
+			self.misscount += 1
+
+		if scores == 300 and self.frames[300][0].size[0] == 1 and self.frames[300][0].size[1] == 1:
+			return
 		# [score, x, y, index, alpha, time, go down]
 		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
 
@@ -33,11 +38,18 @@ class HitResult(FrameObject):
 		i = len(self.hitresults)
 		while i > 0:
 			i -= 1
-			if self.hitresults[i][5] >= self.time:
-				del self.hitresults[i]
-				break
 
 			score = self.hitresults[i][0]
+
+			if self.hitresults[i][5] >= self.time * self.multiplieranimation[score]:
+				del self.hitresults[i]
+				if score == 0:
+					self.misscount -= 1
+				if self.misscount == 0:  # if there is no misscount then this is the last element so we can break
+					break
+				else:
+					continue
+
 			img = self.frames[score][self.hitresults[i][3]]
 
 			x, y = self.hitresults[i][1], self.hitresults[i][2]
@@ -51,6 +63,7 @@ class HitResult(FrameObject):
 			self.hitresults[i][5] += self.interval * 60/Settings.fps
 
 			if self.hitresults[i][5] >= self.time - self.interval * 10:
-				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 10 * 60/Settings.fps)
+				self.hitresults[i][4] = max(0, self.hitresults[i][4] - (10/self.multiplieranimation[score]) * 60/Settings.fps)
 			else:
-				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/Settings.fps)
+				self.hitresults[i][4] = min(100, self.hitresults[i][4] + (20/self.multiplieranimation[score]) * 60/Settings.fps)
+

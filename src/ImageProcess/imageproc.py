@@ -49,6 +49,13 @@ def add_color(image, color):
 	return out
 
 
+def add_color_s(imglist, color):
+	new = []
+	for img in imglist:
+		new.append(add_color(img, color))
+	return new
+
+
 def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 	"""
 	Add image to the background
@@ -74,7 +81,7 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 		if 0 < alpha < 1:
 			a = img.getchannel("A")
 			a = a.point(lambda i: i * alpha)
-		if alpha == 0:
+		if alpha <= 0:
 			return
 		background.paste(img, (x_offset, y_offset), a)
 
@@ -102,6 +109,13 @@ def change_size(img, scale_row, scale_col, rows=None, cols=None):
 	n_cols = max(2, int(scale_col * cols))
 	n_cols += int(n_cols % 2 == 1)  # need to be even
 	return img.resize((n_cols, n_rows), Image.ANTIALIAS)
+
+
+def change_sizes(imglist, scale_row, scale_col, rows=None, cols=None):
+	news = []
+	for img in imglist:
+		news.append(change_size(img, scale_row, scale_col, rows=rows, cols=cols))
+	return news
 
 
 def rotate_images(frames, angle):
