@@ -3,7 +3,7 @@ import os
 import osrparse
 from osrparse.enums import Mod
 
-from AudioProcess.main import create_audio
+from AudioProcess.CreateAudio import create_audio
 from CheckSystem.checkmain import checkmain
 from ImageProcess.PrepareFrames.YImage import SkinPaths
 from Parser.jsonparser import read
@@ -60,7 +60,7 @@ def main():
 
 	write_data(beatmap, resultinfo)
 
-	audio = create_audio(resultinfo, beatmap.hitobjects, offset, endtime, beatmap.general["AudioFilename"], multi_process)
+	audio = create_audio(resultinfo, beatmap, offset, endtime, beatmap.general["AudioFilename"], multi_process)
 	drawers, writers, pipes = create_frame(codec, beatmap, SkinPaths.skin_ini, replay_event, replay_info, resultinfo, start_index, end_index, multi_process, hd)
 
 
