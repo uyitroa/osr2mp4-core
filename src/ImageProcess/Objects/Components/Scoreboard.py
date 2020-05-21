@@ -32,7 +32,7 @@ class Scoreboard(FrameObject):
 		self.falling = False
 
 		self.nboard = 6
-		self.height = (660 - 315) / self.nboard * Settings.scale
+		self.height = (660 - 313) / self.nboard * Settings.scale
 		self.getscores()
 		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, playername, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
@@ -44,7 +44,7 @@ class Scoreboard(FrameObject):
 
 	def setuppos(self):
 		x = 0
-		y = 315 * Settings.scale
+		y = 313 * Settings.scale
 		self.nboard = min(self.nboard, len(self.scoreboards))
 		for i in range(self.nboard):
 			self.origposboards.append([x, y])
@@ -67,25 +67,31 @@ class Scoreboard(FrameObject):
 		self.scoreboards[0].alpha = 1
 
 	def getscores(self):
-		# self.scoreboards.append(BoardInfo("34.523.736", "1.136", 34523736, 1136,"yuitora", None, None, None, 0))
-		self.scoreboards.append(BoardInfo("1.400", "2", 1400, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("1.600", "2", 1600, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("2.000", "2", 2000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("3.000", "2", 3000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("5.000", "2", 5000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("7.000", "2", 7000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("10.000", "2", 10000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("15.000", "2", 15000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("16.000", "2", 16000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("17.000", "2", 17000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("20.000", "2", 20000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("30.000", "2", 30000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("70.000", "2", 70000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("107.000", "2", 107000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("207.000", "2", 207000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("208.000", "2", 208000, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("208.500", "2", 208500, 2, "gay", None, None, None, 1))
-		self.scoreboards.append(BoardInfo("400.000", "2", 400000, 2, "gay", None, None, None, 1))
+		self.scoreboards.append(BoardInfo("69", "1", 69, 1, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("1.400", "2", 1400, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("1.600", "2", 1600, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("2.000", "2", 2000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("3.000", "2", 3000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("5.000", "2", 5000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("7.000", "2", 7000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("10.000", "2", 10000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("15.000", "2", 15000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("16.000", "2", 16000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("17.000", "2", 17000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("20.000", "2", 20000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("30.000", "2", 30000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("70.000", "2", 70000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("107.000", "2", 107000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("207.000", "2", 207000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("208.000", "2", 208000, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("208.500", "2", 208500, 2, "gay", None, None, None, 1))
+		# self.scoreboards.append(BoardInfo("400.000", "2", 400000, 2, "gay", None, None, None, 1))
 		self.oldrankid = None
 
 	def sortscore(self):
@@ -98,6 +104,26 @@ class Scoreboard(FrameObject):
 		return True, playerrank
 
 	def setscore(self, score, combo=None):
+		self.curscore = score
+		curinfo = self.scoreboards[self.currank]
+		if combo is not None:
+			combo = max(combo, curinfo.intcombo)
+		else:
+			combo = curinfo.intcombo
+		strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score))  # add dot to every 3 digits
+		strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(combo))
+		self.scoreboards[self.currank] = BoardInfo(strscore, strcombo, score, combo, curinfo.playername, curinfo.x, curinfo.y, curinfo.alpha, -1)
+		animating = self.animate
+		prevrank = self.currank
+		self.animate, self.currank = self.sortscore()
+		if self.animate and not animating:
+			self.setranktoanimate(prevrank=prevrank)
+			if self.effectalpha <= 0:
+				self.effectalpha = 2.5
+				self.effectx = -500 * Settings.scale
+				self.effecty = self.scoreboards[self.currank].y
+
+	def setsetscore(self, score, combo):
 		self.curscore = score
 		curinfo = self.scoreboards[self.currank]
 		if combo is not None:
@@ -120,7 +146,7 @@ class Scoreboard(FrameObject):
 			return min(0, self.currank), self.currank
 		return self.currank - 4, self.currank
 
-	def setranktoanimate(self):
+	def setranktoanimate(self, prevrank=None):
 		start, end = self.getrange()
 		self.scoreboards[0].y = self.origposboards[0][1]
 		count = 0
@@ -129,8 +155,12 @@ class Scoreboard(FrameObject):
 			if i == self.currank:
 				continue
 			self.scoreboards[i].y = self.origposboards[count][1]
+		if prevrank is None:
+			prevrank = self.currank+1
+		rank = max(prevrank-1, self.currank)
+		rank = min(self.nboard - 2, rank)
 		if self.currank < self.nboard - 1:
-			self.scoreboards[self.currank].y = self.origposboards[self.currank+1][1]
+			self.scoreboards[self.currank].y = self.origposboards[rank+1][1]
 			for i in range(0, self.nboard):
 				self.scoreboards[i].alpha = 1
 

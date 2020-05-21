@@ -12,7 +12,7 @@ def prepare_scoreboard(scale):
 	"""
 	img = YImage(scoreboard, scale).img
 	img = img.crop((int(img.size[0] * 2/3), 0, img.size[0], img.size[1]))
-	img = imageproc.change_size(img, 0.6, 0.6)
+	img = img.resize((int(140 * scale), int(64 * scale)))
 	imageproc.changealpha(img, 0.3)
 
 	playerimg = imageproc.add_color(img, [80, 80, 80])
