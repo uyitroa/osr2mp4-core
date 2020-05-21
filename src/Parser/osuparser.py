@@ -1,13 +1,6 @@
 import math
 import re
-
-from CheckSystem.Health import HealthProcessor
-from CheckSystem.Judgement import DiffCalculator
-from ImageProcess.Curves.adjustcurve import next_t
-from ImageProcess.Curves.curve2 import Curve
 from ImageProcess.Curves.curves import getclass
-from ImageProcess.Curves.generate_slider import GenerateSlider
-from ImageProcess.Curves.position import Position
 
 
 class Beatmap:
