@@ -17,7 +17,7 @@ class Sections(FrameObject):
 		self.blink = 0
 		self.breakk = None
 
-	def startbreak(self, status, breakk):
+	def startbreak(self, status, breakk, hp):
 		if self.breakk == breakk:
 			return
 		self.breakk = breakk
@@ -25,6 +25,10 @@ class Sections(FrameObject):
 		self.out = 0
 		self.blink = 0
 		self.show = True
+		if hp < 0.5:
+			self.frame_index = self.FAIL
+		else:
+			self.frame_index = self.PASS
 
 	def add_to_frame(self, background):
 		if not self.show:
