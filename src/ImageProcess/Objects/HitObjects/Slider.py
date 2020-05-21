@@ -122,7 +122,7 @@ class SliderManager:
 		index = int(slider.sliderf_i)
 		slider.sliderb_i = (slider.sliderb_i + 1) % len(self.sliderb_frames[color])
 
-		vector_x1, vector_y1 = slider.prev_pos[0] - cur_pos[0], slider.prev_pos[1] - cur_pos[1]
+		vector_x1, vector_y1 = cur_pos[0] - slider.prev_pos[0], cur_pos[1] - slider.prev_pos[1]
 
 		if slider.cur_repeated % 2 == 0 and self.flip:
 			ball = self.sliderb_frames[color][slider.sliderb_i].transpose(Image.FLIP_LEFT_RIGHT)
