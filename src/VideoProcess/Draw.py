@@ -17,7 +17,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 			img = pbuffer
 
 
-	in_break = check_break(beatmap, component, frame_info)
+	in_break = check_break(beatmap, component, frame_info, updater)
 	check_key(component, cursor_event, in_break)
 	add_followpoints(beatmap, component, frame_info, preempt_followpoint)
 	add_hitobjects(beatmap, component, frame_info, time_preempt)
