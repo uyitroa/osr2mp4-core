@@ -28,12 +28,12 @@ def cleanup():
 	#
 	# f = Paths.output[:-4] + "f" + Paths.output[-4:]
 	# os.system('{} "{}"'.format(rm_command, f))
-	# os.system('{} z.mp3'.format(rm_command))
+	# os.system('{} audio.mp3'.format(rm_command))
 
 
 def mix_video_audio():
 	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	command = '"{}" -i "{}" -i z.mp3 -c:v copy -c:a aac "{}" -y'.format(Paths.ffmpeg, f, Paths.output)
+	command = '"{}" -i "{}" -i audio.mp3 -c:v copy -c:a aac "{}" -y'.format(Paths.ffmpeg, f, Paths.output)
 	if os.name == 'nt':
 		command = '"' + command + '"'
 
