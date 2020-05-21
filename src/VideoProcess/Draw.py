@@ -30,9 +30,9 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	cursor_y = int(cursor_event.event[Replays.CURSOR_Y] * Settings.playfieldscale) + Settings.movedown
 
 
-	component.background.add_to_frame(img, np_img, frame_info.cur_time)
-	component.timepie.add_to_frame(np_img, frame_info.cur_time)
-	component.scorebarbg.add_to_frame(img)
+	component.background.add_to_frame(img, np_img, frame_info.cur_time, in_break)
+	component.scorebarbg.add_to_frame(img, in_break)
+	component.timepie.add_to_frame(np_img, img, frame_info.cur_time, component.scorebarbg.h, component.scorebarbg.alpha)
 	component.scorebar.add_to_frame(img, frame_info.cur_time)
 	component.arrowwarning.add_to_frame(img, frame_info.cur_time)
 	component.inputoverlayBG.add_to_frame(img, Settings.width - component.inputoverlayBG.w() // 2, int(320 * Settings.scale))

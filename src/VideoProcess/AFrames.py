@@ -76,7 +76,7 @@ class PreparedFrames:
 		self.bg = prepare_background(Paths.beatmap + beatmap.bg[2])
 
 		self.sections = prepare_sections(Settings.scale)
-		self.scorebarbg = prepare_scorebarbg(Settings.scale)
+		self.scorebarbg = prepare_scorebarbg(Settings.scale, self.bg)
 		self.scorebar = prepare_scorebar(Settings.scale)
 		self.arrowwarning = prepare_arrowwarning(Settings.scale)
 
@@ -103,7 +103,7 @@ class FrameObjects:
 		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry)
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"])
-		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time)
+		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg)
 		self.hitresult = HitResult(frames.hitresult)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"])
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"])

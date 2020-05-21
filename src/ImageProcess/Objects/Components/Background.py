@@ -27,7 +27,7 @@ class Background(FrameObject):
 		i = i * min(1, max(0, (self.end_time - cur_time)/self.fade_time))
 		self.frame_index = round(i * (len(self.frames) - 1))
 
-	def add_to_frame(self, background, np, cur_time):
+	def add_to_frame(self, background, np, cur_time, inbreak):
 
 		if cur_time <= self.map_start:
 			i = max(0, min(1, (self.map_start - cur_time)/1000))
@@ -46,7 +46,8 @@ class Background(FrameObject):
 			self.step = -self.interval * 60/Settings.fps
 
 		if int(self.frame_index) <= 0:
-			np.fill(0)
+			if inbreak:
+				np.fill(0)
 			return
 
 		super().add_to_frame(background, Settings.width//2, Settings.height//2)
