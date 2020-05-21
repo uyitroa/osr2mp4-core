@@ -62,6 +62,8 @@ def setup(skinpath, defaultpath, audiopath, settings=None):
 	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath))
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath))
 	Hitsound.normalslidertick = Audio2p(*getaudiofromfile("normal-slidertick", skinpath, defaultpath))
+	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath))
+	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath))
 
 	for x in range(10, 20):
 		speed = x/10
@@ -97,7 +99,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 		hitsoundm.addslidersound(my_info, x, song)
 		hitsoundm.addspinnerhitsound(my_info, x, song)
 		hitsoundm.addcombobreak(my_info, x, song)
-
+		hitsoundm.addsectionsound(my_info, x, song)
 
 	out = getoffset(offset, endtime, song)
 

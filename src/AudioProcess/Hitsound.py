@@ -4,3 +4,5 @@ class Hitsound:
 	spinnerbonus = None
 	spinnerspin = []
 	normalslidertick = None
+	sectionfail = None
+	sectionpass = None

@@ -5,10 +5,32 @@ from AudioProcess.Utils import overlay
 class HitsoundManager:
 	def __init__(self, beatmap):
 		self.hitobjects = beatmap.hitobjects
+		self.breakperiods = beatmap.breakperiods
 		self.spincooldown = 0
 		self.prevspin = None
 		self.prevbonusscore = None
+		self.breakperiod_i = 0
+		self.sectionadded = False
 
+	def addsectionsound(self, my_info, index, song):
+		if self.breakperiods[self.breakperiod_i]["End"] < my_info[index].time:
+			self.breakperiod_i += 1
+			self.sectionadded = False
+		breakperiod = self.breakperiods[self.breakperiod_i]
+
+		if self.sectionadded or self.breakperiod_i >= len(self.breakperiods)-1:
+			return
+
+		self.sectionadded = True
+		half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
+		print(half)
+		if breakperiod["End"] - breakperiod["Start"] > 2000:
+			if my_info[index].hp < 0.5:
+				sound = Hitsound.sectionfail
+			else:
+				sound = Hitsound.sectionpass
+			overlay(half, song, sound)
+			self.sectionadded = True
 
 	def addcombobreak(self, my_info, index, song):
 		previndex = max(0, index - 1)
