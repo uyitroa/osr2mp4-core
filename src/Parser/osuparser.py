@@ -39,7 +39,7 @@ class Beatmap:
 		endtime_fp = self.hitobjects[-1]["time"] + 800
 		# diffcalculator = DiffCalculator(self.diff)
 		# timepreempt = int(diffcalculator.ar() + 500)
-		# self.breakperiods.append({"Start": endtime_fp, "End": endtime_fp, "Arrow": False})
+		# self.breakperiods.append({"Start": -500, "End": self.start_time-timepreempt, "Arrow": True})
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
 		                           "type": ["end"], "id": -1})  # to avoid index out of range
 

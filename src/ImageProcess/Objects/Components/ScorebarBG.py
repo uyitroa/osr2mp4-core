@@ -7,8 +7,8 @@ class ScorebarBG(AScorebar):
 
 	def add_to_frame(self, background, inbreak):
 		AScorebar.animate(self)
-		if inbreak:
-			self.frame_index = 0
-		else:
-			self.frame_index = 1
+		# if inbreak:
+		# 	self.frame_index = 0
+		# else:
+		# 	self.frame_index = 1
 		super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
