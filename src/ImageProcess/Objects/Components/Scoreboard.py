@@ -52,7 +52,7 @@ class Scoreboard(FrameObject):
 		self.alphaboards = [1] * self.nboard
 
 		for i in range(len(self.scoreboards)-1, -1, -1):
-			if i <= len(self.scoreboards) - self.nboard and len(self.scoreboards) - self.nboard >= 0:
+			if i <= len(self.scoreboards) - self.nboard and len(self.scoreboards) - self.nboard >= 0 and len(self.origposboards) > 1:
 				x, y = self.origposboards[1]
 				alpha = 0
 			else:
@@ -67,7 +67,7 @@ class Scoreboard(FrameObject):
 		self.scoreboards[0].alpha = 1
 
 	def getscores(self):
-		self.scoreboards.append(BoardInfo("69", "1", 69, 1, "OppaiFun", None, None, None, 0))
+		# self.scoreboards.append(BoardInfo("69", "1", 69, 1, "OppaiFun", None, None, None, 0))
 		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
 		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
 		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
