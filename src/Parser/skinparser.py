@@ -118,7 +118,10 @@ class Skin:
 					raise Exception('invalid section name found: ' + line[1:-1])
 
 			sl = line.split(':')
-			key, value = sl[0], sl[1]
+			try:
+				key, value = sl[0], sl[1]
+			except IndexError as e:
+				continue
 
 			my_command = section + '["' + key + '"] = ' + '"' + str(value) + '"'
 			exec(my_command)
