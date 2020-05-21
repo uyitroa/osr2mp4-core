@@ -2,6 +2,7 @@
 # Circle
 from PIL import Image
 
+from EEnum.EImageFrom import ImageFrom
 from ImageProcess import imageproc
 from ImageProcess.Animation import alpha, size
 from ImageProcess.PrepareFrames.YImage import YImage
@@ -81,8 +82,12 @@ def calculate_ar(ar):
 def load():
 	circle = YImage(hitcircle).img
 	c_overlay = YImage(hitcircleoverlay).img
-	slider = YImage(sliderstartcircle, fallback=hitcircle).img
-	s_overlay = YImage(sliderstartcircleoverlay, fallback=hitcircleoverlay).img
+	yslider = YImage(sliderstartcircle, fallback=hitcircle)
+	slider = yslider.img
+	slideroverlay = sliderstartcircleoverlay
+	if yslider.imgfrom == ImageFrom.FALLBACK_X or yslider.imgfrom == ImageFrom.FALLBACK_X2:
+		slideroverlay = hitcircleoverlay
+	s_overlay = YImage(slideroverlay, fallback=hitcircleoverlay).img
 	return circle, c_overlay, slider, s_overlay
 
 
