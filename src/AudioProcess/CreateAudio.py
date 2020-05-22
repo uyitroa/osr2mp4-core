@@ -32,10 +32,12 @@ def pydubtonumpy(audiosegment):
 		y = y.reshape((-1, 2))
 	if audiosegment.channels == 1:
 		y1 = np.zeros((len(y), 2), dtype=y.dtype)
-		y1[:, 0] = y
-		y1[:, 1] = y
+		y1[:, 0] = y * 0.5
+		y1[:, 1] = y * 0.5
 		y = y1
-	return audiosegment.frame_rate, np.float32(y) / 2 ** (audiosegment.sample_width * 8)
+
+	maxvalue = max(np.amax(y), 2 ** 16)
+	return audiosegment.frame_rate, np.float32(y) / maxvalue  # (1/audiosegment.sample_width * 32)
 
 
 def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=1.0):
@@ -104,7 +106,7 @@ def getoffset(offset, endtime, song):
 
 
 def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name):
-	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10))
+	song = Audio2p(*read(beatmap_path + audio_name))
 
 	filenames = getfilenames(beatmap)
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
