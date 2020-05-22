@@ -21,8 +21,8 @@ class Accuracy(FrameObject):
 		self.curscore = 0
 		self.gap = gap * 0.5 * Settings.scale
 		self.sizegap = self.gap - self.frames[0].size[0]
-		self.y = frames[1] + self.frames[10].size[1]/2  # 67 * Settings.scale
-		self.startx = 1347 * Settings.scale
+		self.y = frames[1] + self.frames[10].size[1]/2 - self.gap  # 67 * Settings.scale
+		self.startx = 1347 * Settings.scale + self.gap//2
 
 	def update_acc(self, hitresult):
 		self.maxscore += 300
