@@ -46,8 +46,8 @@ class Background(FrameObject):
 			self.step = -self.interval * 60/Settings.fps
 
 		if int(self.frame_index) <= 0:
-			# if inbreak:
-			np.fill(0)
+			if inbreak or cur_time < self.map_start:
+				np.fill(0)
 			return
 
 		super().add_to_frame(background, Settings.width//2, Settings.height//2)

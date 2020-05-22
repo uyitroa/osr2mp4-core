@@ -121,7 +121,7 @@ class FrameObjects:
 
 		self.background = Background(frames.bg, beatmap.start_time - timepreempt)
 		self.sections = Sections(frames.sections)
-		self.scorebarbg = ScorebarBG(frames.scorebarbg)
+		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt)
 		self.scorebar = Scorebar(frames.scorebar, beatmap)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
 

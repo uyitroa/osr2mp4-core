@@ -31,7 +31,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 
 	component.background.add_to_frame(img, np_img, frame_info.cur_time, in_break)
-	component.scorebarbg.add_to_frame(img, in_break)
+	component.scorebarbg.add_to_frame(img, frame_info.cur_time, in_break)
 	component.timepie.add_to_frame(np_img, img, frame_info.cur_time, component.scorebarbg.h, component.scorebarbg.alpha)
 	component.scorebar.add_to_frame(img, frame_info.cur_time)
 	component.arrowwarning.add_to_frame(img, frame_info.cur_time)
