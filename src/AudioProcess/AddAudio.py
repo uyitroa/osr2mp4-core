@@ -1,16 +1,41 @@
 from AudioProcess.Hitsound import Hitsound
-from AudioProcess.Utils import overlay
+from AudioProcess.Utils import overlay, getfilename
+from EEnum.EAudio import Sound
 
 
 class HitsoundManager:
 	def __init__(self, beatmap):
 		self.hitobjects = beatmap.hitobjects
 		self.breakperiods = beatmap.breakperiods
+		self.timingpoint = beatmap.timing_point
+		self.timingpoint_index = 0
 		self.spincooldown = 0
 		self.prevspin = None
 		self.prevbonusscore = None
 		self.breakperiod_i = 0
 		self.sectionadded = False
+
+		self.hitsoundset = {"0": "normal", "1": "whistle", "2": "finish", "3": "clap"}
+		self.sliderset = {"0": "slide", "1": "whilstle"}
+		self.sampleset = {"0": "normal", "1": "normal", "2": "soft", "3": "drum"}
+
+	def getvolume(self, samplevolume):
+		if float(samplevolume) == 0:
+			return self.timingpoint[self.timingpoint_index]["Volume"]/100
+		return float(samplevolume)/100
+
+	def updatetimingpoint(self, my_info, index, song):
+		# use next off_set or not
+
+		cur_time = my_info[index].time
+		if type(my_info[index].more).__name__ == "Circle":
+			cur_time = my_info[index].timestamp
+		if type(my_info[index].more).__name__ == "Slider":
+			slidertime = my_info[index].timestamp + self.hitobjects[my_info[index].id]["duration"] * (my_info[index].more.arrowindex-1)
+			cur_time = max(cur_time, slidertime)
+
+		while cur_time >= self.timingpoint[self.timingpoint_index + 1]["Offset"] - 1:
+			self.timingpoint_index += 1
 
 	def addsectionsound(self, my_info, index, song):
 		if self.breakperiods[self.breakperiod_i]["End"] < my_info[index].time:
@@ -23,7 +48,6 @@ class HitsoundManager:
 
 		self.sectionadded = True
 		half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
-		print(half)
 		if breakperiod["End"] - breakperiod["Start"] > 2000:
 			if my_info[index].hp < 0.5:
 				sound = Hitsound.sectionfail
@@ -40,21 +64,35 @@ class HitsoundManager:
 	def addhitsound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Circle":
 			if my_info[index].hitresult is not None and my_info[index].hitresult > 0:
-				overlay(my_info[index].time, song, Hitsound.normalhitnormal)
+				objectindex = my_info[index].id
+				my_dict = self.hitobjects[objectindex]
+
+				tt = "soundcircle"
+				hitvolume = my_dict["hitSample"][Sound.volume]
+				if my_info[index].more.sliderhead:
+					tt = "soundhead"
+					hitvolume = "0"
+
+				for f in my_dict[tt]:
+					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(hitvolume))
 
 	def addslidersound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Slider":
 			objectindex = my_info[index].id
+			my_dict = self.hitobjects[objectindex]
 
 			if my_info[index].more.hitvalue == 10:
-				overlay(my_info[index].time, song, Hitsound.normalslidertick)
+				for f in my_dict["soundtick"]:
+					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
 
 			if my_info[index].more.hitvalue >= 30 and not my_info[index].more.end:  # in case sliderend and sliderarrow has same time because fast slider so need >= 30
-				overlay(my_info[index].time, song, Hitsound.normalhitnormal)
+				for f in my_dict["soundend"]:
+					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
 
 			if my_info[index].hitresult is not None and my_info[index].hitresult > 0:
 				endtime = self.hitobjects[objectindex]["end time"]
-				overlay(endtime, song, Hitsound.normalhitnormal)
+				for f in my_dict["soundend"]:
+					overlay(endtime, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
 
 	def addspinnerhitsound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Spinner":

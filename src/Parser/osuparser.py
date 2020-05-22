@@ -88,8 +88,8 @@ class Beatmap:
 				my_dict["BeatDuration"] = - float(items[1]) * inherited / 100
 			my_dict["Base"] = inherited
 			my_dict["Meter"] = int(items[2])
-			my_dict["SampleSet"] = int(items[3])
-			my_dict["SampleIndex"] = int(items[4])
+			my_dict["SampleSet"] = items[3]
+			my_dict["SampleIndex"] = items[4]
 			my_dict["Volume"] = float(items[5])
 			my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
@@ -150,6 +150,7 @@ class Beatmap:
 				my_dict["end time"] = my_dict["time"]
 				my_dict["end x"] = my_dict["x"]
 				my_dict["end y"] = my_dict["y"]
+				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 5:
 					my_dict["hitSample"] = osuobject[5]
 				else:
@@ -225,6 +226,7 @@ class Beatmap:
 
 				baiser.clear()
 
+				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:
 					my_dict["edgeSounds"] = osuobject[8]
 					my_dict["edgeSets"] = osuobject[9]
@@ -233,6 +235,8 @@ class Beatmap:
 					else:
 						my_dict["hitSample"] = "0:0:0:0:"
 				else:
+					my_dict["edgeSounds"] = "{}|{}".format(osuobject[4], osuobject[4])
+					my_dict["edgeSets"] = "0:0|0:0"
 					my_dict["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[3]):

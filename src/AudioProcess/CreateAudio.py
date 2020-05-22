@@ -1,3 +1,4 @@
+from copy import deepcopy
 from multiprocessing import Process
 from recordclass import recordclass
 from scipy.io.wavfile import write
@@ -6,6 +7,7 @@ from pydub import AudioSegment
 from pydub import exceptions
 from AudioProcess.AddAudio import HitsoundManager
 from AudioProcess.Hitsound import Hitsound
+from AudioProcess.Utils import getfilenames
 
 Audio2p = recordclass("Audio2p", "rate audio")
 
@@ -33,7 +35,7 @@ def pydubtonumpy(audiosegment):
 		y1[:, 0] = y
 		y1[:, 1] = y
 		y = y1
-	return audiosegment.frame_rate, np.float32(y) / 2 ** (audiosegment.sample_width * 8 - 1)
+	return audiosegment.frame_rate, np.float32(y) / 2 ** (audiosegment.sample_width * 8)
 
 
 def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=1.0):
@@ -55,21 +57,34 @@ def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=
 		return 1, np.zeros((0, 2), dtype=np.float32)
 
 
-def setup(skinpath, defaultpath, audiopath, settings=None):
+def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, addvolume=0, speed=1.0):
+	try:
+		return read(beatmappath + filename + "." + "wav", addvolume=addvolume, speed=speed)
+	except FileNotFoundError:
+		filename = ''.join(filter(lambda x: not x.isdigit(), filename))
+		return getaudiofromfile(filename, path, defaultpath, addvolume=addvolume, speed=speed)
+	except exceptions.CouldntDecodeError:
+		return 1, np.zeros((0, 2), dtype=np.float32)
 
-	song = Audio2p(*read(audiopath, addvolume=-10))
-	Hitsound.normalhitnormal = Audio2p(*getaudiofromfile("normal-hitnormal", skinpath, defaultpath))
-	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath))
+
+def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
+
+	bmapindex = 0
+	skinindex = 1
+
+	for f in filenames[bmapindex]:
+		Hitsound.hitsounds[f] = Audio2p(*getaudiofrombeatmap(f, beatmappath, skinpath, defaultpath))
+	for f in filenames[skinindex]:
+		Hitsound.hitsounds[f] = Audio2p(*getaudiofromfile(f, skinpath, defaultpath))
+
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath))
-	Hitsound.normalslidertick = Audio2p(*getaudiofromfile("normal-slidertick", skinpath, defaultpath))
+	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath))
 	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath))
 	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath))
 
 	for x in range(10, 20):
 		speed = x/10
 		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, speed=speed)))
-
-	return song
 
 
 def getoffset(offset, endtime, song):
@@ -89,12 +104,16 @@ def getoffset(offset, endtime, song):
 
 
 def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name):
-	song = setup(skin_path, default_skinpath, beatmap_path + audio_name)
+	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10))
+
+	filenames = getfilenames(beatmap)
+	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
 
 	hitsoundm = HitsoundManager(beatmap)
 
 	for x in range(len(my_info)):
 
+		hitsoundm.updatetimingpoint(my_info, x, song)
 		hitsoundm.addhitsound(my_info, x, song)
 		hitsoundm.addslidersound(my_info, x, song)
 		hitsoundm.addspinnerhitsound(my_info, x, song)
@@ -112,6 +131,8 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 	beatmap_path = Paths.beatmap
 	default_skinP = SkinPaths.default_path
 	skin_path = SkinPaths.path
+
+	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
 		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name,)

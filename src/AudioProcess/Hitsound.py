@@ -1,8 +1,7 @@
 class Hitsound:
-	normalhitnormal = None
+	hitsounds = {}
 	miss = None
 	spinnerbonus = None
 	spinnerspin = []
-	normalslidertick = None
 	sectionfail = None
 	sectionpass = None
