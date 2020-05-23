@@ -7,7 +7,7 @@ from pydub import AudioSegment
 from pydub import exceptions
 from AudioProcess.AddAudio import HitsoundManager
 from AudioProcess.Hitsound import Hitsound
-from AudioProcess.Utils import getfilenames
+from AudioProcess.Utils import getfilenames, nextpowerof2
 
 Audio2p = recordclass("Audio2p", "rate audio")
 
@@ -36,8 +36,8 @@ def pydubtonumpy(audiosegment):
 		y1[:, 1] = y * 0.5
 		y = y1
 
-	maxvalue = max(np.amax(y), 2 ** 16)
-	return audiosegment.frame_rate, np.float32(y) / maxvalue  # (1/audiosegment.sample_width * 32)
+	maxvalue = max(nextpowerof2(np.amax(y)) * 2, 2 ** 16)
+	return audiosegment.frame_rate, np.float32(y) / maxvalue
 
 
 def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=1.0):
