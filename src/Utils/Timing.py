@@ -1,4 +1,5 @@
 from CheckSystem.Judgement import DiffCalculator
+from EEnum.EReplay import Replays
 from Utils.skip import search_time, search_osrindex
 
 
@@ -21,11 +22,13 @@ def get_offset(beatmap, start_index, end_index, replay_event):
 def find_time(starttime, endtime, replay, replay_start):
 
 	starttime *= 1000
+	starttime += replay[0][Replays.TIMES]
 	# starttime += replay_start
 
 	if endtime != -1:
 		endtime *= 1000
 		# endtime += replay_start
+		endtime += replay[0][Replays.TIMES]
 
 	startindex = None
 
