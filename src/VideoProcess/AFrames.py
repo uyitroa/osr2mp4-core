@@ -1,9 +1,19 @@
+from ImageProcess.Objects.RankingScreens.Menuback import Menuback
+from ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
+from ImageProcess.Objects.RankingScreens.RankingAccuracy import RankingAccuracy
+from ImageProcess.Objects.RankingScreens.RankingCombo import RankingCombo
+from ImageProcess.Objects.RankingScreens.RankingGrade import RankingGrade
+from ImageProcess.Objects.RankingScreens.RankingGraph import RankingGraph
+from ImageProcess.Objects.RankingScreens.RankingHitresults import RankingHitresults
+from ImageProcess.Objects.RankingScreens.RankingPanel import RankingPanel
 from ImageProcess.Objects.Components.Scoreboard import Scoreboard
 from ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from ImageProcess.Objects.Components.Background import Background
 from ImageProcess.Objects.Components.Scorebar import Scorebar
 from ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
 from ImageProcess.Objects.Components.Sections import Sections
+from ImageProcess.Objects.RankingScreens.RankingReplay import RankingReplay
+from ImageProcess.Objects.RankingScreens.RankingTitle import RankingTitle
 from ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
 from ImageProcess.Objects.Components.Followpoints import FollowPointsManager
 from ImageProcess.Objects.Components.TimePie import TimePie
@@ -26,6 +36,14 @@ from ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, pre
 from ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail, prepare_cursormiddle
 from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
 from ImageProcess.PrepareFrames.Components.Background import prepare_background
+from ImageProcess.PrepareFrames.RankingScreens.BackButton import prepare_menuback
+from ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
+from ImageProcess.PrepareFrames.RankingScreens.RankingAccuracy import prepare_rankingaccuracy
+from ImageProcess.PrepareFrames.RankingScreens.RankingCombo import prepare_rankingcombo
+from ImageProcess.PrepareFrames.RankingScreens.RankingGrade import prepare_rankinggrade
+from ImageProcess.PrepareFrames.RankingScreens.RankingGraph import prepare_rankinggraph
+from ImageProcess.PrepareFrames.RankingScreens.RankingHitresults import prepare_rankinghitresults
+from ImageProcess.PrepareFrames.RankingScreens.RankingPanel import prepare_rankingpanel
 from ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
 from ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
 from ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
@@ -35,6 +53,9 @@ from ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcircle
 from ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
 from ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
 from ImageProcess.PrepareFrames.HitObjects.Spinner import prepare_spinner
+from ImageProcess.PrepareFrames.RankingScreens.RankingReplay import prepare_rankingreplay
+from ImageProcess.PrepareFrames.RankingScreens.RankingScore import prepare_rankingscorecounter
+from ImageProcess.PrepareFrames.RankingScreens.RankingTitle import prepare_rankingtitle
 from ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
 from ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
 from ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
@@ -84,6 +105,18 @@ class PreparedFrames:
 		self.scoreboard = prepare_scoreboard(Settings.scale)
 		self.scoreboardeffect = prepare_scoreboardeffect(Settings.scale)
 
+		self.rankingpanel = prepare_rankingpanel(Settings.scale, self.bg)
+		self.rankinghitresults = prepare_rankinghitresults(Settings.scale)
+		self.rankingscore = prepare_rankingscorecounter(self.scorenumbers)
+		self.rankinggrades = prepare_rankinggrade(Settings.scale)
+		self.rankingtitle = prepare_rankingtitle(Settings.scale)
+		self.rankingcombo = prepare_rankingcombo(Settings.scale)
+		self.rankingaccuracy = prepare_rankingaccuracy(Settings.scale)
+		self.menuback = prepare_menuback(Settings.scale)
+		self.modicons = prepare_modicons(Settings.scale)
+		self.rankingreplay = prepare_rankingreplay(Settings.scale)
+		self.rankinggraph = prepare_rankinggraph(Settings.scale)
+
 
 class FrameObjects:
 	def __init__(self, frames, skin, beatmap, replay_info, check, hd):
@@ -126,3 +159,14 @@ class FrameObjects:
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
 
 		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info.player_name)
+
+		self.rankingpanel = RankingPanel(frames.rankingpanel)
+		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
+		self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, beatmap)
+		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
+		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
+		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, skin.fonts["ScoreOverlap"])
+		self.menuback = Menuback(frames.menuback, skin)
+		self.modicons = ModIcons(frames.modicons, replay_info)
+		self.rankingreplay = RankingReplay(frames.rankingreplay)
+		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info)

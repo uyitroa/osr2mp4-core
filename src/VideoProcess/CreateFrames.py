@@ -13,7 +13,7 @@ from VideoProcess.Setup import getlist, setup_draw
 from global_var import Settings, Paths
 
 
-def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, start_index, end_index, mpp, hd):
+def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, start_index, end_index, mpp, hd, showranking):
 
 	diffcalculator = DiffCalculator(beatmap.diff)
 	frames = PreparedFrames(skin, diffcalculator, beatmap, hd)
@@ -44,7 +44,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			globalvars = getlist()
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars))
+				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars, showranking and i == mpp-1))
 
 			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars))
 
@@ -78,8 +78,16 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
-			# cv2.putText(np_img, str(resultinfo[min(len(resultinfo) - 1, updater.info_index)].hitresult) + " " + str(resultinfo[min(len(resultinfo) - 1, updater.info_index)].more), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)
+
 			if status:
+				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+				writer.write(im)
+
+		if showranking:
+			component.rankingpanel.start_show()
+			for x in range(200):
+				# np_img.fill(0)
+				component.rankingpanel.add_to_frame(pbuffer)
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)
 

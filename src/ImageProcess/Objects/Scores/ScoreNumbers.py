@@ -15,6 +15,8 @@ class ScoreNumbers:
 
 		self.score_dot = YImage(score_dot, scale, prefix="ScorePrefix")
 
+		self.score_x = YImage(score_x, scale, prefix="ScorePrefix")
+
 		self.combo_images = []
 		for x in range(10):
 			self.combo_images.append(YImage(scoreprefix + str(x), scale, prefix="ComboPrefix"))

@@ -1,6 +1,5 @@
 from ImageProcess.Animation import size
 from ImageProcess.PrepareFrames.YImage import YImages
-from global_var import Settings
 
 hitprefix = "hit"
 default_size = 128

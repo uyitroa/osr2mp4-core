@@ -97,9 +97,14 @@ class Skin:
 			with open(self.default_path + 'skin.ini', 'rb') as file:
 				lines = file.readlines()
 
+		section = None
+
 		for line in lines:
 			# remove shit like `\r\n` and leading and trailling whitespaces
-			line = line.decode().strip()
+			try:
+				line = line.decode().strip()
+			except UnicodeDecodeError:
+				continue
 			line = raw(line)
 
 			# removing comments
@@ -111,11 +116,14 @@ class Skin:
 
 			# if section tag
 			if '[' in line and ']' in line:
+				oldsection = section
 				section = getsection(line)
 				if section is not None:
 					continue
 				else:
-					raise Exception('invalid section name found: ' + line[1:-1])
+					section = oldsection
+					continue
+					#raise Exception('invalid section name found: ' + line[1:-1])
 
 			sl = line.split(':')
 			try:
@@ -140,6 +148,7 @@ class Skin:
 		self.general['SliderStyle'] = iint(self.general.get('SliderStyle', 0))
 		self.general['AllowSliderBallTint'] = iint(self.general.get('AllowSliderBallTint', 0))
 		self.general['SliderBallFlip'] = iint(self.general.get('SliderBallFlip', 1))
+		self.general['AnimationFramerate'] = iint(self.general.get('AnimationFramerate  ', 1))
 
 	def parse_colors(self):
 		for key, value in self.colours.items():

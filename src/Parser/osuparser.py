@@ -8,6 +8,7 @@ class Beatmap:
 		self.info = info
 		self.general = {}
 		self.diff = {}
+		self.meta = {}
 		self.bg = []
 		self.breakperiods = []
 		self.timing_point = []
@@ -22,6 +23,7 @@ class Beatmap:
 		self.hr = hr
 
 		self.parse_general()
+		self.parse_meta()
 		self.parse_diff()
 
 		self.parse_event()
@@ -46,6 +48,14 @@ class Beatmap:
 			if item != "":
 				my_list = item.split(": ")
 				self.general[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+
+	def parse_meta(self):
+		general = self.info[3]
+		general = general.split("\n")
+		for item in general:
+			if item != "":
+				my_list = item.split(":")
+				self.meta[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 
 	def parse_diff(self):
 		general = self.info[4]

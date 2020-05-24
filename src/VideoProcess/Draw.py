@@ -58,10 +58,6 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 	frame_info.cur_time += Settings.timeframe / Settings.fps
 
-	# print(cursor_event.event[Replays.CURSOR_X], cursor_event.event[Replays.CURSOR_Y])
-	# cv2.putText(np_img, str(cursor_event.event[Replays.CURSOR_X]) + " " + str(cursor_event.event[Replays.CURSOR_Y]), (100, 100),
-	#             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)
-
 
 	# choose correct osr index for the current time because in osr file there might be some lag
 	tt = nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
@@ -73,7 +69,7 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	return img.size[0] != 1
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths, showranking):
 	asdfasdf = time.time()
 	print("process start")
 
@@ -102,9 +98,40 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, r
 			timer2 += time.time() - asdf
 		# print("unlocked", timer2)
 
+	if showranking:
+		component.rankingpanel.start_show()
+		component.rankinghitresults.start_show()
+		component.rankingtitle.start_show()
+		component.rankingcombo.start_show()
+		component.rankingaccuracy.start_show()
+		component.rankinggrade.start_show()
+		component.menuback.start_show()
+		component.modicons.start_show()
+		component.rankingreplay.start_show()
+		component.rankinggraph.start_show()
+		for x in range(200):
+			# np_img.fill(0)
+			component.rankingpanel.add_to_frame(pbuffer)
+			component.rankinghitresults.add_to_frame(pbuffer)
+			component.rankingtitle.add_to_frame(pbuffer, np_img)
+			component.rankingcombo.add_to_frame(pbuffer)
+			component.rankingaccuracy.add_to_frame(pbuffer)
+			component.rankinggrade.add_to_frame(pbuffer)
+			component.menuback.add_to_frame(pbuffer)
+			component.modicons.add_to_frame(pbuffer)
+			component.rankingreplay.add_to_frame(pbuffer)
+			component.rankinggraph.add_to_frame(pbuffer)
+
+			conn.send(1)
+			i = conn.recv()
+
 	conn.send(10)
 	print("\nprocess done")
 	print("Drawing time:", timer)
 	print("Total time:", time.time() - asdfasdf)
 	print("Waiting time:", timer2)
 	print("Changing value time:", timer3)
+
+
+def draw_rankingpanel():
+	pass
