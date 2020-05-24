@@ -85,9 +85,28 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 		if showranking:
 			component.rankingpanel.start_show()
+			component.rankinghitresults.start_show()
+			component.rankingtitle.start_show()
+			component.rankingcombo.start_show()
+			component.rankingaccuracy.start_show()
+			component.rankinggrade.start_show()
+			component.menuback.start_show()
+			component.modicons.start_show()
+			component.rankingreplay.start_show()
+			component.rankinggraph.start_show()
 			for x in range(200):
 				# np_img.fill(0)
 				component.rankingpanel.add_to_frame(pbuffer)
+				component.rankinghitresults.add_to_frame(pbuffer)
+				component.rankingtitle.add_to_frame(pbuffer, np_img)
+				component.rankingcombo.add_to_frame(pbuffer)
+				component.rankingaccuracy.add_to_frame(pbuffer)
+				component.rankinggrade.add_to_frame(pbuffer)
+				component.menuback.add_to_frame(pbuffer)
+				component.modicons.add_to_frame(pbuffer)
+				component.rankingreplay.add_to_frame(pbuffer)
+				component.rankinggraph.add_to_frame(pbuffer)
+
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)
 
