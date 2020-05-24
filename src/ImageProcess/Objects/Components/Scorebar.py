@@ -1,7 +1,7 @@
 from CheckSystem.Health import HealthProcessor
 from ImageProcess import imageproc
 from ImageProcess.Objects.Components.AScorebar import AScorebar
-from global_var import Settings
+from global_var import Settings, SkinPaths
 
 
 class Scorebar(AScorebar):
@@ -51,8 +51,8 @@ class Scorebar(AScorebar):
 	def add_to_frame(self, background, cur_time):
 		AScorebar.animate(self)
 
-		self.frame_index += 60/Settings.fps
-		self.frame_index = int(self.frame_index % len(self.frames))
+		self.frame_index += SkinPaths.skin_ini.general["AnimationFramerate"]/Settings.fps
+		self.frame_index = self.frame_index % len(self.frames)
 
 		self.drainhp(cur_time)
 
@@ -62,7 +62,7 @@ class Scorebar(AScorebar):
 		elif self.step <= 0 and self.hp < self.healthprocessor.health_value:
 			self.hp = self.healthprocessor.health_value
 
-		img = self.frames[self.frame_index]
+		img = self.frames[int(self.frame_index)]
 		img = img.crop((0, 0, int(img.size[0] * self.hp), img.size[1]))
 		imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)
 

@@ -1,6 +1,6 @@
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from global_var import Settings, SkinPaths
 
 
 class HitResult(FrameObject):
@@ -50,7 +50,7 @@ class HitResult(FrameObject):
 				else:
 					continue
 
-			img = self.frames[score][self.hitresults[i][3]]
+			img = self.frames[score][int(self.hitresults[i][3])]
 
 			x, y = self.hitresults[i][1], self.hitresults[i][2]
 			imageproc.add(img, background, x, y, alpha=self.hitresults[i][4] / 100)
@@ -59,8 +59,8 @@ class HitResult(FrameObject):
 				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
 				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2 * 60/Settings.fps)
 
-			self.hitresults[i][3] = int(min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/Settings.fps))
-			self.hitresults[i][5] += self.interval * 60/Settings.fps
+			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/Settings.fps)
+			self.hitresults[i][5] += self.interval * SkinPaths.skin_ini.general["AnimationFramerate"]/Settings.fps
 
 			if self.hitresults[i][5] >= self.time - self.interval * 10:
 				self.hitresults[i][4] = max(0, self.hitresults[i][4] - (10/self.multiplieranimation[score]) * 60/Settings.fps)
