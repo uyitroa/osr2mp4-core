@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 from multiprocessing import Process
 from recordclass import recordclass
@@ -8,11 +9,16 @@ from pydub import exceptions
 from AudioProcess.AddAudio import HitsoundManager
 from AudioProcess.Hitsound import Hitsound
 from AudioProcess.Utils import getfilenames, nextpowerof2
+from global_var import Paths, SkinPaths, Settings
 
 Audio2p = recordclass("Audio2p", "rate audio")
 
 
 def read(f, addvolume=0, speed=1.0, changepitch=True):
+	if speed != 1.0 and not changepitch:
+		os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" spedup.mp3 -y'.format(Paths.ffmpeg, f, speed))
+		f = "spedup.mp3"
+
 	if f[-1] == "3":
 		a = AudioSegment.from_mp3(f)
 	else:
@@ -105,8 +111,9 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name):
-	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10))
+def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt):
+	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10, speed=Settings.timeframe/1000, changepitch=not dt))
+	song.rate /= Settings.timeframe/1000
 
 	filenames = getfilenames(beatmap)
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
@@ -124,12 +131,11 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
-	write('audio.mp3', song.rate, out)
+	write('audio.mp3', round(song.rate * Settings.timeframe/1000), out)
 
 
 
-def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
-	from global_var import Paths, SkinPaths
+def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp, dt):
 	beatmap_path = Paths.beatmap
 	default_skinP = SkinPaths.default_path
 	skin_path = SkinPaths.path
@@ -137,10 +143,10 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp):
 	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
-		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name,)
+		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name)
+		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt)
 		return None
