@@ -86,7 +86,7 @@ class HitsoundManager:
 					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
 
 			if my_info[index].more.hitvalue >= 30 and not my_info[index].more.end:  # in case sliderend and sliderarrow has same time because fast slider so need >= 30
-				for f in my_dict["soundend"]:
+				for f in my_dict["soundarrow{}".format(my_info[index].more.arrowindex-1)]:
 					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
 
 			if my_info[index].hitresult is not None and my_info[index].hitresult > 0:

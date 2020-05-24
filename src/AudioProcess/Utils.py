@@ -100,7 +100,7 @@ def getfilenames(beatmap):
 			continue
 
 		# use next off_set or not
-		while my_dict["time"] >= beatmap.timing_point[timingpoint_i + 1]["Offset"]:
+		while my_dict["time"] >= beatmap.timing_point[timingpoint_i + 1]["Offset"]-1:
 			timingpoint_i += 1
 		soundinfo = my_dict["hitSample"].split(":")
 
@@ -117,7 +117,7 @@ def getfilenames(beatmap):
 
 			slidersoundinfo = my_dict["edgeSets"].split("|")
 			slidersoundinfo[0] = slidersoundinfo[0].split(":")
-			slidersoundinfo[1] = slidersoundinfo[1].split(":")
+			slidersoundinfo[-1] = slidersoundinfo[-1].split(":")
 
 			sliderhitsound = my_dict["edgeSounds"].split("|")
 
@@ -125,11 +125,20 @@ def getfilenames(beatmap):
 			f = getfilename(beatmap.timing_point[timingpoint_i], slidersoundinfo[0], sampleset, sliderhitsound[0], hitsoundset, "circle")
 			addfilename(beatmapsound, skinsound, slidersoundinfo[0], beatmap.timing_point[timingpoint_i], f, my_dict, "soundhead")
 
+			for ii in range(1, len(slidersoundinfo)-1):
+				slidersoundinfo[ii] = slidersoundinfo[ii].split(":")
+				end_index = timingpoint_i
+				while my_dict["time"] + my_dict["duration"] * ii >= beatmap.timing_point[end_index + 1]["Offset"]-1:
+					end_index += 1
+				f = getfilename(beatmap.timing_point[end_index], slidersoundinfo[ii], sampleset, sliderhitsound[ii], hitsoundset, "circle")
+				addfilename(beatmapsound, skinsound, slidersoundinfo[ii], beatmap.timing_point[end_index], f, my_dict, "soundarrow{}".format(str(ii)))
+
+
 			end_index = timingpoint_i
-			while my_dict["time"] >= beatmap.timing_point[end_index + 1]["Offset"]:
+			while my_dict["end time"] >= beatmap.timing_point[end_index + 1]["Offset"]-1:
 				end_index += 1
-			f = getfilename(beatmap.timing_point[timingpoint_i], slidersoundinfo[1], sampleset, sliderhitsound[1], hitsoundset, "circle")
-			addfilename(beatmapsound, skinsound, slidersoundinfo[0], beatmap.timing_point[end_index], f, my_dict, "soundend")
+			f = getfilename(beatmap.timing_point[end_index], slidersoundinfo[-1], sampleset, sliderhitsound[-1], hitsoundset, "circle")
+			addfilename(beatmapsound, skinsound, slidersoundinfo[-1], beatmap.timing_point[end_index], f, my_dict, "soundend")
 
 			slidertickname = [sampleset[soundinfo[Sound.normalset]] + "-slidertick"]
 			addfilename(beatmapsound, skinsound, soundinfo, beatmap.timing_point[timingpoint_i], slidertickname, my_dict, "soundtick")
@@ -141,6 +150,7 @@ def getfilenames(beatmap):
 		addfilename(beatmapsound, skinsound, soundinfo, beatmap.timing_point[timingpoint_i], f, my_dict, "sound" + objtype)
 
 		my_dict["hitSample"] = soundinfo
+	print(beatmap.hitobjects[6])
 	return beatmapsound, skinsound
 
 

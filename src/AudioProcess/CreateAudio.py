@@ -43,7 +43,7 @@ def pydubtonumpy(audiosegment):
 		y = y1
 
 	maxvalue = max(nextpowerof2(np.amax(y)) * 2, 2 ** 16)
-	return audiosegment.frame_rate, np.float32(y) / maxvalue
+	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
 def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=1.0):
@@ -53,10 +53,14 @@ def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=
 		nxtfmt = "mp3"
 		if fmt == "mp3":
 			nxtfmt = "wav"
+		elif fmt == "wav":
+			nxtfmt = "ogg"
 
 		if defaultpath is not None:
 			if fmt == "mp3":
 				return getaudiofromfile(filename, path, defaultpath, fmt="wav")
+			elif fmt == "wav":
+				return getaudiofromfile(filename, path, defaultpath, fmt="ogg")
 			return getaudiofromfile(filename, defaultpath, None, nxtfmt)
 
 		return 1, np.zeros((0, 2), dtype=np.float32)
@@ -69,8 +73,11 @@ def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, addvolume=0, s
 	try:
 		return read(beatmappath + filename + "." + "wav", addvolume=addvolume, speed=speed)
 	except FileNotFoundError:
-		filename = ''.join(filter(lambda x: not x.isdigit(), filename))
-		return getaudiofromfile(filename, path, defaultpath, addvolume=addvolume, speed=speed)
+		try:
+			return read(beatmappath + filename + "." + "ogg", addvolume=addvolume, speed=speed)
+		except FileNotFoundError:
+			filename = ''.join(filter(lambda x: not x.isdigit(), filename))
+			return getaudiofromfile(filename, path, defaultpath, addvolume=addvolume, speed=speed)
 	except exceptions.CouldntDecodeError:
 		return 1, np.zeros((0, 2), dtype=np.float32)
 
@@ -90,8 +97,8 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath))
 	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath))
 
-	for x in range(10, 20):
-		speed = x/10
+	for x in range(100, 150, 5):
+		speed = x/100
 		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, speed=speed)))
 
 

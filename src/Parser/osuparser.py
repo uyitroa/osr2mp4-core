@@ -245,8 +245,11 @@ class Beatmap:
 					else:
 						my_dict["hitSample"] = "0:0:0:0:"
 				else:
-					my_dict["edgeSounds"] = "{}|{}".format(osuobject[4], osuobject[4])
-					my_dict["edgeSets"] = "0:0|0:0"
+					my_dict["edgeSounds"] = osuobject[4]
+					my_dict["edgeSets"] = "0:0"
+					for i in range(my_dict["repeated"]):
+						my_dict["edgeSounds"] += "|{}".format(osuobject[4])
+						my_dict["edgeSets"] += "|0:0"
 					my_dict["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[3]):
