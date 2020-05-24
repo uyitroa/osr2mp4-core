@@ -10,7 +10,7 @@ def getcirclehitsound(n):
 	whistle = n & 2 == 2
 	finish = n & 4 == 4
 	clap = n & 8 == 8
-	normal = n & 0 == 0  #  not (whistle or finish or clap)
+	normal = False  #  not (whistle or finish or clap)
 	return normal, whistle, finish, clap
 
 
@@ -50,20 +50,21 @@ def getfilename(timing, soundinfo, sampleset, hitsound, hitsoundset, objtype):
 	sample_name = sampleset[samplekey]
 
 	additional_name = sampleset[soundinfo[Sound.additionalset]]
-	if objtype == "slider":
+	if objtype == "slider" or soundinfo[Sound.additionalset] == "0":
 		additional_name = sample_name
 
 	filenames = []
 	if len(soundinfo) > 4 and soundinfo[Sound.filename] != '':
 		filenames = [soundinfo[Sound.filename]]
 	else:
+		filenames.append(sample_name + "-" + objname[objtype] + "normal")
+		if index_name != "0" and index_name != "1":
+			filenames[-1] += index_name
 		for x in range(len(hitsound_names)):
-			filenames.append(sample_name + "-" + objname[objtype] + hitsound_names[x])
-			if index_name != "0":
-				filenames[-1] += index_name
 			if objtype == "circle":
 				filenames.append(additional_name + "-" + objname[objtype] + hitsound_names[x])
-				# filenames[-1] += index_name  # so we can have the same name for both
+				if index_name != "0" and index_name != "1":
+					filenames[-1] += index_name
 	return filenames
 
 

@@ -106,7 +106,7 @@ def getoffset(offset, endtime, song):
 
 
 def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name):
-	song = Audio2p(*read(beatmap_path + audio_name))
+	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10))
 
 	filenames = getfilenames(beatmap)
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
