@@ -12,6 +12,41 @@ from global_var import Settings, Paths, GameplaySettings
 BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playername x y alpha id")
 
 
+def getsummods(mods):
+	if mods == "*":
+		return "*"
+	modidct = {
+		"NM": 0,
+		"NF": 1,
+		"EZ": 2,
+		"HD": 8,
+		"HR": 16,
+		"SD": 32,
+		"DT": 64,
+		"RX": 128,
+		"HT": 256,
+		"NC": 576,
+		"FL": 1024,
+		"AT": 2048,
+		"SO": 4096,
+		"AP": 8192,
+		"PF": 16384
+	}
+
+	summod = 0
+
+	for i in mods:
+		summod += modidct[i]
+
+	return summod
+
+
+def getmods(mods):
+	if mods == "*":
+		return "*"
+	return re.findall('..', mods)
+
+
 class Scoreboard(FrameObject):
 	def __init__(self, frames, scorenetryframes, effectframes, replay_info, beatmap):
 		FrameObject.__init__(self, frames)
@@ -72,24 +107,34 @@ class Scoreboard(FrameObject):
 		self.scoreboards[0].alpha = 1
 
 	def getscores(self):
-		if GameplaySettings.settings["Global leaderboard"]:
-			self.getglobalscores()
-		else:
-			self.getlocalscores()
+		mods = getmods(GameplaySettings.settings["Mods leaderboard"])
 
-	def getglobalscores(self):
+		if GameplaySettings.settings["Global leaderboard"]:
+			self.getglobalscores(mods)
+		else:
+			self.getlocalscores(mods)
+
+	def getglobalscores(self, mods):
 		k = GameplaySettings.settings["api key"]
 		if k is None:
 			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
-			self.getlocalscores()
+			self.getlocalscores(mods)
 			return
 
-		r = requests.post("https://osu.ppy.sh/api/get_scores", data={'k': k, 'b': self.beatmapid})
+
+		if mods == "*":
+			data = {'k': k, 'b': self.beatmapid}
+		else:
+			summods = getsummods(mods)
+			data = {'k': k, 'b': self.beatmapid, 'mods': summods}
+
+
+		r = requests.post("https://osu.ppy.sh/api/get_scores", data=data)
 		data = json.loads(r.text)
 
 		if "error" in data:
 			print("\n\n {} \n\n".format(data["error"]))
-			self.getlocalscores()
+			self.getlocalscores(mods)
 			return
 
 		for i in range(len(data)):
@@ -100,10 +145,15 @@ class Scoreboard(FrameObject):
 		self.oldrankid = None
 
 
-	def getlocalscores(self):
+	def getlocalscores(self, mods):
 		scores = getscores(self.beatmaphash, Paths.osu + "scores.db")
 		for i in range(len(scores["scores"])):
 			score = scores["scores"][i]
+
+			summods = getsummods(mods)
+			if summods != score["mods"]["modFlags"] and summods != "*":
+				continue
+
 			strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["score"]))  # add dot to every 3 digits
 			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["max_combo"]))
 			self.scoreboards.append(BoardInfo(strscore, strcombo, score["score"], score["max_combo"], score["player"], None, None, None, i))

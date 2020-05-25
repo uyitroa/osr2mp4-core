@@ -345,6 +345,7 @@ def parseMods(modFlags):
 			modObject[mod] = True
 		else:
 			modObject[mod] = False
+	modObject["modFlags"] = modFlags
 	return modObject
 
 
