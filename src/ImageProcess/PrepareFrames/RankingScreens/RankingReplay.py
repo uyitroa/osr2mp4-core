@@ -1,6 +1,6 @@
 from ImageProcess.PrepareFrames.YImage import YImage
 
-rankingreplay = "ranking-replay"
+rankingreplay = "pause-replay"
 
 
 def prepare_rankingreplay(scale):

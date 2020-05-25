@@ -37,8 +37,8 @@ class ModIcons(ARankingScreen):
 		if self.fade == self.FADEIN:
 
 			x = 1300 * Settings.scale
-			step_x = 35 * Settings.scale
+			step_x = 60 * Settings.scale
 			for mod in self.sortedmods:
 				if mod in self.mods:
-					imageproc.add(self.modframes[mod], background, x, 430 * Settings.scale, self.alpha)
+					imageproc.add(self.modframes[mod], background, x, 420 * Settings.scale, self.alpha)
 					x -= step_x

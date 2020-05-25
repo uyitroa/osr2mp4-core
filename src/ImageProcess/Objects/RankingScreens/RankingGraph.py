@@ -2,7 +2,7 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
-from global_var import Settings
+from global_var import Settings, SkinPaths
 
 
 class RankingGraph(ARankingScreen):
@@ -17,8 +17,16 @@ class RankingGraph(ARankingScreen):
 		else:
 			self.rankingperfect = Image.new("RGBA", (1, 1))
 
+
+		if SkinPaths.skin_ini.general["Version"] == 1:
+			self.y = 576
+			self.perfectx = 320
+		else:
+			self.y = 608
+			self.perfectx = 416
+
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			imageproc.add(self.rankinggraph, background, 256 * Settings.scale, 608 * Settings.scale, self.alpha, topleft=True)
-			imageproc.add(self.rankingperfect, background, 416 * Settings.scale, 688 * Settings.scale, self.alpha)
+			imageproc.add(self.rankinggraph, background, self.perfectx * Settings.scale, self.y * Settings.scale, self.alpha, topleft=True)
+			imageproc.add(self.rankingperfect, background, self.perfectx * Settings.scale, 688 * Settings.scale, self.alpha)

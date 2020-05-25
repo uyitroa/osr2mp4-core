@@ -14,7 +14,7 @@ def prepare_rankingscorecounter(scorenumber):
 	scorenumber.score_dot.change_size(1, 1)
 	hitresultimg.append(scorenumber.score_dot.img)
 
-	scorenumber.score_x.change_size(1, 1)
+	scorenumber.combo_x.change_size(1, 1)
 	hitresultimg.append(scorenumber.score_x.img)
 
 	scorenumber.score_percent.change_size(1, 1)

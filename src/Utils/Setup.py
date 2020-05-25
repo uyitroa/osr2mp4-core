@@ -14,6 +14,7 @@ def setupglobals(data, replay_info):
 	fps = data["FPS"]
 	width = data["Width"]
 	height = data["Height"]
+	osupath = data["osu! path"]
 
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
@@ -23,6 +24,9 @@ def setupglobals(data, replay_info):
 
 	if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
 		beatmap_path += "/"
+
+	if osupath[-1] != "/" and osupath[-1] != "\\":
+		osupath += "/"
 
 
 	if Mod.DoubleTime in replay_info.mod_combination or Mod.Nightcore in replay_info.mod_combination:
@@ -42,6 +46,7 @@ def setupglobals(data, replay_info):
 	Paths.output = output_path
 	Paths.ffmpeg = ffmpeg
 	Paths.beatmap = beatmap_path
+	Paths.osu = osupath
 
 
 	skin = Skin(skin_path, default_path)
@@ -50,4 +55,4 @@ def setupglobals(data, replay_info):
 	SkinPaths.path = skin_path
 	SkinPaths.default_path = default_path
 	SkinPaths.skin_ini = skin
-	SkinPaths.default_skin_ini = defaultskin
+	SkinPaths.default_skin_ini = skin

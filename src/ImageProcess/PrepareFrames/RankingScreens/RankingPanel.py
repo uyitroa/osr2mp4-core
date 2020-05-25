@@ -2,6 +2,7 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.PrepareFrames.YImage import YImage
+from global_var import SkinPaths
 
 rankingpanel = "ranking-panel"
 
@@ -18,6 +19,12 @@ def prepare_rankingpanel(scale, background):
 	blackbar = Image.new("RGBA", (background[-1].size[0], int(100 * scale)), (0, 0, 0, 200))
 
 	bg = background[-1].copy()
-	imageproc.add(img, bg, 0, 102 * scale, topleft=True)
+
+	if SkinPaths.skin_ini.general["Version"] == 1:
+		y = 74
+	else:
+		y = 102
+
+	imageproc.add(img, bg, 0, y * scale, topleft=True)
 	imageproc.add(blackbar, bg, 0, 0, topleft=True)
 	return [bg]

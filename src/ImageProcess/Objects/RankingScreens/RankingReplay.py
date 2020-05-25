@@ -15,4 +15,4 @@ class RankingReplay(ARankingScreen):
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			imageproc.add(self.rankingreplay, background, 950 * Settings.scale, 576 * Settings.scale, self.alpha, topleft=True)
+			imageproc.add(self.rankingreplay, background, Settings.width - self.rankingreplay.size[0]/2, 576 * Settings.scale, self.alpha)

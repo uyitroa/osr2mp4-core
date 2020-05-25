@@ -11,13 +11,13 @@ class RankingHitresults(ARankingScreen):
 		super().__init__(dummy)
 		self.replayinfo = replayinfo
 		self.numberframes = numberframes
-		self.gap = int(gap * Settings.scale * 0.5)
+		self.gap = gap * Settings.scale  #int(gap * Settings.scale * 0.5)
 		self.hitresultframes = frames
 
-		self.hitresultx = 150
-		self.hitresulty = 250
-		self.hitresultwidth = 300
-		self.hitresultheight = 100
+		self.hitresultx = 135
+		self.hitresulty = 255
+		self.hitresultwidth = 320
+		self.hitresultheight = 95
 		
 		self.hitresultgap = 75
 		self.snake = 5
@@ -45,7 +45,7 @@ class RankingHitresults(ARankingScreen):
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			self.draw_score(str(self.replayinfo.score), background, 165 * Settings.scale, 150 * Settings.scale, self.alpha, self.gap - 10 * Settings.scale)
+			self.draw_score(str(self.replayinfo.score), background, 180 * Settings.scale, 150 * Settings.scale, self.alpha, self.gap - 10 * Settings.scale)
 			self.draw_score(str(self.replayinfo.number_300s), background, self.hitresultx * Settings.scale, self.hitresulty * Settings.scale, self.alpha)
 			self.draw_score(str(self.replayinfo.number_100s), background, self.hitresultx * Settings.scale, (self.hitresulty + self.hitresultheight) * Settings.scale, self.alpha)
 			self.draw_score(str(self.replayinfo.number_50s), background, self.hitresultx * Settings.scale, (self.hitresulty + self.hitresultheight * 2) * Settings.scale, self.alpha)

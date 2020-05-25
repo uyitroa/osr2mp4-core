@@ -121,6 +121,7 @@ class PreparedFrames:
 class FrameObjects:
 	def __init__(self, frames, skin, beatmap, replay_info, check, hd):
 		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"])
+		rankinggap = 5
 
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
@@ -158,14 +159,14 @@ class FrameObjects:
 		self.scorebar = Scorebar(frames.scorebar, beatmap)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info.player_name)
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info)
 
 		self.rankingpanel = RankingPanel(frames.rankingpanel)
-		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
+		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap)
 		self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, beatmap)
-		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
-		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, skin.fonts["ScoreOverlap"])
-		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, skin.fonts["ScoreOverlap"])
+		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, rankinggap)
+		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, rankinggap)
+		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, rankinggap)
 		self.menuback = Menuback(frames.menuback, skin)
 		self.modicons = ModIcons(frames.modicons, replay_info)
 		self.rankingreplay = RankingReplay(frames.rankingreplay)

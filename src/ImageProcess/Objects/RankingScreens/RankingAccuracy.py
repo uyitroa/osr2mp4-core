@@ -2,7 +2,7 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
-from global_var import Settings
+from global_var import Settings, SkinPaths
 
 
 class RankingAccuracy(ARankingScreen):
@@ -14,10 +14,15 @@ class RankingAccuracy(ARankingScreen):
 		self.accuracy = str(round(score/maxscore * 100, 2))
 
 		self.numberframes = numberframes[1]
-		self.gap = int(gap * Settings.scale * 0.5)
+		self.gap = gap * Settings.scale
 
 		self.accuracyframes = frames
 		self.accuracyindex = 0
+
+		if SkinPaths.skin_ini.general["Version"] == 1:
+			self.y = 500
+		else:
+			self.y = 480
 
 
 	def draw_score(self, score_string, background, x, y, alpha):
@@ -35,9 +40,9 @@ class RankingAccuracy(ARankingScreen):
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			self.draw_score(self.accuracy, background, 325 * Settings.scale, 560 * Settings.scale, self.alpha)
+			self.draw_score(self.accuracy, background, 325 * Settings.scale, 552 * Settings.scale, self.alpha)
 
 			self.accuracyindex += 1000/Settings.fps
 			self.accuracyindex = self.accuracyindex % len(self.accuracyframes)
 
-			imageproc.add(self.accuracyframes[int(self.accuracyindex)], background, 291 * Settings.scale, 608 * Settings.scale, self.alpha, topleft=True)
+			imageproc.add(self.accuracyframes[int(self.accuracyindex)], background, 291 * Settings.scale, self.y * Settings.scale, self.alpha, topleft=True)
