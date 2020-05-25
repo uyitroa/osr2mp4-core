@@ -1,9 +1,16 @@
+from AudioProcess.Hitsound import Hitsound
 from EEnum.EAudio import Sound
 
 
-def overlay(time, song, hitsound, volume=1):
+def overlay(time, song, hitsound, volume=1.0):
 	index = int(time / 1000 * song.rate)
 	song.audio[index:index + len(hitsound.audio)] += hitsound.audio * 0.5 * volume
+
+
+def overlays(time, song, sounds, volume=1.0):
+	overlay(time, song, Hitsound.hitsounds[sounds[0]], volume=volume)
+	for f in sounds[1:]:
+		overlay(time, song, Hitsound.hitsounds[f], volume=volume * 0.5)
 
 
 def getcirclehitsound(n):
@@ -150,7 +157,7 @@ def getfilenames(beatmap):
 		addfilename(beatmapsound, skinsound, soundinfo, beatmap.timing_point[timingpoint_i], f, my_dict, "sound" + objtype)
 
 		my_dict["hitSample"] = soundinfo
-	print(beatmap.hitobjects[6])
+	print(beatmap.hitobjects[0])
 	return beatmapsound, skinsound
 
 

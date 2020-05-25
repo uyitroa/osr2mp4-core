@@ -41,8 +41,10 @@ def pydubtonumpy(audiosegment):
 		y1[:, 0] = y * 0.5
 		y1[:, 1] = y * 0.5
 		y = y1
-
-	maxvalue = max(nextpowerof2(np.amax(y)) * 2, 2 ** 16)
+	try:
+		maxvalue = max(np.amax(y), 2 ** 16)
+	except ValueError:
+		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
@@ -118,9 +120,9 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt):
-	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10, speed=Settings.timeframe/1000, changepitch=not dt))
-	song.rate /= Settings.timeframe/1000
+def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe):
+	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10, speed=timeframe/1000, changepitch=not dt))
+	song.rate /= timeframe/1000
 
 	filenames = getfilenames(beatmap)
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
@@ -138,7 +140,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
-	write('audio.mp3', round(song.rate * Settings.timeframe/1000), out)
+	write('audio.mp3', round(song.rate * timeframe/1000), out)
 
 
 
@@ -146,14 +148,15 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp, dt):
 	beatmap_path = Paths.beatmap
 	default_skinP = SkinPaths.default_path
 	skin_path = SkinPaths.path
+	timeframe = Settings.timeframe
 
 	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
-		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt,)
+		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt)
+		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe)
 		return None

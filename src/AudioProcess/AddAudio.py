@@ -1,5 +1,5 @@
 from AudioProcess.Hitsound import Hitsound
-from AudioProcess.Utils import overlay, getfilename
+from AudioProcess.Utils import overlay, getfilename, overlays
 from EEnum.EAudio import Sound
 
 
@@ -73,8 +73,11 @@ class HitsoundManager:
 					tt = "soundhead"
 					hitvolume = "0"
 
-				for f in my_dict[tt]:
-					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(hitvolume))
+				# overlay(my_info[index].time, song, Hitsound.hitsounds[my_dict[tt][0]], volume=self.getvolume(hitvolume))
+				# for f in my_dict[tt][1:]:
+				# 	overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(hitvolume) * 0.5)
+
+				overlays(my_info[index].time, song, my_dict[tt], volume=self.getvolume(hitvolume))
 
 	def addslidersound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Slider":
@@ -82,17 +85,14 @@ class HitsoundManager:
 			my_dict = self.hitobjects[objectindex]
 
 			if my_info[index].more.hitvalue == 10:
-				for f in my_dict["soundtick"]:
-					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
+				overlays(my_info[index].time, song, my_dict["soundtick"], volume=self.getvolume(0))
 
 			if my_info[index].more.hitvalue >= 30 and not my_info[index].more.end:  # in case sliderend and sliderarrow has same time because fast slider so need >= 30
-				for f in my_dict["soundarrow{}".format(my_info[index].more.arrowindex-1)]:
-					overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
+				overlays(my_info[index].time, song, my_dict["soundarrow{}".format(my_info[index].more.arrowindex-1)], volume=self.getvolume(0))
 
 			if my_info[index].hitresult is not None and my_info[index].hitresult > 0:
 				endtime = self.hitobjects[objectindex]["end time"]
-				for f in my_dict["soundend"]:
-					overlay(endtime, song, Hitsound.hitsounds[f], volume=self.getvolume(0))
+				overlays(endtime, song, my_dict["soundend"], volume=self.getvolume(0))
 
 	def addspinnerhitsound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Spinner":
