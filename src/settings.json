@@ -1,12 +1,14 @@
 {
-  "Cursor size": 2,
+  "Cursor size": 1,
   "In-game interface": true,
   "Show scoreboard": true,
   "Background dim": 50,
   "Always show key overlay": false,
   "Automatic cursor size": false,
   "Score meter size": 1.25,
-  "Song volume": 100,
+  "Song volume": 50,
   "Effect volume": 100,
-  "Ignore beatmap hitsounds": false
+  "Ignore beatmap hitsounds": true,
+  "Global leaderboard": true,
+  "api key": "1341374jsfhaksfha9324h"
 }

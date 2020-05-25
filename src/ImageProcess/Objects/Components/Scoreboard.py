@@ -1,4 +1,7 @@
+import json
+
 import cv2
+import requests
 from recordclass import recordclass
 import re
 from ImageProcess import imageproc
@@ -10,7 +13,7 @@ BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playernam
 
 
 class Scoreboard(FrameObject):
-	def __init__(self, frames, scorenetryframes, effectframes, replay_info):
+	def __init__(self, frames, scorenetryframes, effectframes, replay_info, beatmap):
 		FrameObject.__init__(self, frames)
 
 		self.score = scorenetryframes[0]
@@ -34,6 +37,7 @@ class Scoreboard(FrameObject):
 		self.nboard = 6
 		self.height = (660 - 313) / self.nboard * Settings.scale
 		self.beatmaphash = replay_info.beatmap_hash
+		self.beatmapid = beatmap.meta["BeatmapID"]
 		self.getscores()
 		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, replay_info.player_name, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
@@ -68,12 +72,41 @@ class Scoreboard(FrameObject):
 		self.scoreboards[0].alpha = 1
 
 	def getscores(self):
+		if GameplaySettings.settings["Global leaderboard"]:
+			self.getglobalscores()
+		else:
+			self.getlocalscores()
+
+	def getglobalscores(self):
+		k = GameplaySettings.settings["api key"]
+		if k is None:
+			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			self.getlocalscores()
+			return
+
+		r = requests.post("https://osu.ppy.sh/api/get_scores", data={'k': k, 'b': self.beatmapid})
+		data = json.loads(r.text)
+
+		if "error" in data:
+			print("\n\n {} \n\n".format(data["error"]))
+			self.getlocalscores()
+			return
+
+		for i in range(len(data)):
+			score = data[i]
+			strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["score"]))  # add dot to every 3 digits
+			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["maxcombo"]))
+			self.scoreboards.append(BoardInfo(strscore, strcombo, int(score["score"]), int(score["maxcombo"]), score["username"], None, None, None, i))
+		self.oldrankid = None
+
+
+	def getlocalscores(self):
 		scores = getscores(self.beatmaphash, Paths.osu + "scores.db")
 		for i in range(len(scores["scores"])):
 			score = scores["scores"][i]
 			strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["score"]))  # add dot to every 3 digits
 			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["max_combo"]))
-			self.scoreboards.append(BoardInfo(strscore, strcombo, score["score"],score["max_combo"], score["player"], None, None, None, i))
+			self.scoreboards.append(BoardInfo(strscore, strcombo, score["score"], score["max_combo"], score["player"], None, None, None, i))
 		self.oldrankid = None
 
 	def sortscore(self):

@@ -162,7 +162,7 @@ class FrameObjects:
 		self.scorebar = Scorebar(frames.scorebar, beatmap)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info)
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, beatmap)
 
 		self.rankingpanel = RankingPanel(frames.rankingpanel)
 		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap)
