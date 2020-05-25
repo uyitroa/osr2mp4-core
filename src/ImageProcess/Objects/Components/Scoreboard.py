@@ -187,7 +187,6 @@ class Scoreboard(FrameObject):
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
-		print(text, y_offset, self.height, Settings.scale, alpha)
 		cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, Settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
 
 	def add_to_frame(self, np_img, background):
