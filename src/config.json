@@ -1,15 +1,16 @@
 {
-  "Skin path": "/Users/yuitora./Downloads/dt",
-  "Beatmap path": "/Users/yuitora./Downloads/tool/",
-  ".osr path": "../res/tool.osr",
-  "Default skin path": "/Users/yuitora./Downloads/default",
-  "Output path": "output.mkv",
+  "osu! path": "/Users/yuitora./osu!/",
+  "Skin path": "/Users/yuitora./osu!/Skins/-#Whitecat#-",
+  "Beatmap path": "/Users/yuitora./osu!/Songs/123456 Hachigatsu, Bou/",
+  ".osr path": "/Users/yuitora./osu!/Replays/yuitora_12317423.osr",
+  "Default skin path": "/Users/yuitora./Downloads/Default Skin/",
+  "Output path": "output.avi",
   "Width": 1920,
   "Height": 1080,
   "FPS": 60,
   "Start time": 0,
   "End time": -1,
-  "Video codec": "X264",
+  "Video codec": "XVID",
   "Process": 2,
   "ffmpeg path": "ffmpeg"
 }

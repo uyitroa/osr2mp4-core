@@ -11,6 +11,7 @@ class Paths:
 	ffmpeg = None
 	output = None
 	beatmap = None
+	osu = None
 
 
 class Settings:
