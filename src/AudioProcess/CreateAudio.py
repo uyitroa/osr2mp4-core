@@ -1,3 +1,4 @@
+import math
 import os
 from copy import deepcopy
 from multiprocessing import Process
@@ -9,12 +10,12 @@ from pydub import exceptions
 from AudioProcess.AddAudio import HitsoundManager
 from AudioProcess.Hitsound import Hitsound
 from AudioProcess.Utils import getfilenames, nextpowerof2
-from global_var import Paths, SkinPaths, Settings
+from global_var import Paths, SkinPaths, Settings, GameplaySettings
 
 Audio2p = recordclass("Audio2p", "rate audio")
 
 
-def read(f, addvolume=0, speed=1.0, changepitch=True):
+def read(f, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
 		os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" spedup.mp3 -y'.format(Paths.ffmpeg, f, speed))
 		f = "spedup.mp3"
@@ -23,6 +24,8 @@ def read(f, addvolume=0, speed=1.0, changepitch=True):
 		a = AudioSegment.from_mp3(f)
 	else:
 		a = AudioSegment.from_file(f)
+
+	addvolume = 30 * math.log(volume, 10)
 	a += addvolume
 
 	if speed != 1.0:
@@ -48,9 +51,9 @@ def pydubtonumpy(audiosegment):
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
-def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=1.0):
+def getaudiofromfile(filename, path, defaultpath, fmt="mp3", volume=1.0, speed=1.0):
 	try:
-		return read(path + filename + "." + fmt, addvolume=addvolume, speed=speed)
+		return read(path + filename + "." + fmt, volume=volume, speed=speed)
 	except FileNotFoundError:
 		nxtfmt = "mp3"
 		if fmt == "mp3":
@@ -71,15 +74,15 @@ def getaudiofromfile(filename, path, defaultpath, fmt="mp3", addvolume=0, speed=
 		return 1, np.zeros((0, 2), dtype=np.float32)
 
 
-def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, addvolume=0, speed=1.0):
+def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, volume=1.0, speed=1.0):
 	try:
-		return read(beatmappath + filename + "." + "wav", addvolume=addvolume, speed=speed)
+		return read(beatmappath + filename + "." + "wav", volume=volume, speed=speed)
 	except FileNotFoundError:
 		try:
-			return read(beatmappath + filename + "." + "ogg", addvolume=addvolume, speed=speed)
+			return read(beatmappath + filename + "." + "ogg", volume=volume, speed=speed)
 		except FileNotFoundError:
 			filename = ''.join(filter(lambda x: not x.isdigit(), filename))
-			return getaudiofromfile(filename, path, defaultpath, addvolume=addvolume, speed=speed)
+			return getaudiofromfile(filename, path, defaultpath, volume=volume, speed=speed)
 	except exceptions.CouldntDecodeError:
 		return 1, np.zeros((0, 2), dtype=np.float32)
 
@@ -89,19 +92,22 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 	bmapindex = 0
 	skinindex = 1
 
-	for f in filenames[bmapindex]:
-		Hitsound.hitsounds[f] = Audio2p(*getaudiofrombeatmap(f, beatmappath, skinpath, defaultpath))
-	for f in filenames[skinindex]:
-		Hitsound.hitsounds[f] = Audio2p(*getaudiofromfile(f, skinpath, defaultpath))
+	if settings["Ignore beatmap hitsounds"]:
+		beatmappath = "reeeee"
 
-	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath))
-	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath))
-	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath))
-	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath))
+	for f in filenames[bmapindex]:
+		Hitsound.hitsounds[f] = Audio2p(*getaudiofrombeatmap(f, beatmappath, skinpath, defaultpath, volume=settings["Effect volume"]/100))
+	for f in filenames[skinindex]:
+		Hitsound.hitsounds[f] = Audio2p(*getaudiofromfile(f, skinpath, defaultpath, volume=settings["Effect volume"]/100))
+
+	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath, volume=settings["Effect volume"]/100))
+	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, volume=settings["Effect volume"]/100))
+	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath, volume=settings["Effect volume"]/100))
+	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath, volume=settings["Effect volume"]/100))
 
 	for x in range(100, 150, 5):
 		speed = x/100
-		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, speed=speed)))
+		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, volume=settings["Effect volume"]/100, speed=speed)))
 
 
 def getoffset(offset, endtime, song):
@@ -120,12 +126,12 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe):
-	song = Audio2p(*read(beatmap_path + audio_name, addvolume=-10, speed=timeframe/1000, changepitch=not dt))
+def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe, settings):
+	song = Audio2p(*read(beatmap_path + audio_name, volume=settings["Song volume"]/100, speed=timeframe/1000, changepitch=not dt))
 	song.rate /= timeframe/1000
 
 	filenames = getfilenames(beatmap)
-	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath)
+	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)
 
 	hitsoundm = HitsoundManager(beatmap)
 
@@ -153,10 +159,10 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp, dt):
 	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
-		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe,)
+		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe)
+		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings)
 		return None
