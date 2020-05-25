@@ -8,6 +8,8 @@ from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
 from Parser.scoresparser import getscores
 from global_var import Settings, Paths, GameplaySettings
+from itertools import compress
+from itertools import product
 
 BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playername x y alpha id")
 
@@ -15,6 +17,7 @@ BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playernam
 def getsummods(mods):
 	if mods == "*":
 		return "*"
+	mods = re.findall('..', mods)
 	modidct = {
 		"NM": 0,
 		"NF": 1,
@@ -41,10 +44,41 @@ def getsummods(mods):
 	return summod
 
 
+# Mod's string should be splitted to required mods and optional mods
+
+
+def mod_to_list(mods):
+	required_mods = ""
+	optional_mods = []
+	i = 0
+	j = 0
+	while i < len(mods):
+		if mods[i] == "(":
+			j = i
+			while mods[j] != ")":
+				j += 1
+			optional_mods.append(mods[i + 1:j])
+			i = j + 1
+		else:
+			required_mods += mods[i:i + 2]
+			i += 2
+	return required_mods, optional_mods
+
+
+def solve(mod):
+	return (list(compress(mod, mask)) for mask in product(*[[0, 1]] * len(mod)))
+
+
 def getmods(mods):
-	if mods == "*":
-		return "*"
-	return re.findall('..', mods)
+	allmods = []
+	required_mods, optional_mods = mod_to_list(mods)
+	for i in solve(optional_mods):
+		output = required_mods + "".join(i)
+		if output == "":
+			allmods.append("NM")
+		else:
+			allmods.append(output)
+	return allmods
 
 
 class Scoreboard(FrameObject):
@@ -68,12 +102,21 @@ class Scoreboard(FrameObject):
 		self.maxcombo = 0
 		self.oldrankid = None
 		self.falling = False
+		self.removeone = 0
 
 		self.nboard = 6
 		self.height = (660 - 313) / self.nboard * Settings.scale
 		self.beatmaphash = replay_info.beatmap_hash
+		self.playerscore = replay_info.score
+		self.playername = replay_info.player_name
 		self.beatmapid = beatmap.meta["BeatmapID"]
+
+		self.scoresid = []
 		self.getscores()
+
+		if len(self.scoreboards) > 50 - self.removeone:
+			_, _ = self.sortscore(000)
+			self.scoreboards = self.scoreboards[:50 - self.removeone]
 		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, replay_info.player_name, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
 		_, self.currank = self.sortscore()
@@ -109,10 +152,12 @@ class Scoreboard(FrameObject):
 	def getscores(self):
 		mods = getmods(GameplaySettings.settings["Mods leaderboard"])
 
-		if GameplaySettings.settings["Global leaderboard"]:
-			self.getglobalscores(mods)
-		else:
-			self.getlocalscores(mods)
+		for mod in mods:
+			print(mod)
+			if GameplaySettings.settings["Global leaderboard"]:
+				self.getglobalscores(mod)
+			else:
+				self.getlocalscores(mod)
 
 	def getglobalscores(self, mods):
 		k = GameplaySettings.settings["api key"]
@@ -139,6 +184,17 @@ class Scoreboard(FrameObject):
 
 		for i in range(len(data)):
 			score = data[i]
+
+			if score["username"] == self.playername:
+				if int(score["score"]) == self.playerscore:
+					self.removeone = 1
+				continue
+
+			keepgoing = self.filter(score["user_id"],  int(score["score"]))
+
+			if not keepgoing:
+				continue
+
 			strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["score"]))  # add dot to every 3 digits
 			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["maxcombo"]))
 			self.scoreboards.append(BoardInfo(strscore, strcombo, int(score["score"]), int(score["maxcombo"]), score["username"], None, None, None, i))
@@ -150,6 +206,9 @@ class Scoreboard(FrameObject):
 		for i in range(len(scores["scores"])):
 			score = scores["scores"][i]
 
+			if int(score["score"]) == self.playerscore and score["player"] == self.playername:
+				continue
+
 			summods = getsummods(mods)
 			if summods != score["mods"]["modFlags"] and summods != "*":
 				continue
@@ -159,9 +218,10 @@ class Scoreboard(FrameObject):
 			self.scoreboards.append(BoardInfo(strscore, strcombo, score["score"], score["max_combo"], score["player"], None, None, None, i))
 		self.oldrankid = None
 
-	def sortscore(self):
+	def sortscore(self, playerrank=None):
 		self.scoreboards.sort(key=lambda x: x.intscore, reverse=True)
-		playerrank = [i for i in range(len(self.scoreboards)) if self.scoreboards[i].id == -1][0]
+		if playerrank is None:
+			playerrank = [i for i in range(len(self.scoreboards)) if self.scoreboards[i].id == -1][0]
 
 		if self.oldrankid == playerrank:
 			return False, playerrank
@@ -301,4 +361,16 @@ class Scoreboard(FrameObject):
 
 		self.effectalpha -= 0.1
 		self.effectx = min(0 * Settings.scale, self.effectx + 30 * Settings.scale)
+
+	def filter(self, userid, score):
+		try:
+			idindex = self.scoresid.index(userid)
+			if score > self.scoreboards[idindex].intscore:
+				del self.scoresid[idindex]
+				del self.scoreboards[idindex]
+				return True
+			return False
+		except ValueError:
+			self.scoresid.append(userid)
+			return True
 

@@ -8,7 +8,7 @@ class TestModDiff(unittest.TestCase):
 	def setUpClass(cls):
 		aa = open('../test/resources/mods.txt', 'r')
 		a = aa.readlines()
-		cls.mods = [eval(x) for x in a]
+		cls.mods = [x.strip() for x in a]
 		aa.close()
 
 		aa = open('../test/resources/modsexpect.txt', 'r')
@@ -18,7 +18,8 @@ class TestModDiff(unittest.TestCase):
 
 	def test_mods(self):
 		for x in range(len(self.mods)):
-			self.assertListEqual(getmods(self.mods[x]), self.modsexpect[x])
+			print(getmods(self.mods[x]), self.modsexpect[x])
+			# self.assertCountEqual(getmods(self.mods[x]), self.modsexpect[x])
 
 
 
