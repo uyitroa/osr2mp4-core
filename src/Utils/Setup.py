@@ -28,7 +28,6 @@ def setupglobals(data, gameplaydata, replay_info):
 	if osupath[-1] != "/" and osupath[-1] != "\\":
 		osupath += "/"
 
-
 	if Mod.DoubleTime in replay_info.mod_combination or Mod.Nightcore in replay_info.mod_combination:
 		time_frame = 1500
 	elif Mod.HalfTime in replay_info.mod_combination:
