@@ -10,7 +10,7 @@ BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playernam
 
 
 class Scoreboard(FrameObject):
-	def __init__(self, frames, scorenetryframes, effectframes, playername):
+	def __init__(self, frames, scorenetryframes, effectframes, replayinfo):
 		FrameObject.__init__(self, frames)
 
 		self.score = scorenetryframes[0]
@@ -34,7 +34,7 @@ class Scoreboard(FrameObject):
 		self.nboard = 6
 		self.height = (660 - 313) / self.nboard * Settings.scale
 		self.getscores()
-		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, playername, None, None, None, -1))
+		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, replayinfo.player_name, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
 		_, self.currank = self.sortscore()
 
@@ -187,6 +187,7 @@ class Scoreboard(FrameObject):
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
+		print(text, y_offset, self.height, Settings.scale, alpha)
 		cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, Settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
 
 	def add_to_frame(self, np_img, background):
