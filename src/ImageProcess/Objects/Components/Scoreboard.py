@@ -70,6 +70,8 @@ def solve(mod):
 
 
 def getmods(mods):
+	if mods == "*":
+		return "*"
 	allmods = []
 	required_mods, optional_mods = mod_to_list(mods)
 	for i in solve(optional_mods):
