@@ -8,7 +8,7 @@ from global_var import Settings
 class URBar(FrameObject):
 	def __init__(self, frames):
 		self.scale = Settings.scale
-		self.w, self.h = int(200 * Settings.scale), int(25 * Settings.scale)
+		self.w, self.h = int(frames[0].size[0]), int(frames[0].size[1])
 		self.y = Settings.height - self.h//2
 		self.x = Settings.width//2
 		self.x_offset = self.x - self.w // 2

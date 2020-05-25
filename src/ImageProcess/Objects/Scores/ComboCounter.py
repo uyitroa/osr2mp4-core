@@ -2,7 +2,7 @@ from math import ceil
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from global_var import Settings, GameplaySettings
 
 
 class ComboCounter(FrameObject):
@@ -74,7 +74,7 @@ class ComboCounter(FrameObject):
 		x, x_offset, y_offset = self.next_pos(x, y, img)
 		imageproc.add(img, background, x_offset, y_offset)
 
-	def add_to_frame(self, background):
+	def add_to_frame(self, background, inbreak):
 		if int(self.fadeout_index) == len(self.score_fadeout[0]) - 1:
 			self.combo = self.combofadeout
 			self.score_index = 0
@@ -93,11 +93,13 @@ class ComboCounter(FrameObject):
 			self.animate = False
 
 		if self.adding:
-			self.draw_combo(self.combofadeout, background, self.score_fadeout, self.fadeout_index)
+			if GameplaySettings.settings["In-game interface"] or inbreak:
+				self.draw_combo(self.combofadeout, background, self.score_fadeout, self.fadeout_index)
 
 			self.fadeout_index += 1
 
-		self.draw_combo(self.combo, background, self.score_frames, self.score_index)
+		if GameplaySettings.settings["In-game interface"] or inbreak:
+			self.draw_combo(self.combo, background, self.score_frames, self.score_index)
 
 		if self.animate:
 			self.score_index += self.index_step

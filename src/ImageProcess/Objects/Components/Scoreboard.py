@@ -4,7 +4,7 @@ import re
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
 from Parser.scoresparser import getscores
-from global_var import Settings, Paths
+from global_var import Settings, Paths, GameplaySettings
 
 BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playername x y alpha id")
 
@@ -171,7 +171,10 @@ class Scoreboard(FrameObject):
 	def drawname(self, background, y_offset, text, alpha):
 		cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, Settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
 
-	def add_to_frame(self, np_img, background):
+	def add_to_frame(self, np_img, background, in_break):
+		if not GameplaySettings.settings["Show scoreboard"]:
+			return
+
 		shows = max(1, self.currank - self.nboard + 2)
 		ranktoclimb = self.nboard - 1
 		for x in range(len(self.scoreboards)-1, -1, -1):
@@ -201,14 +204,18 @@ class Scoreboard(FrameObject):
 				self.scoreboards[x].y = max(self.scoreboards[x].y - 5, self.origposboards[boardindex][1])
 			else:
 				self.frame_index = 0
-			super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
-			self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
-			self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
-			self.drawname(np_img, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
+
+			if GameplaySettings.settings["In-game interface"] or in_break:
+				super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
+				self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
+				self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
+				self.drawname(np_img, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
 
 		alpha = max(0, min(1, self.effectalpha))
-		imageproc.add(self.effecteclipse, background, self.effectx, self.effecty, alpha=alpha)
-		imageproc.add(self.effectcircle, background, 0, self.effecty, alpha=alpha)
+		if GameplaySettings.settings["In-game interface"] or in_break:
+			imageproc.add(self.effecteclipse, background, self.effectx, self.effecty, alpha=alpha)
+			imageproc.add(self.effectcircle, background, 0, self.effecty, alpha=alpha)
+
 		self.effectalpha -= 0.1
 		self.effectx = min(0 * Settings.scale, self.effectx + 30 * Settings.scale)
 

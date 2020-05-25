@@ -4,13 +4,11 @@ import cv2
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 from CheckSystem.Judgement import DiffCalculator
-from EEnum.EReplay import Replays
 from VideoProcess.AFrames import *
 from VideoProcess.Draw import draw_frame, render_draw
 from VideoProcess.FrameWriter import write_frame
 from VideoProcess.Setup import getlist, setup_draw
-
-from global_var import Settings, Paths
+from global_var import Settings, Paths, GameplaySettings
 
 
 def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, start_index, end_index, mpp, hd, showranking):
@@ -44,9 +42,9 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			globalvars = getlist()
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars, showranking and i == mpp-1))
+				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars, GameplaySettings.settings, showranking and i == mpp-1))
 
-			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars))
+			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars, GameplaySettings.settings))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))

@@ -1,7 +1,7 @@
 from CheckSystem.Health import HealthProcessor
 from ImageProcess import imageproc
 from ImageProcess.Objects.Components.AScorebar import AScorebar
-from global_var import Settings, SkinPaths
+from global_var import Settings, SkinPaths, GameplaySettings
 
 
 class Scorebar(AScorebar):
@@ -48,7 +48,8 @@ class Scorebar(AScorebar):
 		diff = self.healthprocessor.health_value - tmp
 		self.hp += diff
 
-	def add_to_frame(self, background, cur_time):
+	def add_to_frame(self, background, cur_time, in_break):
+
 		AScorebar.animate(self)
 
 		self.frame_index += SkinPaths.skin_ini.general["AnimationFramerate"]/Settings.fps
@@ -64,7 +65,9 @@ class Scorebar(AScorebar):
 
 		img = self.frames[int(self.frame_index)]
 		img = img.crop((0, 0, int(img.size[0] * self.hp), img.size[1]))
-		imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)
+
+		if GameplaySettings.settings["In-game interface"] or in_break:
+			imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)
 
 		if self.hasmarker:
 			imageproc.add(self.marker, background, self.x + img.size[0], 16 * Settings.scale-self.h, alpha=self.alpha)

@@ -1,5 +1,6 @@
+from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from global_var import Settings, GameplaySettings
 
 
 class Background(FrameObject):
@@ -46,8 +47,11 @@ class Background(FrameObject):
 			self.step = -self.interval * 60/Settings.fps
 
 		if int(self.frame_index) <= 0:
-			if inbreak or cur_time < self.map_start:
-				np.fill(0)
+			if inbreak or cur_time < self.map_start or not GameplaySettings.settings["In-game interface"]:
+				if GameplaySettings.settings["Background dim"] == 100:
+					np.fill(0)
+				else:
+					imageproc.add(self.frames[1], background, Settings.width//2, Settings.height//2)
 			return
 
 		super().add_to_frame(background, Settings.width//2, Settings.height//2)

@@ -6,8 +6,7 @@ from EEnum.EReplay import Replays
 from InfoProcessor import Updater
 from Utils.skip import skip
 from VideoProcess.AFrames import FrameObjects
-from global_var import Settings, SkinPaths, Paths
-
+from global_var import Settings, SkinPaths, Paths, GameplaySettings
 
 FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end, break_index")
 CursorEvent = recordclass("CursorEvent", "event old_x old_y")
@@ -21,7 +20,7 @@ def get_buffer(img):
 	return np_img, pbuffer
 
 
-def setup_global(settings, paths, skinpaths):
+def setup_global(settings, paths, skinpaths, gameplaysettings):
 	Settings.width, Settings.height, Settings.scale = settings[0], settings[1], settings[2]
 	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = settings[3], settings[4], settings[5]
 	Settings.fps, Settings.timeframe = settings[6], settings[7]
@@ -36,6 +35,8 @@ def setup_global(settings, paths, skinpaths):
 	Paths.ffmpeg = paths[1]
 	Paths.beatmap = paths[2]
 	Paths.osu = paths[3]
+
+	GameplaySettings.settings = gameplaysettings
 
 
 def getlist():

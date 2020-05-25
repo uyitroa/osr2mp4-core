@@ -1,4 +1,5 @@
 from ImageProcess.Objects.Components.AScorebar import AScorebar
+from global_var import GameplaySettings
 
 
 class ScorebarBG(AScorebar):
@@ -10,6 +11,10 @@ class ScorebarBG(AScorebar):
 		AScorebar.animate(self)
 		if inbreak or cur_time < self.map_start:
 			self.frame_index = 0
+			h = -self.h
 		else:
 			self.frame_index = 1
-		super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
+			h = 0
+
+		if GameplaySettings.settings["In-game interface"] or inbreak:
+			super().add_to_frame(background, 0, h, alpha=self.alpha, topleft=True)

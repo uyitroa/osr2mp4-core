@@ -1,0 +1,12 @@
+{
+  "Cursor size": 2,
+  "In-game interface": true,
+  "Show scoreboard": true,
+  "Background dim": 50,
+  "Always show key overlay": false,
+  "Automatic cursor size": false,
+  "Score meter size": 1.25,
+  "Song volume": 100,
+  "Effect volume": 100,
+  "Ignore beatmap hitsounds": false
+}

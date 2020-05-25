@@ -2,10 +2,10 @@ from osrparse.enums import Mod
 
 from Parser.skinparser import Skin
 from Utils.Resolution import get_screensize
-from global_var import Settings, Paths, SkinPaths
+from global_var import Settings, Paths, SkinPaths, GameplaySettings
 
 
-def setupglobals(data, replay_info):
+def setupglobals(data, gameplaydata, replay_info):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
 	output_path = data["Output path"]
@@ -56,3 +56,5 @@ def setupglobals(data, replay_info):
 	SkinPaths.default_path = default_path
 	SkinPaths.skin_ini = skin
 	SkinPaths.default_skin_ini = skin
+
+	GameplaySettings.settings = gameplaydata

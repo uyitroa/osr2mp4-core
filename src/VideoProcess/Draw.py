@@ -32,8 +32,8 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 
 	component.background.add_to_frame(img, np_img, frame_info.cur_time, in_break)
 	component.scorebarbg.add_to_frame(img, frame_info.cur_time, in_break)
-	component.timepie.add_to_frame(np_img, img, frame_info.cur_time, component.scorebarbg.h, component.scorebarbg.alpha)
-	component.scorebar.add_to_frame(img, frame_info.cur_time)
+	component.timepie.add_to_frame(np_img, img, frame_info.cur_time, component.scorebarbg.h, component.scorebarbg.alpha, in_break)
+	component.scorebar.add_to_frame(img, frame_info.cur_time, in_break)
 	component.arrowwarning.add_to_frame(img, frame_info.cur_time)
 	component.inputoverlayBG.add_to_frame(img, Settings.width - component.inputoverlayBG.w() // 2, int(320 * Settings.scale))
 	component.urbar.add_to_frame_bar(img)
@@ -45,15 +45,15 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	component.hitobjmanager.add_to_frame(img, np_img)
 	component.hitresult.add_to_frame(img)
 	component.spinbonus.add_to_frame(img)
-	component.combocounter.add_to_frame(img)
-	component.scorecounter.add_to_frame(img, cursor_event.event[Replays.TIMES])
-	component.accuracy.add_to_frame(img)
+	component.combocounter.add_to_frame(img, in_break)
+	component.scorecounter.add_to_frame(img, cursor_event.event[Replays.TIMES], in_break)
+	component.accuracy.add_to_frame(img, in_break)
 	component.urbar.add_to_frame(img)
 	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y, cursor_event.event[Replays.TIMES])
 	component.cursor.add_to_frame(img, cursor_x, cursor_y)
 	component.cursormiddle.add_to_frame(img, cursor_x, cursor_y)
 	component.sections.add_to_frame(img)
-	component.scoreboard.add_to_frame(np_img, img)
+	component.scoreboard.add_to_frame(np_img, img, in_break)
 
 
 	frame_info.cur_time += Settings.timeframe / Settings.fps
@@ -69,11 +69,11 @@ def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuff
 	return img.size[0] != 1
 
 
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths, showranking):
+def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths, gameplaysettings, showranking):
 	asdfasdf = time.time()
 	print("process start")
 
-	setup_global(settings, paths, skinpaths)
+	setup_global(settings, paths, skinpaths, gameplaysettings)
 
 	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
 		beatmap, frames, replay_event, replay_info, resultinfo, shared, skin, start_index, hd)

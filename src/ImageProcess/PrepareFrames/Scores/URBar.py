@@ -7,6 +7,7 @@ def prepare_bar(scale, scorewindow):
 	:param scorewindow: [float]
 	:return: PIL.Image, [PIL.Image], float
 	"""
+	scale = scale * scorewindow[2]/100
 	w, h = int(200 * scale), int(25 * scale)
 	bar_images = []
 

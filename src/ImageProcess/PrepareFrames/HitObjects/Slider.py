@@ -43,7 +43,7 @@ def prepare_slider(diff, scale, skin):
 	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	radius_scale = cs * 2 / default_size
 
-	interval = 0.75 * Settings.timeframe / Settings.fps
+	interval = Settings.timeframe / Settings.fps
 	follow_fadein = 150  # need 150ms to fadein
 
 	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale)

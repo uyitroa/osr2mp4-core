@@ -6,10 +6,10 @@ from VideoProcess.Setup import setup_global
 from global_var import Settings
 
 
-def write_frame(shared, conn, filename, codec, settings, paths, skinpaths):
+def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings):
 	asdfasdf = time.time()
 
-	setup_global(settings, paths, skinpaths)
+	setup_global(settings, paths, skinpaths, gameplaysettings)
 
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)

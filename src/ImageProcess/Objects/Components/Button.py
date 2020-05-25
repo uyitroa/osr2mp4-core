@@ -1,5 +1,6 @@
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from global_var import GameplaySettings
 
 
 class ScoreEntry(FrameObject):
@@ -7,6 +8,9 @@ class ScoreEntry(FrameObject):
 		super().__init__(frames)
 
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
+		if not GameplaySettings.settings["Always show key overlay"]:
+			return
+
 		number = str(number)
 		n = len(number) - 1
 		index = max(0, min(len(self.frames[0]) - 1, index+n-1))
@@ -46,6 +50,9 @@ class InputOverlay(FrameObject):
 		self.holding = True
 
 	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
+		if not GameplaySettings.settings["Always show key overlay"]:
+			return
+
 		if self.holding or (self.frame_index < len(self.frames) - 1 and self.oldclick):
 			self.frame_index += 1
 			if self.frame_index >= len(self.frames):
@@ -67,6 +74,9 @@ class InputOverlay(FrameObject):
 
 class InputOverlayBG(FrameObject):
 	def add_to_frame(self, background, x_offset, y_offset):
+		if not GameplaySettings.settings["Always show key overlay"]:
+			return
+
 		# special y_offset
 		y_offset = y_offset + self.frames[0].size[1]//2
 		super().add_to_frame(background, x_offset, y_offset)

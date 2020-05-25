@@ -1,5 +1,5 @@
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from global_var import Settings, GameplaySettings
 
 
 class Accuracy(FrameObject):
@@ -60,9 +60,11 @@ class Accuracy(FrameObject):
 			super().add_to_frame(background, x, y)
 			x += self.sizegap
 
-	def add_to_frame(self, background):
+	def add_to_frame(self, background, inbreak):
 		if self.maxscore == 0:
 			acc = '100.00'
 		else:
 			acc = "{:.2f}".format(self.curscore/self.maxscore * 100)
-		self.draw_acc(acc, background, self.startx)
+
+		if GameplaySettings.settings["In-game interface"] or inbreak:
+			self.draw_acc(acc, background, self.startx)

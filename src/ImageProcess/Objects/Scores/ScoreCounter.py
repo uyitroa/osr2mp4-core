@@ -1,5 +1,5 @@
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from global_var import Settings, GameplaySettings
 
 
 class ScoreCounter(FrameObject):
@@ -50,10 +50,14 @@ class ScoreCounter(FrameObject):
 		# print(delta, self.score, self.showscore, "\n")
 
 
-	def add_to_frame(self, background, cur_time):
+	def add_to_frame(self, background, cur_time, inbreak):
+		if not GameplaySettings.settings["In-game interface"]:
+			return
+
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
-		self.draw_score(score_string, background)
+		if GameplaySettings.settings["In-game interface"] or inbreak:
+			self.draw_score(score_string, background)
 
 		# self.proc_showscore()
 		if self.showscore < self.score:

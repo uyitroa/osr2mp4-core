@@ -29,20 +29,17 @@ def main():
 	start_time = data["Start time"]
 	end_time = data["End time"]
 
+	gameplaydata = read("settings.json")
+
+
 
 	replay_info = osrparse.parse_replay_file(replay_file)
 
 	upsidedown = Mod.HardRock in replay_info.mod_combination
 	hd = Mod.Hidden in replay_info.mod_combination
 	dt = Mod.DoubleTime in replay_info.mod_combination
-	print(replay_info.timestamp)
-	print(replay_info.number_300s)
-	print(replay_info.number_100s)
-	print(replay_info.number_50s)
-	print(replay_info.misses)
-	print(replay_info.score)
 
-	setupglobals(data, replay_info)
+	setupglobals(data, gameplaydata, replay_info)
 
 	beatmap_file = get_osu(Paths.beatmap, replay_info.beatmap_hash)
 

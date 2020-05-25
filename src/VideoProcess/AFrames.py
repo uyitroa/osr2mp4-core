@@ -63,14 +63,17 @@ from ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
 from ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
 from ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
-from global_var import Settings, Paths
+from global_var import Settings, Paths, GameplaySettings
 
 
 class PreparedFrames:
 	def __init__(self, skin, check, beatmap, hd):
-		self.cursor, default = prepare_cursor(Settings.scale)
-		self.cursormiddle, self.continuous = prepare_cursormiddle(Settings.scale, default)
-		self.cursor_trail = prepare_cursortrail(Settings.scale, self.continuous)
+		if GameplaySettings.settings["Automatic cursor size"]:
+			circlescale = 4/beatmap.diff["CircleSize"]
+			GameplaySettings.settings["Cursor size"] *= circlescale
+		self.cursor, default = prepare_cursor(Settings.scale * GameplaySettings.settings["Cursor size"])
+		self.cursormiddle, self.continuous = prepare_cursormiddle(Settings.scale * GameplaySettings.settings["Cursor size"], default)
+		self.cursor_trail = prepare_cursortrail(Settings.scale * GameplaySettings.settings["Cursor size"], self.continuous)
 
 		self.scoreentry = prepare_scoreentry(Settings.scale, skin.colours["InputOverlayText"])
 		self.inputoverlayBG = prepare_inputoverlaybg(Settings.scale)
@@ -86,7 +89,7 @@ class PreparedFrames:
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 
-		self.urbar = prepare_bar(Settings.scale, check.scorewindow)
+		self.urbar = prepare_bar(Settings.scale * GameplaySettings.settings["Score meter size"], check.scorewindow)
 
 		self.fpmanager = prepare_fpmanager(Settings.playfieldscale)
 

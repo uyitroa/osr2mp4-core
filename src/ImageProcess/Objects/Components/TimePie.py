@@ -3,7 +3,7 @@ import math
 import cv2
 
 from ImageProcess import imageproc
-from global_var import Settings
+from global_var import Settings, GameplaySettings
 
 
 class TimePie:
@@ -22,7 +22,7 @@ class TimePie:
 		extended = self.radius * math.sqrt(2)
 		self.overlayimg = scorebarbg[0].crop((self.x - extended, self.y - extended, self.x + extended, self.y + extended))
 
-	def add_to_frame(self, np_img, background, cur_time, scorebarh, scorebaralpha):
+	def add_to_frame(self, np_img, background, cur_time, scorebarh, scorebaralpha, inbreak):
 		ratio = (cur_time-self.starttime)/(self.endtime-self.starttime)
 		color = (125, 125, 125, 255)
 		if ratio < 0:
@@ -31,8 +31,10 @@ class TimePie:
 		startangle = -360 + ratio * 360
 		endangle = -360
 		axes = (self.radius, self.radius)
-		cv2.ellipse(np_img, (self.x, self.y), axes, angle, startangle, endangle, color, -1, cv2.LINE_AA)
-		cv2.circle(np_img, (self.x, self.y), self.radius, (255, 255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
-		cv2.circle(np_img, (self.x, self.y), min(1, int(self.scale)), (255, 255, 255, 255), thickness=-1, lineType=cv2.LINE_AA)
 
-		imageproc.add(self.overlayimg, background, self.x, self.y - scorebarh, alpha=scorebaralpha)
+		if GameplaySettings.settings["In-game interface"] or inbreak:
+			cv2.ellipse(np_img, (self.x, self.y), axes, angle, startangle, endangle, color, -1, cv2.LINE_AA)
+			cv2.circle(np_img, (self.x, self.y), self.radius, (255, 255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
+			cv2.circle(np_img, (self.x, self.y), min(1, int(self.scale)), (255, 255, 255, 255), thickness=-1, lineType=cv2.LINE_AA)
+
+			imageproc.add(self.overlayimg, background, self.x, self.y - scorebarh, alpha=scorebaralpha)
