@@ -3,14 +3,14 @@ from recordclass import recordclass
 import re
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
-
+from Parser.scoresparser import getscores
+from global_var import Settings, Paths
 
 BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playername x y alpha id")
 
 
 class Scoreboard(FrameObject):
-	def __init__(self, frames, scorenetryframes, effectframes, playername):
+	def __init__(self, frames, scorenetryframes, effectframes, replay_info):
 		FrameObject.__init__(self, frames)
 
 		self.score = scorenetryframes[0]
@@ -33,8 +33,9 @@ class Scoreboard(FrameObject):
 
 		self.nboard = 6
 		self.height = (660 - 313) / self.nboard * Settings.scale
+		self.beatmaphash = replay_info.beatmap_hash
 		self.getscores()
-		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, playername, None, None, None, -1))
+		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, replay_info.player_name, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
 		_, self.currank = self.sortscore()
 
@@ -67,31 +68,12 @@ class Scoreboard(FrameObject):
 		self.scoreboards[0].alpha = 1
 
 	def getscores(self):
-		# self.scoreboards.append(BoardInfo("69", "1", 69, 1, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("500.000", "131", 500000, 131, "OppaiFun", None, None, None, 0))
-		# self.scoreboards.append(BoardInfo("1.400", "2", 1400, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("1.600", "2", 1600, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("2.000", "2", 2000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("3.000", "2", 3000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("5.000", "2", 5000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("7.000", "2", 7000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("10.000", "2", 10000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("15.000", "2", 15000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("16.000", "2", 16000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("17.000", "2", 17000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("20.000", "2", 20000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("30.000", "2", 30000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("70.000", "2", 70000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("107.000", "2", 107000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("207.000", "2", 207000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("208.000", "2", 208000, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("208.500", "2", 208500, 2, "gay", None, None, None, 1))
-		# self.scoreboards.append(BoardInfo("400.000", "2", 400000, 2, "gay", None, None, None, 1))
+		scores = getscores(self.beatmaphash, Paths.osu + "scores.db")
+		for i in range(len(scores["scores"])):
+			score = scores["scores"][i]
+			strscore = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["score"]))  # add dot to every 3 digits
+			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["max_combo"]))
+			self.scoreboards.append(BoardInfo(strscore, strcombo, score["score"],score["max_combo"], score["player"], None, None, None, i))
 		self.oldrankid = None
 
 	def sortscore(self):

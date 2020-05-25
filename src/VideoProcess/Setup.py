@@ -35,6 +35,7 @@ def setup_global(settings, paths, skinpaths):
 	Paths.output = paths[0]
 	Paths.ffmpeg = paths[1]
 	Paths.beatmap = paths[2]
+	Paths.osu = paths[3]
 
 
 def getlist():
@@ -55,6 +56,7 @@ def getlist():
 	paths.append(Paths.output)
 	paths.append(Paths.ffmpeg)
 	paths.append(Paths.beatmap)
+	paths.append(Paths.osu)
 
 	return settings, paths, skinpaths
 
