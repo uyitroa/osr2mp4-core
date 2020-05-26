@@ -23,11 +23,8 @@ def prepare_scoreentry(scale, color):
 	for x in range(10):
 		number = YImage(scoreentry + str(x), scale)
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.new("RGBA", (14, 14))
-			imagedraw = ImageDraw.Draw(img)
-			size = imagedraw.getfont().getsize(str(x))
-			imagedraw.text((0, 0), str(x), (255, 255, 255, 255))
-			img = imageproc.change_size(img.crop((0, 0, size[0], size[1])), scale * 1.3, scale * 1.3)
+			img = Image.open("../res/" + scoreentry + str(x) + "@2x.png")
+			img =   imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img
 		tmp = imageproc.add_color(img, color)

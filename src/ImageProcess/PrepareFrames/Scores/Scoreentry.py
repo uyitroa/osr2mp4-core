@@ -15,21 +15,20 @@ def prepare_scoreboardscore(scale):
 	:param color: tuple(R, G, B)
 	:return: [PIL.Image]
 	"""
+
+	scale = scale * 0.8
+
 	numbers_animation = []
 	for x in range(12):
 		if x == 10:
 			x = "x"
 		if x == 11:
 			x = "dot"
-		number = YImage(scoreentry + str(x), scale * 0.8)
-		if x == "dot":
-			x = "."
+		number = YImage(scoreentry + str(x), scale)
+
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.new("RGBA", (14, 14))
-			imagedraw = ImageDraw.Draw(img)
-			size = imagedraw.getfont().getsize(str(x))
-			imagedraw.text((0, 0), str(x), (255, 255, 255, 255))
-			img = imageproc.change_size(img.crop((0, 0, size[0], size[1])), scale * 1.3, scale * 1.3)
+			img = Image.open("../res/" + scoreentry + str(x) + "@2x.png")
+			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img
 
