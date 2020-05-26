@@ -91,7 +91,7 @@ def addfilename(beatmapsound, skinsound, soundinfo, timing, filenames, hitobject
 		hitobjects[key].append(i)
 
 
-def getfilenames(beatmap):
+def getfilenames(beatmap, ignore):
 	# also change hitsample and edgesample of beatmap
 
 	timingpoint_i = 0
@@ -115,6 +115,19 @@ def getfilenames(beatmap):
 
 		if "slider" in my_dict["type"]:
 			sampleset_name = sampleset[beatmap.timing_point[timingpoint_i]["SampleSet"]]
+
+
+		my_dict["hitSample"] = soundinfo
+		if ignore:
+			my_dict["soundcircle"] = ["normal-hitnormal"]
+			if "slider" in my_dict["type"]:
+				my_dict["soundhead"] = ["normal-hitnormal"]
+				for arrowi in range(1, my_dict["repeated"]):
+					my_dict["soundarrow{}".format(arrowi)] =  ["normal-hitnormal"]
+				my_dict["soundtick"] = ["normal-slidertick"]
+				my_dict["soundend"] = ["normal-hitnormal"]
+			continue
+
 
 		objtype = "circle"
 		soundset = hitsoundset
@@ -156,8 +169,9 @@ def getfilenames(beatmap):
 		f = getfilename(beatmap.timing_point[timingpoint_i], soundinfo, sampleset, hitsound, soundset, objtype)
 		addfilename(beatmapsound, skinsound, soundinfo, beatmap.timing_point[timingpoint_i], f, my_dict, "sound" + objtype)
 
-		my_dict["hitSample"] = soundinfo
-	print(beatmap.hitobjects[0])
+	if ignore:
+		beatmapsound = ["normal-hitnormal", "normal-slidertick"]
+
 	return beatmapsound, skinsound
 
 

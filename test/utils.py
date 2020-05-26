@@ -42,7 +42,7 @@ def getlistfromtxt(filename):
 
 def getaudiofilename(mapname, path):
 	bmap = getbeatmap(mapname, path)
-	resultlist = getfilenames(bmap)
+	resultlist = getfilenames(bmap, False)
 	expectedlist = getlistfromtxt(path + mapname + "expect.txt")
 	return resultlist, expectedlist
 

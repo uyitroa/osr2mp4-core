@@ -92,7 +92,7 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 	bmapindex = 0
 	skinindex = 1
 
-	if settings["Ignore beatmap hitsounds"]:
+	if settings["Use skin's sound samples"]:
 		beatmappath = "reeeee"
 
 	for f in filenames[bmapindex]:
@@ -130,7 +130,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 	song = Audio2p(*read(beatmap_path + audio_name, volume=settings["Song volume"]/100, speed=timeframe/1000, changepitch=not dt))
 	song.rate /= timeframe/1000
 
-	filenames = getfilenames(beatmap)
+	filenames = getfilenames(beatmap, settings["Ignore beatmap hitsounds"])
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)
 
 	hitsoundm = HitsoundManager(beatmap)
