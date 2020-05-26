@@ -124,7 +124,7 @@ class PreparedFrames:
 class FrameObjects:
 	def __init__(self, frames, skin, beatmap, replay_info, check, hd):
 		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"])
-		rankinggap = 5
+		rankinggap = 0
 
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)

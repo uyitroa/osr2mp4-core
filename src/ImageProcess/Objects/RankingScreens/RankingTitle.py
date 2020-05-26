@@ -27,7 +27,7 @@ class RankingTitle(ARankingScreen):
 	def add_to_frame(self, background, np_img):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			self.drawname(np_img, 0, 30 * Settings.scale, "{} - {}[{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
+			self.drawname(np_img, 0, 30 * Settings.scale, "{} - {} [{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
 			self.drawname(np_img, 0, 50 * Settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
 			self.drawname(np_img, 0, 70 * Settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
 
