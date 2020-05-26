@@ -1,14 +1,9 @@
 # Fix wrong game mechanics
-- Wrong score
-- Wrong hitresult, most likely because of slider 100s. watch dadada at 22th 100s. When key clicked and cursor is not in the slider, that key will not be counted in slider, so if the cursor move to the slider, it will not be counted.
-- Unittest for judgement
-- Combo doesn't break sometimes
-- Sliderheads don't have notelock
-- Sliderfollow disappear immediatly if cursor goes out
 
 # Implement features
-- Add leaderboard
-- Score each digit keep changing until that biggest digit get to the real score digit
+- Fix wrong font
+- Add scoreentry images to res in case not image found
+- Add rank number to scoreboard
 
 # Optimisation
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
