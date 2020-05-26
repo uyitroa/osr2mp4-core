@@ -4,7 +4,8 @@ from EEnum.EAudio import Sound
 
 def overlay(time, song, hitsound, volume=1.0):
 	index = int(time / 1000 * song.rate)
-	song.audio[index:index + len(hitsound.audio)] += hitsound.audio * 0.5 * volume
+	endindex = min(index + len(hitsound.audio), len(song.audio))
+	song.audio[index:endindex] += hitsound.audio[:endindex - index] * 0.5 * volume
 
 
 def overlays(time, song, sounds, volume=1.0):
