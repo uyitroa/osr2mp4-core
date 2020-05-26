@@ -3,6 +3,7 @@ from PIL import Image
 
 from ImageProcess import imageproc
 from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
+from ImageProcess.PrepareFrames.Components.Text import prepare_text
 from global_var import Settings
 
 
@@ -21,14 +22,20 @@ class RankingTitle(ARankingScreen):
 
 		self.rankingtitle = frames[0]
 
+		titleimg = prepare_text(["{} - {} [{}]".format(self.artist, self.beatmapname, self.diff)], 40, (255, 255, 255, 255))
+		creatorimg = prepare_text(["Beatmap by {}".format(self.mapper)], 30, (255, 255, 255, 255))
+		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 30, (255, 255, 255, 255))
+
+		self.textimgs = {**titleimg, **creatorimg, **playerimg}
+
 	def drawname(self, background, x_offset, y_offset, text, alpha, size):
-		cv2.putText(background, text, (int(x_offset), int(y_offset)), cv2.QT_FONT_NORMAL, Settings.scale * size, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
+		imageproc.add(self.textimgs[text], background, x_offset, y_offset, alpha=alpha, topleft=True)
 
 	def add_to_frame(self, background, np_img):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			self.drawname(np_img, 0, 30 * Settings.scale, "{} - {} [{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
-			self.drawname(np_img, 0, 50 * Settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
-			self.drawname(np_img, 0, 70 * Settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
+			self.drawname(background, 0, 0 * Settings.scale, "{} - {} [{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
+			self.drawname(background, 0, 35 * Settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
+			self.drawname(background, 0, 60 * Settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
 
 			imageproc.add(self.rankingtitle, background, Settings.width - 32 * Settings.scale - self.rankingtitle.size[0], 10 * Settings.scale, self.alpha, topleft=True)

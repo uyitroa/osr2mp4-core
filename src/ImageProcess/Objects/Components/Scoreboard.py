@@ -2,10 +2,12 @@ import json
 
 import cv2
 import requests
+from PIL import ImageDraw, ImageFont
 from recordclass import recordclass
 import re
 from ImageProcess import imageproc
 from ImageProcess.Objects.FrameObject import FrameObject
+from ImageProcess.PrepareFrames.Components.Text import prepare_text
 from Parser.scoresparser import getscores
 from global_var import Settings, Paths, GameplaySettings
 from itertools import compress
@@ -126,6 +128,10 @@ class Scoreboard(FrameObject):
 		self.setuppos()
 
 		self.animate = False
+
+
+		playernames = [x.playername for x in self.scoreboards]
+		self.nameimg = prepare_text(playernames, 25, (255, 255, 255, 255))
 
 	def setuppos(self):
 		x = 0
@@ -316,7 +322,12 @@ class Scoreboard(FrameObject):
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
-		cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, Settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
+		# if self.imgdraw is None or background != self.imgdrawid:
+		# 	self.imgdraw = ImageDraw.Draw(background)
+		# 	self.imgdrawid = background
+		# cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, Settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
+		# self.imgdraw.text( (0, int(y_offset + self.height * 0.4)), "something123", font=self.font)
+		imageproc.add(self.nameimg[text], background, 0, y_offset + self.height * 0.1, alpha, topleft=True)
 
 	def add_to_frame(self, np_img, background, in_break):
 		if not GameplaySettings.settings["Show scoreboard"]:
@@ -356,7 +367,7 @@ class Scoreboard(FrameObject):
 				super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
 				self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
 				self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
-				self.drawname(np_img, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
+				self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
 
 		for i in range(len(self.effectalpha)-1, -1, -1):
 			alpha = max(0, min(1, self.effectalpha[i]))
