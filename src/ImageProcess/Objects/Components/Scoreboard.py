@@ -93,7 +93,7 @@ class Scoreboard(FrameObject):
 
 		self.effecteclipse = effectframes[0]
 		self.effectcircle = effectframes[1]
-		self.effectx, self.effecty, self.effectalpha = 0, 0, 0
+		self.effectx, self.effecty, self.effectalpha = [], [], []
 
 		self.scoreboards = []
 		self.posboards = []
@@ -243,12 +243,13 @@ class Scoreboard(FrameObject):
 		animating = self.animate
 		prevrank = self.currank
 		self.animate, self.currank = self.sortscore()
-		if self.animate and not animating:
-			self.setranktoanimate(prevrank=prevrank)
-			if self.effectalpha <= 0:
-				self.effectalpha = 2.5
-				self.effectx = -500 * Settings.scale
-				self.effecty = self.scoreboards[self.currank].y
+
+		rank = min(self.nboard - 1, self.currank)
+		if self.animate:
+			# self.setranktoanimate(prevrank=prevrank)
+			self.effectalpha.append(2.5)
+			self.effectx.append(-500 * Settings.scale)
+			self.effecty.append(curinfo.y)
 
 	def setsetscore(self, score, combo):
 		self.curscore = score
@@ -261,12 +262,13 @@ class Scoreboard(FrameObject):
 		strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(combo))
 		self.scoreboards[self.currank] = BoardInfo(strscore, strcombo, score, combo, curinfo.playername, curinfo.x, curinfo.y, curinfo.alpha, -1)
 		self.animate, self.currank = self.sortscore()
+
+
 		if self.animate:
 			self.setranktoanimate()
-			if self.effectalpha <= 0:
-				self.effectalpha = 2.5
-				self.effectx = -500 * Settings.scale
-				self.effecty = self.scoreboards[self.currank].y
+			self.effectalpha.append(2.5)
+			self.effectx.append(-500 * Settings.scale)
+			self.effecty.append(curinfo.y)
 
 	def getrange(self):
 		if self.currank < self.nboard - 1:
@@ -356,13 +358,19 @@ class Scoreboard(FrameObject):
 				self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
 				self.drawname(np_img, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
 
-		alpha = max(0, min(1, self.effectalpha))
-		if GameplaySettings.settings["In-game interface"] or in_break:
-			imageproc.add(self.effecteclipse, background, self.effectx, self.effecty, alpha=alpha)
-			imageproc.add(self.effectcircle, background, 0, self.effecty, alpha=alpha)
+		for i in range(len(self.effectalpha)-1, -1, -1):
+			alpha = max(0, min(1, self.effectalpha[i]))
+			if GameplaySettings.settings["In-game interface"] or in_break:
+				imageproc.add(self.effecteclipse, background, self.effectx[i], self.effecty[i], alpha=alpha)
+				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
-		self.effectalpha -= 0.1
-		self.effectx = min(0 * Settings.scale, self.effectx + 30 * Settings.scale)
+				self.effectalpha[i] -= 0.1
+				self.effectx[i] = min(0 * Settings.scale, self.effectx[i] + 30 * Settings.scale)
+
+				if self.effectalpha[i] <= 0:
+					del self.effectalpha[i]
+					del self.effectx[i]
+					del self.effecty[i]
 
 	def filter(self, userid, score):
 		try:

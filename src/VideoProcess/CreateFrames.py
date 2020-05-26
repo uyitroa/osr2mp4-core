@@ -73,6 +73,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 		print(frame_info.osr_index, end_index)
 
+		counter = 0
 		while frame_info.osr_index < end_index:  # len(replay_event) - 3:
 			status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
 			                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
@@ -80,6 +81,26 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			if status:
 				im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)
+				# if counter > 0:
+				# 	counter -= 1
+				# 	print(counter)
+				# 	continue
+				# im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+				# # writer.write(im)
+				# cv2.imshow("debug", im)
+				# cv2.waitKey(0)
+				#
+				# a = ""
+				# while "next" not in a and a != "stop":
+				# 	a = input(">> ")
+				# 	try:
+				# 		exec(a)
+				# 	except Exception as e:
+				# 		print(e)
+				# if a == "stop":
+				# 	break
+				# if a != "next" and "next" in a:
+				# 	counter = int(a[5:])
 
 		if showranking:
 			component.rankingpanel.start_show()
