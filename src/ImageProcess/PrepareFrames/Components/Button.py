@@ -24,7 +24,7 @@ def prepare_scoreentry(scale, color):
 		number = YImage(scoreentry + str(x), scale)
 		if number.imgfrom == ImageFrom.BLANK:
 			img = Image.open("../res/" + scoreentry + str(x) + "@2x.png")
-			img =   imageproc.change_size(img, scale * 0.5, scale * 0.5)
+			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img
 		tmp = imageproc.add_color(img, color)
