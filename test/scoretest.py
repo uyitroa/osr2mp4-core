@@ -26,7 +26,7 @@ class TestScore(unittest.TestCase):
 		# cls.tests.append(getinfos("../test/resources/", "dareka"))  # TODO: sliderend problem
 		# cls.tests.append(getinfos("../test/resources/", "len"))  # TODO: score error of 9
 		# cls.tests.append(getinfos("../test/resources/", "2reimei"))  # TODO: sliderend problem
-		# cls.tests.append(getinfos("../test/resources/", "blends"))  # TODO: score error of 4
+		cls.tests.append(getinfos("../test/resources/", "blends"))  # TODO: score error of 4
 
 	def testscore(self):
 		for i in range(len(self.tests)):

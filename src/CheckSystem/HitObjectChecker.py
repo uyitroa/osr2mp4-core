@@ -14,6 +14,20 @@ Slider = namedtuple("Slider", "followstate hitvalue tickend x y end arrowindex")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
 
 
+def difficulty_multiplier(diff):
+	points = int(diff["BaseOverallDifficulty"] + diff["BaseHPDrainRate"] + diff["BaseCircleSize"] - 0.25)
+	# points -= int(self.diff["BaseApproachRate"] + 1)  # math.ceil but cooler
+	if points in range(0, 6):
+		return 2
+	if points in range(6, 13):
+		return 3
+	if points in range(13, 18):
+		return 4
+	if points in range(18, 25):
+		return 5
+	return 6
+
+
 class HitObjectChecker:
 	def __init__(self, beatmap, mod=1, tests=False):
 		self.diff = beatmap.diff
@@ -56,19 +70,7 @@ class HitObjectChecker:
 		self.health_value = 1
 
 	def difficulty_multiplier(self):
-		points = int(
-			self.diff["BaseOverallDifficulty"] + self.diff["BaseHPDrainRate"] + self.diff["BaseCircleSize"] + self.diff[
-				"BaseApproachRate"])
-		points -= int(self.diff["BaseApproachRate"] + 1)  # math.ceil but cooler
-		if points in range(0, 6):
-			return 2
-		if points in range(6, 13):
-			return 3
-		if points in range(13, 18):
-			return 4
-		if points in range(18, 25):
-			return 5
-		return 6
+		return difficulty_multiplier(self.diff)
 
 	def update_score(self, hitresult, objtype, usecombo=True, combo=None):
 		# Always update score after updating combo
