@@ -9,12 +9,13 @@ from Utils.HashBeatmap import get_osu
 from Utils.Setup import setupglobals
 from Utils.Timing import find_time, get_offset
 from VideoProcess.CreateFrames import create_frame
-from VideoProcess.DiskUtils import concat_videos, mix_video_audio
+from VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir
 from global_var import Paths, Settings, SkinPaths
 
 
 class Osr2mp4:
 	def __init__(self, data, gameplaysettings=None):
+		create_dir()  # in case filenotfounderror no such file or directory ../temp/
 		if gameplaysettings is None:
 			gameplaysettings = {
 				"Cursor size": 1,

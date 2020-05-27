@@ -41,3 +41,9 @@ def mix_video_audio():
 
 def convert_tomp4():
 	os.system('"{}" -i "{}" -codec copy output.mp4 -y'.format(Paths.ffmpeg, Paths.output))
+
+
+def create_dir():
+	if os.path.isdir("../temp"):
+		return
+	os.makedirs("../temp")
