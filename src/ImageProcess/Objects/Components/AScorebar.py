@@ -13,7 +13,7 @@ class AScorebar(FrameObject):
 		self.duration = 0
 		self.interval = 0
 		self.alpha = 1
-		self.h = 5
+		self.h = 0
 
 	def startbreak(self, breakk, duration):
 		if self.breakk == breakk["Start"]:
@@ -47,5 +47,5 @@ class AScorebar(FrameObject):
 
 		if not self.scrolling and self.interval == 0:
 			self.alpha = 1
-			self.h = 5
+			self.h = 0
 

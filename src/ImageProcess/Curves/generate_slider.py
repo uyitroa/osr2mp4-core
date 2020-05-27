@@ -1,4 +1,5 @@
 import cv2
+from PIL import Image
 
 from ImageProcess.Curves.curves import getclass
 
@@ -16,17 +17,21 @@ class GenerateSlider:
 		:param radius: float, size of slider
 		:param scale: float, current resolution with 512x384
 		"""
-		self.sliderborder = list(sliderborder)
-		self.sliderborder[0], self.sliderborder[2] = self.sliderborder[2], self.sliderborder[0]
-		self.sliderborder = tuple(self.sliderborder)
+		# self.sliderborder = list(sliderborder)
+		# self.sliderborder[0], self.sliderborder[2] = self.sliderborder[2], self.sliderborder[0]
+		self.sliderborder = tuple(sliderborder)
 
-		self.slideroverride = list(slideroverride)
-		self.slideroverride[0], self.slideroverride[2] = self.slideroverride[2], self.slideroverride[0]
-		self.slideroverride = tuple(self.slideroverride)
+		# self.slideroverride = list(slideroverride)
+		# self.slideroverride[0], self.slideroverride[2] = self.slideroverride[2], self.slideroverride[0]
+		self.slideroverride = tuple(slideroverride)
 
 		self.radius = radius
 		self.scale = scale
 		self.extended = self.radius * self.scale
+
+		self.img = np.zeros((int(484 * self.scale + self.extended * 2), int(612 * self.scale + self.extended * 2), 4), dtype=np.uint8)
+		self.pbuffer = Image.frombuffer("RGBA", (self.img.shape[1], self.img.shape[0]), self.img, 'raw', "RGBA", 0, 1)
+		self.pbuffer.readonly = False
 
 	def convert_string(self, slider_code):
 		string = slider_code.split(",")
@@ -81,11 +86,10 @@ class GenerateSlider:
 
 	def draw(self, curve_pos):
 		to_color = np.array([50, 50, 50])  # slider gradually become this color, the closer to the center the closer the color
-		im = np.zeros((int(484 * self.scale + self.extended * 2), int(612 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		curve_pos = np.array(curve_pos)
 
-		cv2.polylines(im, [curve_pos], False, (*self.sliderborder, 200), int(self.radius*2*self.scale), cv2.LINE_AA)
-		cv2.polylines(im, [curve_pos], False, (*self.slideroverride, 200), int((self.radius-8)*2*self.scale), cv2.LINE_AA)
+		cv2.polylines(self.img, [curve_pos], False, (*self.sliderborder, 200), int(self.radius*2*self.scale), cv2.LINE_AA)
+		cv2.polylines(self.img, [curve_pos], False, (*self.slideroverride, 200), int((self.radius-8)*2*self.scale), cv2.LINE_AA)
 
 		# make shadow color effect
 		for c in range(4, int(self.radius), 1):
@@ -94,8 +98,7 @@ class GenerateSlider:
 			cur_slider[cur_slider > 255] = 255
 			cur_slider = tuple(cur_slider)
 
-			cv2.polylines(im, [curve_pos], False, (*cur_slider, 200), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
-		return im
+			cv2.polylines(self.img, [curve_pos], False, (*cur_slider, 200), int((self.radius*2 - c*2) * self.scale), cv2.LINE_AA)
 
 	def get_slider_img(self, slidertype, ps, pixel_length):
 		ps = self.convert(ps)
@@ -103,18 +106,20 @@ class GenerateSlider:
 		curve_pos = np.int32(baiser.pos)
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 
-		img = self.draw(curve_pos)
+		self.draw(curve_pos)
 
 		# crop useless part of image
-		left_y_corner = max(0, int(min_y - self.extended))
+		up_y_corner = max(0, int(min_y - self.extended))
 		left_x_corner = max(0, int(min_x - self.extended))
-		right_y_corner = min(img.shape[0], int(max_y + self.extended))
-		right_x_corner = min(img.shape[1], int(max_x + self.extended))
+		down_y_corner = min(self.img.shape[0], int(max_y + self.extended))
+		right_x_corner = min(self.img.shape[1], int(max_x + self.extended))
 
-		img = img[left_y_corner:right_y_corner, left_x_corner:right_x_corner]
+		img = self.pbuffer.crop((left_x_corner, up_y_corner, right_x_corner, down_y_corner))
+
+		self.img[up_y_corner:down_y_corner, left_x_corner:right_x_corner] = 0  # reset
 
 		x_offset = int((curve_pos[0][0] - left_x_corner))
-		y_offset = int((curve_pos[0][1] - left_y_corner))
+		y_offset = int((curve_pos[0][1] - up_y_corner))
 
 		return img, x_offset, y_offset
 
