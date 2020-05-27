@@ -1,5 +1,5 @@
-from ImageProcess.Objects.Components.AScorebar import AScorebar
-from global_var import GameplaySettings
+from .AScorebar import AScorebar
+from ....global_var import GameplaySettings
 
 
 class ScorebarBG(AScorebar):

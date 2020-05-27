@@ -1,6 +1,6 @@
 from PIL import ImageFont, ImageDraw, Image
 
-from global_var import Settings
+from ....global_var import Settings
 
 
 def prepare_text(texts, size, color):

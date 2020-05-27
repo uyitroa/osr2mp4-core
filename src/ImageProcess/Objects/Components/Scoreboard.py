@@ -1,15 +1,13 @@
 import json
 
-import cv2
 import requests
-from PIL import ImageDraw, ImageFont
 from recordclass import recordclass
 import re
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from ImageProcess.PrepareFrames.Components.Text import prepare_text
-from Parser.scoresparser import getscores
-from global_var import Settings, Paths, GameplaySettings
+from ... import imageproc
+from ..FrameObject import FrameObject
+from ...PrepareFrames.Components.Text import prepare_text
+from ....Parser.scoresparser import getscores
+from ....global_var import Settings, Paths, GameplaySettings
 from itertools import compress
 from itertools import product
 

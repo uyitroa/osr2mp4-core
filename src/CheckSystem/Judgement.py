@@ -1,9 +1,7 @@
 import math
 import numpy as np
 
-from EEnum.EReplay import Replays
-from ImageProcess.Curves.adjustcurve import next_t
-from ImageProcess.Curves.curve2 import Curve
+from ..EEnum.EReplay import Replays
 
 
 class DiffCalculator:

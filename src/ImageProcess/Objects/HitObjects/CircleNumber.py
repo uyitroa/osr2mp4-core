@@ -1,4 +1,4 @@
-from ImageProcess.Objects.FrameObject import FrameObject
+from ..FrameObject import FrameObject
 
 
 class Number(FrameObject):

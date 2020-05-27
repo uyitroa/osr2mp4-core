@@ -1,20 +1,29 @@
+import inspect
+import os
 import osrparse
 from osrparse.enums import Mod
 
-from AudioProcess.CreateAudio import create_audio
-from CheckSystem.checkmain import checkmain
-from Parser.osrparser import setupReplay
-from Parser.osuparser import read_file
-from Utils.HashBeatmap import get_osu
-from Utils.Setup import setupglobals
-from Utils.Timing import find_time, get_offset
-from VideoProcess.CreateFrames import create_frame
-from VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir
-from global_var import Paths, Settings, SkinPaths
+from .AudioProcess.CreateAudio import create_audio
+from .CheckSystem.checkmain import checkmain
+from .Parser.osrparser import setupReplay
+from .Parser.osuparser import read_file
+from .Utils.HashBeatmap import get_osu
+from .Utils.Setup import setupglobals
+from .Utils.Timing import find_time, get_offset
+from .VideoProcess.CreateFrames import create_frame
+from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir
+from .global_var import Paths, Settings, SkinPaths
+
+
+class Dummy: pass
 
 
 class Osr2mp4:
 	def __init__(self, data, gameplaysettings=None):
+		Paths.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
+		if Paths.path[-1] != "/" and Paths.path[-1] != "\\":
+			Paths.path += "/"
+
 		create_dir()  # in case filenotfounderror no such file or directory ../temp/
 		if gameplaysettings is None:
 			gameplaysettings = {
@@ -39,7 +48,6 @@ class Osr2mp4:
 		starttime = data["Start time"]
 		endtime = data["End time"]
 
-
 		self.replay_info = osrparse.parse_replay_file(replaypath)
 
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
@@ -58,7 +66,6 @@ class Osr2mp4:
 
 		self.resultinfo = None
 
-
 	def startvideo(self):
 		hd = Mod.Hidden in self.replay_info.mod_combination
 		self.drawers, self.writers, self.pipes = create_frame(self.data["Video codec"], self.beatmap,
@@ -72,7 +79,8 @@ class Osr2mp4:
 	def startaudio(self):
 		dt = Mod.DoubleTime in self.replay_info.mod_combination
 		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event)
-		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.beatmap.general["AudioFilename"], self.data["Process"], dt)
+		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.beatmap.general["AudioFilename"],
+		                          self.data["Process"], dt)
 
 	def startall(self):
 		self.analyse_replay()

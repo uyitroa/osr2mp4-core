@@ -1,4 +1,4 @@
-from ImageProcess.PrepareFrames.YImage import YImages
+from ...PrepareFrames.YImage import YImages
 
 rankingcombo = "ranking-maxcombo"
 

@@ -1,6 +1,6 @@
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import GameplaySettings
+from ... import imageproc
+from ..FrameObject import FrameObject
+from ....global_var import GameplaySettings
 
 
 class ScoreEntry(FrameObject):

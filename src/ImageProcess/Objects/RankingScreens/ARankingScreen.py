@@ -1,8 +1,7 @@
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from ..FrameObject import FrameObject
+from ....global_var import Settings
 
 
 class ARankingScreen(FrameObject):

@@ -1,6 +1,6 @@
-from ImageProcess import imageproc
-from ImageProcess.Animation import size, alpha
-from global_var import Settings
+from ... import imageproc
+from ...Animation import alpha, size
+from ....global_var import Settings
 
 
 def prepare_combo(scorenumbers):

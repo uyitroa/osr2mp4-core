@@ -1,6 +1,6 @@
 from osrparse.enums import Mod
 
-from ImageProcess.PrepareFrames.YImage import YImage
+from ...PrepareFrames.YImage import YImage
 
 selectionmod = "selection-mod-"
 

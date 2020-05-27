@@ -1,6 +1,6 @@
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings, SkinPaths
+from ... import imageproc
+from ..FrameObject import FrameObject
+from ....global_var import Settings, SkinPaths
 
 
 class HitResult(FrameObject):

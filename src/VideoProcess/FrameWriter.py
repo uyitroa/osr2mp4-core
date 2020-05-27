@@ -2,8 +2,8 @@ import time
 import numpy as np
 import cv2
 
-from VideoProcess.Setup import setup_global
-from global_var import Settings
+from .Setup import setup_global
+from ..global_var import Settings
 
 
 def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings):

@@ -1,9 +1,9 @@
 from PIL import Image
 
-from EEnum.EGrade import Grade
-from ImageProcess import imageproc
-from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
-from global_var import Settings
+from ....EEnum.EGrade import Grade
+from ... import imageproc
+from .ARankingScreen import ARankingScreen
+from ....global_var import Settings
 
 
 class RankingGrade(ARankingScreen):

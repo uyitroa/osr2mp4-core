@@ -1,4 +1,4 @@
-from ImageProcess.PrepareFrames.YImage import YImage
+from ...PrepareFrames.YImage import YImage
 
 ranking = "ranking-"
 

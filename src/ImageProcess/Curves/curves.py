@@ -2,10 +2,10 @@ import math
 
 import cv2
 
-from ImageProcess.Curves.adjustcurve import next_t, diste
+from .adjustcurve import next_t, diste
 import numpy as np
-from ImageProcess.Curves import constants, mathhelper
-from ImageProcess.Curves.curve2 import LinearB, PerfectB, Curve
+from . import constants, mathhelper
+from .curve2 import LinearB, PerfectB, Curve
 
 
 class ASlider:

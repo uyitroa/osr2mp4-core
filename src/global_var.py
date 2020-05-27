@@ -12,6 +12,7 @@ class Paths:
 	output = None
 	beatmap = None
 	osu = None
+	path = None
 
 
 class Settings:

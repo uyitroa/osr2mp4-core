@@ -9,10 +9,10 @@ from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
 from pydub import exceptions
-from AudioProcess.AddAudio import HitsoundManager
-from AudioProcess.Hitsound import Hitsound
-from AudioProcess.Utils import getfilenames, nextpowerof2
-from global_var import Paths, SkinPaths, Settings, GameplaySettings
+from .AddAudio import HitsoundManager
+from .Hitsound import Hitsound
+from .Utils import getfilenames, nextpowerof2
+from ..global_var import Paths, SkinPaths, Settings, GameplaySettings
 import os.path
 
 
@@ -23,17 +23,17 @@ def from_notwav(filename):
 	if not os.path.isfile(filename):
 		raise FileNotFoundError
 
-	subprocess.call([Paths.ffmpeg, '-i', filename, '../temp/converted.wav', '-y'])
+	subprocess.call([Paths.ffmpeg, '-i', filename, Paths.path + '../temp/converted.wav', '-y'])
 
-	a = AudioSegment.from_file('../temp/converted.wav')
+	a = AudioSegment.from_file(Paths.path + '../temp/converted.wav')
 	return a
 
 
 def read(f, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		subprocess.call([Paths.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), '../temp/spedup.mp3', '-y'])
+		subprocess.call([Paths.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), Paths.path + '../temp/spedup.mp3', '-y'])
 		# os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" ../temp/spedup.wav -y'.format(Paths.ffmpeg, f, speed))
-		f = "../temp/spedup.mp3"
+		f = Paths.path + "../temp/spedup.mp3"
 
 	if f[-4:] != ".wav":
 		a = from_notwav(f)
@@ -144,8 +144,9 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe, settings, ffmpeg):
+def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe, settings, ffmpeg, path):
 	Paths.ffmpeg = ffmpeg
+	Paths.path = path
 
 	ccc = time.time()
 
@@ -170,7 +171,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
-	write('../temp/audio.mp3', round(song.rate * timeframe/1000), out)
+	write(Paths.path + '../temp/audio.mp3', round(song.rate * timeframe/1000), out)
 
 
 
@@ -184,10 +185,10 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp, dt):
 	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
-		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg)
+		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg, Paths.path,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg)
+		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg, Paths.path)
 		return None

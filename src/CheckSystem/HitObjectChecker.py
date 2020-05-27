@@ -1,12 +1,12 @@
 import math
 
-from CheckSystem.Health import HealthProcessor, HealthDummy
-from CheckSystem.Judgement import Check
+from .Health import HealthProcessor, HealthDummy
+from .Judgement import Check
 from collections import namedtuple
 import copy
 
-from EEnum.EState import States
-from global_var import Settings
+from ..EEnum.EState import States
+from ..global_var import Settings
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")

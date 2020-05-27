@@ -1,8 +1,8 @@
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
-from global_var import Settings
+from ... import imageproc
+from .ARankingScreen import ARankingScreen
+from ....global_var import Settings
 
 
 class RankingReplay(ARankingScreen):

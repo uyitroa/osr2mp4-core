@@ -1,5 +1,5 @@
-from ImageProcess.Animation import size
-from ImageProcess.PrepareFrames.YImage import YImages
+from ...Animation import size
+from ...PrepareFrames.YImage import YImages
 
 hitprefix = "hit"
 default_size = 128

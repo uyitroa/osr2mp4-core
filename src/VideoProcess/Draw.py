@@ -1,12 +1,10 @@
 import time
 
-import cv2
-
-from EEnum.EReplay import Replays
-from VideoProcess.smoothing import smoothcursor
-from VideoProcess.Setup import setup_global, setup_draw
-from VideoProcess.calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
-from global_var import Settings
+from ..EEnum.EReplay import Replays
+from .smoothing import smoothcursor
+from .Setup import setup_global, setup_draw
+from .calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
+from ..global_var import Settings
 
 
 def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,

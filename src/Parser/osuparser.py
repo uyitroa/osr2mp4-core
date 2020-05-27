@@ -1,6 +1,6 @@
 import math
 import re
-from ImageProcess.Curves.curves import getclass
+from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:

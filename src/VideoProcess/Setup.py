@@ -1,12 +1,12 @@
 import numpy as np
 from PIL import Image
 from recordclass import recordclass
-from CheckSystem.Judgement import DiffCalculator
-from EEnum.EReplay import Replays
-from InfoProcessor import Updater
-from Utils.skip import skip
-from VideoProcess.AFrames import FrameObjects
-from global_var import Settings, SkinPaths, Paths, GameplaySettings
+from ..CheckSystem.Judgement import DiffCalculator
+from ..EEnum.EReplay import Replays
+from ..InfoProcessor import Updater
+from ..Utils.skip import skip
+from .AFrames import FrameObjects
+from ..global_var import Settings, SkinPaths, Paths, GameplaySettings
 
 FrameInfo = recordclass("FrameInfo", "cur_time index_hitobj info_index osr_index index_fp obj_endtime x_end y_end, break_index")
 CursorEvent = recordclass("CursorEvent", "event old_x old_y")
@@ -35,6 +35,7 @@ def setup_global(settings, paths, skinpaths, gameplaysettings):
 	Paths.ffmpeg = paths[1]
 	Paths.beatmap = paths[2]
 	Paths.osu = paths[3]
+	Paths.path = paths[4]
 
 	GameplaySettings.settings = gameplaysettings
 
@@ -58,6 +59,7 @@ def getlist():
 	paths.append(Paths.ffmpeg)
 	paths.append(Paths.beatmap)
 	paths.append(Paths.osu)
+	paths.append(Paths.path)
 
 	return settings, paths, skinpaths
 

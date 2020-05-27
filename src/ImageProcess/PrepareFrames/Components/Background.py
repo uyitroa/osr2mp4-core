@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import Image
 
-from ImageProcess import imageproc
-from global_var import Settings, GameplaySettings
+from ... import imageproc
+from ....global_var import Settings, GameplaySettings
 
 
 def prepare_background(backgroundname):

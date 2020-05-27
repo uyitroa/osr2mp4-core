@@ -1,4 +1,4 @@
-from ImageProcess import imageproc
+from .. import imageproc
 
 
 def img_fade(img, start, end, step):

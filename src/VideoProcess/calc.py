@@ -1,5 +1,5 @@
-from EEnum.EReplay import Replays
-from global_var import Settings
+from ..EEnum.EReplay import Replays
+from ..global_var import Settings
 
 
 

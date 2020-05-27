@@ -1,6 +1,6 @@
-from AudioProcess.Hitsound import Hitsound
-from AudioProcess.Utils import overlay, getfilename, overlays
-from EEnum.EAudio import Sound
+from .Hitsound import Hitsound
+from .Utils import overlay, getfilename, overlays
+from ..EEnum.EAudio import Sound
 
 
 class HitsoundManager:

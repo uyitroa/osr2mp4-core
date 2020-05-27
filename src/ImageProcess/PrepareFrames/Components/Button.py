@@ -1,11 +1,11 @@
 from PIL import Image, ImageDraw
 import numpy as np
 
-from EEnum.EImageFrom import ImageFrom
-from ImageProcess.Animation.size import shrink
-from ImageProcess.PrepareFrames.YImage import YImage
-from ImageProcess import imageproc
-from global_var import Settings
+from ....EEnum.EImageFrom import ImageFrom
+from ...Animation.size import shrink
+from ...PrepareFrames.YImage import YImage
+from ... import imageproc
+from ....global_var import Settings, Paths
 
 scoreentry = "scoreentry-"
 inputoverlay = "inputoverlay-key"
@@ -23,7 +23,7 @@ def prepare_scoreentry(scale, color):
 	for x in range(10):
 		number = YImage(scoreentry + str(x), scale)
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open("../res/" + scoreentry + str(x) + "@2x.png")
+			img = Image.open(Paths.path + "../res/" + scoreentry + str(x) + "@2x.png")
 			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img

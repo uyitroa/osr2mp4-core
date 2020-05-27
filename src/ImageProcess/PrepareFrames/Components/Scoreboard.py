@@ -1,5 +1,5 @@
-from ImageProcess import imageproc
-from ImageProcess.PrepareFrames.YImage import YImage
+from ... import imageproc
+from ...PrepareFrames.YImage import YImage
 
 
 scoreboard = "menu-button-background"

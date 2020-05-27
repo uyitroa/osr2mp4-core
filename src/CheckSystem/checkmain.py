@@ -2,8 +2,8 @@ import time
 
 from osrparse.enums import Mod
 
-from CheckSystem.HitObjectChecker import HitObjectChecker
-from EEnum.EReplay import Replays
+from .HitObjectChecker import HitObjectChecker
+from ..EEnum.EReplay import Replays
 
 
 def nearer(cur_time, replay, index):

@@ -1,6 +1,6 @@
 from PIL import Image
 
-from ImageProcess.PrepareFrames.YImage import YImage
+from ...PrepareFrames.YImage import YImage
 
 
 arrowwarning = "arrow-warning"

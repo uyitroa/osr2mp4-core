@@ -2,9 +2,9 @@ import os
 import numpy as np
 from PIL import Image
 
-from EEnum.EImageFrom import ImageFrom
-from ImageProcess import imageproc
-from global_var import SkinPaths
+from ...EEnum.EImageFrom import ImageFrom
+from .. import imageproc
+from ...global_var import SkinPaths
 
 
 class YImage:

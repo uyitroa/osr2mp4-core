@@ -1,4 +1,3 @@
-import json
 from struct import unpack_from
 
 

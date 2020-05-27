@@ -2,11 +2,11 @@ import osrparse
 
 
 # index for replay_event
-from CheckSystem.Judgement import DiffCalculator
+from ..CheckSystem.Judgement import DiffCalculator
 
 
 # noinspection PyTypeChecker
-from EEnum.EReplay import Replays
+from ..EEnum.EReplay import Replays
 
 
 def setupReplay(osrfile, beatmap):

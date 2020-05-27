@@ -1,8 +1,8 @@
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.PrepareFrames.YImage import YImage, YImages
-from global_var import Settings
+from ... import imageproc
+from ...PrepareFrames.YImage import YImage, YImages
+from ....global_var import Settings
 
 sliderb = "sliderb"
 sliderfollowcircle = "sliderfollowcircle"

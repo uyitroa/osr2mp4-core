@@ -1,8 +1,8 @@
-from ImageProcess.Objects.FrameObject import FrameObject
+from ..FrameObject import FrameObject
 import numpy as np
 from recordclass import recordclass
-from ImageProcess.PrepareFrames.Components.Followpoints import prepare_fp
-from global_var import Settings
+from ...PrepareFrames.Components.Followpoints import prepare_fp
+from ....global_var import Settings
 
 followpoints = "followpoint"
 

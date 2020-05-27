@@ -1,10 +1,9 @@
-import cv2
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
-from ImageProcess.PrepareFrames.Components.Text import prepare_text
-from global_var import Settings
+from ... import imageproc
+from .ARankingScreen import ARankingScreen
+from ...PrepareFrames.Components.Text import prepare_text
+from ....global_var import Settings
 
 
 class RankingTitle(ARankingScreen):

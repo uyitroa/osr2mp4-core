@@ -1,7 +1,7 @@
-from CheckSystem.Health import HealthProcessor
-from ImageProcess import imageproc
-from ImageProcess.Objects.Components.AScorebar import AScorebar
-from global_var import Settings, SkinPaths, GameplaySettings
+from ....CheckSystem.Health import HealthProcessor
+from ... import imageproc
+from .AScorebar import AScorebar
+from ....global_var import Settings, SkinPaths, GameplaySettings
 
 
 class Scorebar(AScorebar):

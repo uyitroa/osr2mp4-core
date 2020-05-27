@@ -1,8 +1,8 @@
 from recordclass import recordclass
 
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from ... import imageproc
+from ..FrameObject import FrameObject
+from ....global_var import Settings
 
 Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fadeout_i is_fadeout x_step max_step")
 

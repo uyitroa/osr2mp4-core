@@ -1,4 +1,4 @@
-from EEnum.EState import States
+from .EEnum.EState import States
 
 
 class Updater:

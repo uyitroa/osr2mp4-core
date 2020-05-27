@@ -2,8 +2,8 @@ import math
 
 import cv2
 
-from ImageProcess import imageproc
-from global_var import Settings, GameplaySettings
+from ... import imageproc
+from ....global_var import Settings, GameplaySettings
 
 
 class TimePie:

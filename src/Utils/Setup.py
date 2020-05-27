@@ -1,8 +1,8 @@
 from osrparse.enums import Mod
 
-from Parser.skinparser import Skin
-from Utils.Resolution import get_screensize
-from global_var import Settings, Paths, SkinPaths, GameplaySettings
+from ..Parser.skinparser import Skin
+from ..Utils.Resolution import get_screensize
+from ..global_var import Settings, Paths, SkinPaths, GameplaySettings
 
 
 def setupglobals(data, gameplaydata, replay_info):
@@ -10,7 +10,7 @@ def setupglobals(data, gameplaydata, replay_info):
 	beatmap_path = data["Beatmap path"]
 	output_path = data["Output path"]
 	ffmpeg = data["ffmpeg path"]
-	default_path = data["Default skin path"]
+	default_path = Paths.path + "../res/default/"
 	fps = data["FPS"]
 	width = data["Width"]
 	height = data["Height"]
@@ -18,9 +18,6 @@ def setupglobals(data, gameplaydata, replay_info):
 
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"
-
-	if default_path[-1] != "/" and default_path[-1] != "\\":
-		default_path += "/"
 
 	if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
 		beatmap_path += "/"

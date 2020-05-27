@@ -1,7 +1,4 @@
-from PIL import Image
-
-from ImageProcess.PrepareFrames.YImage import YImage
-from global_var import Settings
+from ...PrepareFrames.YImage import YImage
 
 scorebarbg = "scorebar-bg"
 

@@ -1,6 +1,6 @@
-from CheckSystem.Judgement import DiffCalculator
-from EEnum.EReplay import Replays
-from Utils.skip import search_time, search_osrindex
+from ..CheckSystem.Judgement import DiffCalculator
+from ..EEnum.EReplay import Replays
+from ..Utils.skip import search_time, search_osrindex
 
 
 def get_offset(beatmap, start_index, end_index, replay_event):

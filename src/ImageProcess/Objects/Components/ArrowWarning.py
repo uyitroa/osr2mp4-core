@@ -1,5 +1,5 @@
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings
+from ..FrameObject import FrameObject
+from ....global_var import Settings
 
 
 class ArrowWarning(FrameObject):

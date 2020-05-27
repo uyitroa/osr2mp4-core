@@ -2,7 +2,7 @@ import time
 
 import cv2
 
-from global_var import Settings
+from ....global_var import Settings
 
 CIRCLE = 0
 SLIDER = 1

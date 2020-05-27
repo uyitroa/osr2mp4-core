@@ -2,12 +2,12 @@
 # Circle
 from PIL import Image
 
-from EEnum.EImageFrom import ImageFrom
-from ImageProcess import imageproc
-from ImageProcess.Animation import alpha, size
-from ImageProcess.PrepareFrames.YImage import YImage
-from ImageProcess.imageproc import newalpha
-from global_var import Settings
+from ....EEnum.EImageFrom import ImageFrom
+from ... import imageproc
+from ...Animation import alpha, size
+from ...PrepareFrames.YImage import YImage
+from ...imageproc import newalpha
+from ....global_var import Settings
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"

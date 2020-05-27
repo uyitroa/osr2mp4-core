@@ -6,9 +6,9 @@ import numpy as np
 from scipy.special import comb
 from toolz import sliding_window
 try:
-    from ImageProcess.Curves.abec import ABCMeta, abstractmethod
-    from ImageProcess.Curves.position import Position
-    from ImageProcess.Curves.utils import lazyval
+    from .abec import ABCMeta, abstractmethod
+    from .position import Position
+    from .utils import lazyval
 except:
 	from abec import ABCMeta, abstractmethod
 	from position import Position

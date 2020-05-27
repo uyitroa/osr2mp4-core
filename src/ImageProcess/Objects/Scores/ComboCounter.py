@@ -1,8 +1,8 @@
 from math import ceil
 
-from ImageProcess import imageproc
-from ImageProcess.Objects.FrameObject import FrameObject
-from global_var import Settings, GameplaySettings
+from ... import imageproc
+from ..FrameObject import FrameObject
+from ....global_var import Settings, GameplaySettings
 
 
 class ComboCounter(FrameObject):

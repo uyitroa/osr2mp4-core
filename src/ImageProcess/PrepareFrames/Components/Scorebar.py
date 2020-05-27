@@ -1,5 +1,5 @@
-from EEnum.EImageFrom import ImageFrom
-from ImageProcess.PrepareFrames.YImage import YImage, YImages
+from ....EEnum.EImageFrom import ImageFrom
+from ...PrepareFrames.YImage import YImage, YImages
 
 scorebar = "scorebar-colour"
 scorebarmarker = "scorebar-marker"

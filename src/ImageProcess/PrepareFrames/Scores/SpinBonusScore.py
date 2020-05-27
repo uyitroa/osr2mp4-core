@@ -1,4 +1,4 @@
-from ImageProcess import imageproc
+from ... import imageproc
 
 
 def prepare_spinbonus(scorenumber):

@@ -3,12 +3,12 @@ import cv2
 
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
-from CheckSystem.Judgement import DiffCalculator
-from VideoProcess.AFrames import *
-from VideoProcess.Draw import draw_frame, render_draw
-from VideoProcess.FrameWriter import write_frame
-from VideoProcess.Setup import getlist, setup_draw
-from global_var import Settings, Paths, GameplaySettings
+from ..CheckSystem.Judgement import DiffCalculator
+from .AFrames import *
+from .Draw import draw_frame, render_draw
+from .FrameWriter import write_frame
+from .Setup import getlist, setup_draw
+from ..global_var import Settings, Paths, GameplaySettings
 
 
 def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, start_index, end_index, mpp, hd, showranking):
@@ -25,7 +25,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		osr_interval = int((end_index - start_index) / mpp)
 		start = start_index
 
-		my_file = open("../temp/listvideo.txt", "w")
+		my_file = open(Paths.path + "../temp/listvideo.txt", "w")
 		for i in range(mpp):
 
 			if i == mpp - 1:
@@ -37,7 +37,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			conn1, conn2 = Pipe()
 
 			# extract container
-			f = "../temp/output" + str(i) + Paths.output[-4:]
+			f = Paths.path + "../temp/output" + str(i) + Paths.output[-4:]
 
 			globalvars = getlist()
 
@@ -63,7 +63,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 
 	else:
-		f = "../temp/outputf" + Paths.output[-4:]
+		f = Paths.path + "../temp/outputf" + Paths.output[-4:]
 		shared = RawArray(ctypes.c_uint8, Settings.height * Settings.width * 4)
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 

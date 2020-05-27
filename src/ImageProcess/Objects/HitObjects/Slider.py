@@ -3,13 +3,12 @@ from recordclass import recordclass
 
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.Curves.adjustcurve import next_t
-from ImageProcess.Curves.generate_slider import GenerateSlider
-from ImageProcess.Curves.curve2 import *
+from ... import imageproc
+from ...Curves.generate_slider import GenerateSlider
+from ...Curves.curve2 import *
 
-from ImageProcess.PrepareFrames.HitObjects.Circles import calculate_ar
-from global_var import Settings
+from ...PrepareFrames.HitObjects.Circles import calculate_ar
+from ....global_var import Settings
 
 Slider = recordclass("Slider", "image x y cur_duration opacity sliderf_i sliderb_i cur_repeated appear_f tick_a arrow_i prev_pos osu_d")
 

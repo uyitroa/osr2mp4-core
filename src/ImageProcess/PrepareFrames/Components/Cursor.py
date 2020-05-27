@@ -2,10 +2,10 @@ import os
 
 from PIL import Image
 
-from ImageProcess.Animation.alpha import fadein
-from ImageProcess.Animation.size import grow
-from ImageProcess.PrepareFrames.YImage import YImage, SkinPaths
-from global_var import Settings
+from ...Animation.alpha import fadein
+from ...Animation.size import grow
+from ...PrepareFrames.YImage import YImage, SkinPaths
+from ....global_var import Settings
 
 cursor = "cursor"
 cursormiddle = "cursormiddle"

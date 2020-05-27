@@ -1,8 +1,8 @@
 from PIL import Image
 
-from ImageProcess import imageproc
-from ImageProcess.PrepareFrames.YImage import YImage
-from global_var import SkinPaths
+from ... import imageproc
+from ...PrepareFrames.YImage import YImage
+from ....global_var import SkinPaths
 
 rankingpanel = "ranking-panel"
 

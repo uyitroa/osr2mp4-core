@@ -1,12 +1,9 @@
 import cv2
 from PIL import Image
 
-from ImageProcess.Curves.curves import getclass
+from .curves import getclass
+from .curve2 import *
 
-try:
-	from ImageProcess.Curves.curve2 import *
-except Exception:
-		from .curve2 import *
 
 
 class GenerateSlider:

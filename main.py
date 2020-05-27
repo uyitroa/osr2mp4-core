@@ -1,15 +1,15 @@
 import os
-from Parser.jsonparser import read
-from VideoProcess.DiskUtils import convert_tomp4
+from src.Parser.jsonparser import read
+from src.VideoProcess.DiskUtils import convert_tomp4
 import time
-from osr2mp4 import Osr2mp4
+from src.osr2mp4 import Osr2mp4
 
 
 def main():
 
-	data = read("config.json")
+	data = read("src/config.json")
 
-	gameplaydata = read("settings.json")
+	gameplaydata = read("src/settings.json")
 
 	osr2mp4 = Osr2mp4(data, gameplaydata)
 	osr2mp4.startall()
