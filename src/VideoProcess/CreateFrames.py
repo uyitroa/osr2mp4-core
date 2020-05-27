@@ -25,7 +25,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		osr_interval = int((end_index - start_index) / mpp)
 		start = start_index
 
-		my_file = open("listvideo.txt", "w")
+		my_file = open("../temp/listvideo.txt", "w")
 		for i in range(mpp):
 
 			if i == mpp - 1:
@@ -37,7 +37,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			conn1, conn2 = Pipe()
 
 			# extract container
-			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
+			f = "../temp/output" + str(i) + Paths.output[-4:]
 
 			globalvars = getlist()
 
@@ -63,7 +63,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 
 	else:
-		f = Paths.output[:-4] + "f" + Paths.output[-4:]
+		f = "../temp/outputf" + Paths.output[-4:]
 		shared = RawArray(ctypes.c_uint8, Settings.height * Settings.width * 4)
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 

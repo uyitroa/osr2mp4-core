@@ -1,5 +1,7 @@
 import math
 import os
+import subprocess
+import time
 from copy import deepcopy
 from multiprocessing import Process
 from recordclass import recordclass
@@ -11,17 +13,28 @@ from AudioProcess.AddAudio import HitsoundManager
 from AudioProcess.Hitsound import Hitsound
 from AudioProcess.Utils import getfilenames, nextpowerof2
 from global_var import Paths, SkinPaths, Settings, GameplaySettings
+import os.path
+
 
 Audio2p = recordclass("Audio2p", "rate audio")
 
 
+def from_notwav(filename):
+	if not os.path.isfile(filename):
+		raise FileNotFoundError
+	subprocess.call([Paths.ffmpeg, '-i', filename, '../temp/converted.wav', '-y'])
+
+	a = AudioSegment.from_file('../temp/converted.wav')
+	return a
+
+
 def read(f, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" spedup.mp3 -y'.format(Paths.ffmpeg, f, speed))
-		f = "spedup.mp3"
+		os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" ../temp/spedup.wav -y'.format(Paths.ffmpeg, f, speed))
+		f = "../temp/spedup.wav"
 
-	if f[-1] == "3":
-		a = AudioSegment.from_mp3(f)
+	if f[-4:] != ".wav":
+		a = from_notwav(f)
 	else:
 		a = AudioSegment.from_file(f)
 
@@ -68,7 +81,10 @@ def getaudiofromfile(filename, path, defaultpath, fmt="mp3", volume=1.0, speed=1
 				return getaudiofromfile(filename, path, defaultpath, fmt="ogg")
 			return getaudiofromfile(filename, defaultpath, None, nxtfmt)
 
-		return 1, np.zeros((0, 2), dtype=np.float32)
+		if fmt == "ogg":
+			print(path, defaultpath)
+			return 1, np.zeros((0, 2), dtype=np.float32)
+		return getaudiofromfile(filename, path, defaultpath, nxtfmt)
 
 	except exceptions.CouldntDecodeError:
 		return 1, np.zeros((0, 2), dtype=np.float32)
@@ -126,7 +142,11 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe, settings):
+def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath, beatmap_path, audio_name, dt, timeframe, settings, ffmpeg):
+	Paths.ffmpeg = ffmpeg
+
+	ccc = time.time()
+
 	song = Audio2p(*read(beatmap_path + audio_name, volume=settings["Song volume"]/100, speed=timeframe/1000, changepitch=not dt))
 	song.rate /= timeframe/1000
 
@@ -134,6 +154,8 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)
 
 	hitsoundm = HitsoundManager(beatmap)
+
+	print("Done loading", time.time() - ccc)
 
 	for x in range(len(my_info)):
 
@@ -146,7 +168,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
-	write('audio.mp3', round(song.rate * timeframe/1000), out)
+	write('../temp/audio.mp3', round(song.rate * timeframe/1000), out)
 
 
 
@@ -155,14 +177,15 @@ def create_audio(my_info, beatmap_info, offset, endtime, audio_name, mpp, dt):
 	default_skinP = SkinPaths.default_path
 	skin_path = SkinPaths.path
 	timeframe = Settings.timeframe
+	ffmpeg = Paths.ffmpeg
 
 	beatmap_info = deepcopy(beatmap_info)
 
 	if mpp >= 1:
-		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings,)
+		audio_args = (my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings)
+		processaudio(my_info, beatmap_info, skin_path, offset, endtime, default_skinP, beatmap_path, audio_name, dt, timeframe, GameplaySettings.settings, ffmpeg)
 		return None

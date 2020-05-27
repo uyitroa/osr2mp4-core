@@ -27,7 +27,7 @@ class GenerateSlider:
 
 		self.radius = radius
 		self.scale = scale
-		self.extended = self.radius * self.scale
+		self.extended = self.radius * self.scale + 2
 
 		self.img = np.zeros((int(484 * self.scale + self.extended * 2), int(612 * self.scale + self.extended * 2), 4), dtype=np.uint8)
 		self.pbuffer = Image.frombuffer("RGBA", (self.img.shape[1], self.img.shape[0]), self.img, 'raw', "RGBA", 0, 1)

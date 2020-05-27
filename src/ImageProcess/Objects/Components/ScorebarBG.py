@@ -17,7 +17,7 @@ class ScorebarBG(AScorebar):
 		# 	h = 0
 
 		if GameplaySettings.settings["In-game interface"] or inbreak:
-			if inbreak or cur_time < self.map_start:
+			if inbreak or cur_time < self.map_start or not (not self.scrolling and self.interval == 0):
 				self.frame_index = 0
 				super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
 			else:

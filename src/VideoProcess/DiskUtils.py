@@ -1,14 +1,16 @@
 import os
+import subprocess
 
 from global_var import Paths
 
 
 def concat_videos():
-	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	command = '"{}" -safe 0 -f concat -i listvideo.txt -c copy "{}" -y'.format(Paths.ffmpeg, f)
-	if os.name == 'nt':
-		command = '"' + command + '"'
-	os.system(command)
+	f = "../temp/outputf" + Paths.output[-4:]
+	# command = '"{}" -safe 0 -f concat -i ../temp/listvideo.txt -c copy "{}" -y'.format(Paths.ffmpeg, f)
+	# if os.name == 'nt':
+	# 	command = '"' + command + '"'
+	# os.system(command)
+	subprocess.call([Paths.ffmpeg, '-safe', '0', '-f', 'concat', '-i', '../temp/listvideo.txt', '-c', 'copy', f, '-y'])
 
 
 def cleanup():
@@ -18,11 +20,7 @@ def cleanup():
 		rm_command = "rm"
 
 	try:
-		mpp = len(open("listvideo.txt", "r").read().split("\n")) - 1
-		os.system('{} listvideo.txt'.format(rm_command))
-		for i in range(mpp):
-			f = Paths.output[:-4] + str(i) + Paths.output[-4:]
-			os.system('{} "{}"'.format(rm_command, f))
+		subprocess.call([rm_command, "../temp/*"])
 	except FileNotFoundError:
 		pass
 	#
@@ -32,12 +30,13 @@ def cleanup():
 
 
 def mix_video_audio():
-	f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	command = '"{}" -i "{}" -i audio.mp3 -c:v copy -c:a aac "{}" -y'.format(Paths.ffmpeg, f, Paths.output)
-	if os.name == 'nt':
-		command = '"' + command + '"'
-
-	os.system(command)
+	f = "../temp/outputf" + Paths.output[-4:]
+	# command = '"{}" -i "{}" -i ../temp/audio.mp3 -c:v copy -c:a aac "{}" -y'.format(Paths.ffmpeg, f, Paths.output)
+	# if os.name == 'nt':
+	# 	command = '"' + command + '"'
+	#
+	# os.system(command)
+	subprocess.call([Paths.ffmpeg, '-i', f, '-i', '../temp/audio.mp3', '-c:v', 'copy', '-c:a', 'aac', Paths.output, '-y'])
 
 
 def convert_tomp4():

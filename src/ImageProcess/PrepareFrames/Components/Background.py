@@ -27,10 +27,10 @@ def prepare_background(backgroundname):
 	img = imageproc.change_size(img, scale, scale)
 	imgs = [Image.new("RGBA", (1, 1))]
 
-	dim = max(0, min(100, (100 - GameplaySettings.settings["Background dim"])))
+	dim = max(0, min(100, (100 - GameplaySettings.settings["Background dim"]))) * 2.55
 	color = np.array([dim, dim, dim])
 	interval = int(1000/Settings.fps)
-	c_interval = GameplaySettings.settings["Background dim"]/interval
+	c_interval = max(0, (GameplaySettings.settings["Background dim"] - 50) * 2.55/interval)
 	color[:] = color[:] - c_interval
 	for x in range(interval):
 		color[:] = color[:] + c_interval
