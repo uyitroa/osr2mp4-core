@@ -1,9 +1,11 @@
-*.png
 *.mp4
 *.mkv
 *.pyc
 *.xml
 .idea/
+src/*.png
+src/*.mp3
+src/*.swp
 venv/
 .DS_Store
 .idea/
