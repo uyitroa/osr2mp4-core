@@ -9,12 +9,16 @@ class ScorebarBG(AScorebar):
 
 	def add_to_frame(self, background, cur_time, inbreak):
 		AScorebar.animate(self)
-		if inbreak or cur_time < self.map_start:
-			self.frame_index = 0
-			h = -self.h
-		else:
-			self.frame_index = 1
-			h = 0
+		# if inbreak or cur_time < self.map_start:
+		# 	self.frame_index = 0
+		# 	h = -self.h
+		# else:
+		# 	self.frame_index = 1
+		# 	h = 0
 
 		if GameplaySettings.settings["In-game interface"] or inbreak:
-			super().add_to_frame(background, 0, h, alpha=self.alpha, topleft=True)
+			if inbreak or cur_time < self.map_start:
+				self.frame_index = 0
+				super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
+			else:
+				background.paste(self.frames[1], (0, -self.h))

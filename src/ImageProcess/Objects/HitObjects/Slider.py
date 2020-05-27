@@ -75,8 +75,8 @@ class SliderManager:
 
 	def get_slider_img(self, osu_d):
 		image, x_offset, y_offset = self.gs.get_slider_img(osu_d["slider type"], osu_d["ps"], osu_d["pixel length"])
-		image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
-		return Image.fromarray(image), x_offset, y_offset
+		# image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
+		return image, x_offset, y_offset
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
 		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]

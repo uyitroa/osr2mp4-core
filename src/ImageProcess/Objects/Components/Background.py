@@ -51,7 +51,8 @@ class Background(FrameObject):
 				if GameplaySettings.settings["Background dim"] == 100:
 					np.fill(0)
 				else:
-					imageproc.add(self.frames[1], background, Settings.width//2, Settings.height//2)
+					# imageproc.add(self.frames[1], background, Settings.width//2, Settings.height//2)
+					background.paste(self.frames[1], (0, 0))
 			return
 
 		super().add_to_frame(background, Settings.width//2, Settings.height//2)
