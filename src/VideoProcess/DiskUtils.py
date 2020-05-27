@@ -44,6 +44,7 @@ def convert_tomp4():
 
 
 def create_dir():
-	if os.path.isdir("../temp"):
-		return
-	os.makedirs("../temp")
+	if not os.path.isdir("../temp"):
+		os.makedirs("../temp")
+	if not os.path.isdir("../logs/"):
+		os.makedirs("../logs")

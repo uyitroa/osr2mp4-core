@@ -22,6 +22,7 @@ Audio2p = recordclass("Audio2p", "rate audio")
 def from_notwav(filename):
 	if not os.path.isfile(filename):
 		raise FileNotFoundError
+
 	subprocess.call([Paths.ffmpeg, '-i', filename, '../temp/converted.wav', '-y'])
 
 	a = AudioSegment.from_file('../temp/converted.wav')
@@ -30,8 +31,9 @@ def from_notwav(filename):
 
 def read(f, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" ../temp/spedup.wav -y'.format(Paths.ffmpeg, f, speed))
-		f = "../temp/spedup.wav"
+		subprocess.call([Paths.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), '../temp/spedup.mp3', '-y'])
+		# os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" ../temp/spedup.wav -y'.format(Paths.ffmpeg, f, speed))
+		f = "../temp/spedup.mp3"
 
 	if f[-4:] != ".wav":
 		a = from_notwav(f)
