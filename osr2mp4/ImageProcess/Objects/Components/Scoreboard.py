@@ -129,7 +129,7 @@ class Scoreboard(FrameObject):
 
 
 		playernames = [x.playername for x in self.scoreboards]
-		self.nameimg = prepare_text(playernames, 25, (255, 255, 255, 255))
+		self.nameimg = prepare_text(playernames, 15 * Settings.scale, (255, 255, 255, 255))
 
 	def setuppos(self):
 		x = 0

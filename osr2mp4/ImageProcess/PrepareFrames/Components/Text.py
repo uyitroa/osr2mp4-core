@@ -4,6 +4,7 @@ from ....global_var import Settings, Paths
 
 
 def prepare_text(texts, size, color):
+	size = int(size)
 	font = ImageFont.truetype(Paths.path + "res/Arial.ttf", size=size)
 
 	img = Image.new("RGBA", (Settings.width, Settings.height))

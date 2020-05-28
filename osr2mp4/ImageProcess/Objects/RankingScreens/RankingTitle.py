@@ -21,9 +21,9 @@ class RankingTitle(ARankingScreen):
 
 		self.rankingtitle = frames[0]
 
-		titleimg = prepare_text(["{} - {} [{}]".format(self.artist, self.beatmapname, self.diff)], 40, (255, 255, 255, 255))
-		creatorimg = prepare_text(["Beatmap by {}".format(self.mapper)], 30, (255, 255, 255, 255))
-		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 30, (255, 255, 255, 255))
+		titleimg = prepare_text(["{} - {} [{}]".format(self.artist, self.beatmapname, self.diff)], 30 * Settings.scale, (255, 255, 255, 255))
+		creatorimg = prepare_text(["Beatmap by {}".format(self.mapper)], 20 * Settings.scale, (255, 255, 255, 255))
+		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 20 * Settings.scale, (255, 255, 255, 255))
 
 		self.textimgs = {**titleimg, **creatorimg, **playerimg}
 
