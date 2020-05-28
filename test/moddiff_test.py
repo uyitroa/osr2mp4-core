@@ -1,5 +1,5 @@
 import unittest
-from CheckSystem.checkmain import dtod, dtar, htod, htar
+from osr2mp4.CheckSystem.checkmain import dtod, dtar, htod, htar
 
 
 class TestModDiff(unittest.TestCase):

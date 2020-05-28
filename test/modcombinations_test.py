@@ -1,5 +1,5 @@
 import unittest
-from ImageProcess.Objects.Components.Scoreboard import getmods
+from osr2mp4.ImageProcess.Objects.Components.Scoreboard import getmods
 
 
 class TestModDiff(unittest.TestCase):

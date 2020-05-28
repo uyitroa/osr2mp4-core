@@ -1,8 +1,8 @@
 import unittest
 
-from CheckSystem.checkmain import checkmain
-from global_var import Settings
-from test.utils import getinfos
+from osr2mp4.CheckSystem.checkmain import checkmain
+from osr2mp4.global_var import Settings
+from utils import getinfos
 
 
 class TestScore(unittest.TestCase):
