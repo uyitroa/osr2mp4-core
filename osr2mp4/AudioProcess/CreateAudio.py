@@ -60,7 +60,8 @@ def pydubtonumpy(audiosegment):
 		y1[:, 1] = y * 0.5
 		y = y1
 	try:
-		maxvalue = max(np.amax(y), 2 ** 16)
+		h = max(2, audiosegment.sample_width) * 8
+		maxvalue = max(np.amax(y), 2 ** h)
 	except ValueError:
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
@@ -125,7 +126,7 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 
 	for x in range(100, 150, 5):
 		speed = x/100
-		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, volume=settings["Effect volume"]/100, speed=speed)))
+		Hitsound.spinnerspin.append(Audio2p(*getaudiofromfile("spinnerspin", skinpath, defaultpath, volume=settings["Effect volume"]/200, speed=speed)))
 
 
 def getoffset(offset, endtime, song):
