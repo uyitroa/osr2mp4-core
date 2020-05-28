@@ -1,0 +1,2 @@
+file '/Users/yuitora./PycharmProjects/osr2mp4/osr2mp4/temp/output0.mkv'
+file '/Users/yuitora./PycharmProjects/osr2mp4/osr2mp4/temp/output1.mkv'

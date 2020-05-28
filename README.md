@@ -1,45 +1,34 @@
-# Getting started
-```python
-from osr2mp4 import Osr2mp4
-
-data = {
-  "osu! path": "/Users/yuitora./osu!/",
-  "Skin path": "/Users/yuitora./osu!/Skins/-#Whitecat#-",
-  "Beatmap path": "/Users/yuitora./osu!/Songs/123456 Hachigatsu, Bou/",
-  ".osr path": "/Users/yuitora./osu!/Replays/yuitora_12317423.osr",
-  "Default skin path": "/Users/yuitora./Downloads/Default Skin/",
-  "Output path": "output.avi",
-  "Width": 1920,
-  "Height": 1080,
-  "FPS": 60,
-  "Start time": 0,
-  "End time": -1,
-  "Video codec": "XVID",
-  "Process": 2,
-  "ffmpeg path": "Users/yuitora./ffmpeg/bin/ffmpeg.exe"
-}
-
-settings = {
-  "Cursor size": 1,
-  "In-game interface": True,
-  "Show scoreboard": True,
-  "Background dim": 90,
-  "Always show key overlay": True,
-  "Automatic cursor size": False,
-  "Score meter size": 1.25,
-  "Song volume": 50,
-  "Effect volume": 100,
-  "Ignore beatmap hitsounds": True,
-  "Use skin's sound samples": True,
-  "Global leaderboard": False,
-  "Mods leaderboard": "(HD)HR",
-  "api key": "lol"
-}
-
-converter = Osr2mp4(data, settings)
-converter.startall()
-converter.joinall()
+# Installing
+```
+cd src/
+python setup.py
 ```
 
-`"Process": n` means the amount of parallel computing. Theorically the more the faster. Usually 2-4 is fast and above that is slower.
- 
+Then
+
+### Pillow-SIMD
+Download Pillow-SIMD here
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pillow-simd
+
+Install pillow-simd
+`pip install download-file.whl`
+
+### ffmpeg
+Download ffmpeg here:
+https://www.ffmpeg.org/download.html#build-windows
+
+
+### Download the default skin link
+https://osu.ppy.sh/community/forums/topics/129191?start=2997865
+
+
+### Setup config
+Setup path for skin, beatmap, replay, default skin and ffmpeg in `src/config.json`
+
+
+`"Start time": 0, "End time": 60` means it will only convert the first minute of the replay.
+Set `"End time"` to -1 if you want to convert full replay.
+
+`"Process": 2` means the program will use 2 processes to convert so it will be faster than just 1.
+Use `"Process": 0` if you don't want parallel computing.
+
