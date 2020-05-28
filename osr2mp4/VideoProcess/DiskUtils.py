@@ -10,7 +10,7 @@ def concat_videos():
 	# if os.name == 'nt':
 	# 	command = '"' + command + '"'
 	# os.system(command)
-	subprocess.call([Paths.ffmpeg, '-safe', '0', '-f', 'concat', '-i', Paths.path + 'temp/listvideo.txt', '-c', 'copy', f, '-y'])
+	subprocess.call([Paths.ffmpeg, '-safe', '0', '-f', 'concat', '-i', 'listvideo.txt', '-c', 'copy', f, '-y'])
 
 
 def cleanup():

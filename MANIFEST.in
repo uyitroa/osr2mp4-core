@@ -1,5 +1,0 @@
-include pypiREADME.md
-include requirements.txt
-include osr2mp4/config.json
-include osr2mp4/settings.json
-recursive-include osr2mp4/res *

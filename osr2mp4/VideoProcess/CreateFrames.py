@@ -25,7 +25,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		osr_interval = int((end_index - start_index) / mpp)
 		start = start_index
 
-		my_file = open(Paths.path + "temp/listvideo.txt", "w")
+		my_file = open("listvideo.txt", "w")
 		for i in range(mpp):
 
 			if i == mpp - 1:
