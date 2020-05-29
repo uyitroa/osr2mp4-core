@@ -11,7 +11,7 @@ from pydub import AudioSegment
 from pydub import exceptions
 from .AddAudio import HitsoundManager
 from .Hitsound import Hitsound
-from .Utils import getfilenames, nextpowerof2
+from .Utils import getfilenames
 from ..global_var import Paths, SkinPaths, Settings, GameplaySettings
 import os.path
 
@@ -61,7 +61,7 @@ def pydubtonumpy(audiosegment):
 		y = y1
 	try:
 		h = max(2, audiosegment.sample_width) * 8
-		maxvalue = max(np.amax(y), 2 ** h)
+		maxvalue = np.amax(y)
 	except ValueError:
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
@@ -172,6 +172,8 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
+	maxvalue = np.amax(song.audio)
+	song.audio = np.float64(song.audio) / maxvalue
 	write(Paths.path + 'temp/audio.mp3', round(song.rate * timeframe/1000), out)
 
 
