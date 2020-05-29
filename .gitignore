@@ -11,3 +11,5 @@ venv/
 .idea/
 __pycache__/
 asdf/
+MANIFEST.in
+pypiREADME.md

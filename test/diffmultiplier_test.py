@@ -1,9 +1,8 @@
 import unittest
 
-from CheckSystem.HitObjectChecker import difficulty_multiplier
-from CheckSystem.checkmain import checkmain
-from global_var import Settings
-from test.utils import getinfos, getbeatmap
+from osr2mp4.CheckSystem.HitObjectChecker import difficulty_multiplier
+from osr2mp4.global_var import Settings
+from utils import getinfos, getbeatmap
 
 
 class TestScore(unittest.TestCase):

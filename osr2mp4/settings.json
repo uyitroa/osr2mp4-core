@@ -1,0 +1,17 @@
+{
+  "Cursor size": 1,
+  "In-game interface": true,
+  "Show scoreboard": true,
+  "Background dim": 100,
+  "Always show key overlay": true,
+  "Automatic cursor size": false,
+  "Rotate sliderball": false,
+  "Score meter size": 1.25,
+  "Song volume": 50,
+  "Effect volume": 100,
+  "Ignore beatmap hitsounds": false,
+  "Use skin's sound samples": false,
+  "Global leaderboard": true,
+  "Mods leaderboard": "*",
+  "api key": "lol"
+}

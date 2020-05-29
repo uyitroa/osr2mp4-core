@@ -1,7 +1,7 @@
-from AudioProcess.Utils import getfilenames
-from Parser.osrparser import setupReplay
-from Parser.osuparser import read_file
-from Parser.skinparser import Skin
+from osr2mp4.AudioProcess.Utils import getfilenames
+from osr2mp4.Parser.osrparser import setupReplay
+from osr2mp4.Parser.osuparser import read_file
+from osr2mp4.Parser.skinparser import Skin
 import osrparse
 import os
 

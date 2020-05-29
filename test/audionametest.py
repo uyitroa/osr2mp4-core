@@ -1,6 +1,6 @@
 import unittest
 
-from test.utils import getaudiofilename
+from utils import getaudiofilename
 
 
 class TestAudio(unittest.TestCase):
