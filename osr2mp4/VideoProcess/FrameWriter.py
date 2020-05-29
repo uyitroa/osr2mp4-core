@@ -1,12 +1,13 @@
+import os
 import time
 import numpy as np
 import cv2
 
 from .Setup import setup_global
-from ..global_var import Settings
+from ..global_var import Settings, Paths
 
 
-def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings):
+def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings, iii):
 	asdfasdf = time.time()
 
 	setup_global(settings, paths, skinpaths, gameplaysettings)
@@ -21,7 +22,13 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 	timer3 = 0
 	timer4 = 0
 	a = 0
+	framecount = 1
 	print("start writing:", time.time() - asdfasdf)
+
+	startwringtime = time.time()
+
+	if iii:
+		filewriter = open(Paths.path + "temp/speed.txt", "w")
 
 	while a != 10:
 
@@ -33,7 +40,6 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 		timer2 += time.time() - asdf
 
 		if a == 1:
-
 			asdf = time.time()
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
 			# print("video send")
@@ -45,6 +51,16 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 			asdf = time.time()
 			writer.write(im)
 			timer += time.time() - asdf
+
+			framecount += 1
+			if iii and framecount % 200:
+				deltatime = timer
+				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, filename, startwringtime))
+				filewriter.flush()
+
+	if iii:
+		filewriter.write("done")
+		filewriter.close()
 
 	writer.release()
 	print("\nWriting time:", timer)

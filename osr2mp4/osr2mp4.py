@@ -1,5 +1,7 @@
 import inspect
 import os
+import time
+
 import osrparse
 from osrparse.enums import Mod
 
@@ -26,6 +28,11 @@ class Osr2mp4:
 			Paths.path += "/"
 
 		create_dir()  # in case filenotfounderror no such file or directory ../temp/
+
+		exists = os.path.isfile(Paths.path + "temp/speed.txt")
+		if exists:
+			os.remove(Paths.path + "temp/speed.txt")
+
 		if gameplaysettings is None:
 			gameplaysettings = {
 				"Cursor size": 1,
@@ -72,7 +79,10 @@ class Osr2mp4:
 
 		self.resultinfo = None
 
+		self.previousprogress = 0
+
 	def startvideo(self):
+		self.analyse_replay()
 		hd = Mod.Hidden in self.replay_info.mod_combination
 		self.drawers, self.writers, self.pipes = create_frame(self.data["Video codec"], self.beatmap,
 		                                                      SkinPaths.skin_ini, self.replay_event, self.replay_info,
@@ -117,3 +127,30 @@ class Osr2mp4:
 		if self.data["Process"] >= 1:
 			concat_videos()
 		mix_video_audio()
+
+	def getprogress(self):
+		should_continue = os.path.isfile(Paths.path + "temp/speed.txt")
+		if not should_continue:
+			return 0
+
+		fileopen = open(Paths.path + "temp/speed.txt", "r")
+		try:
+			info = fileopen.read().split("\n")
+			framecount = int(info[0])
+			deltatime = float(info[1])
+			filename = info[2]
+			starttime = float(info[3])
+
+			curdeltatime = time.time() - starttime
+			estimated_curframe = curdeltatime/deltatime * framecount
+
+			estimated_progress = estimated_curframe/(self.end_index - self.start_index)
+		except ValueError:
+			if "done" in info:
+				estimated_progress = 100
+			else:
+				estimated_progress = self.previousprogress
+
+		self.previousprogress = estimated_progress
+		fileopen.close()
+		return min(99, estimated_progress * 100)
