@@ -11,7 +11,7 @@ class RankingAccuracy(ARankingScreen):
 		super().__init__(dummy)
 		maxscore = (replayinfo.number_300s + replayinfo.number_100s + replayinfo.number_50s + replayinfo.misses) * 300
 		score = replayinfo.number_300s * 300 + replayinfo.number_100s * 100 + replayinfo.number_50s * 50
-		self.accuracy = str(round(score/maxscore * 100, 2))
+		self.accuracy = str("{:.2f}".format(score/maxscore * 100))
 
 		self.numberframes = numberframes[1]
 		self.gap = gap * Settings.scale
