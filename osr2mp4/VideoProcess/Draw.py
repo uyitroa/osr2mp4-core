@@ -107,7 +107,7 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, r
 		component.modicons.start_show()
 		component.rankingreplay.start_show()
 		component.rankinggraph.start_show()
-		for x in range(200):
+		for x in range(int(5 * Settings.fps)):
 			# np_img.fill(0)
 			component.rankingpanel.add_to_frame(pbuffer)
 			component.rankinghitresults.add_to_frame(pbuffer)
