@@ -3,7 +3,11 @@ from ..EEnum.EReplay import Replays
 from ..Utils.skip import search_time, search_osrindex
 
 
-def get_offset(beatmap, start_index, end_index, replay_event):
+def get_offset(beatmap, start_index, end_index, replay_event, endtime):
+	if endtime == -1:
+		endtime = 5000
+	else:
+		endtime = 0
 	start_time = replay_event[start_index][3]
 	diffcalculator = DiffCalculator(beatmap.diff)
 	timepreempt = diffcalculator.ar()
@@ -14,7 +18,7 @@ def get_offset(beatmap, start_index, end_index, replay_event):
 	index = max(osr_index, start_index)
 	# print(replay_event[osr_index][Replays.TIMES], replay_event[start_index][Replays.TIMES], replay_event[index][Replays.TIMES])
 	offset = replay_event[index][3]
-	endtime = replay_event[end_index][3] + 100
+	endtime += replay_event[end_index][3] + 100
 	print("\n\nOFFSET:", offset)
 	return offset, endtime
 

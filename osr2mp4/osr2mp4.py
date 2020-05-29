@@ -84,7 +84,7 @@ class Osr2mp4:
 
 	def startaudio(self):
 		dt = Mod.DoubleTime in self.replay_info.mod_combination
-		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event)
+		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
 		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.beatmap.general["AudioFilename"],
 		                          self.data["Process"], dt)
 

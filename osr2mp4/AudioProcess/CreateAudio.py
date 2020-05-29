@@ -140,8 +140,8 @@ def getoffset(offset, endtime, song):
 		out[int(offset / 1000 * song.rate):] = song.audio
 
 	if endtime != -1:
-		out = out[:int(rendtime / 1000 * song.rate)]
-
+		e = min(int(rendtime / 1000 * song.rate), len(out))
+		out = out[:e]
 	return out
 
 
