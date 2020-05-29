@@ -208,7 +208,11 @@ class Scoreboard(FrameObject):
 
 
 	def getlocalscores(self, mods):
-		scores = getscores(self.beatmaphash, Paths.osu + "scores.db")
+		try:
+			scores = getscores(self.beatmaphash, Paths.osu + "scores.db")
+		except FileNotFoundError:
+			return
+
 		for i in range(len(scores["scores"])):
 			score = scores["scores"][i]
 

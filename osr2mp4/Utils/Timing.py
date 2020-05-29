@@ -42,7 +42,9 @@ def find_time(starttime, endtime, replay, replay_start):
 	endindex = len(replay) - 3
 	if endtime == -1:
 		endindex = len(replay) - 3
-	for index, x in enumerate(replay):
+
+	starttime = min(starttime, replay[-10][Replays.TIMES])
+	for index, x in enumerate(replay[:-3]):
 		if x[3] >= starttime and startindex is None:
 			startindex = index
 		if x[3] >= endtime + 1000 and endtime != -1:

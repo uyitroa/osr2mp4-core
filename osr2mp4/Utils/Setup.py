@@ -8,13 +8,13 @@ from ..global_var import Settings, Paths, SkinPaths, GameplaySettings
 def setupglobals(data, gameplaydata, replay_info):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
-	output_path = data["Output path"]
-	ffmpeg = data["ffmpeg path"]
+	output_path = data.get("Output path", "output.avi")
+	ffmpeg = data.get("ffmpeg path", "ffmpeg")
 	default_path = Paths.path + "res/default/"
-	fps = data["FPS"]
-	width = data["Width"]
-	height = data["Height"]
-	osupath = data["osu! path"]
+	fps = data.get("FPS", 60)
+	width = data.get("Width", 1920)
+	height = data.get("Height", 1080)
+	osupath = data.get("osu! path", None)
 
 	if skin_path[-1] != "/" and skin_path[-1] != "\\":
 		skin_path += "/"

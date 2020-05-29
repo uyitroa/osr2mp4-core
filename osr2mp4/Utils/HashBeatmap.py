@@ -1,9 +1,14 @@
 import hashlib
 import os
 
+from ..Exceptions import BeatmapNotFound
+
 
 def get_osu(path, maphash):
-	filelist = os.listdir(path)
+	try:
+		filelist = os.listdir(path)
+	except FileNotFoundError as e:
+		raise BeatmapNotFound() from None
 	for f in filelist[:]:
 		if f.endswith(".osu"):
 			md5 = hashlib.md5()
@@ -16,3 +21,5 @@ def get_osu(path, maphash):
 			m = md5.hexdigest()
 			if maphash == m:
 				return path+f
+
+	raise BeatmapNotFound()

@@ -5,6 +5,7 @@ import time
 import osrparse
 from osrparse.enums import Mod
 
+from .Exceptions import ReplayNotFound
 from .Parser.jsonparser import read
 from .AudioProcess.CreateAudio import create_audio
 from .CheckSystem.checkmain import checkmain
@@ -61,7 +62,10 @@ class Osr2mp4:
 		starttime = data["Start time"]
 		endtime = data["End time"]
 
-		self.replay_info = osrparse.parse_replay_file(replaypath)
+		try:
+			self.replay_info = osrparse.parse_replay_file(replaypath)
+		except FileNotFoundError as e:
+			raise ReplayNotFound() from None
 
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
