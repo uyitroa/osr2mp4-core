@@ -15,7 +15,7 @@ from .Utils.HashBeatmap import get_osu
 from .Utils.Setup import setupglobals
 from .Utils.Timing import find_time, get_offset
 from .VideoProcess.CreateFrames import create_frame
-from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir
+from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir, cleanup
 from .global_var import Paths, Settings, SkinPaths
 
 
@@ -133,6 +133,10 @@ class Osr2mp4:
 		if self.data["Process"] >= 1:
 			concat_videos()
 		mix_video_audio()
+		self.cleanup()
+
+	def cleanup(self):
+		cleanup()
 
 	def getprogress(self):
 		should_continue = os.path.isfile(Paths.path + "temp/speed.txt")

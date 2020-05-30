@@ -1,6 +1,6 @@
 import os
 import subprocess
-
+import shutil
 from ..global_var import Paths
 
 
@@ -14,20 +14,10 @@ def concat_videos():
 
 
 def cleanup():
-	if os.name == 'nt':
-		rm_command = "del"
-	else:
-		rm_command = "rm"
-
-	try:
-		subprocess.call([rm_command, Paths.path + "temp/*"])
-	except FileNotFoundError:
-		pass
-	#
-	# f = Paths.output[:-4] + "f" + Paths.output[-4:]
-	# os.system('{} "{}"'.format(rm_command, f))
-	# os.system('{} audio.mp3'.format(rm_command))
-
+	if os.path.isdir(Paths.path + "temp/"):
+		shutil.rmtree(Paths.path + "temp/")
+	if os.path.isfile(Paths.path + "listvideo.txt"):
+		os.remove(Paths.path + "listvideo.txt")
 
 def mix_video_audio():
 	f = Paths.path + "temp/outputf" + Paths.output[-4:]
