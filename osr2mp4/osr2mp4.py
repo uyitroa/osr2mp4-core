@@ -25,6 +25,7 @@ class Dummy: pass
 class Osr2mp4:
 	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None):
 		Paths.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
+		Paths.path = os.path.relpath(Paths.path)
 		if Paths.path[-1] != "/" and Paths.path[-1] != "\\":
 			Paths.path += "/"
 

@@ -28,7 +28,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		osr_interval = int((end_index - start_index) / mpp)
 		start = start_index
 
-		my_file = open("listvideo.txt", "w")
+		my_file = open(Paths.path + "listvideo.txt", "w")
 		for i in range(mpp):
 
 			if i == mpp - 1:
@@ -40,14 +40,14 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			conn1, conn2 = Pipe()
 
 			# extract container
-			f = Paths.path + "temp/output" + str(i) + Paths.output[-4:]
+			f = "temp/output" + str(i) + Paths.output[-4:]
 
 			globalvars = getlist()
 
 			drawer = Process(target=draw_frame, args=(
 				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars, GameplaySettings.settings, showranking and i == mpp-1))
 
-			writer = Process(target=write_frame, args=(shared, conn2, f, codec, *globalvars, GameplaySettings.settings, i == mpp-1))
+			writer = Process(target=write_frame, args=(shared, conn2, Paths.path + f, codec, *globalvars, GameplaySettings.settings, i == mpp-1))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))
