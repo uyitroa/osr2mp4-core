@@ -16,7 +16,7 @@ class RankingTitle(ARankingScreen):
 		self.mapper = beatmap.meta["Creator"]
 		self.diff = beatmap.meta["Version"]
 		self.player = replayinfo.player_name
-		self.date = str(replayinfo.timestamp)
+		self.date = str(replayinfo.timestamp.replace(microsecond=0))
 		self.date = self.date.replace("-", "/")
 
 		self.rankingtitle = frames[0]
