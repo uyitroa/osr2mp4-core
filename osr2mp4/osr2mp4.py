@@ -41,6 +41,7 @@ class Osr2mp4:
 				"In-game interface": True,
 				"Show scoreboard": True,
 				"Background dim": 100,
+				"Rotate sliderball": False,
 				"Always show key overlay": True,
 				"Automatic cursor size": False,
 				"Score meter size": 1,
