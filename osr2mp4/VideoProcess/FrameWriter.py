@@ -28,7 +28,7 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 	startwringtime = time.time()
 
 	if iii:
-		filewriter = open(Paths.path + "temp/speed.txt", "w")
+		filewriter = open(Paths.temp + "speed.txt", "w")
 
 	while a != 10:
 

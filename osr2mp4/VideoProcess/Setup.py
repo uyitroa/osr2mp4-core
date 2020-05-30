@@ -36,6 +36,7 @@ def setup_global(settings, paths, skinpaths, gameplaysettings):
 	Paths.beatmap = paths[2]
 	Paths.osu = paths[3]
 	Paths.path = paths[4]
+	Paths.temp = paths[5]
 
 	GameplaySettings.settings = gameplaysettings
 
@@ -60,6 +61,7 @@ def getlist():
 	paths.append(Paths.beatmap)
 	paths.append(Paths.osu)
 	paths.append(Paths.path)
+	paths.append(Paths.temp)
 
 	return settings, paths, skinpaths
 

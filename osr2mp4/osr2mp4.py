@@ -15,8 +15,9 @@ from .Utils.HashBeatmap import get_osu
 from .Utils.Setup import setupglobals
 from .Utils.Timing import find_time, get_offset
 from .VideoProcess.CreateFrames import create_frame
-from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir, cleanup
+from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup
 from .global_var import Paths, Settings, SkinPaths
+import uuid
 
 
 class Dummy: pass
@@ -28,12 +29,9 @@ class Osr2mp4:
 		Paths.path = os.path.relpath(Paths.path)
 		if Paths.path[-1] != "/" and Paths.path[-1] != "\\":
 			Paths.path += "/"
+		Paths.temp = Paths.path + str(uuid.uuid1()) + "temp/"
 
-		create_dir()  # in case filenotfounderror no such file or directory ../temp/
-
-		exists = os.path.isfile(Paths.path + "temp/speed.txt")
-		if exists:
-			os.remove(Paths.path + "temp/speed.txt")
+		setup_dir()  # in case filenotfounderror no such file or directory ../temp/
 
 		if gameplaysettings is None:
 			gameplaysettings = {
@@ -139,11 +137,11 @@ class Osr2mp4:
 		cleanup()
 
 	def getprogress(self):
-		should_continue = os.path.isfile(Paths.path + "temp/speed.txt")
+		should_continue = os.path.isfile(Paths.temp + "speed.txt")
 		if not should_continue:
 			return 0
 
-		fileopen = open(Paths.path + "temp/speed.txt", "r")
+		fileopen = open(Paths.temp + "speed.txt", "r")
 		try:
 			info = fileopen.read().split("\n")
 			framecount = int(info[0])

@@ -23,17 +23,17 @@ def from_notwav(filename):
 	if not os.path.isfile(filename):
 		raise FileNotFoundError
 
-	subprocess.call([Paths.ffmpeg, '-i', filename, Paths.path + 'temp/converted.wav', '-y'])
+	subprocess.call([Paths.ffmpeg, '-i', filename, Paths.temp + 'converted.wav', '-y'])
 
-	a = AudioSegment.from_file(Paths.path + 'temp/converted.wav')
+	a = AudioSegment.from_file(Paths.temp + 'converted.wav')
 	return a
 
 
 def read(f, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		subprocess.call([Paths.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), Paths.path + 'temp/spedup.mp3', '-y'])
+		subprocess.call([Paths.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), Paths.temp + 'spedup.mp3', '-y'])
 		# os.system('"{}" -i "{}" -codec:a libmp3lame -filter:a "atempo={}" ../temp/spedup.wav -y'.format(Paths.ffmpeg, f, speed))
-		f = Paths.path + "temp/spedup.mp3"
+		f = Paths.temp + "spedup.mp3"
 
 	if f[-4:] != ".wav":
 		a = from_notwav(f)
@@ -172,7 +172,7 @@ def processaudio(my_info, beatmap, skin_path, offset, endtime, default_skinpath,
 
 	out = getoffset(offset, endtime, song)
 
-	write(Paths.path + 'temp/audio.mp3', round(song.rate * timeframe/1000), out)
+	write(Paths.temp + 'audio.mp3', round(song.rate * timeframe/1000), out)
 
 
 

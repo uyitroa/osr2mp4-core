@@ -28,7 +28,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 		osr_interval = int((end_index - start_index) / mpp)
 		start = start_index
 
-		my_file = open(Paths.path + "listvideo.txt", "w")
+		my_file = open(Paths.temp + "listvideo.txt", "w")
 		for i in range(mpp):
 
 			if i == mpp - 1:
@@ -40,14 +40,14 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 			conn1, conn2 = Pipe()
 
 			# extract container
-			f = "temp/output" + str(i) + Paths.output[-4:]
+			f = "output" + str(i) + Paths.output[-4:]
 
 			globalvars = getlist()
 
 			drawer = Process(target=draw_frame, args=(
 				shared, conn1, beatmap, frames, skin, replay_event, replay_info, resultinfo, start, end, hd, *globalvars, GameplaySettings.settings, showranking and i == mpp-1))
 
-			writer = Process(target=write_frame, args=(shared, conn2, Paths.path + f, codec, *globalvars, GameplaySettings.settings, i == mpp-1))
+			writer = Process(target=write_frame, args=(shared, conn2, Paths.temp + f, codec, *globalvars, GameplaySettings.settings, i == mpp-1))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))
@@ -66,7 +66,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 
 	else:
-		f = Paths.path + "temp/outputf" + Paths.output[-4:]
+		f = Paths.temp + "outputf" + Paths.output[-4:]
 		shared = RawArray(ctypes.c_uint8, Settings.height * Settings.width * 4)
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
 
@@ -89,7 +89,7 @@ def create_frame(codec, beatmap, skin, replay_event, replay_info, resultinfo, st
 
 				framecount += 1
 				if framecount == 100:
-					filewriter = open(Paths.path + "temp/speed.txt", "w")
+					filewriter = open(Paths.temp + "speed.txt", "w")
 					deltatime = time.time() - startwritetime
 					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
 					filewriter.close()
