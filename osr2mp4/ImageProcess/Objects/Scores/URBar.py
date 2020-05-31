@@ -2,15 +2,14 @@ from PIL import Image
 
 from ... import imageproc
 from ..FrameObject import FrameObject
-from ....global_var import Settings
 
 
 class URBar(FrameObject):
-	def __init__(self, frames):
-		self.scale = Settings.scale
+	def __init__(self, frames, settings):
+		self.scale = settings.scale
 		self.w, self.h = int(frames[0].size[0]), int(frames[0].size[1])
-		self.y = Settings.height - self.h//2
-		self.x = Settings.width//2
+		self.y = settings.height - self.h//2
+		self.x = settings.width//2
 		self.x_offset = self.x - self.w // 2
 
 		self.bars = []

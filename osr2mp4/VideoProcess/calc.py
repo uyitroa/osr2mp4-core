@@ -1,5 +1,4 @@
 from ..EEnum.EReplay import Replays
-from ..global_var import Settings
 
 
 
@@ -68,10 +67,10 @@ def check_key(component, cursor_event, in_break):
 		component.mouse2.clicked(cursor_event.event[Replays.TIMES])
 
 
-def add_hitobjects(beatmap, component, frame_info, time_preempt):
+def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):
 	osu_d = beatmap.hitobjects[frame_info.index_hitobj]
-	x_circle = int(osu_d["x"] * Settings.playfieldscale) + Settings.moveright
-	y_circle = int(osu_d["y"] * Settings.playfieldscale) + Settings.movedown
+	x_circle = int(osu_d["x"] * settings.playfieldscale) + settings.moveright
+	y_circle = int(osu_d["y"] * settings.playfieldscale) + settings.movedown
 	# check if it's time to draw circles
 	if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
 

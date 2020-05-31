@@ -1,5 +1,3 @@
-import time
-
 from osrparse.enums import Mod
 
 from .HitObjectChecker import HitObjectChecker
@@ -108,11 +106,12 @@ def getmultiplier(mods):
 	return result
 
 
-def checkmain(beatmap, replay_info, replay_event, cur_time, tests=False):
+def checkmain(beatmap, replay_info, settings, tests=False):
 	osr_index = 0
+	replay_event = replay_info.play_data
 	diffmod(replay_info, beatmap.diff)
 	mod = getmultiplier(replay_info.mod_combination)
-	hitobjectchecker = HitObjectChecker(beatmap, mod, tests)
+	hitobjectchecker = HitObjectChecker(beatmap, settings, mod, tests)
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])

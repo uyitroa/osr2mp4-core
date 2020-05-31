@@ -2,7 +2,6 @@ from ..FrameObject import FrameObject
 import numpy as np
 from recordclass import recordclass
 from ...PrepareFrames.Components.Followpoints import prepare_fp
-from ....global_var import Settings
 
 followpoints = "followpoint"
 
@@ -56,13 +55,14 @@ class Followpoint(FrameObject):
 
 
 class FollowPointsManager:
-	def __init__(self, fp):
+	def __init__(self, fp, settings):
+		self.settings = settings
 		self.followpoints = []
 		self.pointdistance = 32
 		self.alpha_tdelta = 200
-		self.scale = Settings.playfieldscale
-		self.movedown = Settings.movedown
-		self.moveright = Settings.moveright
+		self.scale = self.settings.playfieldscale
+		self.movedown = self.settings.movedown
+		self.moveright = self.settings.moveright
 		self.preempt = 800
 		self.fp = fp
 

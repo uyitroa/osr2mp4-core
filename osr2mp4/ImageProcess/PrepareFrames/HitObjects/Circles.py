@@ -7,7 +7,6 @@ from ... import imageproc
 from ...Animation import alpha, size
 from ...PrepareFrames.YImage import YImage
 from ...imageproc import newalpha
-from ....global_var import Settings
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"
@@ -19,15 +18,16 @@ default_size = 128
 overlay_scale = 1.05
 
 
-def prepare_approach(scale, time_preempt):
+def prepare_approach(scale, time_preempt, settings):
 	"""
+	:param settings:
 	:param scale: float
 	:param time_preempt: the time the circle is on screen
 	:return: [PIL.Image]
 	"""
-	img = YImage(approachcircle).img
+	img = YImage(approachcircle, settings).img
 	approach_frames = []
-	interval = int(Settings.timeframe / Settings.fps)
+	interval = int(settings.timeframe / settings.fps)
 	time_preempt = round(time_preempt)
 	s = 3.5
 	for time_left in range(time_preempt, 0, -interval):
@@ -64,8 +64,8 @@ def prepare_fadeout(img):
 	return fade_out
 
 
-def calculate_ar(ar):
-	interval = Settings.timeframe / Settings.fps
+def calculate_ar(ar, settings):
+	interval = settings.timeframe / settings.fps
 	if ar < 5:
 		time_preempt = 1200 + 600 * (5 - ar) / 5
 		fade_in = 800 + 400 * (5 - ar) / 5
@@ -79,38 +79,38 @@ def calculate_ar(ar):
 	return opacity_interval, time_preempt, fade_in
 
 
-def load():
-	circle = YImage(hitcircle).img
-	c_overlay = YImage(hitcircleoverlay).img
-	yslider = YImage(sliderstartcircle, fallback=hitcircle)
+def load(settings):
+	circle = YImage(hitcircle, settings).img
+	c_overlay = YImage(hitcircleoverlay, settings).img
+	yslider = YImage(sliderstartcircle, settings, fallback=hitcircle)
 	slider = yslider.img
 	slideroverlay = sliderstartcircleoverlay
 	if yslider.imgfrom == ImageFrom.FALLBACK_X or yslider.imgfrom == ImageFrom.FALLBACK_X2:
 		slideroverlay = hitcircleoverlay
-	s_overlay = YImage(slideroverlay, fallback=hitcircleoverlay).img
+	s_overlay = YImage(slideroverlay, settings, fallback=hitcircleoverlay).img
 	return circle, c_overlay, slider, s_overlay
 
 
-def prepare_circle(beatmap, scale, skin, hd):
+def prepare_circle(beatmap, scale, settings, hd):
 	# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 	# to overlap number, circle overlay and approach circle every single time.
 
-	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"])
+	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"], settings)
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	radius_scale = cs * overlay_scale * 2 / default_size
 
-	circle, c_overlay, slider, s_overlay = load()
+	circle, c_overlay, slider, s_overlay = load(settings)
 	if not hd:
-		approach_frames = prepare_approach(radius_scale, time_preempt)
+		approach_frames = prepare_approach(radius_scale, time_preempt, settings)
 
 	fadeout = [[], []]  # circle, slider
 	circle_frames = []  # [color][number][alpha]
 	slidercircle_frames = []  # [color][number][alpha]
 	alphas = []
 
-	for c in range(1, skin.colours["ComboNumber"] + 1):
-		color = skin.colours["Combo" + str(c)]
+	for c in range(1, settings.skin_ini.colours["ComboNumber"] + 1):
+		color = settings.skin_ini.colours["Combo" + str(c)]
 
 		orig_circle = overlayhitcircle(c_overlay, circle, color, radius_scale)
 
@@ -148,7 +148,7 @@ def prepare_circle(beatmap, scale, skin, hd):
 			alphas.append(alpha)
 
 		else:
-			interval = int(Settings.timeframe / Settings.fps)
+			interval = int(settings.timeframe / settings.fps)
 			fade_in = time_preempt * 0.4
 			fade_in_interval = 100 * interval/fade_in
 

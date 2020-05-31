@@ -3,15 +3,15 @@ import math
 import cv2
 
 from ... import imageproc
-from ....global_var import Settings, GameplaySettings
 
 
 class TimePie:
-	def __init__(self, accuracy, starttime, endtime, scorebarbg):
+	def __init__(self, accuracy, starttime, endtime, scorebarbg, settings):
 		# need to initalize this right after initializing accuracy class
-		self.scale = Settings.scale
+		self.settings = settings
+		self.scale = self.settings.scale
 		self.y = int(accuracy.y + accuracy.frames[0].size[1]//2)
-		self.radius = int(15 * Settings.scale)
+		self.radius = int(15 * self.settings.scale)
 		# frames[10[ is percent
 		accsize = (-accuracy.sizegap) * 6 + accuracy.frames[11].size[0] - accuracy.gap
 		self.x = int(accuracy.startx - accuracy.frames[10].size[0] - accsize - self.radius)
@@ -32,7 +32,7 @@ class TimePie:
 		endangle = -360
 		axes = (self.radius, self.radius)
 
-		if GameplaySettings.settings["In-game interface"] or inbreak:
+		if self.settings.settings["In-game interface"] or inbreak:
 			cv2.ellipse(np_img, (self.x, self.y), axes, angle, startangle, endangle, color, -1, cv2.LINE_AA)
 			cv2.circle(np_img, (self.x, self.y), self.radius, (255, 255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
 			cv2.circle(np_img, (self.x, self.y), min(1, int(self.scale)), (255, 255, 255, 255), thickness=-1, lineType=cv2.LINE_AA)

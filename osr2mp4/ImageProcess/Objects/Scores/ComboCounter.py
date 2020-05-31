@@ -2,14 +2,15 @@ from math import ceil
 
 from ... import imageproc
 from ..FrameObject import FrameObject
-from ....global_var import Settings, GameplaySettings
 
 
 class ComboCounter(FrameObject):
-	def __init__(self, frames, gap):
+	def __init__(self, frames, gap, settings):
+		self.settings = settings
+
 		self.score_frames, self.score_fadeout = frames
-		self.height = Settings.height
-		self.width = Settings.width
+		self.height = self.settings.height
+		self.width = self.settings.width
 
 		self.score_index = 0
 		self.index_step = 1
@@ -21,7 +22,7 @@ class ComboCounter(FrameObject):
 		self.adding = False
 		self.animate = False
 
-		self.gap = int(gap * Settings.scale)
+		self.gap = int(gap * self.settings.scale)
 
 	def breakcombo(self):
 		self.breaking = True
@@ -61,7 +62,7 @@ class ComboCounter(FrameObject):
 		return x, x_offset, y_offset
 
 	def draw_combo(self, combo, background, frames, index):
-		x = 10 * Settings.scale
+		x = 10 * self.settings.scale
 		for digit in str(combo):
 			digit = int(digit)
 			img = frames[digit][int(index)]
@@ -93,12 +94,12 @@ class ComboCounter(FrameObject):
 			self.animate = False
 
 		if self.adding:
-			if GameplaySettings.settings["In-game interface"] or inbreak:
+			if self.settings.settings["In-game interface"] or inbreak:
 				self.draw_combo(self.combofadeout, background, self.score_fadeout, self.fadeout_index)
 
 			self.fadeout_index += 1
 
-		if GameplaySettings.settings["In-game interface"] or inbreak:
+		if self.settings.settings["In-game interface"] or inbreak:
 			self.draw_combo(self.combo, background, self.score_frames, self.score_index)
 
 		if self.animate:

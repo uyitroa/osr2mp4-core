@@ -6,7 +6,6 @@ from collections import namedtuple
 import copy
 
 from ..EEnum.EState import States
-from ..global_var import Settings
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
@@ -29,7 +28,7 @@ def difficulty_multiplier(diff):
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, mod=1, tests=False):
+	def __init__(self, beatmap, settings, mod=1, tests=False):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -44,7 +43,7 @@ class HitObjectChecker:
 			self.fade_in = 800 - 500 * (self.diff["ApproachRate"] - 5) / 5
 
 		self.maxtimewindow = 150 + 50 * (5 - self.diff["OverallDifficulty"]) / 5  # + 0.5
-		self.interval = Settings.timeframe / Settings.fps
+		self.interval = settings.timeframe / settings.fps
 		self.CIRCLE = 0
 		self.SLIDER = 1
 		self.SPINNER = 2

@@ -1,20 +1,14 @@
-import os
 import time
 import numpy as np
 import cv2
 
-from .Setup import setup_global
-from ..global_var import Settings, Paths
 
-
-def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings, iii):
+def write_frame(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
-	setup_global(settings, paths, skinpaths, gameplaysettings)
-
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
+	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
-	np_img = np_img.reshape((Settings.height, Settings.width, 4))
+	np_img = np_img.reshape((settings.height, settings.width, 4))
 
 	timer = 0
 
@@ -28,7 +22,7 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 	startwringtime = time.time()
 
 	if iii:
-		filewriter = open(Paths.temp + "speed.txt", "w")
+		filewriter = open(settings.temp + "speed.txt", "w")
 
 	while a != 10:
 

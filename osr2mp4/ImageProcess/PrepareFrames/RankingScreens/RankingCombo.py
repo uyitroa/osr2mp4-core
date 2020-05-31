@@ -3,6 +3,6 @@ from ...PrepareFrames.YImage import YImages
 rankingcombo = "ranking-maxcombo"
 
 
-def prepare_rankingcombo(scale):
-	img = YImages(rankingcombo, scale, "-").frames
+def prepare_rankingcombo(scale, settings):
+	img = YImages(rankingcombo, settings, scale, "-").frames
 	return img

@@ -2,10 +2,9 @@ import numpy as np
 from PIL import Image
 
 from ... import imageproc
-from ....global_var import Settings, GameplaySettings
 
 
-def prepare_background(backgroundname):
+def prepare_background(backgroundname, settings):
 	"""
 	:param backgroundname: string
 	:return: PIL.Image
@@ -13,8 +12,8 @@ def prepare_background(backgroundname):
 	print(backgroundname)
 	img = Image.open(backgroundname).convert("RGBA")
 
-	width = Settings.width
-	height = Settings.height
+	width = settings.width
+	height = settings.height
 	ratiow = width / height
 	ratioh = height / width
 
@@ -27,10 +26,10 @@ def prepare_background(backgroundname):
 	img = imageproc.change_size(img, scale, scale)
 	imgs = [Image.new("RGBA", (1, 1))]
 
-	dim = max(0, min(100, (100 - GameplaySettings.settings["Background dim"]))) * 2.55
+	dim = max(0, min(100, (100 - settings.settings["Background dim"]))) * 2.55
 	color = np.array([dim, dim, dim])
-	interval = int(1000/Settings.fps)
-	c_interval = max(0, (GameplaySettings.settings["Background dim"] - 50) * 2.55/interval)
+	interval = int(1000/settings.fps)
+	c_interval = max(0, (settings.settings["Background dim"] - 50) * 2.55/interval)
 	color[:] = color[:] - c_interval
 	for x in range(interval):
 		color[:] = color[:] + c_interval

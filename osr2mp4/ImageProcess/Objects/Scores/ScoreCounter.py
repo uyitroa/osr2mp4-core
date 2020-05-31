@@ -1,17 +1,16 @@
 from ..FrameObject import FrameObject
-from ....global_var import Settings, GameplaySettings
 
 
 class ScoreCounter(FrameObject):
-	def __init__(self, frames, diff, gap):
-		super().__init__(frames)
+	def __init__(self, frames, diff, gap, settings):
+		super().__init__(frames, settings=settings)
 		self.freeze = 0
 		self.showscore = 0
 		self.score = 0
 		self.diff = diff
-		self.width = Settings.width
-		self.height = Settings.height
-		self.gap = int(gap * Settings.scale * 0.75)
+		self.width = self.settings.width
+		self.height = self.settings.height
+		self.gap = int(gap * self.settings.scale * 0.75)
 
 	def set_score(self, freeze, score, showscore):
 		"""
@@ -25,7 +24,6 @@ class ScoreCounter(FrameObject):
 		self.showscore = showscore
 
 	def update_score(self, score):
-		#self.score += int(hitvalue + (hitvalue * ((combo * self.diff_multiplier * mod) / 25)))
 		self.score = score
 
 	def bonus_score(self, score):
@@ -51,19 +49,19 @@ class ScoreCounter(FrameObject):
 
 
 	def add_to_frame(self, background, cur_time, inbreak):
-		if not GameplaySettings.settings["In-game interface"]:
+		if not self.settings.settings["In-game interface"]:
 			return
 
 		score_string = str(int(self.showscore))
 		score_string = "0" * (8 - len(score_string)) + score_string
-		if GameplaySettings.settings["In-game interface"] or inbreak:
+		if self.settings.settings["In-game interface"] or inbreak:
 			self.draw_score(score_string, background)
 
 		# self.proc_showscore()
 		if self.showscore < self.score:
 			self.showscore += 1
 		if cur_time >= self.freeze:
-			add_up = max(7.27, (self.score - self.showscore)/12.72) * 60/Settings.fps
+			add_up = max(7.27, (self.score - self.showscore)/12.72) * 60/self.settings.fps
 			if self.showscore + add_up > self.score:
 				self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
 			else:

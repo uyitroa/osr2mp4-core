@@ -6,14 +6,14 @@ default_size = 128
 hitresult_size = 1.7
 
 
-def prepare_hitresults(scale, beatmap):
+def prepare_hitresults(scale, beatmap, settings):
 
 	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
 	scale = cs * 2 * hitresult_size / default_size
 
 	scores_frames = {}
 	for x in [0, 50, 100, 300]:
-		yimg = YImages(hitprefix + str(x), scale, delimiter="-", rotate=x == 0)
+		yimg = YImages(hitprefix + str(x), settings, scale, delimiter="-", rotate=x == 0)
 		f = []
 		f1 = yimg.frames
 		if yimg.unanimate:

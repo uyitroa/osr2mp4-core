@@ -2,7 +2,6 @@ from PIL import Image
 
 from ... import imageproc
 from ...PrepareFrames.YImage import YImage, YImages
-from ....global_var import Settings
 
 sliderb = "sliderb"
 sliderfollowcircle = "sliderfollowcircle"
@@ -26,37 +25,37 @@ def ballinhole(follow, sliderball):
 	return follow
 
 
-def load(scale):
+def load(scale, settings):
 	arrow_frames = []
 	for x in range(120, 100, -4):
-		img = YImage(reversearrow, scale * x / 100, rotate=1)
+		img = YImage(reversearrow, settings, scale * x / 100, rotate=1)
 		arrow_frames.append(img.img)
 
-	sliderb_frames = YImages(sliderb, scale).frames
-	sliderfollow_frames = YImages(sliderfollowcircle, scale).frames
-	slider_tick = YImage(sliderscorepoint, scale).img
+	sliderb_frames = YImages(sliderb, settings, scale).frames
+	sliderfollow_frames = YImages(sliderfollowcircle, settings, scale).frames
+	slider_tick = YImage(sliderscorepoint, settings, scale).img
 	return arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick
 
 
-def prepare_slider(diff, scale, skin):
+def prepare_slider(diff, scale, settings):
 
 	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	radius_scale = cs * 2 / default_size
 
-	interval = Settings.timeframe / Settings.fps
+	interval = settings.timeframe / settings.fps
 	follow_fadein = 150  # need 150ms to fadein
 
-	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale)
+	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale, settings)
 
 	sframes = []
 	sliderfollow_fadeout = []
 	bframes = []
 
-	for c in range(1, skin.colours["ComboNumber"] + 1):
+	for c in range(1, settings.skin_ini.colours["ComboNumber"] + 1):
 		bframes.append([])
-		color = skin.colours["Combo" + str(c)]
+		color = settings.skin_ini.colours["Combo" + str(c)]
 		for x in range(len(sliderb_frames)):
-			if skin.general["AllowSliderBallTint"]:
+			if settings.skin_ini.general["AllowSliderBallTint"]:
 				color_sb = imageproc.add_color(sliderb_frames[x], color)
 			else:
 				color_sb = sliderb_frames[x].copy()

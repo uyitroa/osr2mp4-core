@@ -1,14 +1,13 @@
 from ... import imageproc
 from ..FrameObject import FrameObject
-from ....global_var import GameplaySettings
 
 
 class ScoreEntry(FrameObject):
-	def __init__(self, frames):
-		super().__init__(frames)
+	def __init__(self, frames, settings):
+		super().__init__(frames, settings=settings)
 
 	def add_to_frame(self, background, x_offset, y_offset, number, index=0):
-		if not GameplaySettings.settings["Always show key overlay"]:
+		if not self.settings.settings["Always show key overlay"]:
 			return
 
 		number = str(number)
@@ -22,12 +21,12 @@ class ScoreEntry(FrameObject):
 
 
 class InputOverlay(FrameObject):
-	def __init__(self, button_frames, scoreentry):
+	def __init__(self, button_frames, scoreentry, settings):
 		"""
 		:param button_frames: [PIL.Image]
 		:param scoreentry: ScoreEntry(FrameObject)
 		"""
-		super().__init__(button_frames)
+		super().__init__(button_frames, settings=settings)
 		self.freeze = 0
 		self.scoreentry = scoreentry
 
@@ -50,7 +49,7 @@ class InputOverlay(FrameObject):
 		self.holding = True
 
 	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
-		if not GameplaySettings.settings["Always show key overlay"]:
+		if not self.settings.settings["Always show key overlay"]:
 			return
 
 		if self.holding or (self.frame_index < len(self.frames) - 1 and self.oldclick):
@@ -74,7 +73,7 @@ class InputOverlay(FrameObject):
 
 class InputOverlayBG(FrameObject):
 	def add_to_frame(self, background, x_offset, y_offset):
-		if not GameplaySettings.settings["Always show key overlay"]:
+		if not self.settings.settings["Always show key overlay"]:
 			return
 
 		# special y_offset
