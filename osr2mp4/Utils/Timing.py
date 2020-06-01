@@ -23,14 +23,14 @@ def get_offset(beatmap, start_index, end_index, replay_event, endtime):
 	return offset, endtime
 
 
-def find_time(starttime, endtime, replay, replay_start):
+def find_time(starttime, endtime, replay, settings):
 
-	starttime *= 1000
+	starttime *= settings.timeframe
 	starttime += replay[0][Replays.TIMES]
 	# starttime += replay_start
 
 	if endtime != -1:
-		endtime *= 1000
+		endtime *= settings.timeframe
 		# endtime += replay_start
 		endtime += replay[0][Replays.TIMES]
 
