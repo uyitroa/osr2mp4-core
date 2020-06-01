@@ -14,7 +14,6 @@ from .calc import check_break, check_key, add_followpoints, add_hitobjects, near
 
 class Drawer:
 	def __init__(self, shared, beatmap, frames, replay_info, resultinfo, videotime, settings):
-		print("Shared", shared)
 		self.shared = shared
 		self.beatmap = beatmap
 		self.frames = frames
@@ -140,17 +139,16 @@ class Drawer:
 			self.initialiseranking()
 			self.initialised_ranking = True
 
-		for x in range(int(5 * self.settings.fps)):
-			self.component.rankingpanel.add_to_frame(self.pbuffer)
-			self.component.rankinghitresults.add_to_frame(self.pbuffer)
-			self.component.rankingtitle.add_to_frame(self.pbuffer, self.np_img)
-			self.component.rankingcombo.add_to_frame(self.pbuffer)
-			self.component.rankingaccuracy.add_to_frame(self.pbuffer)
-			self.component.rankinggrade.add_to_frame(self.pbuffer)
-			self.component.menuback.add_to_frame(self.pbuffer)
-			self.component.modicons.add_to_frame(self.pbuffer)
-			self.component.rankingreplay.add_to_frame(self.pbuffer)
-			self.component.rankinggraph.add_to_frame(self.pbuffer)
+		self.component.rankingpanel.add_to_frame(self.pbuffer)
+		self.component.rankinghitresults.add_to_frame(self.pbuffer)
+		self.component.rankingtitle.add_to_frame(self.pbuffer, self.np_img)
+		self.component.rankingcombo.add_to_frame(self.pbuffer)
+		self.component.rankingaccuracy.add_to_frame(self.pbuffer)
+		self.component.rankinggrade.add_to_frame(self.pbuffer)
+		self.component.menuback.add_to_frame(self.pbuffer)
+		self.component.modicons.add_to_frame(self.pbuffer)
+		self.component.rankingreplay.add_to_frame(self.pbuffer)
+		self.component.rankinggraph.add_to_frame(self.pbuffer)
 
 
 def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
@@ -175,7 +173,10 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 			timer2 += time.time() - asdf
 
 	if showranking:
-		drawer.draw_rankingpanel()
+		for x in range(int(5 * settings.fps)):
+			drawer.draw_rankingpanel()
+			conn.send(1)
+			i = conn.recv()
 
 	conn.send(10)
 	print("\nprocess done")
