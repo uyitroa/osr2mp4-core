@@ -14,7 +14,7 @@ from .calc import check_break, check_key, add_followpoints, add_hitobjects, near
 
 class Drawer:
 	def __init__(self, shared, beatmap, frames, replay_info, resultinfo, videotime, settings):
-
+		print("Shared", shared)
 		self.shared = shared
 		self.beatmap = beatmap
 		self.frames = frames
@@ -164,10 +164,7 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 	timer2 = 0
 	timer3 = 0
 	while drawer.frame_info.osr_index < videotime[1]:
-		asdf = time.time()
 		status = drawer.render_draw()
-		timer += time.time() - asdf
-
 		asdf = time.time()
 		if status:
 			conn.send(1)

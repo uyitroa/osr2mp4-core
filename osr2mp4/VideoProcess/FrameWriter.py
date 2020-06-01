@@ -6,6 +6,8 @@ import cv2
 def write_frame(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
+	print(filename, vars(settings), "\n")
+
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((settings.height, settings.width, 4))
@@ -27,20 +29,14 @@ def write_frame(shared, conn, filename, settings, iii):
 	while a != 10:
 
 		asdf = time.time()
-		# print("video wait")
-		# print(filename)
 		a = conn.recv()
-		# print("video received")
 		timer2 += time.time() - asdf
 
 		if a == 1:
 			asdf = time.time()
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
-			# print("video send")
 			conn.send(0)
-			# print("video sent")
 			timer3 += time.time() - asdf
-			# print("unlock", timer3)
 
 			asdf = time.time()
 			writer.write(im)

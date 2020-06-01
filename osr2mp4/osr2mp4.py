@@ -73,13 +73,13 @@ class Osr2mp4:
 			self.replay_info = osrparse.parse_replay_file(replaypath)
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
-
+		#
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
 		print(vars(self.settings))
 
-		self.drawers, self.writers, self.pipes = None, None, None
+		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
 		beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
@@ -97,7 +97,7 @@ class Osr2mp4:
 	def startvideo(self):
 		self.analyse_replay()
 		videotime = (self.start_index, self.end_index)
-		self.drawers, self.writers, self.pipes = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
 
 	def analyse_replay(self):
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)

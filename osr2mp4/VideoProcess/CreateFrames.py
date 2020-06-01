@@ -60,7 +60,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			start += osr_interval
 		my_file.close()
 
-		return drawers, writers, shared_pipe
+		return drawers, writers, shared_pipe, shared_array
 
 
 	else:

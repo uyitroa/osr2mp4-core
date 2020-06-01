@@ -21,11 +21,6 @@ def cleanup(settings):
 
 def mix_video_audio(settings):
 	f = settings.temp + "outputf" + settings.output[-4:]
-	# command = '"{}" -i "{}" -i ../temp/audio.mp3 -c:v copy -c:a aac "{}" -y'.format(settings.ffmpeg, f, settings.output)
-	# if os.name == 'nt':
-	# 	command = '"' + command + '"'
-	#
-	# os.system(command)
 	subprocess.call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', 'aac', settings.output, '-y'])
 
 
