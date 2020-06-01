@@ -356,7 +356,9 @@ class Scoreboard(FrameObject):
 			if x == self.currank:
 				self.frame_index = 1
 				boardindex = min(ranktoclimb, self.currank)
-				self.scoreboards[x].y = max(self.scoreboards[x].y - 5, self.origposboards[boardindex][1])
+				coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
+				step = max(1, 30 * coef)
+				self.scoreboards[x].y = max(self.scoreboards[x].y - step, self.origposboards[boardindex][1])
 			else:
 				self.frame_index = 0
 
@@ -372,8 +374,8 @@ class Scoreboard(FrameObject):
 				imageproc.add(self.effecteclipse, background, self.effectx[i], self.effecty[i], alpha=alpha)
 				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
-				self.effectalpha[i] -= 0.1
-				self.effectx[i] = min(0 * self.settings.scale, self.effectx[i] + 30 * self.settings.scale)
+				self.effectalpha[i] -= 0.05
+				self.effectx[i] = min(0 * self.settings.scale, self.effectx[i] + 30 * self.settings.scale * (-self.effectx[i])/350)
 
 				if self.effectalpha[i] <= 0:
 					del self.effectalpha[i]

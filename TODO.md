@@ -1,8 +1,7 @@
 # Fix wrong game mechanics
 
 # Implement features
-- Fix wrong font
-- Add scoreentry images to res in case not image found
+- Add option to animate sliderball (this can be optimised)
 - Add rank number to scoreboard
 
 # Optimisation
