@@ -13,7 +13,8 @@ class DiffCalculator:
 		self.time_preempt = self.ar()
 
 	def cs(self):
-		return 54.4 - 4.48 * self.diff["CircleSize"]
+		print(self.diff["CircleSize"])
+		return 23.05 - (self.diff["CircleSize"] - 7) * 4.4825  # 54.4 - 4.48 * self.diff["CircleSize"]
 
 	def od(self):
 		o = self.diff["OverallDifficulty"]
