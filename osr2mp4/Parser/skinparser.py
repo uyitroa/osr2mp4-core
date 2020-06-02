@@ -94,6 +94,8 @@ class Skin:
 			with open(self.skin_path + 'skin.ini', 'rb') as file:
 				lines = file.readlines()
 		except FileNotFoundError:
+			print("using default skin ini")
+			print(self.skin_path)
 			with open(self.default_path + 'skin.ini', 'rb') as file:
 				lines = file.readlines()
 

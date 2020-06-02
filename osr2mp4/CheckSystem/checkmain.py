@@ -109,12 +109,19 @@ def getmultiplier(mods):
 def checkmain(beatmap, replay_info, settings, tests=False):
 	osr_index = 0
 	replay_event = replay_info.play_data
+
+
 	diffmod(replay_info, beatmap.diff)
 	mod = getmultiplier(replay_info.mod_combination)
+
+
 	hitobjectchecker = HitObjectChecker(beatmap, settings, mod, tests)
+
+
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
+
 	print("Start check")
 	while osr_index < len(replay_event) - 3:
 		k1, k2, m1, m2 = keys(replay_event[osr_index][Replays.KEYS_PRESSED])
@@ -123,11 +130,14 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 		else:
 			f_k1, f_k2, f_m1, f_m2 = False, False, False, False
 
+
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
+
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1, in_break)
+
 
 		osr_index += 1
 

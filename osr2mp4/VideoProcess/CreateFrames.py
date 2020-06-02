@@ -12,8 +12,7 @@ from .FrameWriter import write_frame
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
 
-	diffcalculator = DiffCalculator(beatmap.diff)
-	frames = PreparedFrames(settings, diffcalculator, beatmap, Mod.Hidden in replay_info.mod_combination)
+	frames = PreparedFrames(settings, beatmap, Mod.Hidden in replay_info.mod_combination)
 
 	if settings.process >= 1:
 		shared_array = []

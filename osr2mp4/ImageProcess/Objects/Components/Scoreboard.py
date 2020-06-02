@@ -374,8 +374,8 @@ class Scoreboard(FrameObject):
 				imageproc.add(self.effecteclipse, background, self.effectx[i], self.effecty[i], alpha=alpha)
 				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
-				self.effectalpha[i] -= 0.05
-				self.effectx[i] = min(0 * self.settings.scale, self.effectx[i] + 30 * self.settings.scale * (-self.effectx[i])/350)
+				self.effectalpha[i] -= 0.075
+				self.effectx[i] = min(0 * self.settings.scale, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)
 
 				if self.effectalpha[i] <= 0:
 					del self.effectalpha[i]

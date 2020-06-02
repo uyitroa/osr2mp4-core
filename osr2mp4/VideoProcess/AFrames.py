@@ -69,8 +69,9 @@ from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings, check, beatmap, hd):
+	def __init__(self, settings, beatmap, hd):
 		skin = settings.skin_ini
+		check = DiffCalculator(beatmap.diff)
 		if settings.settings["Automatic cursor size"]:
 			circlescale = 4/beatmap.diff["CircleSize"]
 			settings.settings["Cursor size"] *= circlescale
