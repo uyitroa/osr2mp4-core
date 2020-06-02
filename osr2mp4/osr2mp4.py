@@ -95,22 +95,26 @@ class Osr2mp4:
 		self.previousprogress = 0
 
 	def startvideo(self):
-		self.analyse_replay()
+		if self.resultinfo is None:
+			self.analyse_replay()
 		videotime = (self.start_index, self.end_index)
 		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
 
 	def analyse_replay(self):
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
+		print(self.resultinfo[-1].accuracy)
 
 	def startaudio(self):
+		if self.resultinfo is None:
+			self.analyse_replay()
 		dt = Mod.DoubleTime in self.replay_info.mod_combination
 		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
 		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings, dt)
 
 	def startall(self):
 		self.analyse_replay()
-		self.startaudio()
 		self.startvideo()
+		self.startaudio()
 
 	def joinvideo(self):
 		if self.data["Process"] >= 1:
