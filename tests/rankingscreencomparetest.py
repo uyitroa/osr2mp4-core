@@ -14,10 +14,10 @@ class TestCompareRanking(unittest.TestCase):
 		cls.update = False
 
 		expectimage, videotime, timestamp, epsilon = getexpect("5", "syunn")
-		cls.tests.append((*getdrawer("5", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("5", "syunn", videotime), epsilon, expectimage, timestamp))  # shige copy skin
 
 		expectimage, videotime, timestamp, epsilon = getexpect("6", "syunn")
-		cls.tests.append((*getdrawer("6", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("6", "syunn", videotime), epsilon, expectimage, timestamp))  # default skin
 
 
 

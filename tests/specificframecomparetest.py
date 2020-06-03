@@ -12,18 +12,37 @@ class TestCompareFrames(unittest.TestCase):
 	def setUpClass(cls):
 		cls.tests = []
 		cls.update = False
+		cls.saveimages = False
 
 		expectimage, videotime, timestamp, epsilon = getexpect("", "syunn")
-		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # followpoints
 
 		expectimage, videotime, timestamp, epsilon = getexpect("1", "syunn")
-		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # followpoints
 
 		expectimage, videotime, timestamp, epsilon = getexpect("2", "syunn")
-		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # slider
 
 		expectimage, videotime, timestamp, epsilon = getexpect("3", "syunn")
-		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # normal
+
+		expectimage, videotime, timestamp, epsilon = getexpect("7", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # slider follwball
+
+		expectimage, videotime, timestamp, epsilon = getexpect("8", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # miss animation
+
+		expectimage, videotime, timestamp, epsilon = getexpect("9", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # miss animation
+
+		expectimage, videotime, timestamp, epsilon = getexpect("10", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # miss animation
+
+		expectimage, videotime, timestamp, epsilon = getexpect("11", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # miss animation
+
+		expectimage, videotime, timestamp, epsilon = getexpect("12", "syunn")
+		cls.tests.append((*getdrawer("4", "syunn", videotime), epsilon, expectimage, timestamp))  # miss animation
 
 
 	def testframes(self):
@@ -52,6 +71,8 @@ class TestCompareFrames(unittest.TestCase):
 			# drawer.render_draw()
 
 			img = drawer.img.convert("RGB")
+			if self.saveimages:
+				img.save("test{}.png".format(i))
 			expect = Image.open(self.tests[i][-2] + ".png").convert("RGB")
 			ep = getepsilon(img, expect)
 			if self.update:

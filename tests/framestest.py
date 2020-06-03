@@ -37,7 +37,7 @@ class TestFrames(unittest.TestCase):
 					print("Comparing {}".format(expectf))
 					expectimg = Image.open(expectf).convert("RGBA")
 
-					assert_image_similar(imglist, expectimg, 5)
+					assert_image_similar(imglist, expectimg, 1)
 
 
 if __name__ == '__main__':

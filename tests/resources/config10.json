@@ -1,0 +1,15 @@
+{
+  "osu! path": "aa",
+  "Skin path": "shige copy",
+  "Beatmap path": "syunn",
+  ".osr path": "syunn.osr",
+  "Output path": "output.mkv",
+  "Width": 1000,
+  "Height": 500,
+  "FPS": 60,
+  "Start time": 0,
+  "End time": 10,
+  "Video codec": "XVID",
+  "Process": 2,
+  "ffmpeg path": "ffmpeg"
+}

@@ -41,7 +41,7 @@ class TestRankingScreen(unittest.TestCase):
 				drawer.pbuffer.save(expectf)
 			else:
 				expect = Image.open(expectf).convert("RGBA")
-				assert_image_similar(drawer.pbuffer, expect, 5)
+				assert_image_similar(drawer.pbuffer, expect, 1)
 
 
 if __name__ == '__main__':

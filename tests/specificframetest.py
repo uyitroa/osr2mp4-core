@@ -36,7 +36,7 @@ class TestSpecificFrame(unittest.TestCase):
 							drawer.pbuffer.save(expectf)
 						else:
 							expect = Image.open(expectf).convert("RGBA")
-							assert_image_similar(drawer.pbuffer, expect, 2)
+							assert_image_similar(drawer.pbuffer, expect, 1)
 					counter += 1
 
 

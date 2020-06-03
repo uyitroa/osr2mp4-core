@@ -7,7 +7,6 @@ from PIL import Image
 import bruh
 from osr2mp4.CheckSystem.checkmain import checkmain
 from osr2mp4.Utils.Timing import find_time
-from osr2mp4.VideoProcess.Draw import Drawer
 
 from osr2mp4.VideoProcess.AFrames import PreparedFrames
 
@@ -17,8 +16,6 @@ from osrparse.enums import Mod
 from osr2mp4.Utils.Setup import setupglobals
 
 from osr2mp4.Parser import jsonparser
-
-from osr2mp4.global_var import Settings
 
 from osr2mp4.AudioProcess.Utils import getfilenames
 from osr2mp4.Parser.osrparser import setupReplay
@@ -80,6 +77,7 @@ def getaudiofilename(mapname):
 
 
 def setupenv(suffix, mapname):
+	from osr2mp4.global_var import Settings
 	settings = Settings()
 	config = jsonparser.read("{}config{}.json".format(abspath, suffix))
 	gameplayconfig = jsonparser.read("{}settings{}.json".format(abspath, suffix))
@@ -97,7 +95,8 @@ def setupenv(suffix, mapname):
 	setupglobals(config, gameplayconfig, replay_info, settings)
 
 	beatmap_file = get_osu(settings.beatmap, replay_info.beatmap_hash)
-	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours, Mod.HardRock in replay_info.mod_combination)
+	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours,
+	                    Mod.HardRock in replay_info.mod_combination)
 	return settings, replay_info, beatmap
 
 
@@ -126,8 +125,8 @@ def getframes(suffix, mapname, update=False, data=None):
 	return resultprefix, frames
 
 
-
 def getdrawer(suffix, mapname, videotime):
+	from osr2mp4.VideoProcess.Draw import Drawer
 	settings, replay_info, beatmap = setupenv(suffix, mapname)
 	replay_event, cur_time = setupReplay("{}{}.osr".format(abspath, mapname), beatmap)
 	replay_info.play_data = replay_event
@@ -145,7 +144,6 @@ def getdrawer(suffix, mapname, videotime):
 
 
 def getexpect(suffix, mapname):
-
 	path = abspath + "orignalframes/" + mapname + "expect" + suffix
 
 	fileopen = open(path + ".txt", "r")
@@ -164,3 +162,35 @@ def getexpect(suffix, mapname):
 	except FileNotFoundError:
 		epsilon = 500
 	return path, videotime, timestamp, epsilon
+
+
+def getrightconfigs(suffix):
+	config = jsonparser.read("{}config{}.json".format(abspath, suffix))
+	settings = jsonparser.read("{}settings{}.json".format(abspath, suffix))
+
+	config["Skin path"] = abspath + config["Skin path"]
+	config["Beatmap path"] = abspath + config["Beatmap path"]
+	config[".osr path"] = abspath + config[".osr path"]
+
+	config["Output path"] = suffix + config["Output path"]
+
+	return config, settings
+
+
+def get_length(filename):
+	import subprocess
+	result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+	                         "format=duration", "-of",
+	                         "default=noprint_wrappers=1:nokey=1", filename],
+	                        stdout=subprocess.PIPE,
+	                        stderr=subprocess.STDOUT)
+	return float(result.stdout)
+
+
+def get_res(filename):
+	import cv2
+	vid = cv2.VideoCapture(filename)
+	height = vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+	width = vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+
+	return width, height
