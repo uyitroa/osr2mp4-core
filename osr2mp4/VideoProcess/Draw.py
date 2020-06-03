@@ -1,5 +1,6 @@
 import time
 
+import cv2
 from PIL import Image
 
 from ..Utils.skip import skip
@@ -61,7 +62,7 @@ class Drawer:
 
 		self.updater.info_index = self.frame_info.info_index
 
-		self.img = Image.new("RGB", (1, 1))
+		self.img = Image.new("RGB", (1, 0))
 		self.np_img, self.pbuffer = get_buffer(self.shared, self.settings)
 
 	def render_draw(self):
@@ -90,10 +91,10 @@ class Drawer:
 		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
 		self.component.urbar.add_to_frame_bar(self.img)
-		self.component.key1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(350 * self.settings.scale))
-		self.component.key2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(398 * self.settings.scale))
-		self.component.mouse1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(446 * self.settings.scale))
-		self.component.mouse2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(492 * self.settings.scale))
+		self.component.key1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(350 * self.settings.scale), self.frame_info.cur_time)
+		self.component.key2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(398 * self.settings.scale), self.frame_info.cur_time)
+		self.component.mouse1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(446 * self.settings.scale), self.frame_info.cur_time)
+		self.component.mouse2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(492 * self.settings.scale), self.frame_info.cur_time)
 		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitobjmanager.add_to_frame(self.img, self.np_img)
 		self.component.hitresult.add_to_frame(self.img)
@@ -111,7 +112,8 @@ class Drawer:
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
-
+		# resultinfo = self.updater.resultinfo[min(len(self.updater.resultinfo) - 1, self.updater.info_index)]
+		# cv2.putText(self.np_img, str(resultinfo.timestamp) + " " + str(resultinfo.more), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255))
 		# choose correct osr index for the current time because in osr file there might be some lag
 		tt = nearer(self.frame_info.cur_time, self.replay_event, self.frame_info.osr_index)
 		if tt == 0:
