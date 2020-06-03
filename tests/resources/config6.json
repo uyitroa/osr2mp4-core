@@ -1,0 +1,16 @@
+{
+  "osu! path": "ll",
+  "Skin path": "shsfsf",
+  "Beatmap path": "syunn",
+  ".osr path": "syunn.osr",
+  "Output path": "output.mkv",
+  "Width": 1366,
+  "Height": 768,
+  "FPS": 30,
+  "Start time": 100,
+  "End time": 106,
+  "Video codec": "XVID",
+  "Process": 0,
+  "ffmpeg path": "ffmpeg"
+}
+

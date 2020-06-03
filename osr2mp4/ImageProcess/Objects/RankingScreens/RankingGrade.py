@@ -7,7 +7,7 @@ from .ARankingScreen import ARankingScreen
 
 class RankingGrade(ARankingScreen):
 	def __init__(self, replayinfo, gradeframes, gap, settings):
-		dummy = [Image.new("RGBA", (1, 1))]
+		dummy = [Image.new("RGBA", (0, 0))]
 		super().__init__(dummy, settings)
 
 		self.grades = {10: Grade.SS, 9: Grade.S, 8: Grade.A, 7: Grade.B, 6: Grade.C, 5: Grade.D}

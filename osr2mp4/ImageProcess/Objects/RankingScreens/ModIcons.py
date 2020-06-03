@@ -7,7 +7,7 @@ from .ARankingScreen import ARankingScreen
 
 class ModIcons(ARankingScreen):
 	def __init__(self, frames, replayinfo, settings):
-		dummy = [Image.new("RGBA", (1, 1))]
+		dummy = [Image.new("RGBA", (0, 0))]
 		super().__init__(dummy, settings=settings)
 		self.mods = replayinfo.mod_combination
 		self.modframes = frames

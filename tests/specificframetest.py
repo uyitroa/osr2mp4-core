@@ -18,7 +18,7 @@ class TestSpecificFrame(unittest.TestCase):
 
 
 	def testframes(self):
-		blank = Image.new("RGBA", (1, 1))
+		blank = Image.new("RGBA", (0, 1))
 		for i in range(len(self.tests)):
 			drawer = self.tests[i][1]
 
@@ -36,7 +36,7 @@ class TestSpecificFrame(unittest.TestCase):
 							drawer.pbuffer.save(expectf)
 						else:
 							expect = Image.open(expectf).convert("RGBA")
-							assert_image_similar(drawer.pbuffer, expect, 5)
+							assert_image_similar(drawer.pbuffer, expect, 2)
 					counter += 1
 
 

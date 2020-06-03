@@ -7,7 +7,7 @@ from ...PrepareFrames.Components.Text import prepare_text
 
 class RankingTitle(ARankingScreen):
 	def __init__(self, frames, replayinfo, beatmap, settings):
-		dummy = [Image.new("RGBA", (1, 1))]
+		dummy = [Image.new("RGBA", (0, 0))]
 		super().__init__(dummy, settings=settings)
 		self.replayinfo = replayinfo
 		self.artist = beatmap.meta["Artist"]

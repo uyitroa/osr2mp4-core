@@ -2,6 +2,8 @@ import ctypes
 import inspect
 from multiprocessing.sharedctypes import RawArray
 
+from PIL import Image
+
 import bruh
 from osr2mp4.CheckSystem.checkmain import checkmain
 from osr2mp4.Utils.Timing import find_time
@@ -141,3 +143,24 @@ def getdrawer(suffix, mapname, videotime):
 	resultprefix = abspath + "frames/" + suffix + mapname
 	return resultprefix, drawer, shared
 
+
+def getexpect(suffix, mapname):
+
+	path = abspath + "orignalframes/" + mapname + "expect" + suffix
+
+	fileopen = open(path + ".txt", "r")
+	text = fileopen.read()
+	timestamp = int(text.strip())
+	videotime = (timestamp / 1000 - 3, timestamp / 1000 + 3)
+
+	fileopen.close()
+
+	try:
+		fileopen = open(path + "epsilon.txt", "r")
+		text = fileopen.read()
+		epsilon = float(text.strip())
+
+		fileopen.close()
+	except FileNotFoundError:
+		epsilon = 500
+	return path, videotime, timestamp, epsilon

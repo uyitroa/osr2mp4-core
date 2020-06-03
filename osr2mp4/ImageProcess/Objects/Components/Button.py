@@ -41,14 +41,18 @@ class InputOverlay(FrameObject):
 
 	def clicked(self, cur_time):
 		if not self.oldclick:
+			if cur_time < self.freeze:
+				return
 			self.oldclick = True
-			if cur_time >= self.freeze:
-				self.n += 1
+			self.n += 1
 			self.frame_index = 1
 
 		self.holding = True
 
-	def add_to_frame(self, background, x_offset, y_offset, alpha=1):
+	def add_to_frame(self, background, x_offset, y_offset, curtime, alpha=1):
+		if background.size[0] == 1:
+			return
+
 		if not self.settings.settings["Always show key overlay"]:
 			return
 
