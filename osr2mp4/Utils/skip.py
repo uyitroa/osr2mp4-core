@@ -1,6 +1,6 @@
 def search_time(to_time, hitobjects):
 	cur_index = 0
-	while cur_index <= len(hitobjects)-1 and hitobjects[cur_index]["end time"] + 1000 < to_time:
+	while cur_index <= len(hitobjects)-2 and hitobjects[cur_index]["end time"] + 1000 < to_time:
 		cur_index += 1
 
 	cur_index = max(0, cur_index - 1)
@@ -94,7 +94,6 @@ def search_break(to_time, breaks):
 
 
 def skip(to_time, resultinfo, replayinfo, beatmap, timepreempt, component):
-	print(to_time)
 	hitobjectindex = search_time(to_time, beatmap.hitobjects)
 	starttime = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, to_time)
 	osr_index = search_osrindex(starttime, replayinfo)
