@@ -25,10 +25,10 @@ def prepare_hitresults(scale, beatmap, settings):
 		if x == 0:
 			if yimg.unanimate:
 				f1 = f1[0]
-			f1 = size.shrink(f1, 1.5, 1.1, 0.01)
+			f1 = size.shrink(f1, 1.45, 0.9, 0.05)
 			f = []
-			for a in range(len(f1)):
-				f1[a] = f1[a].rotate(-10 - a * 0.5)
+			# for a in range(len(f1)):
+			# 	f1[a] = f1[a].rotate(-10 - a * 0.5)
 		scores_frames[x] = f+f1
 
 	return scores_frames

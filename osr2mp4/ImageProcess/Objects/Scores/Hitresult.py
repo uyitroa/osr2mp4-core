@@ -10,7 +10,7 @@ class HitResult(FrameObject):
 		self.divide_by_255 = 1 / 255.0
 		self.hitresults = []
 		self.interval = self.settings.timeframe / self.settings.fps
-		self.time = 600
+		self.time = 1000
 		self.misscount = 0
 		self.multiplieranimation = {0: 2, 50: 1, 100: 1, 300: 1}
 		self.playfieldscale = self.settings.playfieldscale
@@ -27,6 +27,7 @@ class HitResult(FrameObject):
 
 		if scores == 0:
 			self.misscount += 1
+			x -= 10 * self.playfieldscale
 
 		if scores == 300 and self.frames[300][0].size[0] == 1 and self.frames[300][0].size[1] == 1:
 			return
@@ -56,13 +57,13 @@ class HitResult(FrameObject):
 
 			if score == 0:
 				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
-				self.hitresults[i][6] = max(0.8, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
+				self.hitresults[i][6] = max(0.5, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
 
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)
 			self.hitresults[i][5] += self.interval * 60/self.settings.fps  #
 
-			if self.hitresults[i][5] >= self.time - self.interval * 10:
-				self.hitresults[i][4] = max(0, self.hitresults[i][4] - (10/self.multiplieranimation[score]) * 60/self.settings.fps)
+			if self.hitresults[i][5] >= self.time - self.interval * 20:
+				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 5 * 60/self.settings.fps)
 			else:
-				self.hitresults[i][4] = min(100, self.hitresults[i][4] + (20/self.multiplieranimation[score]) * 60/self.settings.fps)
+				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/self.settings.fps)
 
