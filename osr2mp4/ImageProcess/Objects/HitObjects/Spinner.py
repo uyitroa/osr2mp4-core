@@ -50,7 +50,7 @@ class SpinnerManager(FrameObject):
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
 			progress -= 1
 
-		self.spinners[idd][4] = min(10, int(progress))
+		self.spinners[idd].index = min(10, int(progress))
 
 	def add_to_frame(self, background, i, _):
 		if self.spinners[i].starttime_left > 0:
@@ -62,7 +62,6 @@ class SpinnerManager(FrameObject):
 				self.spinners[i].alpha = max(0, self.spinners[i].alpha - self.interval / 200)
 			else:
 				self.spinners[i].alpha = 1
-
 		img = self.frames[spinnerbackground]
 		imageproc.add(img, background, self.width/2 + self.moveright, self.height/2 + self.movedown, alpha=self.spinners[i].alpha)
 
@@ -75,6 +74,6 @@ class SpinnerManager(FrameObject):
 		img = self.frames[spinnermetre].crop((0, y_start, width, height))
 
 		x = self.width/2 + self.moveright - width/2
-		y = 23/768 * self.height + y_start
+		y = 46/768 * self.height + y_start
 		imageproc.add(img, background, x, y, alpha=self.spinners[i].alpha, topleft=True)
 
