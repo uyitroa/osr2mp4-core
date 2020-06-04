@@ -8,7 +8,8 @@ import shutil
 import sys
 import tempfile
 from io import BytesIO
-
+import numpy as np
+import cv2
 import pytest
 from PIL import Image, ImageMath, features
 
@@ -157,6 +158,17 @@ def getepsilon(a, b, msg=None):
 
 	ave_diff = diff / (a.size[0] * a.size[1])
 	return ave_diff
+
+
+def contain_image(big, small, threshold=0.99):
+	if type(big).__name__ != "ndarray":
+		big = np.array(big)
+	if type(small).__name__ != "ndarray":
+		small = np.array(small)
+
+	res = cv2.matchTemplate(small, big, cv2.TM_CCOEFF_NORMED)
+	loc = np.where (res >= threshold)
+	return loc[0].size > 0
 
 
 def assert_image_similar_tofile(a, filename, epsilon, msg=None, mode=None):
