@@ -180,7 +180,10 @@ class Scoreboard(FrameObject):
 
 
 		r = requests.post("https://osu.ppy.sh/api/get_scores", data=data)
-		data = json.loads(r.text)
+		try:
+			data = json.loads(r.text)
+		except json.decoder.JSONDecodeError:
+			return
 
 		if "error" in data:
 			print("\n\n {} \n\n".format(data["error"]))
