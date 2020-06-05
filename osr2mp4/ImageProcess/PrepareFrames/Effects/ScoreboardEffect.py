@@ -25,7 +25,7 @@ def prepare_scoreboardeffect(scale):
 		speedalpha = min(15, speedalpha + 0.05 * scale)
 
 	eclipseeffect = image.crop((int(image.size[0] * 3/5), y, image.size[0], y + height))
-	eclipseeffect = imageproc.change_size(eclipseeffect, 2, 2.5)
+	eclipseeffect = imageproc.change_size(eclipseeffect, 2.25, 2.5)
 
 	image = Image.new('RGBA', (int(1366 * scale), int(768 * scale)))
 	draw = ImageDraw.Draw(image)

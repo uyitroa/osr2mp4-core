@@ -118,7 +118,7 @@ class Scoreboard(FrameObject):
 		if len(self.scoreboards) > 50 - self.removeone:
 			_, _ = self.sortscore(000)
 			self.scoreboards = self.scoreboards[:50 - self.removeone]
-		self.scoreboards.append(BoardInfo("", "", self.curscore, self.maxcombo, replay_info.player_name, None, None, None, -1))
+		self.scoreboards.append(BoardInfo("0", "0", self.curscore, self.maxcombo, replay_info.player_name, None, None, None, -1))
 		self.shows = max(0, len(self.scoreboards)-self.nboard+1)
 		_, self.currank = self.sortscore()
 
@@ -271,14 +271,14 @@ class Scoreboard(FrameObject):
 
 
 		if self.animate:
-			self.setranktoanimate()
+			self.setrankpos()
 			self.effectalpha.append(2.5)
 			self.effectx.append(-500 * self.settings.scale)
 			self.effecty.append(curinfo.y)
 
 	def getrange(self):
 		if self.currank < self.nboard - 1:
-			return min(0, self.currank), self.currank
+			return 0, 6
 		return self.currank - 4, self.currank
 
 	def setranktoanimate(self, prevrank=None):
@@ -299,7 +299,24 @@ class Scoreboard(FrameObject):
 			for i in range(0, self.nboard):
 				self.scoreboards[i].alpha = 1
 
+	def setrankpos(self):
+		start, end = self.getrange()
+		self.scoreboards[0].y = self.origposboards[0][1]
+		count = 0
+		for i in range(start + 1, end):
+			count += 1
+			if i == self.currank:
+				continue
+			self.scoreboards[i].y = self.origposboards[count][1]
+
+		if self.currank < self.nboard - 1:
+			self.scoreboards[self.currank].y = self.origposboards[self.currank][1]
+			for i in range(0, self.nboard):
+				self.scoreboards[i].alpha = 1
+
 	def drawnumber(self, background, x_offset, y_offset, number, frames, alpha):
+		if number == "0":
+			return
 		number = number
 		x_start = x_offset
 		for digit in number:
@@ -316,17 +333,14 @@ class Scoreboard(FrameObject):
 		self.drawnumber(background, 5 * self.settings.scale, y_offset, number, self.score, alpha)
 
 	def drawcombo(self, background, y_offset, number, alpha):
+		if number == "0":
+			return
 		number = number + "x"
 		n = len(number)
 		x_start = self.frames[0].size[0] - int(n * self.combo[0].size[0])
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
-		# if self.imgdraw is None or background != self.imgdrawid:
-		# 	self.imgdraw = ImageDraw.Draw(background)
-		# 	self.imgdrawid = background
-		# cv2.putText(background, text, (0, int(y_offset + self.height * 0.4)), cv2.QT_FONT_NORMAL, self.settings.scale * 0.5, (alpha * 255, alpha * 255, alpha * 255, alpha * 150), 1, cv2.LINE_AA)
-		# self.imgdraw.text( (0, int(y_offset + self.height * 0.4)), "something123", font=self.font)
 		imageproc.add(self.nameimg[text], background, 0, y_offset + self.height * 0.1, alpha, topleft=True)
 
 	def add_to_frame(self, np_img, background, in_break):
@@ -341,20 +355,32 @@ class Scoreboard(FrameObject):
 				if self.scoreboards[x].y >= self.origposboards[boardindex][1] and self.scoreboards[x].alpha >= 1:
 					self.scoreboards[x].y = self.origposboards[boardindex][1]
 				else:
-					self.scoreboards[x].y = min(self.origposboards[boardindex][1], self.scoreboards[x].y + 5)
+					coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
+					if coef >= 0:
+						step = max(1, 30 * coef)
+					else:
+						step = min(-1, 30 * coef)
+					self.scoreboards[x].y = min(self.origposboards[boardindex][1], self.scoreboards[x].y - step)
 					self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
 			if self.currank < ranktoclimb and self.currank < x < self.nboard:
-				self.scoreboards[x].y = min(self.scoreboards[x].y + 5, self.origposboards[x][1])
+				coef = (self.scoreboards[x].y - self.origposboards[x][1]) / self.scoreboards[x].y
+				if coef > 0:
+					step = max(1, 30 * coef)
+				elif coef < 0:
+					step = min(-1, 30 * coef)
+				else:
+					step = 0
+				self.scoreboards[x].y = min(self.scoreboards[x].y - step, self.origposboards[x][1])
+				self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
-			if x > self.currank and self.scoreboards[x].alpha > 0:
-				if self.currank >= ranktoclimb:
-					self.scoreboards[x].alpha -= 0.01
-					self.scoreboards[x].y += 5
-					self.falling = True
-
-			if self.scoreboards[x].alpha <= 0 or (ranktoclimb <= self.currank < x) or (self.currank < ranktoclimb < x):
+			if self.scoreboards[x].alpha <= 0 or (self.currank < ranktoclimb < x):
 				continue
+
+			if ranktoclimb <= self.currank < x:
+				# fadeout and fall
+				self.scoreboards[x].alpha -= 0.05
+				self.scoreboards[x].y += 10
 
 			if x == self.currank:
 				self.frame_index = 1
@@ -366,10 +392,11 @@ class Scoreboard(FrameObject):
 				self.frame_index = 0
 
 			if self.settings.settings["In-game interface"] or in_break:
-				super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
-				self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
-				self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
-				self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
+				if self.scoreboards[x].alpha > 0:
+					super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
+					self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
+					self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
+					self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
 
 		for i in range(len(self.effectalpha)-1, -1, -1):
 			alpha = max(0, min(1, self.effectalpha[i]))
