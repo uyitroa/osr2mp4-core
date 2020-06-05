@@ -1,5 +1,7 @@
 from PIL import Image
 
+from ...Animation.alpha import fadein
+from ...Animation.size import grow
 from ... import imageproc
 from ...PrepareFrames.YImage import YImage, YImages
 
@@ -62,21 +64,37 @@ def prepare_slider(diff, scale, settings):
 			bframes[-1].append(color_sb)
 
 
-	scale_interval = round(0.25 * interval/follow_fadein, 2)
-	cur_scale = 1
-	alpha_interval = round(interval / follow_fadein, 2)
-	cur_alpha = 1
+	startsize, endsize = 0.5, 1
+	scale_interval = (endsize - startsize) * interval/follow_fadein
 
-	for x in range(follow_fadein, 0, -int(interval)):
-		sfollow = imageproc.newalpha(sliderfollow_frames[0], cur_alpha)
-		sfollow = imageproc.change_size(sfollow, cur_scale, cur_scale)
+	startalpha, endalpha = 0.5, 1
+	alpha_interval = (endalpha - startalpha) * interval / follow_fadein
 
-		follow_img = sfollow.copy()
-		sliderfollow_fadeout.append(follow_img)
+	sframes = fadein(sliderfollow_frames[0], startalpha, endalpha, alpha_interval)
+	sframes = grow(sframes, startsize, endsize, scale_interval)
+	sframes = sframes[::-1]
 
-		sframes.append(sfollow)
+	startsize, endsize = endsize, endsize * 0.75
+	scale_interval = (endsize - startsize) * interval/follow_fadein
 
-		cur_scale -= scale_interval
-		cur_alpha -= alpha_interval
+	startalpha, endalpha = 1, 0
+	alpha_interval = (endalpha - startalpha) * interval / follow_fadein
+
+	sliderfollow_fadeout = fadein(sliderfollow_frames[0], startalpha, endalpha, alpha_interval)
+	sliderfollow_fadeout = grow(sliderfollow_fadeout, startsize, endsize, scale_interval)
+	# sliderfollow_fadeout = sliderfollow_fadeout[::-1]
+
+	# for x in range(follow_fadein, 0, -int(interval)):
+	# 	sfollow = imageproc.newalpha(sliderfollow_frames[0], cur_alpha)
+	# 	sfollow = imageproc.change_size(sfollow, cur_scale, cur_scale)
+	#
+	# 	follow_img = sfollow.copy()
+	# 	sliderfollow_fadeout.append(follow_img)
+	#
+	# 	sframes.append(sfollow)
+	#
+	# 	cur_scale -= scale_interval
+	# 	cur_alpha -= alpha_interval
+
 
 	return arrow_frames, sframes, sliderfollow_fadeout, slider_tick, bframes
