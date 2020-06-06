@@ -71,7 +71,6 @@ class Drawer:
 			if self.img.size[0] == 1:
 				self.img = self.pbuffer
 
-
 		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater)
 		check_key(self.component, self.cursor_event, in_break)
 		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)

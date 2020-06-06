@@ -3,6 +3,7 @@
 # Implement features
 - Add option to animate sliderball (this can be optimised)
 - Add rank number to scoreboard
+- test contain image for specificframecompare
 
 # Optimisation
 - Avoid redrawing unchanged image to reduce execution time. (Slider body, Spinner background, Button, Score can be redrawn less often)
