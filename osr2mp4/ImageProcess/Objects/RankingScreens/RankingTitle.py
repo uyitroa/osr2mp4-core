@@ -3,27 +3,26 @@ from PIL import Image
 from ... import imageproc
 from .ARankingScreen import ARankingScreen
 from ...PrepareFrames.Components.Text import prepare_text
-from ....global_var import Settings
 
 
 class RankingTitle(ARankingScreen):
-	def __init__(self, frames, replayinfo, beatmap):
-		dummy = [Image.new("RGBA", (1, 1))]
-		super().__init__(dummy)
+	def __init__(self, frames, replayinfo, beatmap, settings):
+		dummy = [Image.new("RGBA", (0, 0))]
+		super().__init__(dummy, settings=settings)
 		self.replayinfo = replayinfo
 		self.artist = beatmap.meta["Artist"]
 		self.beatmapname = beatmap.meta["Title"]
 		self.mapper = beatmap.meta["Creator"]
 		self.diff = beatmap.meta["Version"]
 		self.player = replayinfo.player_name
-		self.date = str(replayinfo.timestamp)
+		self.date = str(replayinfo.timestamp.replace(microsecond=0))
 		self.date = self.date.replace("-", "/")
 
 		self.rankingtitle = frames[0]
 
-		titleimg = prepare_text(["{} - {} [{}]".format(self.artist, self.beatmapname, self.diff)], 30 * Settings.scale, (255, 255, 255, 255))
-		creatorimg = prepare_text(["Beatmap by {}".format(self.mapper)], 20 * Settings.scale, (255, 255, 255, 255))
-		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 20 * Settings.scale, (255, 255, 255, 255))
+		titleimg = prepare_text(["{} - {} [{}]".format(self.artist, self.beatmapname, self.diff)], 30 * self.settings.scale, (255, 255, 255, 255), settings)
+		creatorimg = prepare_text(["Beatmap by {}".format(self.mapper)], 20 * self.settings.scale, (255, 255, 255, 255), settings)
+		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 20 * self.settings.scale, (255, 255, 255, 255), settings)
 
 		self.textimgs = {**titleimg, **creatorimg, **playerimg}
 
@@ -33,8 +32,8 @@ class RankingTitle(ARankingScreen):
 	def add_to_frame(self, background, np_img):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			self.drawname(background, 0, 0 * Settings.scale, "{} - {} [{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
-			self.drawname(background, 0, 35 * Settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
-			self.drawname(background, 0, 60 * Settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
+			self.drawname(background, 0, 0 * self.settings.scale, "{} - {} [{}]".format(self.artist, self.beatmapname, self.diff), self.alpha, 0.75)
+			self.drawname(background, 0, 35 * self.settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
+			self.drawname(background, 0, 60 * self.settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
 
-			imageproc.add(self.rankingtitle, background, Settings.width - 32 * Settings.scale - self.rankingtitle.size[0], 10 * Settings.scale, self.alpha, topleft=True)
+			imageproc.add(self.rankingtitle, background, self.settings.width - 32 * self.settings.scale - self.rankingtitle.size[0], 10 * self.settings.scale, self.alpha, topleft=True)

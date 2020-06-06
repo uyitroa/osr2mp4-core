@@ -1,12 +1,11 @@
 from ....CheckSystem.Health import HealthProcessor
 from ... import imageproc
 from .AScorebar import AScorebar
-from ....global_var import Settings, SkinPaths, GameplaySettings
 
 
 class Scorebar(AScorebar):
-	def __init__(self, frames, beatmap):
-		AScorebar.__init__(self, frames[0])
+	def __init__(self, frames, beatmap, settings):
+		AScorebar.__init__(self, frames[0], settings=settings)
 		self.marker = frames[1]
 		self.hasmarker = frames[2]
 		self.healthprocessor = HealthProcessor(beatmap, beatmap.health_processor.drain_rate)
@@ -16,11 +15,11 @@ class Scorebar(AScorebar):
 		self.step = 0
 
 		if not self.hasmarker:
-			self.x = 5 * Settings.scale
-			self.y = 16 * Settings.scale
+			self.x = 5 * self.settings.scale
+			self.y = 16 * self.settings.scale
 		else:
-			self.x = 12 * Settings.scale
-			self.y = 12 * Settings.scale
+			self.x = 12 * self.settings.scale
+			self.y = 12 * self.settings.scale
 
 	def startbreak(self, breakk, duration):
 		self.endtime = breakk["End"]
@@ -52,7 +51,7 @@ class Scorebar(AScorebar):
 
 		AScorebar.animate(self)
 
-		self.frame_index += SkinPaths.skin_ini.general["AnimationFramerate"]/Settings.fps
+		self.frame_index += self.settings.skin_ini.general["AnimationFramerate"]/self.settings.fps
 		self.frame_index = self.frame_index % len(self.frames)
 
 		self.drainhp(cur_time)
@@ -66,8 +65,8 @@ class Scorebar(AScorebar):
 		img = self.frames[int(self.frame_index)]
 		img = img.crop((0, 0, int(img.size[0] * self.hp), img.size[1]))
 
-		if GameplaySettings.settings["In-game interface"] or in_break:
+		if self.settings.settings["In-game interface"] or in_break:
 			imageproc.add(img, background, self.x, self.y-self.h, alpha=self.alpha, topleft=True)
 
 		if self.hasmarker:
-			imageproc.add(self.marker, background, self.x + img.size[0], 16 * Settings.scale-self.h, alpha=self.alpha)
+			imageproc.add(self.marker, background, self.x + img.size[0], 16 * self.settings.scale-self.h, alpha=self.alpha)

@@ -2,16 +2,15 @@ from PIL import Image
 
 from ... import imageproc
 from .ARankingScreen import ARankingScreen
-from ....global_var import Settings
 
 
 class RankingPanel(ARankingScreen):
 	FADEIN = -1
 	FADEOUT = 1
 
-	def __init__(self, frames):
-		super().__init__(frames)
-		self.backgroundimg = Image.new("RGBA", (Settings.width, Settings.height), (0, 0, 0, 255))
+	def __init__(self, frames, settings):
+		super().__init__(frames, settings=settings)
+		self.backgroundimg = Image.new("RGBA", (self.settings.width, self.settings.height), (0, 0, 0, 255))
 
 	def add_to_frame(self, background):
 

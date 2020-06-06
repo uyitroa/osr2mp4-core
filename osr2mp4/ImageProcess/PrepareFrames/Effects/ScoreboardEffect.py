@@ -16,16 +16,16 @@ def prepare_scoreboardeffect(scale):
 	for i in range(50):
 		draw.ellipse((x, y, x + width, y + height), fill=(255, 255, 255, int(alpha)),
 		             outline=(255, 255, 255, int(alpha)))
-		alpha = min(170, alpha + speedalpha)
+		alpha = min(200, alpha + speedalpha)
 		x += 1.5 * scale
 		y -= speed
 		width -= 3 * scale
 		height += speed * 2
 		speed = max(0.00001, speed - 0.75 * scale)
-		speedalpha = min(10, speedalpha + 0.05 * scale)
+		speedalpha = min(15, speedalpha + 0.05 * scale)
 
 	eclipseeffect = image.crop((int(image.size[0] * 3/5), y, image.size[0], y + height))
-	eclipseeffect = imageproc.change_size(eclipseeffect, 1.5, 2.5)
+	eclipseeffect = imageproc.change_size(eclipseeffect, 2.25, 2.5)
 
 	image = Image.new('RGBA', (int(1366 * scale), int(768 * scale)))
 	draw = ImageDraw.Draw(image)

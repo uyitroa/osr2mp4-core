@@ -1,13 +1,11 @@
 from PIL import ImageFont, ImageDraw, Image
 
-from ....global_var import Settings, Paths
 
-
-def prepare_text(texts, size, color):
+def prepare_text(texts, size, color, settings):
 	size = int(size)
-	font = ImageFont.truetype(Paths.path + "res/Arial.ttf", size=size)
+	font = ImageFont.truetype(settings.path + "res/Arial.ttf", size=size)
 
-	img = Image.new("RGBA", (Settings.width, Settings.height))
+	img = Image.new("RGBA", (settings.width, settings.height))
 	imgdraw = ImageDraw.Draw(img)
 	imgs = {}
 	for text in texts:

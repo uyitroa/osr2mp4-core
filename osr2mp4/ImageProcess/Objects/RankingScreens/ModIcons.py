@@ -3,13 +3,12 @@ from osrparse.enums import Mod
 
 from ... import imageproc
 from .ARankingScreen import ARankingScreen
-from ....global_var import Settings
 
 
 class ModIcons(ARankingScreen):
-	def __init__(self, frames, replayinfo):
-		dummy = [Image.new("RGBA", (1, 1))]
-		super().__init__(dummy)
+	def __init__(self, frames, replayinfo, settings):
+		dummy = [Image.new("RGBA", (0, 0))]
+		super().__init__(dummy, settings=settings)
 		self.mods = replayinfo.mod_combination
 		self.modframes = frames
 
@@ -36,9 +35,9 @@ class ModIcons(ARankingScreen):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
 
-			x = 1300 * Settings.scale
-			step_x = 60 * Settings.scale
+			x = 1300 * self.settings.scale
+			step_x = 60 * self.settings.scale
 			for mod in self.sortedmods:
 				if mod in self.mods:
-					imageproc.add(self.modframes[mod], background, x, 420 * Settings.scale, self.alpha)
+					imageproc.add(self.modframes[mod], background, x, 420 * self.settings.scale, self.alpha)
 					x -= step_x

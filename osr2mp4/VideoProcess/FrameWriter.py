@@ -1,20 +1,16 @@
-import os
 import time
 import numpy as np
 import cv2
 
-from .Setup import setup_global
-from ..global_var import Settings, Paths
 
-
-def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gameplaysettings, iii):
+def write_frame(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
-	setup_global(settings, paths, skinpaths, gameplaysettings)
+	print(filename, vars(settings), "\n")
 
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*codec), Settings.fps, (Settings.width, Settings.height))
+	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
-	np_img = np_img.reshape((Settings.height, Settings.width, 4))
+	np_img = np_img.reshape((settings.height, settings.width, 4))
 
 	timer = 0
 
@@ -28,25 +24,19 @@ def write_frame(shared, conn, filename, codec, settings, paths, skinpaths, gamep
 	startwringtime = time.time()
 
 	if iii:
-		filewriter = open(Paths.path + "temp/speed.txt", "w")
+		filewriter = open(settings.temp + "speed.txt", "w")
 
 	while a != 10:
 
 		asdf = time.time()
-		# print("video wait")
-		# print(filename)
 		a = conn.recv()
-		# print("video received")
 		timer2 += time.time() - asdf
 
 		if a == 1:
 			asdf = time.time()
 			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
-			# print("video send")
 			conn.send(0)
-			# print("video sent")
 			timer3 += time.time() - asdf
-			# print("unlock", timer3)
 
 			asdf = time.time()
 			writer.write(im)

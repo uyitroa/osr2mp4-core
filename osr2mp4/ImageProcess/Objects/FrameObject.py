@@ -2,11 +2,12 @@ from .. import imageproc
 
 
 class FrameObject:
-	def __init__(self, frames=None, yimg=None):
+	def __init__(self, frames=None, yimg=None, settings=None):
 		"""
 		:param frames: list(PIL.Image]
 		"""
 		self.frames = frames
+		self.settings = settings
 		if yimg is not None:
 			self.frames = [yimg.img]
 		self.frame_index = 0

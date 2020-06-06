@@ -1,0 +1,559 @@
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/takenohana/audio.mp3':
+  Metadata:
+    major_brand     : dash
+    minor_version   : 0
+    compatible_brands: iso6mp41
+    creation_time   : 2014-08-08 22:08:14
+    encoder         : Lavf54.20.4
+  Duration: 00:05:47.40, start: 0.000000, bitrate: 128 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    major_brand     : dash
+    minor_version   : 0
+    compatible_brands: iso6mp41
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=   59846kB time=00:05:47.40 bitrate=1411.2kbits/s speed= 696x    
+video:0kB audio:59846kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.000127%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+[mp3 @ 0x7f8086001400] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from 'osr2mp4/res/default/combobreak.mp3':
+  Duration: 00:00:01.04, start: 0.000000, bitrate: 160 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 160 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     180kB time=00:00:01.04 bitrate=1411.8kbits/s speed= 437x    
+video:0kB audio:180kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.042318%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+[wav @ 0x7fdb7f001400] Discarding ID3 tags because more suitable tags were found.
+Guessed Channel Layout for Input Stream #0.0 : stereo
+Input #0, wav, from '/Users/yuitora./Downloads/shige/sectionfail.mp3':
+  Metadata:
+    comment         :  00000000 00000210 00000A9E 0000000000013BD2 00000000 0001094F 00000000 00000000 00000000 00000000 00000000 00000000
+    encoder         : Logic Pro 9.1.8 (libsndfile-1.0.24)
+  Duration: 00:00:01.85, bitrate: 1412 kb/s
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (pcm_s16le (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    ICMT            :  00000000 00000210 00000A9E 0000000000013BD2 00000000 0001094F 00000000 00000000 00000000 00000000 00000000 00000000
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     319kB time=00:00:01.84 bitrate=1412.1kbits/s speed=1.02e+03x    
+video:0kB audio:318kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.062551%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+[mp3 @ 0x7fb0f0001400] Skipping 417 bytes of junk at 0.
+[mp3 @ 0x7fb0f0001400] Estimating duration from bitrate, this may be inaccurate
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/sectionpass.mp3':
+  Metadata:
+    title           : h27
+    artist          : Tone
+    genre           : Blues
+  Duration: 00:00:01.05, start: 0.000000, bitrate: 131 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    INAM            : h27
+    IART            : Tone
+    IGNR            : Blues
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     180kB time=00:00:01.04 bitrate=1412.1kbits/s speed= 374x    
+video:0kB audio:180kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.064019%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 402x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 388x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 356x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 240x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 389x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 383x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 406x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 184x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 279x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%
+ffmpeg version 4.2.1 Copyright (c) 2000-2019 the FFmpeg developers
+  built with Apple clang version 11.0.0 (clang-1100.0.33.8)
+  configuration: --prefix=/usr/local/Cellar/ffmpeg/4.2.1_2 --enable-shared --enable-pthreads --enable-version3 --enable-avresample --cc=clang --host-cflags='-I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include -I/Library/Java/JavaVirtualMachines/adoptopenjdk-13.jdk/Contents/Home/include/darwin -fno-stack-check' --host-ldflags= --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libbluray --enable-libmp3lame --enable-libopus --enable-librubberband --enable-libsnappy --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librtmp --enable-libspeex --enable-libsoxr --enable-videotoolbox --disable-libjack --disable-indev=jack
+  libavutil      56. 31.100 / 56. 31.100
+  libavcodec     58. 54.100 / 58. 54.100
+  libavformat    58. 29.100 / 58. 29.100
+  libavdevice    58.  8.100 / 58.  8.100
+  libavfilter     7. 57.100 /  7. 57.100
+  libavresample   4.  0.  0 /  4.  0.  0
+  libswscale      5.  5.100 /  5.  5.100
+  libswresample   3.  5.100 /  3.  5.100
+  libpostproc    55.  5.100 / 55.  5.100
+Input #0, mp3, from '/Users/yuitora./Downloads/shige/spinnerspin.mp3':
+  Metadata:
+    album           : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    title           : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    track           : 10/13
+    comment         : ·Rdeath
+    artist          : 凜
+    genre           : Other
+  Duration: 00:00:00.81, start: 0.025057, bitrate: 135 kb/s
+    Stream #0:0: Audio: mp3, 44100 Hz, stereo, fltp, 128 kb/s
+    Metadata:
+      encoder         : LAME3.99r
+Stream mapping:
+  Stream #0:0 -> #0:0 (mp3 (mp3float) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, wav, to 'osr2mp4/abd5db36-a387-11ea-9cc4-f01898109583temp/converted.wav':
+  Metadata:
+    IPRD            : SUPER SHOT3 -Bishoujo Game Remix Collection-
+    INAM            : プリズム☆ま～じカル (DJ SHARPNEL hardrave remix)
+    BPM (beats per minute): 186.78
+    IPRT            : 10/13
+    ICMT            : ·Rdeath
+    IART            : 凜
+    IGNR            : Other
+    ISFT            : Lavf58.29.100
+    Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc58.54.100 pcm_s16le
+size=     134kB time=00:00:00.77 bitrate=1413.9kbits/s speed= 362x    
+video:0kB audio:133kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.189061%

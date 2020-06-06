@@ -1,13 +1,13 @@
 def search_time(to_time, hitobjects):
 	cur_index = 0
-	while cur_index <= len(hitobjects)-1 and hitobjects[cur_index]["end time"] + 1000 < to_time:
+	while cur_index <= len(hitobjects)-2 and hitobjects[cur_index]["end time"] + 1000 < to_time:
 		cur_index += 1
 
 	cur_index = max(0, cur_index - 1)
 	return cur_index
 
 
-def search_updateindex(idd, resultinfo, component):
+def search_updateindex(idd, resultinfo, component, to_time):
 	if idd == -1:
 		return len(resultinfo)-1
 	cur_index = 0
@@ -94,13 +94,12 @@ def search_break(to_time, breaks):
 
 
 def skip(to_time, resultinfo, replayinfo, beatmap, timepreempt, component):
-	print(to_time)
 	hitobjectindex = search_time(to_time, beatmap.hitobjects)
-	to_time = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, to_time)
-	osr_index = search_osrindex(to_time, replayinfo)
-	info_index = search_updateindex(beatmap.hitobjects[hitobjectindex]["id"], resultinfo, component)
-	fp_index, obj_endtime, x_end, y_end = search_fpindex(to_time, beatmap.hitobjects)
-	break_index = search_break(to_time, beatmap.breakperiods)
-	return to_time, hitobjectindex, info_index, osr_index, fp_index, obj_endtime, x_end, y_end, break_index
+	starttime = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, to_time)
+	osr_index = search_osrindex(starttime, replayinfo)
+	info_index = search_updateindex(beatmap.hitobjects[hitobjectindex]["id"], resultinfo, component, to_time)
+	fp_index, obj_endtime, x_end, y_end = search_fpindex(starttime, beatmap.hitobjects)
+	break_index = search_break(starttime, beatmap.breakperiods)
+	return starttime, hitobjectindex, info_index, osr_index, fp_index, obj_endtime, x_end, y_end, break_index
 
 

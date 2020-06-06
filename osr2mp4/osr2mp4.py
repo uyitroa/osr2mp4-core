@@ -1,3 +1,4 @@
+import atexit
 import inspect
 import os
 import time
@@ -15,8 +16,9 @@ from .Utils.HashBeatmap import get_osu
 from .Utils.Setup import setupglobals
 from .Utils.Timing import find_time, get_offset
 from .VideoProcess.CreateFrames import create_frame
-from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, create_dir
-from .global_var import Paths, Settings, SkinPaths
+from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup
+from .global_var import Settings
+import uuid
 
 
 class Dummy: pass
@@ -24,15 +26,16 @@ class Dummy: pass
 
 class Osr2mp4:
 	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None):
-		Paths.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
-		if Paths.path[-1] != "/" and Paths.path[-1] != "\\":
-			Paths.path += "/"
+		self.settings = Settings()
+		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
+		self.settings.path = os.path.relpath(self.settings.path)
+		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
+			self.settings.path += "/"
+		self.settings.temp = self.settings.path + str(uuid.uuid1()) + "temp/"
 
-		create_dir()  # in case filenotfounderror no such file or directory ../temp/
+		setup_dir(self.settings)
 
-		exists = os.path.isfile(Paths.path + "temp/speed.txt")
-		if exists:
-			os.remove(Paths.path + "temp/speed.txt")
+		atexit.register(self.cleanup)
 
 		if gameplaysettings is None:
 			gameplaysettings = {
@@ -40,6 +43,7 @@ class Osr2mp4:
 				"In-game interface": True,
 				"Show scoreboard": True,
 				"Background dim": 100,
+				"Rotate sliderball": False,
 				"Always show key overlay": True,
 				"Automatic cursor size": False,
 				"Score meter size": 1,
@@ -62,23 +66,28 @@ class Osr2mp4:
 		starttime = data["Start time"]
 		endtime = data["End time"]
 
+		self.settings.codec = data["Video codec"]
+		self.settings.process = data["Process"]
+
 		try:
 			self.replay_info = osrparse.parse_replay_file(replaypath)
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
-
+		#
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
-		setupglobals(self.data, gameplaysettings, self.replay_info)
+		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
+		print(vars(self.settings))
 
-		self.drawers, self.writers, self.pipes = None, None, None
+		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
-		beatmap_file = get_osu(Paths.beatmap, self.replay_info.beatmap_hash)
-		self.beatmap = read_file(beatmap_file, Settings.playfieldscale, SkinPaths.skin_ini.colours, upsidedown)
+		beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
+		self.beatmap = read_file(beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, upsidedown)
 
 		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
-		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.cur_time)
+		self.replay_info.play_data = self.replay_event
+		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.settings)
 		self.starttimne, self.endtime = starttime, endtime
 
 		self.resultinfo = None
@@ -86,26 +95,26 @@ class Osr2mp4:
 		self.previousprogress = 0
 
 	def startvideo(self):
-		self.analyse_replay()
-		hd = Mod.Hidden in self.replay_info.mod_combination
-		self.drawers, self.writers, self.pipes = create_frame(self.data["Video codec"], self.beatmap,
-		                                                      SkinPaths.skin_ini, self.replay_event, self.replay_info,
-		                                                      self.resultinfo, self.start_index, self.end_index,
-		                                                      self.data["Process"], hd, self.endtime == -1)
+		if self.resultinfo is None:
+			self.analyse_replay()
+		videotime = (self.start_index, self.end_index)
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
 
 	def analyse_replay(self):
-		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.replay_event, self.cur_time)
+		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
+		print(self.resultinfo[-1].accuracy)
 
 	def startaudio(self):
+		if self.resultinfo is None:
+			self.analyse_replay()
 		dt = Mod.DoubleTime in self.replay_info.mod_combination
 		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
-		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.beatmap.general["AudioFilename"],
-		                          self.data["Process"], dt)
+		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings, dt)
 
 	def startall(self):
 		self.analyse_replay()
-		self.startaudio()
 		self.startvideo()
+		self.startaudio()
 
 	def joinvideo(self):
 		if self.data["Process"] >= 1:
@@ -129,15 +138,18 @@ class Osr2mp4:
 			self.joinaudio()
 
 		if self.data["Process"] >= 1:
-			concat_videos()
-		mix_video_audio()
+			concat_videos(self.settings)
+		mix_video_audio(self.settings)
+
+	def cleanup(self):
+		cleanup(self.settings)
 
 	def getprogress(self):
-		should_continue = os.path.isfile(Paths.path + "temp/speed.txt")
+		should_continue = os.path.isfile(self.settings.temp + "speed.txt")
 		if not should_continue:
 			return 0
 
-		fileopen = open(Paths.path + "temp/speed.txt", "r")
+		fileopen = open(self.settings.temp + "speed.txt", "r")
 		try:
 			info = fileopen.read().split("\n")
 			framecount = int(info[0])

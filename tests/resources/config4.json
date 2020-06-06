@@ -1,0 +1,16 @@
+{
+  "osu! path": "lol",
+  "Skin path": "shige copy",
+  "Beatmap path": "syunn",
+  ".osr path": "syunn.osr",
+  "Output path": "output.mkv",
+  "Width": 1278,
+  "Height": 720,
+  "FPS": 30,
+  "Start time": 100,
+  "End time": 105,
+  "Video codec": "XVID",
+  "Process": 0,
+  "ffmpeg path": "ffmpeg"
+}
+

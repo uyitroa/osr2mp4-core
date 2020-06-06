@@ -1,91 +1,169 @@
 import time
 
+import cv2
+from PIL import Image
+
+from ..Utils.skip import skip
+from ..InfoProcessor import Updater
+from .AFrames import FrameObjects
+from ..CheckSystem.Judgement import DiffCalculator
 from ..EEnum.EReplay import Replays
 from .smoothing import smoothcursor
-from .Setup import setup_global, setup_draw
+from .Setup import FrameInfo, CursorEvent, get_buffer
 from .calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
-from ..global_var import Settings
 
 
-def render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-                preempt_followpoint, replay_event, start_index, time_preempt, updater):
+class Drawer:
+	def __init__(self, shared, beatmap, frames, replay_info, resultinfo, videotime, settings):
+		self.shared = shared
+		self.beatmap = beatmap
+		self.frames = frames
+		self.replay_info = replay_info
+		self.replay_event = replay_info.play_data
+		self.resultinfo = resultinfo
+		self.start_index = videotime[0]
+		self.end_index = videotime[1]
+		self.settings = settings
 
-	if frame_info.osr_index >= start_index:
-		if img.size[0] == 1:
-			img = pbuffer
+		self.updater = None
+		self.frame_info = None
+		self.component = None
+		self.preempt_followpoint = None
+		self.cursor_event = None
+		self.img = None
+		self.time_preempt = None
+		self.np_img, self.pbuffer = None, None
+		self.initialised_ranking = False
+
+		self.setup_draw()
+
+	def setup_draw(self):
+		replay_event = self.replay_info.play_data
+		old_cursor_x = int(replay_event[0][Replays.CURSOR_X] * self.settings.playfieldscale) + self.settings.moveright
+		old_cursor_y = int(replay_event[0][Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.moveright
+
+		diffcalculator = DiffCalculator(self.beatmap.diff)
+		self.time_preempt = diffcalculator.ar()
+
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap, self.replay_info)
+
+		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
+
+		self.preempt_followpoint = 800
+
+		self.updater = Updater(self.resultinfo, self.component)
+
+		to_time = replay_event[self.start_index][Replays.TIMES]
+		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))
+
+		self.component.background.startbreak(self.beatmap.breakperiods[self.frame_info.break_index], self.frame_info.cur_time)
+
+		self.cursor_event = CursorEvent(replay_event[self.frame_info.osr_index], old_cursor_x, old_cursor_y)
+
+		self.updater.info_index = self.frame_info.info_index
+
+		self.img = Image.new("RGB", (1, 0))
+		self.np_img, self.pbuffer = get_buffer(self.shared, self.settings)
+
+	def render_draw(self):
+
+		if self.frame_info.osr_index >= self.start_index:
+			if self.img.size[0] == 1:
+				self.img = self.pbuffer
+
+		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater)
+		check_key(self.component, self.cursor_event, in_break)
+		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
+		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
+
+		self.updater.update(self.frame_info.cur_time)
 
 
-	in_break = check_break(beatmap, component, frame_info, updater)
-	check_key(component, cursor_event, in_break)
-	add_followpoints(beatmap, component, frame_info, preempt_followpoint)
-	add_hitobjects(beatmap, component, frame_info, time_preempt)
+		cursor_x = int(self.cursor_event.event[Replays.CURSOR_X] * self.settings.playfieldscale) + self.settings.moveright
+		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
 
 
-	updater.update(frame_info.cur_time)
+		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
+		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
+		self.component.urbar.add_to_frame_bar(self.img)
+		self.component.key1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(350 * self.settings.scale), self.frame_info.cur_time)
+		self.component.key2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(398 * self.settings.scale), self.frame_info.cur_time)
+		self.component.mouse1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(446 * self.settings.scale), self.frame_info.cur_time)
+		self.component.mouse2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(492 * self.settings.scale), self.frame_info.cur_time)
+		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.hitobjmanager.add_to_frame(self.img, self.np_img)
+		self.component.hitresult.add_to_frame(self.img)
+		self.component.spinbonus.add_to_frame(self.img)
+		self.component.combocounter.add_to_frame(self.img, in_break)
+		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
+		self.component.accuracy.add_to_frame(self.img, in_break)
+		self.component.urbar.add_to_frame(self.img)
+		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.cursor_event.event[Replays.TIMES])
+		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
+		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
+		self.component.sections.add_to_frame(self.img)
+		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
 
 
-	cursor_x = int(cursor_event.event[Replays.CURSOR_X] * Settings.playfieldscale) + Settings.moveright
-	cursor_y = int(cursor_event.event[Replays.CURSOR_Y] * Settings.playfieldscale) + Settings.movedown
+		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
+
+		# resultinfo = self.updater.resultinfo[min(len(self.updater.resultinfo) - 1, self.updater.info_index)]
+		# cv2.putText(self.np_img, str(resultinfo.timestamp) + " " + str(resultinfo.more), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255))
+		# choose correct osr index for the current time because in osr file there might be some lag
+		tt = nearer(self.frame_info.cur_time, self.replay_event, self.frame_info.osr_index)
+		if tt == 0:
+			self.cursor_event.event = smoothcursor(self.replay_event, self.frame_info.osr_index, self.cursor_event)
+		else:
+			self.frame_info.osr_index += tt
+			self.cursor_event.event = self.replay_event[self.frame_info.osr_index]
+		return self.img.size[0] != 1
 
 
-	component.background.add_to_frame(img, np_img, frame_info.cur_time, in_break)
-	component.scorebarbg.add_to_frame(img, frame_info.cur_time, in_break)
-	component.timepie.add_to_frame(np_img, img, frame_info.cur_time, component.scorebarbg.h, component.scorebarbg.alpha, in_break)
-	component.scorebar.add_to_frame(img, frame_info.cur_time, in_break)
-	component.arrowwarning.add_to_frame(img, frame_info.cur_time)
-	component.inputoverlayBG.add_to_frame(img, Settings.width - component.inputoverlayBG.w() // 2, int(320 * Settings.scale))
-	component.urbar.add_to_frame_bar(img)
-	component.key1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(350 * Settings.scale))
-	component.key2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(398 * Settings.scale))
-	component.mouse1.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(446 * Settings.scale))
-	component.mouse2.add_to_frame(img, Settings.width - int(24 * Settings.scale), int(492 * Settings.scale))
-	component.followpoints.add_to_frame(img, frame_info.cur_time)
-	component.hitobjmanager.add_to_frame(img, np_img)
-	component.hitresult.add_to_frame(img)
-	component.spinbonus.add_to_frame(img)
-	component.combocounter.add_to_frame(img, in_break)
-	component.scorecounter.add_to_frame(img, cursor_event.event[Replays.TIMES], in_break)
-	component.accuracy.add_to_frame(img, in_break)
-	component.urbar.add_to_frame(img)
-	component.cursor_trail.add_to_frame(img, cursor_x, cursor_y, cursor_event.event[Replays.TIMES])
-	component.cursor.add_to_frame(img, cursor_x, cursor_y)
-	component.cursormiddle.add_to_frame(img, cursor_x, cursor_y)
-	component.sections.add_to_frame(img)
-	component.scoreboard.add_to_frame(np_img, img, in_break)
+	def initialiseranking(self):
+		self.component.rankingpanel.start_show()
+		self.component.rankinghitresults.start_show()
+		self.component.rankingtitle.start_show()
+		self.component.rankingcombo.start_show()
+		self.component.rankingaccuracy.start_show()
+		self.component.rankinggrade.start_show()
+		self.component.menuback.start_show()
+		self.component.modicons.start_show()
+		self.component.rankingreplay.start_show()
+		self.component.rankinggraph.start_show()
+
+	def draw_rankingpanel(self):
+		if not self.initialised_ranking:
+			self.initialiseranking()
+			self.initialised_ranking = True
+
+		self.component.rankingpanel.add_to_frame(self.pbuffer)
+		self.component.rankinghitresults.add_to_frame(self.pbuffer)
+		self.component.rankingtitle.add_to_frame(self.pbuffer, self.np_img)
+		self.component.rankingcombo.add_to_frame(self.pbuffer)
+		self.component.rankingaccuracy.add_to_frame(self.pbuffer)
+		self.component.rankinggrade.add_to_frame(self.pbuffer)
+		self.component.menuback.add_to_frame(self.pbuffer)
+		self.component.modicons.add_to_frame(self.pbuffer)
+		self.component.rankingreplay.add_to_frame(self.pbuffer)
+		self.component.rankinggraph.add_to_frame(self.pbuffer)
 
 
-	frame_info.cur_time += Settings.timeframe / Settings.fps
-
-
-	# choose correct osr index for the current time because in osr file there might be some lag
-	tt = nearer(frame_info.cur_time, replay_event, frame_info.osr_index)
-	if tt == 0:
-		cursor_event.event = smoothcursor(replay_event, frame_info.osr_index, cursor_event)
-	else:
-		frame_info.osr_index += tt
-		cursor_event.event = replay_event[frame_info.osr_index]
-	return img.size[0] != 1
-
-
-def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, resultinfo, start_index, end_index, hd, settings, paths, skinpaths, gameplaysettings, showranking):
+def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	asdfasdf = time.time()
 	print("process start")
 
-	setup_global(settings, paths, skinpaths, gameplaysettings)
-
-	component, cursor_event, frame_info, img, np_img, pbuffer, preempt_followpoint, time_preempt, updater = setup_draw(
-		beatmap, frames, replay_event, replay_info, resultinfo, shared, skin, start_index, hd)
+	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
 	print("setup done")
 	timer = 0
 	timer2 = 0
 	timer3 = 0
-	while frame_info.osr_index < end_index:
-		asdf = time.time()
-		status = render_draw(beatmap, component, cursor_event, frame_info, img, np_img, pbuffer,
-		                     preempt_followpoint, replay_event, start_index, time_preempt, updater)
-		timer += time.time() - asdf
-
+	while drawer.frame_info.osr_index < videotime[1]:
+		status = drawer.render_draw()
 		asdf = time.time()
 		if status:
 			conn.send(1)
@@ -94,32 +172,10 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, r
 			asdf = time.time()
 			i = conn.recv()
 			timer2 += time.time() - asdf
-		# print("unlocked", timer2)
 
 	if showranking:
-		component.rankingpanel.start_show()
-		component.rankinghitresults.start_show()
-		component.rankingtitle.start_show()
-		component.rankingcombo.start_show()
-		component.rankingaccuracy.start_show()
-		component.rankinggrade.start_show()
-		component.menuback.start_show()
-		component.modicons.start_show()
-		component.rankingreplay.start_show()
-		component.rankinggraph.start_show()
-		for x in range(int(5 * Settings.fps)):
-			# np_img.fill(0)
-			component.rankingpanel.add_to_frame(pbuffer)
-			component.rankinghitresults.add_to_frame(pbuffer)
-			component.rankingtitle.add_to_frame(pbuffer, np_img)
-			component.rankingcombo.add_to_frame(pbuffer)
-			component.rankingaccuracy.add_to_frame(pbuffer)
-			component.rankinggrade.add_to_frame(pbuffer)
-			component.menuback.add_to_frame(pbuffer)
-			component.modicons.add_to_frame(pbuffer)
-			component.rankingreplay.add_to_frame(pbuffer)
-			component.rankinggraph.add_to_frame(pbuffer)
-
+		for x in range(int(5 * settings.fps)):
+			drawer.draw_rankingpanel()
 			conn.send(1)
 			i = conn.recv()
 
@@ -129,7 +185,3 @@ def draw_frame(shared, conn, beatmap, frames, skin, replay_event, replay_info, r
 	print("Total time:", time.time() - asdfasdf)
 	print("Waiting time:", timer2)
 	print("Changing value time:", timer3)
-
-
-def draw_rankingpanel():
-	pass

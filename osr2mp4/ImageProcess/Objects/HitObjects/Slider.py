@@ -8,7 +8,6 @@ from ...Curves.generate_slider import GenerateSlider
 from ...Curves.curve2 import *
 
 from ...PrepareFrames.HitObjects.Circles import calculate_ar
-from ....global_var import Settings, GameplaySettings
 
 Slider = recordclass("Slider", "image x y cur_duration opacity sliderf_i sliderb_i cur_repeated appear_f tick_a arrow_i prev_pos osu_d")
 
@@ -20,7 +19,10 @@ def almost_equal(pos1, pos2, places=0):
 
 
 class SliderManager:
-	def __init__(self, frames, diff, skin, hd):
+	def __init__(self, frames, diff, settings, hd):
+		
+		self.settings = settings
+		
 		self.reversearrow, self.sliderfollow, self.sliderfollow_fadeout, self.slidertick, self.sliderb_frames = frames
 		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
 
@@ -31,16 +33,16 @@ class SliderManager:
 
 		self.cs = (54.4 - 4.48 * diff["CircleSize"])
 
-		self.sliderborder = skin.colours["SliderBorder"]
-		self.slideroverride = skin.colours["SliderTrackOverride"]
-		self.flip = skin.general["SliderBallFlip"]
-		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, Settings.playfieldscale)
+		self.sliderborder = self.settings.skin_ini.colours["SliderBorder"]
+		self.slideroverride = self.settings.skin_ini.colours["SliderTrackOverride"]
+		self.flip = self.settings.skin_ini.general["SliderBallFlip"]
+		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, self.settings.playfieldscale)
 
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
 
-		self.interval = Settings.timeframe / Settings.fps
-		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar)
+		self.interval = self.settings.timeframe / self.settings.fps
+		self.opacity_interval, self.time_preempt, _ = calculate_ar(self.ar, self.settings)
 		self.timer = 0
 
 		self.hd = hd
@@ -111,8 +113,8 @@ class SliderManager:
 		background.paste(img, (x_offset, y_offset), a)
 
 	def to_frame(self, img, background, pos, slider, alpha=1.0):
-		x = int((pos[0] + slider.osu_d["stacking"]) * Settings.playfieldscale) + Settings.moveright
-		y = int((pos[1] + slider.osu_d["stacking"]) * Settings.playfieldscale) + Settings.movedown
+		x = int((pos[0] + slider.osu_d["stacking"]) * self.settings.playfieldscale) + self.settings.moveright
+		y = int((pos[1] + slider.osu_d["stacking"]) * self.settings.playfieldscale) + self.settings.movedown
 
 		imageproc.add(img, background, x, y, alpha=alpha)
 
@@ -120,7 +122,7 @@ class SliderManager:
 		color = slider.osu_d["combo_color"] - 1
 		index = int(slider.sliderf_i)
 		slider.sliderb_i = (slider.sliderb_i + 1) % len(self.sliderb_frames[color])
-		if GameplaySettings.settings["Rotate sliderball"]:
+		if self.settings.settings["Rotate sliderball"]:
 			vector_x1, vector_y1 = cur_pos[0] - slider.prev_pos[0], cur_pos[1] - slider.prev_pos[1]
 
 			if slider.cur_repeated % 2 == 0 and self.flip:
@@ -213,8 +215,3 @@ class SliderManager:
 		if slider.cur_repeated < slider.osu_d["repeated"]:
 			self.draw_arrow(slider, background, going_forward, i)
 
-		# slider.osu_d["baiser"].update(t, dist)
-		#
-		# print(t, pos, dist, going_forward, delta_time, slider.osu_d["duration"], slider.cur_duration)
-		# cv2.putText(_, str(t) + " " + str(pos) + " " + str(dist), (100, 150),
-	    #         cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255, 255), 1)

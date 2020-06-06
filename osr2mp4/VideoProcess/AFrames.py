@@ -1,3 +1,6 @@
+from osrparse.enums import Mod
+
+from ..CheckSystem.Judgement import DiffCalculator
 from ..ImageProcess.Objects.RankingScreens.Menuback import Menuback
 from ..ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
 from ..ImageProcess.Objects.RankingScreens.RankingAccuracy import RankingAccuracy
@@ -63,114 +66,118 @@ from ..ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounte
 from ..ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
 from ..ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
-from ..global_var import Settings, Paths, GameplaySettings
 
 
 class PreparedFrames:
-	def __init__(self, skin, check, beatmap, hd):
-		if GameplaySettings.settings["Automatic cursor size"]:
+	def __init__(self, settings, beatmap, hd):
+		skin = settings.skin_ini
+		check = DiffCalculator(beatmap.diff)
+		if settings.settings["Automatic cursor size"]:
 			circlescale = 4/beatmap.diff["CircleSize"]
-			GameplaySettings.settings["Cursor size"] *= circlescale
-		self.cursor, default = prepare_cursor(Settings.scale * GameplaySettings.settings["Cursor size"])
-		self.cursormiddle, self.continuous = prepare_cursormiddle(Settings.scale * GameplaySettings.settings["Cursor size"], default)
-		self.cursor_trail = prepare_cursortrail(Settings.scale * GameplaySettings.settings["Cursor size"], self.continuous)
+			settings.settings["Cursor size"] *= circlescale
+		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
+		self.cursormiddle, self.continuous = prepare_cursormiddle(settings.scale * settings.settings["Cursor size"], settings, default)
+		self.cursor_trail = prepare_cursortrail(settings.scale * settings.settings["Cursor size"], self.continuous, settings)
 
-		self.scoreentry = prepare_scoreentry(Settings.scale, skin.colours["InputOverlayText"])
-		self.inputoverlayBG = prepare_inputoverlaybg(Settings.scale)
-		self.key = prepare_inputoverlay(Settings.scale, [255, 220, 20], 2)
-		self.mouse = prepare_inputoverlay(Settings.scale, [220, 0, 220], 1)
+		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"], settings)
+		self.inputoverlayBG = prepare_inputoverlaybg(settings.scale, settings)
+		self.key = prepare_inputoverlay(settings.scale, [255, 220, 20], 2, settings)
+		self.mouse = prepare_inputoverlay(settings.scale, [220, 0, 220], 1, settings)
 
-		self.scorenumbers = ScoreNumbers(Settings.scale)
-		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, Settings.playfieldscale)
+		self.scorenumbers = ScoreNumbers(settings.scale, settings)
+		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, settings.playfieldscale, settings)
 
 		self.accuracy = prepare_accuracy(self.scorenumbers)
-		self.combocounter = prepare_combo(self.scorenumbers)
-		self.hitresult = prepare_hitresults(Settings.scale, beatmap)
+		self.combocounter = prepare_combo(self.scorenumbers, settings)
+		self.hitresult = prepare_hitresults(settings.scale, beatmap, settings)
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 
-		self.urbar = prepare_bar(Settings.scale * GameplaySettings.settings["Score meter size"], check.scorewindow)
+		self.urbar = prepare_bar(settings.scale * settings.settings["Score meter size"], check.scorewindow)
 
-		self.fpmanager = prepare_fpmanager(Settings.playfieldscale)
+		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
 
-		self.circle = prepare_circle(beatmap, Settings.playfieldscale, skin, hd)
-		self.slider = prepare_slider(beatmap.diff, Settings.playfieldscale, skin)
-		self.spinner = prepare_spinner(Settings.playfieldscale)
+		self.circle = prepare_circle(beatmap, settings.playfieldscale, settings, hd)
+		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, settings)
+		self.spinner = prepare_spinner(settings.playfieldscale, settings)
 
-		self.bg = prepare_background(Paths.beatmap + beatmap.bg[2])
+		self.bg = prepare_background(settings.beatmap + beatmap.bg[2], settings)
 
-		self.sections = prepare_sections(Settings.scale)
-		self.scorebarbg = prepare_scorebarbg(Settings.scale, self.bg)
-		self.scorebar = prepare_scorebar(Settings.scale)
-		self.arrowwarning = prepare_arrowwarning(Settings.scale)
+		self.sections = prepare_sections(settings.scale, settings)
+		self.scorebarbg = prepare_scorebarbg(settings.scale, self.bg, settings)
+		self.scorebar = prepare_scorebar(settings.scale, settings)
+		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
-		self.scoreboardscore = prepare_scoreboardscore(Settings.scale)
-		self.scoreboard = prepare_scoreboard(Settings.scale)
-		self.scoreboardeffect = prepare_scoreboardeffect(Settings.scale)
+		self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
+		self.scoreboard = prepare_scoreboard(settings.scale, settings)
+		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
 
-		self.rankingpanel = prepare_rankingpanel(Settings.scale, self.bg)
-		self.rankinghitresults = prepare_rankinghitresults(Settings.scale)
+		self.rankingpanel = prepare_rankingpanel(settings.scale, self.bg, settings)
+		self.rankinghitresults = prepare_rankinghitresults(settings.scale, settings)
 		self.rankingscore = prepare_rankingscorecounter(self.scorenumbers)
-		self.rankinggrades = prepare_rankinggrade(Settings.scale)
-		self.rankingtitle = prepare_rankingtitle(Settings.scale)
-		self.rankingcombo = prepare_rankingcombo(Settings.scale)
-		self.rankingaccuracy = prepare_rankingaccuracy(Settings.scale)
-		self.menuback = prepare_menuback(Settings.scale)
-		self.modicons = prepare_modicons(Settings.scale)
-		self.rankingreplay = prepare_rankingreplay(Settings.scale)
-		self.rankinggraph = prepare_rankinggraph(Settings.scale)
+		self.rankinggrades = prepare_rankinggrade(settings.scale, settings)
+		self.rankingtitle = prepare_rankingtitle(settings.scale, settings)
+		self.rankingcombo = prepare_rankingcombo(settings.scale, settings)
+		self.rankingaccuracy = prepare_rankingaccuracy(settings.scale, settings)
+		self.menuback = prepare_menuback(settings.scale, settings)
+		self.modicons = prepare_modicons(settings.scale, settings)
+		self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
+		self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
 
 
 class FrameObjects:
-	def __init__(self, frames, skin, beatmap, replay_info, check, hd):
-		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"])
+	def __init__(self, frames, settings, beatmap, replay_info):
+		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)
+		check = DiffCalculator(beatmap.diff)
 		rankinggap = 0
+		skin = settings.skin_ini
+		hd = Mod.Hidden in replay_info.mod_combination
 
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
-		self.cursor_trail = Cursortrail(frames.cursor_trail, frames.continuous)
+		self.cursor_trail = Cursortrail(frames.cursor_trail, frames.continuous, settings)
 		# self.lifegraph = LifeGraph(skin_path + "scorebarbg-colour")
 
-		self.scoreentry = ScoreEntry(frames.scoreentry)
+		self.scoreentry = ScoreEntry(frames.scoreentry, settings)
 
-		self.inputoverlayBG = InputOverlayBG(frames.inputoverlayBG)
-		self.key1 = InputOverlay(frames.key, self.scoreentry)
-		self.key2 = InputOverlay(frames.key, self.scoreentry)
-		self.mouse1 = InputOverlay(frames.mouse, self.scoreentry)
-		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry)
+		self.inputoverlayBG = InputOverlayBG(frames.inputoverlayBG, settings=settings)
+		self.key1 = InputOverlay(frames.key, self.scoreentry, settings)
+		self.key2 = InputOverlay(frames.key, self.scoreentry, settings)
+		self.mouse1 = InputOverlay(frames.mouse, self.scoreentry, settings)
+		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry, settings)
 
-		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"])
-		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg)
-		self.hitresult = HitResult(frames.hitresult)
-		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"])
-		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"])
-		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"])
+		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
+		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)
+		self.hitresult = HitResult(frames.hitresult, settings)
+		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
+		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
+		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)
 
-		self.urbar = URBar(frames.urbar)
+		self.urbar = URBar(frames.urbar, settings)
 
-		self.followpoints = FollowPointsManager(frames.fpmanager)
+		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
-		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber)
-		self.slider = SliderManager(frames.slider, beatmap.diff, skin, hd)
-		self.spinner = SpinnerManager(frames.spinner)
-		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2])
+		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
+		self.slider = SliderManager(frames.slider, beatmap.diff, settings, hd)
+		self.spinner = SpinnerManager(frames.spinner, settings)
+		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
-		self.background = Background(frames.bg, beatmap.start_time - timepreempt)
-		self.sections = Sections(frames.sections)
-		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt)
-		self.scorebar = Scorebar(frames.scorebar, beatmap)
-		self.arrowwarning = ArrowWarning(frames.arrowwarning)
+		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings)
+		self.sections = Sections(frames.sections, settings)
+		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt, settings)
+		self.scorebar = Scorebar(frames.scorebar, beatmap, settings)
+		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, beatmap)
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, beatmap, settings)
 
-		self.rankingpanel = RankingPanel(frames.rankingpanel)
-		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap)
-		self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, beatmap)
-		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, rankinggap)
-		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, rankinggap)
-		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, rankinggap)
-		self.menuback = Menuback(frames.menuback, skin)
-		self.modicons = ModIcons(frames.modicons, replay_info)
-		self.rankingreplay = RankingReplay(frames.rankingreplay)
-		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info)
+		self.rankingpanel = RankingPanel(frames.rankingpanel, settings)
+		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap, settings)
+		self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, beatmap, settings)
+		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, rankinggap, settings)
+		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, rankinggap, settings)
+		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, rankinggap, settings)
+		self.menuback = Menuback(frames.menuback, settings)
+		self.modicons = ModIcons(frames.modicons, replay_info, settings)
+		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
+		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)

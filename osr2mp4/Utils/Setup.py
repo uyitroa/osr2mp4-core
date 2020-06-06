@@ -2,15 +2,14 @@ from osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
 from ..Utils.Resolution import get_screensize
-from ..global_var import Settings, Paths, SkinPaths, GameplaySettings
 
 
-def setupglobals(data, gameplaydata, replay_info):
+def setupglobals(data, gameplaydata, replay_info, settings):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
 	output_path = data.get("Output path", "output.avi")
 	ffmpeg = data.get("ffmpeg path", "ffmpeg")
-	default_path = Paths.path + "res/default/"
+	default_path = settings.path + "res/default/"
 	fps = data.get("FPS", 60)
 	width = data.get("Width", 1920)
 	height = data.get("Height", 1080)
@@ -34,23 +33,23 @@ def setupglobals(data, gameplaydata, replay_info):
 
 
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
-	Settings.width, Settings.height, Settings.scale = width, height, scale
-	Settings.playfieldscale, Settings.playfieldwidth, Settings.playfieldheight = playfield_scale, playfield_width, playfield_height
-	Settings.fps, Settings.timeframe = fps, time_frame
-	Settings.moveright, Settings.movedown = move_right, move_down
+	settings.width, settings.height, settings.scale = width, height, scale
+	settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight = playfield_scale, playfield_width, playfield_height
+	settings.fps, settings.timeframe = fps, time_frame
+	settings.moveright, settings.movedown = move_right, move_down
 
-	Paths.output = output_path
-	Paths.ffmpeg = ffmpeg
-	Paths.beatmap = beatmap_path
-	Paths.osu = osupath
+	settings.output = output_path
+	settings.ffmpeg = ffmpeg
+	settings.beatmap = beatmap_path
+	settings.osu = osupath
 
 
 	skin = Skin(skin_path, default_path)
-	defaultskin = Skin(default_path, default_path)
+	# defaultskin = Skin(default_path, default_path)
 
-	SkinPaths.path = skin_path
-	SkinPaths.default_path = default_path
-	SkinPaths.skin_ini = skin
-	SkinPaths.default_skin_ini = skin
+	settings.skin_path = skin_path
+	settings.default_path = default_path
+	settings.skin_ini = skin
+	settings.default_skin_ini = skin
 
-	GameplaySettings.settings = gameplaydata
+	settings.settings = gameplaydata

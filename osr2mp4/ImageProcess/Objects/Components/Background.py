@@ -1,17 +1,16 @@
 from ... import imageproc
 from ..FrameObject import FrameObject
-from ....global_var import Settings, GameplaySettings
 
 
 class Background(FrameObject):
-	def __init__(self, bg, start_time):
-		super().__init__(bg)
+	def __init__(self, bg, start_time, settings):
+		super().__init__(bg, settings=settings)
 		self.start_time = 0
 		self.map_start = start_time
 		self.starting = False
 		self.end_time = 0
 		self.fade_time = 650
-		self.interval = len(self.frames) / (self.fade_time * Settings.fps / 1000)
+		self.interval = len(self.frames) / (self.fade_time * self.settings.fps / 1000)
 		self.step = 0
 		self.fadeout = False
 
@@ -41,18 +40,18 @@ class Background(FrameObject):
 		self.frame_index = max(0, min(len(self.frames) - 1, self.frame_index + self.step))
 
 		if self.start_time < cur_time < self.end_time:
-			self.step = self.interval * 60/Settings.fps
+			self.step = self.interval * 60/self.settings.fps
 		if (cur_time > self.end_time - 500 and int(self.frame_index) >= len(self.frames) - 1) or self.fadeout:
 			self.fadeout = True
-			self.step = -self.interval * 60/Settings.fps
+			self.step = -self.interval * 60/self.settings.fps
 
 		if int(self.frame_index) <= 0:
-			if inbreak or cur_time < self.map_start or not GameplaySettings.settings["In-game interface"]:
-				if GameplaySettings.settings["Background dim"] == 100:
+			if inbreak or cur_time < self.map_start or not self.settings.settings["In-game interface"]:
+				if self.settings.settings["Background dim"] == 100:
 					np.fill(0)
 				else:
-					# imageproc.add(self.frames[1], background, Settings.width//2, Settings.height//2)
+					# imageproc.add(self.frames[1], background, self.settings.width//2, self.settings.height//2)
 					background.paste(self.frames[1], (0, 0))
 			return
 
-		super().add_to_frame(background, Settings.width//2, Settings.height//2)
+		super().add_to_frame(background, self.settings.width//2, self.settings.height//2)

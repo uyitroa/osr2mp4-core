@@ -1,6 +1,5 @@
-from PIL import ImageDraw, Image
+from PIL import Image
 
-from ....global_var import Paths
 from ....EEnum.EImageFrom import ImageFrom
 from ... import imageproc
 from ...PrepareFrames.YImage import YImage
@@ -9,8 +8,9 @@ from ...PrepareFrames.YImage import YImage
 scoreentry = "scoreentry-"
 
 
-def prepare_scoreboardscore(scale):
+def prepare_scoreboardscore(scale, settings):
 	"""
+	:param settings:
 	:param path: string of path, without filename
 	:param scale: float
 	:param color: tuple(R, G, B)
@@ -25,10 +25,10 @@ def prepare_scoreboardscore(scale):
 			x = "x"
 		if x == 11:
 			x = "dot"
-		number = YImage(scoreentry + str(x), scale)
+		number = YImage(scoreentry + str(x), settings, scale)
 
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open(Paths.path + "res/" + scoreentry + str(x) + "@2x.png")
+			img = Image.open(settings.path + "res/" + scoreentry + str(x) + "@2x.png")
 			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img

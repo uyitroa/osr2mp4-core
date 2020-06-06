@@ -1,10 +1,9 @@
 from ..FrameObject import FrameObject
-from ....global_var import Settings
 
 
 class AScorebar(FrameObject):
-	def __init__(self, frames):
-		super().__init__(frames)
+	def __init__(self, frames, settings):
+		super().__init__(frames, settings=settings)
 		self.scrolltime = 100
 		self.s = 0
 		self.scrolling = False
@@ -22,15 +21,15 @@ class AScorebar(FrameObject):
 		self.scrolling = True
 		self.breakk = breakk["Start"]
 		self.duration = duration - 100
-		self.interval = 1000/Settings.fps
-		self.direction = 0.5 * 60/Settings.fps
+		self.interval = 1000/self.settings.fps
+		self.direction = 0.5 * 60/self.settings.fps
 
 	def animate(self):
 
 		self.duration -= self.interval
 
 		if self.duration < 0:
-			self.direction = -0.5 * 60/Settings.fps
+			self.direction = -0.5 * 60/self.settings.fps
 			self.scrolling = True
 			self.duration = 0
 			self.interval = 0
@@ -38,9 +37,9 @@ class AScorebar(FrameObject):
 		# print(self.duration, self.scrolling, alpha, self.s)
 
 		if self.scrolling:
-			self.s += 1000/Settings.fps * self.direction
+			self.s += 1000/self.settings.fps * self.direction
 			self.alpha = min(1.0, max(0.0, 1 - self.s/self.scrolltime))
-			self.h = int(self.s * Settings.fps/1000 * 5)
+			self.h = int(self.s * self.settings.fps/1000 * 5)
 
 			if self.alpha == 0 or self.alpha == 1:
 				self.scrolling = False

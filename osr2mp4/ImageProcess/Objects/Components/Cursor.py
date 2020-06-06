@@ -5,7 +5,6 @@ from PIL import Image
 
 from ... import imageproc
 from ..FrameObject import FrameObject
-from ....global_var import Settings
 
 
 class Cursor(FrameObject):
@@ -14,17 +13,17 @@ class Cursor(FrameObject):
 
 class Cursortrail(FrameObject):
 	# todo: cursormiddle
-	def __init__(self, trail_frames, continuous):
-		super().__init__(trail_frames)
+	def __init__(self, trail_frames, continuous, settings):
+		super().__init__(trail_frames, settings=settings)
 		self.continuous = continuous
-		self.radius = Settings.scale * 3
+		self.radius = self.settings.scale * 3
 		self.alphas = []  # for continuous trail
-		self.updatetime = Settings.timeframe/Settings.fps/2
+		self.updatetime = self.settings.timeframe/self.settings.fps/2
 		self.oldtime = 0
 		if self.continuous:
 			self.frame_index = len(self.frames) - 2
 			self.trail = (0, 0)
-			self.blank = Image.new("RGBA", (Settings.width, Settings.height))
+			self.blank = Image.new("RGBA", (self.settings.width, self.settings.height))
 		else:
 			self.trail = [[0, 0]] * len(self.frames)
 		self.timer = 0
@@ -104,5 +103,5 @@ class Cursortrail(FrameObject):
 			# 	imageproc.add(self.frames[self.frame_index], self.blank, int(x), int(y))
 
 			self.trail = (x, y)
-			imageproc.add(self.blank, background, Settings.width//2, Settings.height//2)
+			imageproc.add(self.blank, background, self.settings.width//2, self.settings.height//2)
 			imageproc.changealpha(self.blank, 0.92)

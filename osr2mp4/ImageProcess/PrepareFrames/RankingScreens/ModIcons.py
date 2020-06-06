@@ -5,7 +5,7 @@ from ...PrepareFrames.YImage import YImage
 selectionmod = "selection-mod-"
 
 
-def prepare_modicons(scale):
+def prepare_modicons(scale, settings):
 	modnames = {
 		Mod.Perfect: "perfect",
 		Mod.Autopilot: "pilot",
@@ -26,6 +26,6 @@ def prepare_modicons(scale):
 
 	for mod in modnames:
 		filename = selectionmod + modnames[mod]
-		modframes[mod] = YImage(filename, scale).img
+		modframes[mod] = YImage(filename, settings, scale).img
 
 	return modframes

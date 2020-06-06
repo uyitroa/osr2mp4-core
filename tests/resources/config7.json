@@ -1,0 +1,16 @@
+{
+  "osu! path": "/Users/yuitora./pythonstuff/data",
+  "Skin path": "/Users/yuitora./Downloads/shige copy",
+  "Beatmap path": "/Users/yuitora./Downloads/syunn",
+  ".osr path": "/Users/yuitora./Downloads/rustbell.osr",
+  "Output path": "output.mkv",
+  "Width": 1278,
+  "Height": 720,
+  "FPS": 30,
+  "Start time": 103,
+  "End time": 110,
+  "Video codec": "XVID",
+  "Process": 0,
+  "ffmpeg path": "ffmpeg"
+}
+
