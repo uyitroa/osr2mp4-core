@@ -1,7 +1,7 @@
 # Installing
 ```
 cd src/
-python setup.py
+python install.py
 ```
 
 
