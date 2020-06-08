@@ -278,7 +278,7 @@ class Scoreboard(FrameObject):
 
 	def getrange(self):
 		if self.currank < self.nboard - 1:
-			return 0, 6
+			return 0, min(6, self.nboard)
 		return self.currank - 4, self.currank
 
 	def setranktoanimate(self, prevrank=None):
