@@ -2,6 +2,7 @@ import math
 
 from osrparse.enums import Mod
 
+from ..EEnum.EReplay import Replays
 from .Health import HealthProcessor, HealthDummy
 from .Judgement import Check
 from collections import namedtuple
@@ -178,6 +179,8 @@ class HitObjectChecker:
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend, updatefollow = self.check.checkslider(
 			i, replay, osr_index)
 
+		notelock = replay[osr_index][Replays.TIMES] < min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow)
+
 		if combostatus > 0:
 			self.combo += combostatus
 		if combostatus == -1:
@@ -227,7 +230,7 @@ class HitObjectChecker:
 			            self.health_processor.health_value, self.maxcombo, slider)
 			self.info.append(info)
 
-		return i
+		return notelock, i
 
 	def checkspinner(self, i, replay, osr_index):
 		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay, osr_index)
@@ -282,7 +285,7 @@ class HitObjectChecker:
 			elif "slider" in self.hitobjects[i]["type"]:
 				if self.hitobjects[i]["head not done"]:
 					note_lock, sum_newclick, i = self.checkcircle(note_lock, i, replay, osr_index, sum_newclick)
-				i = self.checkslider(i, replay, osr_index)
+				note_lock, i = self.checkslider(i, replay, osr_index)
 
 			elif "spinner" in self.hitobjects[i]["type"]:
 				i = self.checkspinner(i, replay, osr_index)

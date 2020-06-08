@@ -79,10 +79,12 @@ class Check:
 			                                    "dist": self.diff.max_distance, "last osr index": -1, "tickend": 0,
 			                                    "combo": combo}
 
-		if Mod.Relax in self.mods and time_difference >= -11:  # relax hit note early source: https://osu.ppy.sh/community/forums/topics/122411
-			clicked = True
-			self.rxclick = True
-			self.rxclickosr = osrindex
+		if Mod.Relax in self.mods:
+			clicked = False  # disable key press
+			if time_difference >= -11:  # relax hit note early source: https://osu.ppy.sh/community/forums/topics/122411
+				clicked = True
+				self.rxclick = True
+				self.rxclickosr = osrindex
 
 		if dist <= self.diff.max_distance and clicked:
 			update_hitobj = True
