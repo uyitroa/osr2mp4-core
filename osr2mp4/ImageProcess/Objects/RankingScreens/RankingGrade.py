@@ -1,4 +1,5 @@
 from PIL import Image
+from osrparse.enums import Mod
 
 from ....EEnum.EGrade import Grade
 from ... import imageproc
@@ -20,8 +21,8 @@ class RankingGrade(ARankingScreen):
 		# Over 90% 300s, less than 1% 50s and no misses
 		p50 = replayinfo.number_50s/total
 		self.playergrade -= int(self.playergrade == 9 and p50 >= 0.01)
-
-		self.gradeframe = gradeframes[self.grades[self.playergrade]]
+		hd = int(Mod.Hidden in replayinfo.mod_combination)
+		self.gradeframe = gradeframes[hd][self.grades[self.playergrade]]
 		self.gap = int(gap * self.settings.scale * 0.75)
 
 
