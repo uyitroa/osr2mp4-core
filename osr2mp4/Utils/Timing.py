@@ -27,12 +27,14 @@ def find_time(starttime, endtime, replay, settings):
 
 	starttime *= settings.timeframe
 	starttime += replay[0][Replays.TIMES]
-	# starttime += replay_start
+	starttime = min(starttime, replay[-15][Replays.TIMES])
 
 	if endtime != -1:
 		endtime *= settings.timeframe
 		# endtime += replay_start
 		endtime += replay[0][Replays.TIMES]
+
+		endtime = max(endtime, starttime - 900)
 
 	startindex = None
 
@@ -43,7 +45,6 @@ def find_time(starttime, endtime, replay, settings):
 	if endtime == -1:
 		endindex = len(replay) - 3
 
-	starttime = min(starttime, replay[-15][Replays.TIMES])
 	for index, x in enumerate(replay[:-3]):
 		if x[3] >= starttime and startindex is None:
 			startindex = index
