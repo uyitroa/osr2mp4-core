@@ -148,7 +148,7 @@ class FrameObjects:
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
 		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)
-		self.hitresult = HitResult(frames.hitresult, settings)
+		self.hitresult = HitResult(frames.hitresult, settings, replay_info.mod_combination)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
 		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)

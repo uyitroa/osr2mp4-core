@@ -4,6 +4,8 @@ import subprocess
 import time
 from copy import deepcopy
 from multiprocessing import Process
+
+from osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
 import numpy as np
@@ -146,7 +148,10 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, offset, endtime, dt, settings):
+def processaudio(my_info, beatmap, offset, endtime, mods, settings):
+
+	dt = Mod.DoubleTime in mods
+	addmisssound = not (Mod.Relax in mods or Mod.Autopilot in mods)
 
 	skin_path = settings.skin_path
 	default_skinpath = settings.default_path
@@ -160,6 +165,9 @@ def processaudio(my_info, beatmap, offset, endtime, dt, settings):
 
 	filenames = getfilenames(beatmap, settings.settings["Ignore beatmap hitsounds"])
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)
+
+	if not addmisssound:
+		Hitsound.miss = Audio2p(1, np.zeros((0, 2), dtype=np.float32))
 
 	hitsoundm = HitsoundManager(beatmap)
 
@@ -180,14 +188,14 @@ def processaudio(my_info, beatmap, offset, endtime, dt, settings):
 
 
 
-def create_audio(my_info, beatmap_info, offset, endtime, settings, dt):
+def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):
 	beatmap_info = deepcopy(beatmap_info)
 
 	if settings.process >= 1:
-		audio_args = (my_info, beatmap_info, offset, endtime, dt, settings,)
+		audio_args = (my_info, beatmap_info, offset, endtime, mods, settings,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, offset, endtime, dt, settings)
+		processaudio(my_info, beatmap_info, offset, endtime, mods, settings)
 		return None

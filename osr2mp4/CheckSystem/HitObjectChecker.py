@@ -1,5 +1,7 @@
 import math
 
+from osrparse.enums import Mod
+
 from .Health import HealthProcessor, HealthDummy
 from .Judgement import Check
 from collections import namedtuple
@@ -27,8 +29,18 @@ def difficulty_multiplier(diff):
 	return 6
 
 
+def getmultiplier(mods):
+	multiplier = {Mod.Easy: 0.5, Mod.NoFail: 0.5, Mod.HalfTime: 0.3,
+	              Mod.HardRock: 1.06, Mod.SuddenDeath: 1, Mod.Perfect: 1, Mod.DoubleTime: 1.12, Mod.Nightcore: 1.12, Mod.Hidden: 1.06, Mod.Flashlight: 1.12,
+	              Mod.Relax: 0, Mod.Autopilot: 0, Mod.SpunOut: 0.9, Mod.Autoplay: 1, Mod.NoMod: 1}
+	result = 1
+	for m in mods:
+		result *= multiplier[m]
+	return result
+
+
 class HitObjectChecker:
-	def __init__(self, beatmap, settings, mod=1, tests=False):
+	def __init__(self, beatmap, settings, mods, tests=False):
 		self.diff = beatmap.diff
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
@@ -48,13 +60,14 @@ class HitObjectChecker:
 		self.SLIDER = 1
 		self.SPINNER = 2
 
-		self.check = Check(beatmap.diff, self.hitobjects)
+		self.check = Check(beatmap.diff, self.hitobjects, mods)
 		print(self.diff["CircleSize"], self.diff["ApproachRate"], self.diff["OverallDifficulty"],
 		      self.diff["HPDrainRate"])
 		self.scorecounter = 0
 		self.combo = 0
 		self.maxcombo = 0
-		self.mod = mod
+		self.mods = mods
+		self.mod_multiplier = getmultiplier(mods)
 		self.results = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.clicks = [0, 0, 0, 0]
 
@@ -77,7 +90,7 @@ class HitObjectChecker:
 			if combo is None:
 				combo = self.combo - 2
 			combo = max(0, combo)
-			self.scorecounter += int(hitresult + (hitresult * ((combo * self.diff_multiplier * self.mod) / 25)))
+			self.scorecounter += int(hitresult + (hitresult * ((combo * self.diff_multiplier * self.mod_multiplier) / 25)))
 		else:
 			self.scorecounter += int(hitresult)
 			if hitresult == 0:
@@ -103,6 +116,9 @@ class HitObjectChecker:
 					            timestamp, idd, self.health_processor.health_value, self.maxcombo, circle)
 					self.info.append(info)
 					return note_lock, sum_newclick, i
+
+			if hitresult is None:
+				return note_lock, sum_newclick, i
 
 			if hitresult > 0:
 				self.combo += 1
@@ -214,16 +230,15 @@ class HitObjectChecker:
 		return i
 
 	def checkspinner(self, i, replay, osr_index):
-		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay[osr_index])
+		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay, osr_index)
 		combostatus = 0
 		idd = self.hitobjects[i]["id"]
 		timestamp = self.hitobjects[i]["time"]
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
 			if hitresult is not None:
-				hitresult = 300
-				self.results[hitresult] += 1
 
+				self.results[hitresult] += 1
 				if hitresult > 0:
 					self.combo += 1
 					combostatus = 1
