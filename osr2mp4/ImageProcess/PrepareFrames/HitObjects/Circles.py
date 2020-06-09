@@ -148,6 +148,7 @@ def prepare_circle(beatmap, scale, settings, hd):
 			alphas.append(alpha)
 
 		else:
+			# source: https://github.com/ppy/osu/blob/4cb57f8205edf5ed7b7da076325ba76ec9cc3039/osu.Game.Rulesets.Osu/Mods/OsuModHidden.cs#L23
 			interval = int(settings.timeframe / settings.fps)
 			fade_in = time_preempt * 0.4
 			fade_in_interval = 100 * interval/fade_in

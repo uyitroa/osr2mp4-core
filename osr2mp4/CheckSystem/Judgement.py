@@ -9,21 +9,27 @@ class DiffCalculator:
 	def __init__(self, diff):
 		self.diff = diff
 		self.max_distance = self.cs()
-		self.slidermax_distance = self.max_distance * 2.4
+		self.slidermax_distance = self.max_distance * 2.4  # source: https://www.reddit.com/r/osugame/comments/9rki8o/how_are_slider_judgements_calculated/e8hwx85?utm_source=share&utm_medium=web2x
 		self.score, self.scorewindow = self.od()
 		self.time_preempt = self.ar()
 
 	def cs(self):
 		print(self.diff["CircleSize"])
+		# source: https://www.reddit.com/r/osugame/comments/5gd3dm/whats_the_cspixel_formula/
+		# this formula is closer to the real osu than the formula in the wiki
 		return 23.05 - (self.diff["CircleSize"] - 7) * 4.4825  # 54.4 - 4.48 * self.diff["CircleSize"]
 
 	def od(self):
+		# source: https://github.com/ppy/osu/blob/4aafaab4494b721a72f30d4eab52326975e5bf4e/osu.Game.Rulesets.Osu/Scoring/OsuHitWindows.cs#L10
+		# source1: https://github.com/ppy/osu/blob/7eaafe63cb36251b963b876f8f2436acb19f9cad/osu.Game/Beatmaps/BeatmapDifficulty.cs#L45
+		# works better than osu wiki formula
 		o = self.diff["OverallDifficulty"]
 		scorewindow = [int(50 + 30 * (5 - o) / 5), int(100 + 40 * (5 - o) / 5), int(150 + 50 * (5 - o) / 5)]
 		score = [300, 100, 50]
 		return score, scorewindow
 
 	def ar(self):
+		# source: https://osu.ppy.sh/help/wiki/Beatmapping/Approach_rate
 		a = self.diff["ApproachRate"]
 		if a < 5:
 			time_preempt = 1200 + 600 * (5 - a) / 5
@@ -34,6 +40,8 @@ class DiffCalculator:
 		return time_preempt
 
 	def spinrequired(self, duration):
+		# source: https://github.com/ppy/osu/blob/a8b137bb715db0c370148f04a548e7db6cc3cc9c/osu.Game.Rulesets.Osu/Objects/Spinner.cs#L33
+		# TODO: use this source https://osu.ppy.sh/help/wiki/Beatmapping/Overall_difficulty
 		od = self.diff["OverallDifficulty"]
 		multiplier = 5
 		if od > 5:
@@ -173,7 +181,6 @@ class Check:
 		else:
 			return -1
 
-
 	def checkcursor_incurve(self, osu_d, replay, osr_index, slider_d):
 
 		osr = replay[osr_index]
@@ -188,7 +195,9 @@ class Check:
 
 		going_forward = cur_repeated % 2 == 1
 
+		# source: https://www.reddit.com/r/osugame/comments/9rki8o/how_are_slider_judgements_calculated/e8hwx85?utm_source=share&utm_medium=web2x
 		slider_leniency = min(36, (osu_d["duration"] * osu_d["repeated"]) / 2)
+
 		hasendtick = osr[3] + slider_leniency >= int(osu_d["end time"])
 		hasendtick = hasendtick and not slider_d["tickend"]
 
@@ -211,7 +220,6 @@ class Check:
 
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)
 
-		# print(hasendtick, slider_d["tickend"], dist, t, slider_d["follow state"], math.sqrt((osr[0] - pos[0]) ** 2 + (osr[1] - pos[1]) ** 2), slider_d["dist"], tick_inball, osu_d["time"], osr_index, pos, osr, osu_d["duration"])
 		in_ball = tick_inball
 		if in_ball:
 			slider_d["dist"] = self.diff.slidermax_distance
@@ -309,14 +317,13 @@ class Check:
 		if Mod.Relax in self.mods:
 			prevosr = replay[max(0, osrindex - 1)]
 			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = 100 * 360/60000 * timediff  # add 100 rpm when it's relax
+			bonusrot = 100 * 360/60000 * timediff  # source: https://osu.ppy.sh/community/forums/topics/156295
 
 		if Mod.SpunOut in self.mods:
 			prevosr = replay[max(0, osrindex - 1)]
 			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = 277 * 360 / 60000 * timediff
+			bonusrot = 286.48 * 360 / 60000 * timediff  # source: https://osu.ppy.sh/help/wiki/Game_Modifiers
 
-			# set rotation to 277 so angle and last angle should be 0 so it won't affect the rotation speed
 			angle = 0
 			lastangle = 0
 

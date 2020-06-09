@@ -179,6 +179,7 @@ class HitObjectChecker:
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend, updatefollow = self.check.checkslider(
 			i, replay, osr_index)
 
+		# slider has notelock and it depends on the hit time window, or if the slider is too short then it would be the duration of the slider
 		notelock = replay[osr_index][Replays.TIMES] < min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow)
 
 		if combostatus > 0:

@@ -60,6 +60,7 @@ class HealthProcessor:
 		return gain - self.hpstat
 
 	def compute_drainrate(self):
+		# source: https://github.com/ppy/osu/blob/b100fc7fc7252da1e769e670e146dae251df3a91/osu.Game/Rulesets/Scoring/DrainingHealthProcessor.cs#L120
 		if len(self.beatmap) == 0:
 			return 0
 

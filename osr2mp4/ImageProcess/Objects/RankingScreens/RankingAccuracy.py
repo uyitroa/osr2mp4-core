@@ -37,6 +37,7 @@ class RankingAccuracy(ARankingScreen):
 			x += -self.gap + self.numberframes[index].size[0]
 
 	def add_to_frame(self, background):
+		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
 			self.draw_score(self.accuracy, background, 325 * self.settings.scale, 552 * self.settings.scale, self.alpha)

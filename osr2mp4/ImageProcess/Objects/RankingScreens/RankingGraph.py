@@ -17,6 +17,7 @@ class RankingGraph(ARankingScreen):
 			self.rankingperfect = Image.new("RGBA", (0, 0))
 
 
+		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen
 		if self.settings.skin_ini.general["Version"] == 1:
 			self.y = 576
 			self.perfectx = 320

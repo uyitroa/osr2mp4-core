@@ -36,4 +36,5 @@ class RankingTitle(ARankingScreen):
 			self.drawname(background, 0, 35 * self.settings.scale, "Beatmap by {}".format(self.mapper), self.alpha, 0.5)
 			self.drawname(background, 0, 60 * self.settings.scale, "Played by {} on {}".format(self.player, self.date), self.alpha, 0.5)
 
+			# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen
 			imageproc.add(self.rankingtitle, background, self.settings.width - 32 * self.settings.scale - self.rankingtitle.size[0], 10 * self.settings.scale, self.alpha, topleft=True)

@@ -12,6 +12,7 @@ class ModIcons(ARankingScreen):
 		self.mods = replayinfo.mod_combination
 		self.modframes = frames
 
+		# source: ggjjwp
 		self.sortedmods = [
 			Mod.Autoplay,
 			Mod.SpunOut,

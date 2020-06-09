@@ -13,6 +13,7 @@ class RankingHitresults(ARankingScreen):
 		self.gap = gap * settings.scale
 		self.hitresultframes = frames
 
+		# guessed
 		self.hitresultx = 135 * settings.scale
 		self.hitresulty = 255 * settings.scale
 		self.hitresultwidth = 320 * settings.scale
