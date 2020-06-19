@@ -63,7 +63,7 @@ class HitResult(FrameObject):
 			imageproc.add(img, background, x, y, alpha=self.hitresults[i][4] / 100)
 
 			if score == 0:
-				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
+				self.hitresults[i][2] += self.hitresults[i][6] * self.playfieldscale
 				self.hitresults[i][6] = max(0.5, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
 
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)
