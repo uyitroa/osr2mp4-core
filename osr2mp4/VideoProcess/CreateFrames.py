@@ -8,6 +8,7 @@ from multiprocessing.sharedctypes import RawArray
 from .AFrames import *
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
+import os
 
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
@@ -37,7 +38,8 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			conn1, conn2 = Pipe()
 
 			# extract container
-			f = "output" + str(i) + settings.output[-4:]
+			_, file_extension = os.path.splitext(settings.output)
+			f = "output" + str(i) + file_extension
 
 			vid = (start, end)
 
@@ -69,7 +71,8 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
-		f = settings.temp + "outputf" + settings.output[-4:]
+		_, file_extension = os.path.splitext(settings.output)
+		f = settings.temp + "outputf" + file_extension
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 
 		print("setup done")

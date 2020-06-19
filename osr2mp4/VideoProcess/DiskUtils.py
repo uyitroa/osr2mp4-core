@@ -4,7 +4,8 @@ import shutil
 
 
 def concat_videos(settings):
-	f = settings.temp + "outputf" + settings.output[-4:]
+	_, file_extension = os.path.splitext(settings.output)
+	f = settings.temp + "outputf" + file_extension
 	# command = '"{}" -safe 0 -f concat -i ../temp/listvideo.txt -c copy "{}" -y'.format(settings.ffmpeg, f)
 	# if os.name == 'nt':
 	# 	command = '"' + command + '"'
@@ -20,7 +21,8 @@ def cleanup(settings):
 
 
 def mix_video_audio(settings):
-	f = settings.temp + "outputf" + settings.output[-4:]
+	_, file_extension = os.path.splitext(settings.output)
+	f = settings.temp + "outputf" + file_extension
 	subprocess.call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', 'aac', settings.output, '-y'])
 
 
