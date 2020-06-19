@@ -44,9 +44,10 @@ def write_frame(shared, conn, filename, settings, iii):
 
 			framecount += 1
 			if iii and framecount % 200:
-				deltatime = timer
+				deltatime = max(1, timer)
+				filewriter.seek(0)
 				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, filename, startwringtime))
-				filewriter.flush()
+				filewriter.truncate()
 
 	if iii:
 		filewriter.write("done")
