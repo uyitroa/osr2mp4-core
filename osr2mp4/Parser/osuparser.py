@@ -218,7 +218,7 @@ class Beatmap:
 
 				my_dict["slider ticks"] = []
 				my_dict["ticks pos"] = []
-				my_dict["arrow pos"], _ = baiser.at(my_dict["pixel length"], None)
+				my_dict["arrow pos"], _ = baiser.at(my_dict["pixel length"] * 0.98, None)
 				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
