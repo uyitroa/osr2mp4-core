@@ -62,7 +62,7 @@ class Drawer:
 
 		self.updater.info_index = self.frame_info.info_index
 
-		self.img = Image.new("RGB", (1, 0))
+		self.img = Image.new("RGB", (1, 1))
 		self.np_img, self.pbuffer = get_buffer(self.shared, self.settings)
 
 	def render_draw(self):

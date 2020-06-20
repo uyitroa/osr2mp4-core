@@ -6,7 +6,7 @@ from .ARankingScreen import ARankingScreen
 
 class RankingHitresults(ARankingScreen):
 	def __init__(self, frames, replayinfo, numberframes, gap, settings):
-		dummy = [Image.new("RGBA", (0, 0))]
+		dummy = [Image.new("RGBA", (1, 1))]
 		super().__init__(dummy, settings=settings)
 		self.replayinfo = replayinfo
 		self.numberframes = numberframes

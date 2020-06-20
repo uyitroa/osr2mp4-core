@@ -6,7 +6,7 @@ from .ARankingScreen import ARankingScreen
 
 class RankingGraph(ARankingScreen):
 	def __init__(self, frames, replay_info, settings):
-		dummy = [Image.new("RGBA", (0, 0))]
+		dummy = [Image.new("RGBA", (1, 1))]
 		super().__init__(dummy, settings=settings)
 
 		self.rankinggraph = frames[0]
@@ -14,7 +14,7 @@ class RankingGraph(ARankingScreen):
 		if replay_info.is_perfect_combo:
 			self.rankingperfect = frames[1]
 		else:
-			self.rankingperfect = Image.new("RGBA", (0, 0))
+			self.rankingperfect = Image.new("RGBA", (1, 1))
 
 
 		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen

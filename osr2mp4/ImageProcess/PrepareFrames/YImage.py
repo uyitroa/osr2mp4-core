@@ -84,7 +84,7 @@ class YImage:
 			return
 
 		self.filename = "None"
-		self.img = Image.new("RGBA", (0, 0))
+		self.img = Image.new("RGBA", (1, 1))
 		self.imgfrom = ImageFrom.BLANK
 
 	def tosquare(self):

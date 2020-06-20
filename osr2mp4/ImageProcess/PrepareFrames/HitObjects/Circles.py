@@ -117,7 +117,7 @@ def prepare_circle(beatmap, scale, settings, hd):
 		if not hd:
 			fadeout[0].append(prepare_fadeout(orig_circle))
 		else:
-			fadeout[0].append([Image.new("RGBA", (0, 0))])
+			fadeout[0].append([Image.new("RGBA", (1, 1))])
 
 
 		orig_slider = overlayhitcircle(s_overlay, slider, color, radius_scale)
@@ -125,7 +125,7 @@ def prepare_circle(beatmap, scale, settings, hd):
 		if not hd:
 			fadeout[1].append(prepare_fadeout(orig_slider))
 		else:
-			fadeout[1].append([Image.new("RGBA", (0, 0))])
+			fadeout[1].append([Image.new("RGBA", (1, 1))])
 
 		alpha = 0  # alpha for fadein
 		circle_frames.append([])
@@ -164,8 +164,8 @@ def prepare_circle(beatmap, scale, settings, hd):
 					circle_frames[-1].append(newalpha(orig_circle, alpha/100))
 					slidercircle_frames[-1].append(newalpha(orig_slider, alpha/100))
 				else:
-					circle_frames[-1].append(Image.new("RGBA", (0, 0)))
-					slidercircle_frames[-1].append(Image.new("RGBA", (0, 0)))
+					circle_frames[-1].append(Image.new("RGBA", (1, 1)))
+					slidercircle_frames[-1].append(Image.new("RGBA", (1, 1)))
 
 				if alpha == 100:
 					ii = -fade_out_interval
