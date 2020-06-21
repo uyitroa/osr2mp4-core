@@ -35,7 +35,7 @@ class Dummy: pass
 @traced
 class Osr2mp4:
 
-	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True):
+	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
 		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
 		self.settings.path = os.path.relpath(self.settings.path)
@@ -43,12 +43,12 @@ class Osr2mp4:
 		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
 			self.settings.path += "/"
 
-		if not enablelog:
-			logging.basicConfig(level=logging.CRITICAL, stream=os.devnull)
+		if logpath == "":
+			logpath = self.settings.path + "logosr2mp4.log"
 
 		if logtofile:
 			logging.basicConfig(
-				level=TRACE, stream=open("logosr2mp4.log", "w"),
+				level=TRACE, stream=open(logpath, "w"),
 				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
 			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
 		else:
@@ -57,6 +57,8 @@ class Osr2mp4:
 				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
 			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
 
+		if not enablelog:
+			logging.basicConfig(level=logging.CRITICAL, stream=os.devnull)
 
 		self.settings.enablelog = enablelog
 
