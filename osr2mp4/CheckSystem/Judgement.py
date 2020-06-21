@@ -1,3 +1,4 @@
+import logging
 import math
 import numpy as np
 from osrparse.enums import Mod
@@ -14,7 +15,6 @@ class DiffCalculator:
 		self.time_preempt = self.ar()
 
 	def cs(self):
-		print(self.diff["CircleSize"])
 		# source: https://www.reddit.com/r/osugame/comments/5gd3dm/whats_the_cspixel_formula/
 		# this formula is closer to the real osu than the formula in the wiki
 		return 23.05 - (self.diff["CircleSize"] - 7) * 4.4825  # 54.4 - 4.48 * self.diff["CircleSize"]
@@ -150,7 +150,7 @@ class Check:
 				hitresult = 300
 			else:
 				hitresult = 300
-				print("what", slider_d["score"], slider_d["max score"])
+				logging.warning("what {} {}".format(slider_d["score"], slider_d["max score"]))
 
 			return True, hitresult, osu_d["time"], osu_d["id"], osu_d["end x"], osu_d["end y"], \
 			       False, hitvalue, combostatus, slider_d["tickend"], True

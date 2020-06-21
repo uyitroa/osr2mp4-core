@@ -2,10 +2,14 @@ from .EEnum.EState import States
 
 
 class Updater:
+	counter = 0
+
 	def __init__(self, resultinfo, component):
 		self.resultinfo = resultinfo
 		self.component = component
 		self.info_index = 0
+		self.idd = self.counter
+		self.counter += 1
 
 	def process_combo(self):
 		if self.info.combostatus == 1:
@@ -24,8 +28,7 @@ class Updater:
 				self.component.hitobjmanager.fadeout_circle(idd)
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
 				if self.info.more.sliderhead:
-					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate,
-					                                               str(self.info.id) + "s")
+					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate, str(self.info.id) + "s")
 
 		elif objtype == "Slider":
 			idd = str(self.info.id) + "s"
@@ -61,12 +64,10 @@ class Updater:
 
 		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
 
-
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
 			return
 		while self.info_index < len(self.resultinfo) and self.resultinfo[self.info_index].time < cur_time:
-			# print(self.resultinfo[self.info_index].time, cur_time)
 			self.info = self.resultinfo[self.info_index]
 			self.process_combo()
 			self.process_acc()

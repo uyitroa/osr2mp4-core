@@ -9,7 +9,6 @@ def prepare_background(backgroundname, settings):
 	:param backgroundname: string
 	:return: PIL.Image
 	"""
-	print(backgroundname)
 	img = Image.open(backgroundname).convert("RGBA")
 
 	width = settings.width

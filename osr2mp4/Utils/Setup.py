@@ -1,9 +1,14 @@
+import logging
+
+from autologging import traced, logged
 from osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
 from ..Utils.Resolution import get_screensize
 
 
+@logged(logging.getLogger(__name__))
+@traced
 def setupglobals(data, gameplaydata, replay_info, settings):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]

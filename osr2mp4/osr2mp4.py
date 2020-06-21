@@ -1,11 +1,11 @@
 import atexit
 import inspect
 import os
+import sys
 import time
-
 import osrparse
 from osrparse.enums import Mod
-
+import PIL
 from .Exceptions import ReplayNotFound
 from .Parser.jsonparser import read
 from .AudioProcess.CreateAudio import create_audio
@@ -19,19 +19,55 @@ from .VideoProcess.CreateFrames import create_frame
 from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup
 from .global_var import Settings
 import uuid
+from autologging import traced, logged, TRACE
+import logging
 
 
 class Dummy: pass
 
 
+# logging.basicConfig(
+# 	level=TRACE, stream=open("test.log", "w"),
+# 	format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+
+
+@logged(logging.getLogger(__name__))
+@traced
 class Osr2mp4:
-	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None):
+
+	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True):
 		self.settings = Settings()
 		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
 		self.settings.path = os.path.relpath(self.settings.path)
+
 		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
 			self.settings.path += "/"
+
+		if not enablelog:
+			logging.basicConfig(level=logging.CRITICAL, stream=os.devnull)
+
+		if logtofile:
+			logging.basicConfig(
+				level=TRACE, stream=open("logosr2mp4.log", "w"),
+				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
+		else:
+			logging.basicConfig(
+				level=TRACE, stream=sys.stdout,
+				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
+
+
+		self.settings.enablelog = enablelog
+
+		# else:
+		# 	logging.basicConfig(
+		# 		level=logging.CRITICAL, stream=open(self.settings.path + "logs/test.log", "w"),
+		# 		format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+
 		self.settings.temp = self.settings.path + str(uuid.uuid1()) + "temp/"
+
+		self.__log.info("test")
 
 		setup_dir(self.settings)
 
@@ -77,7 +113,6 @@ class Osr2mp4:
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
-		print(vars(self.settings))
 
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
@@ -94,6 +129,8 @@ class Osr2mp4:
 
 		self.previousprogress = 0
 
+		logging.log(TRACE, "Settings vars {}".format(vars(self.settings)))
+
 	def startvideo(self):
 		if self.resultinfo is None:
 			self.analyse_replay()
@@ -102,7 +139,6 @@ class Osr2mp4:
 
 	def analyse_replay(self):
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
-		print(self.resultinfo[-1].accuracy)
 
 	def startaudio(self):
 		if self.resultinfo is None:
@@ -141,6 +177,15 @@ class Osr2mp4:
 		mix_video_audio(self.settings)
 
 	def cleanup(self):
+		if self.drawers is not None:
+			for x in range(len(self.drawers)):
+				self.drawers[x].terminate()
+				self.writers[x].terminate()
+				conn1, conn2 = self.pipes[x]
+				conn1.close()
+				conn2.close()
+		if self.audio is not None:
+			self.audio.terminate()
 		cleanup(self.settings)
 
 	def getprogress(self):

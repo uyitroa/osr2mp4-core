@@ -30,7 +30,6 @@ class Accuracy(FrameObject):
 
 	def set_acc(self, total):
 		self.total = total
-		print(total)
 		self.maxscore = 0
 		self.curscore = 0
 		for x in total:

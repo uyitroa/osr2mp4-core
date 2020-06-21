@@ -1,3 +1,5 @@
+import logging
+
 from osrparse.enums import Mod
 
 from .HitObjectChecker import HitObjectChecker
@@ -100,18 +102,15 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 	osr_index = 0
 	replay_event = replay_info.play_data
 
-
 	diffmod(replay_info, beatmap.diff)
 
-
 	hitobjectchecker = HitObjectChecker(beatmap, settings, replay_info.mod_combination, tests)
-
 
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	print("Start check")
+	logging.debug("Start check")
 	while osr_index < len(replay_event) - 3:
 		k1, k2, m1, m2 = keys(replay_event[osr_index][Replays.KEYS_PRESSED])
 		if not in_break:
@@ -137,5 +136,6 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 			breakperiod = beatmap.breakperiods[break_index]
 		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	print("check done")
+	logging.debug("check done")
+	logging.log(1, "RETURN %r", hitobjectchecker.info[-1])
 	return hitobjectchecker.info

@@ -158,7 +158,6 @@ class Scoreboard(FrameObject):
 		mods = getmods(self.settings.settings["Mods leaderboard"])
 
 		for mod in mods:
-			print(mod)
 			if self.settings.settings["Global leaderboard"]:
 				self.getglobalscores(mod)
 			else:

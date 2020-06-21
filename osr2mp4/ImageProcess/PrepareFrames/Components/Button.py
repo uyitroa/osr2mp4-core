@@ -52,7 +52,6 @@ def prepare_inputoverlay(scale, color, index_c, settings):
 	for i, img in enumerate(button_frames):
 		imgc = imageproc.add_color(img, color)
 		button_frames[i] = imgc
-		print(color)
 		color[index_c] = max(0, color[index_c] - c_step)
 	button_frames.insert(0, yimg.img)
 	return button_frames

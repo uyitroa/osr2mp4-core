@@ -1,3 +1,4 @@
+import logging
 import math
 
 from osrparse.enums import Mod
@@ -62,8 +63,7 @@ class HitObjectChecker:
 		self.SPINNER = 2
 
 		self.check = Check(beatmap.diff, self.hitobjects, mods)
-		print(self.diff["CircleSize"], self.diff["ApproachRate"], self.diff["OverallDifficulty"],
-		      self.diff["HPDrainRate"])
+		logging.log(1, "Diff {}".format(self.diff))
 		self.scorecounter = 0
 		self.combo = 0
 		self.maxcombo = 0
@@ -135,8 +135,9 @@ class HitObjectChecker:
 				self.results[hitresult] += 1
 				self.update_score(hitresult, self.hitobjects[i]["type"])
 			else:
-				self.update_score(30 * int(hitresult is not None and hitresult > 0), self.hitobjects[i]["type"],
-				                  usecombo=False)
+				self.update_score(30 * int(hitresult is not None and hitresult > 0), self.hitobjects[i]["type"], usecombo=False)
+
+			osrtime = min(replay[osr_index][3], self.hitobjects[i]["time"] + self.maxtimewindow + 1)
 
 			if "circle" in self.hitobjects[i]["type"]:
 				circle = Circle(state, deltat, False, False, x, y)
@@ -166,7 +167,8 @@ class HitObjectChecker:
 					self.check.sliders_memory[idd]["combo"] = 0
 				circle = Circle(state, deltat, followappear, True, x, y)
 
-			info = Info(replay[osr_index][3], self.combo, combostatus,
+
+			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
 			            self.health_processor.health_value, self.maxcombo, circle)
@@ -191,6 +193,9 @@ class HitObjectChecker:
 
 		end = self.check.sliders_memory[idd]["tickend"]
 		arrowindex = self.check.sliders_memory[idd]["repeated slider"]
+
+		osrtime = min(replay[osr_index][3], self.hitobjects[i]["end time"] + 1)
+
 		if update:
 			self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 			if hitresult is not None:
@@ -212,10 +217,11 @@ class HitObjectChecker:
 
 		if update or combostatus != 0:
 			followstate = str(int(updatefollow)) + str(int(followappear))
+
 			if combostatus > 1:
 				for x in range(combostatus, 0, -1):
 					slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
-					info = Info(replay[osr_index][3], self.combo-x, 1,
+					info = Info(osrtime, self.combo-x, 1,
 					            self.scorecounter, self.scorecounter,
 					            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
 					            self.health_processor.health_value, self.maxcombo, slider)
@@ -225,7 +231,8 @@ class HitObjectChecker:
 			self.maxcombo = max(self.maxcombo, self.combo)
 
 			slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
-			info = Info(replay[osr_index][3], self.combo, combostatus,
+
+			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
 			            self.health_processor.health_value, self.maxcombo, slider)
@@ -240,6 +247,7 @@ class HitObjectChecker:
 		timestamp = self.hitobjects[i]["time"]
 		self.update_score(hitvalue, self.hitobjects[i]["type"], usecombo=False)
 		if update:
+			osrtime = min(replay[osr_index][3], self.hitobjects[i]["end time"] + 1)
 			if hitresult is not None:
 
 				self.results[hitresult] += 1
@@ -250,6 +258,7 @@ class HitObjectChecker:
 				else:
 					self.combo = 0
 					combostatus = -1
+				osrtime = self.hitobjects[i]["end time"] + 1
 				del self.hitobjects[i]
 				i -= 1
 
@@ -259,7 +268,9 @@ class HitObjectChecker:
 				self.update_score(1000, self.hitobjects[i]["type"], usecombo=False)
 
 			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue)
-			info = Info(replay[osr_index][3], self.combo, combostatus,
+
+
+			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
 			            self.health_processor.health_value, self.maxcombo, spinner)

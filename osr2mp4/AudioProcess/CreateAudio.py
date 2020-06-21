@@ -187,7 +187,6 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 	write(settings.temp + 'audio.mp3', round(song.rate * settings.timeframe/1000), out)
 
 
-
 def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):
 	beatmap_info = deepcopy(beatmap_info)
 

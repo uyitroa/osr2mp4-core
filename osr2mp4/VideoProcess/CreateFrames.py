@@ -1,10 +1,12 @@
 import ctypes
+import logging
 import time
 
 import cv2
 
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
+
 from .AFrames import *
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
@@ -54,9 +56,12 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			writers.append(writer)
 
 			my_file.write("file '{}'\n".format(f))
+			logging.debug("Starting process")
 
 			drawer.start()
+			logging.debug("Start drawer {}".format(i))
 			writer.start()
+			logging.debug("Start writer {}".format(i))
 
 			start += osr_interval
 		my_file.close()
@@ -66,7 +71,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 	else:
 
-		print("process start")
+		logging.debug("process start")
 
 		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
@@ -75,7 +80,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		f = settings.temp + "outputf" + file_extension
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 
-		print("setup done")
+		logging.debug("setup done")
 		framecount = 0
 		startwritetime = time.time()
 		while drawer.frame_info.osr_index < videotime[1]:
@@ -92,13 +97,12 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
 					filewriter.close()
 
-
 		if showranking:
 			for x in range(int(5 * settings.fps)):
 				drawer.draw_rankingpanel()
 				im = cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB)
 				writer.write(im)
 		writer.release()
-		print("\nprocess done")
+		logging.debug("\nprocess done")
 
 		return None, None, None, None

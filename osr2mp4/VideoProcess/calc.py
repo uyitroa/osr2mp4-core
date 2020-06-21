@@ -1,3 +1,5 @@
+import logging
+
 from ..EEnum.EReplay import Replays
 
 
@@ -73,6 +75,8 @@ def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):
 	y_circle = int(osu_d["y"] * settings.playfieldscale) + settings.movedown
 	# check if it's time to draw circles
 	if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
+
+		logging.log(1, "Adding osu object {}\n{}".format(osu_d, frame_info))
 
 		if "spinner" in osu_d["type"]:
 

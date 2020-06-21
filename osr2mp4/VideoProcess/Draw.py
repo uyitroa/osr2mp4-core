@@ -1,7 +1,10 @@
+import PIL
+import logging
 import time
 
 import cv2
 from PIL import Image
+from autologging import traced, logged, TRACE
 
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
@@ -78,10 +81,8 @@ class Drawer:
 
 		self.updater.update(self.frame_info.cur_time)
 
-
 		cursor_x = int(self.cursor_event.event[Replays.CURSOR_X] * self.settings.playfieldscale) + self.settings.moveright
 		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
-
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
@@ -95,7 +96,7 @@ class Drawer:
 		self.component.mouse1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(446 * self.settings.scale), self.frame_info.cur_time)
 		self.component.mouse2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(492 * self.settings.scale), self.frame_info.cur_time)
 		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.hitobjmanager.add_to_frame(self.img, self.np_img)
+		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitresult.add_to_frame(self.img)
 		self.component.spinbonus.add_to_frame(self.img)
 		self.component.combocounter.add_to_frame(self.img, in_break)
@@ -108,11 +109,8 @@ class Drawer:
 		self.component.sections.add_to_frame(self.img)
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
 
-
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
-		# resultinfo = self.updater.resultinfo[min(len(self.updater.resultinfo) - 1, self.updater.info_index)]
-		# cv2.putText(self.np_img, str(resultinfo.timestamp) + " " + str(resultinfo.more), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255, 255))
 		# choose correct osr index for the current time because in osr file there might be some lag
 		tt = nearer(self.frame_info.cur_time, self.replay_event, self.frame_info.osr_index)
 		if tt == 0:
@@ -121,7 +119,6 @@ class Drawer:
 			self.frame_info.osr_index += tt
 			self.cursor_event.event = self.replay_event[self.frame_info.osr_index]
 		return self.img.size[0] != 1
-
 
 	def initialiseranking(self):
 		self.component.rankingpanel.start_show()
@@ -154,11 +151,16 @@ class Drawer:
 
 def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	asdfasdf = time.time()
-	print("process start")
+
+	logging.log(1, "CALL {}, {}".format(videotime, showranking))
+
+	logging.log(logging.DEBUG, "process start")
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
-	print("setup done")
+	logging.log(1, "PROCESS {}, {}".format(videotime, drawer))
+
+	logging.log(logging.DEBUG, "setup done")
 	timer = 0
 	timer2 = 0
 	timer3 = 0
@@ -180,8 +182,8 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 			i = conn.recv()
 
 	conn.send(10)
-	print("\nprocess done")
-	print("Drawing time:", timer)
-	print("Total time:", time.time() - asdfasdf)
-	print("Waiting time:", timer2)
-	print("Changing value time:", timer3)
+	logging.debug("\nprocess done {}, {}".format(videotime, drawer))
+	logging.debug("Drawing time: {}".format(timer))
+	logging.debug("Total time: {}".format(time.time() - asdfasdf))
+	logging.debug("Waiting time: {}".format(timer2))
+	logging.debug("Changing value time: {}".format(timer3))
