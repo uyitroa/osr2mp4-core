@@ -150,6 +150,14 @@ class Drawer:
 
 
 def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+	try:
+		draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking)
+	except Exception as e:
+		logging.error("{} from {}\n\n\n".format(repr(e), videotime))
+		raise
+
+
+def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	asdfasdf = time.time()
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))

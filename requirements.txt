@@ -6,3 +6,4 @@ toolz
 osrparse
 recordclass
 requests
+autologging
