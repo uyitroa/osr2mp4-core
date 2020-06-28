@@ -98,7 +98,8 @@ class Osr2mp4:
 			data = read(filedata)
 		if filesettings is not None:
 			gameplaysettings = read(filesettings)
-
+		if os.path.isdir(data["Output path"]):
+			data["Output path"] = os.path.join(data["Output path"], "output.avi")
 		self.data = data
 		replaypath = data[".osr path"]
 		starttime = data["Start time"]
