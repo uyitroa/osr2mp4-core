@@ -13,9 +13,11 @@ def newimg(fp, mode: str = "r"):
 		return oldimg(fp, mode)
 	except UnidentifiedImageError:
 		a = cv2.imread(fp, -1)
-		cv2.imwrite("temp.png", a)
-		r = oldimg("temp.png", mode)
-		os.remove("temp.png")
+		# cv2.imwrite("temp.png", a)
+		# r = oldimg("temp.png", mode)
+		# os.remove("temp.png")
+		a = cv2.cvtColor(a, cv2.COLOR_RGBA2BGRA)
+		r = Image.fromarray(a)
 		return r
 Image.open = newimg
 
