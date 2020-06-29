@@ -10,7 +10,7 @@ def concat_videos(settings):
 	# if os.name == 'nt':
 	# 	command = '"' + command + '"'
 	# os.system(command)
-	subprocess.call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', settings.temp + 'listvideo.txt', '-c', 'copy', f, '-y'])
+	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', settings.temp + 'listvideo.txt', '-c', 'copy', f, '-y'])
 
 
 def cleanup(settings):
@@ -23,7 +23,7 @@ def cleanup(settings):
 def mix_video_audio(settings):
 	_, file_extension = os.path.splitext(settings.output)
 	f = settings.temp + "outputf" + file_extension
-	subprocess.call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', 'aac', settings.output, '-y'])
+	subprocess.check_call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', 'aac', settings.output, '-y'])
 
 
 def convert_tomp4(settings, output="output.mp4"):
