@@ -1,9 +1,23 @@
 import os
-import numpy as np
-from PIL import Image
 
+import cv2
+import numpy as np
+from PIL import Image, UnidentifiedImageError
 from ...EEnum.EImageFrom import ImageFrom
 from .. import imageproc
+
+
+oldimg = Image.open
+def newimg(fp, mode: str = "r"):
+	try:
+		return oldimg(fp, mode)
+	except UnidentifiedImageError:
+		a = cv2.imread(fp, -1)
+		cv2.imwrite("temp.png", a)
+		r = oldimg("temp.png", mode)
+		os.remove("temp.png")
+		return r
+Image.open = newimg
 
 
 class YImage:
