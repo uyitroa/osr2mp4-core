@@ -92,8 +92,14 @@ class Skin:
 		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
 		config.optionxform = str
 
-		if not config.read(os.path.join(self.skin_path, "skin.ini")):
-			config.read(os.path.join(self.default_path, "skin.ini"))
+		try:
+			with open(self.skin_path + 'skin.ini', encoding='utf-8') as file:
+				lines = file.read()
+		except FileNotFoundError:
+			with open(self.default_path + 'skin.ini', encoding='utf-8') as file:
+				lines = file.read()
+
+		config.read_string(lines)
 
 		self.general = dict(config["General"])
 		self.colours = dict(config["Colours"])
