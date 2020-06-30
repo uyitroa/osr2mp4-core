@@ -336,7 +336,7 @@ class Scoreboard(FrameObject):
 			return
 		number = number + "x"
 		n = len(number)
-		x_start = self.frames[0].size[0] - int(n * self.combo[0].size[0])
+		x_start = self.frames[0].size[0] * 0.95 - int(n * self.combo[0].size[0])
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
