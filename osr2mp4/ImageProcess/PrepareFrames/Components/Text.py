@@ -3,7 +3,7 @@ from PIL import ImageFont, ImageDraw, Image
 
 def prepare_text(texts, size, color, settings):
 	size = int(size)
-	font = ImageFont.truetype(settings.path + "res/Arial.ttf", size=size)
+	font = ImageFont.truetype(settings.path + "res/Aller_Rg.ttf", size=size)
 
 	img = Image.new("RGBA", (settings.width, settings.height))
 	imgdraw = ImageDraw.Draw(img)
