@@ -150,7 +150,7 @@ def getoffset(offset, endtime, song):
 
 def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 
-	dt = Mod.DoubleTime in mods
+	nc = Mod.Nightcore in mods
 	addmisssound = not (Mod.Relax in mods or Mod.Autopilot in mods)
 
 	skin_path = settings.skin_path
@@ -160,7 +160,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 
 	ccc = time.time()
 
-	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=not dt))
+	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	song.rate /= settings.timeframe/1000
 
 	filenames = getfilenames(beatmap, settings.settings["Ignore beatmap hitsounds"])
