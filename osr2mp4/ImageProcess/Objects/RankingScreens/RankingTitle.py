@@ -1,4 +1,9 @@
+from datetime import datetime, timedelta
+import time
+
 from PIL import Image
+from dateutil.relativedelta import relativedelta
+from pytz import timezone
 
 from ... import imageproc
 from .ARankingScreen import ARankingScreen
@@ -15,7 +20,9 @@ class RankingTitle(ARankingScreen):
 		self.mapper = beatmap.meta["Creator"]
 		self.diff = beatmap.meta["Version"]
 		self.player = replayinfo.player_name
-		self.date = str(replayinfo.timestamp.replace(microsecond=0))
+
+		timestamp = self.set_timezone(replayinfo)
+		self.date = str(timestamp.replace(microsecond=0))
 		self.date = self.date.replace("-", "/")
 
 		self.rankingtitle = frames[0]
@@ -25,6 +32,16 @@ class RankingTitle(ARankingScreen):
 		playerimg = prepare_text(["Played by {} on {}".format(self.player, self.date)], 20 * self.settings.scale, (255, 255, 255, 255), settings)
 
 		self.textimgs = {**titleimg, **creatorimg, **playerimg}
+
+	def set_timezone(self, replayinfo):
+		timestamp = replayinfo.timestamp
+		utcnow = timezone('utc').localize(datetime.utcnow())
+		mm = time.tzname[0]
+		here = utcnow.astimezone(timezone(mm)).replace(tzinfo=None)
+		there = utcnow.astimezone(timezone('utc')).replace(tzinfo=None)
+		offset = relativedelta(here, there).hours
+		timestamp += timedelta(hours=offset)
+		return timestamp
 
 	def drawname(self, background, x_offset, y_offset, text, alpha, size):
 		imageproc.add(self.textimgs[text], background, x_offset, y_offset, alpha=alpha, topleft=True)
