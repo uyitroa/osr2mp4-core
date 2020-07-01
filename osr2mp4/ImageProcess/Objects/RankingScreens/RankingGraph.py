@@ -28,5 +28,5 @@ class RankingGraph(ARankingScreen):
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
-			imageproc.add(self.rankinggraph, background, self.perfectx * self.settings.scale, self.y * self.settings.scale, self.alpha, topleft=True)
+			imageproc.add(self.rankinggraph, background, 256 * self.settings.scale, self.y * self.settings.scale, self.alpha, topleft=True)
 			imageproc.add(self.rankingperfect, background, self.perfectx * self.settings.scale, 688 * self.settings.scale, self.alpha)

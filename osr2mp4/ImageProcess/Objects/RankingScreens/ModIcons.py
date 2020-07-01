@@ -38,7 +38,12 @@ class ModIcons(ARankingScreen):
 
 			x = 1300 * self.settings.scale
 			step_x = 60 * self.settings.scale
+			hasnc = Mod.Nightcore in self.mods
 			for mod in self.sortedmods:
+				# if there is nightcore, then doubletime mod in present in the frozenset
+				if mod == Mod.DoubleTime and hasnc:
+					return
+
 				if mod in self.mods:
 					imageproc.add(self.modframes[mod], background, x, 420 * self.settings.scale, self.alpha)
 					x -= step_x
