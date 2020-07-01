@@ -180,15 +180,18 @@ class Osr2mp4:
 		mix_video_audio(self.settings)
 
 	def cleanup(self):
-		if self.drawers is not None:
-			for x in range(len(self.drawers)):
-				self.drawers[x].terminate()
-				self.writers[x].terminate()
-				conn1, conn2 = self.pipes[x]
-				conn1.close()
-				conn2.close()
-		if self.audio is not None:
-			self.audio.terminate()
+		try:
+			if self.drawers is not None:
+				for x in range(len(self.drawers)):
+					self.drawers[x].terminate()
+					self.writers[x].terminate()
+					conn1, conn2 = self.pipes[x]
+					conn1.close()
+					conn2.close()
+			if self.audio is not None:
+				self.audio.terminate()
+		except Exception as e:
+			logging.error(repr(e))
 		cleanup(self.settings)
 
 	def getprogress(self):
