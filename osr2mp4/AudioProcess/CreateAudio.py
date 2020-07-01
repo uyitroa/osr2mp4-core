@@ -70,20 +70,20 @@ def pydubtonumpy(audiosegment):
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
-def getaudiofromfile(filename, path, defaultpath, settings, fmt="mp3", volume=1.0, speed=1.0):
+def getaudiofromfile(filename, path, defaultpath, settings, fmt="wav", volume=1.0, speed=1.0):
 	try:
 		return read(path + filename + "." + fmt, settings, volume=volume, speed=speed)
 	except FileNotFoundError:
-		nxtfmt = "mp3"
-		if fmt == "mp3":
-			nxtfmt = "wav"
-		elif fmt == "wav":
+		nxtfmt = "wav"
+		if fmt == "wav":
+			nxtfmt = "mp3"
+		elif fmt == "mp3":
 			nxtfmt = "ogg"
 
 		if defaultpath is not None:
-			if fmt == "mp3":
-				return getaudiofromfile(filename, path, defaultpath, settings, fmt="wav")
-			elif fmt == "wav":
+			if fmt == "wav":
+				return getaudiofromfile(filename, path, defaultpath, settings, fmt="mp3")
+			elif fmt == "mp3":
 				return getaudiofromfile(filename, path, defaultpath, settings, fmt="ogg")
 			return getaudiofromfile(filename, defaultpath, None, settings, nxtfmt)
 
