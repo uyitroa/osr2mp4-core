@@ -137,21 +137,25 @@ class Skin:
 
 		cur_combo = 1
 		while True:
-			if "Combo" + str(cur_combo) in self.colours:
+			n = "Combo" + str(cur_combo)
+			if n in self.colours:
 				cur_combo += 1
 			else:
 				break
-		cur_combo = max(4, cur_combo)
-		self.colours["Combo1"] = self.colours.get("Combo1", (255, 192, 0))
-		self.colours["Combo2"] = self.colours.get("Combo2", (0, 202, 0))
-		self.colours["Combo3"] = self.colours.get("Combo3", (18, 124, 255))
-		self.colours["Combo4"] = self.colours.get("Combo4", (242, 24, 57))
+		cur_combo -= 1
+
+		if cur_combo == 0:
+			self.colours["Combo1"] = self.colours.get("Combo1", (255, 192, 0))
+			self.colours["Combo2"] = self.colours.get("Combo2", (0, 202, 0))
+			self.colours["Combo3"] = self.colours.get("Combo3", (18, 124, 255))
+			self.colours["Combo4"] = self.colours.get("Combo4", (242, 24, 57))
+			cur_combo = 4
 		self.colours["InputOverlayText"] = self.colours.get("InputOverlayText", (0, 0, 0))
 		self.colours["SliderBall"] = self.colours.get("SliderBall", (2, 170, 255))
 		self.colours["SliderBorder"] = self.colours.get("SliderBorder", (255, 255, 255))
 		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
 		self.colours["SpinnerBackground"] = self.colours.get("SpinnerBackground", (100, 100, 100))
-		self.colours["ComboNumber"] = cur_combo - 1
+		self.colours["ComboNumber"] = cur_combo
 
 	def parse_fonts(self):
 		self.fonts['HitCircleOverlap'] = iint(self.fonts.get('HitCircleOverlap', -2))
