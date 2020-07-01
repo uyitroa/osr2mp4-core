@@ -88,6 +88,12 @@ class Skin:
 		# print(self.colours)
 		# print(self.fonts)
 
+	def filter(self, string):
+		start = "["
+		while string[0] != start:
+			string = string[1:]
+		return string
+
 	def read(self):
 		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
 		config.optionxform = str
@@ -98,7 +104,7 @@ class Skin:
 		except FileNotFoundError:
 			with open(self.default_path + 'skin.ini', encoding='utf-8') as file:
 				lines = file.read()
-
+		lines = self.filter(lines)
 		config.read_string(lines)
 
 		self.general = dict(config["General"])
