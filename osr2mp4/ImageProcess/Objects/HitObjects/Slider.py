@@ -113,8 +113,8 @@ class SliderManager:
 		background.paste(img, (x_offset, y_offset), a)
 
 	def to_frame(self, img, background, pos, slider, alpha=1.0):
-		x = int((pos[0] + slider.osu_d["stacking"]) * self.settings.playfieldscale) + self.settings.moveright
-		y = int((pos[1] + slider.osu_d["stacking"]) * self.settings.playfieldscale) + self.settings.movedown
+		x = int(pos[0] * self.settings.playfieldscale) + self.settings.moveright
+		y = int(pos[1] * self.settings.playfieldscale) + self.settings.movedown
 
 		imageproc.add(img, background, x, y, alpha=alpha)
 

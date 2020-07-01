@@ -36,10 +36,9 @@ class Beatmap:
 		# timepreempt = int(diffcalculator.ar() + 500)
 		# self.breakperiods.append({"Start": -500, "End": self.start_time-timepreempt, "Arrow": True})
 		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
-		                           "type": ["end"], "id": -1})  # to avoid index out of range
+		                        "type": ["end"], "id": -1})  # to avoid index out of range
 
 		self.health_processor = None
-
 
 	def parse_general(self):
 		general = self.info[1]
@@ -107,9 +106,9 @@ class Beatmap:
 
 	def istacked(self, curobj, prevobj, t_min, end=""):
 		x1, y1 = curobj["x"], curobj["y"]
-		x2, y2 = prevobj[end+"x"], prevobj[end+"y"]
-		t1, t2 = curobj["time"], prevobj[end+"time"]
-		return math.sqrt((x1 - x2)**2 + (y1 - y2)**2) < 3 and t1 - t2 < t_min
+		x2, y2 = prevobj[end + "x"], prevobj[end + "y"]
+		t1, t2 = curobj["time"], prevobj[end + "time"]
+		return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < 3 and t1 - t2 < t_min
 
 	def parse_hitobject(self):
 		hitobject = self.info[-1]
@@ -154,6 +153,8 @@ class Beatmap:
 			bin_info = bin_info[::-1]  # reverse the binary
 			object_type = []
 			skip = 0
+
+			my_dict["stacking"] = 0
 
 			if int(bin_info[0]):
 				object_type.append("circle")
@@ -204,8 +205,6 @@ class Beatmap:
 				baiser = getclass(slider_type, ps, my_dict["pixel length"])
 				my_dict["baiser"] = baiser
 
-				my_dict["stacking"] = 0
-
 				my_dict["repeated"] = int(osuobject[6])
 				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (
 						100 * self.diff["SliderMultiplier"])
@@ -219,9 +218,9 @@ class Beatmap:
 				my_dict["slider ticks"] = []
 				my_dict["ticks pos"] = []
 				my_dict["arrow pos"], _ = baiser.at(my_dict["pixel length"] * 0.98, None)
-				speedmultiplier = self.timing_point[cur_offset]["Base"]/my_dict["BeatDuration"]
+				speedmultiplier = self.timing_point[cur_offset]["Base"] / my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
-				mindist_fromend = scoring_distance/self.timing_point[cur_offset]["Base"] * 10
+				mindist_fromend = scoring_distance / self.timing_point[cur_offset]["Base"] * 10
 				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
 
 				# source: https://github.com/ppy/osu/blob/73467410ab0917594eb9613df6e828e1a24c6be6/osu.Game/Rulesets/Objects/SliderEventGenerator.cs#L123
@@ -270,30 +269,30 @@ class Beatmap:
 			my_dict["skip"] = skip
 			my_dict["sound"] = int(osuobject[4])
 
-
-			if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
-				prevobj = self.hitobjects[-1]
-				if self.istacked(my_dict, prevobj, min_stacktime) and "slider" not in prevobj["type"] and not reverse:
-					if stacking:
-						self.to_stack[-1]["end"] = index
-					else:
-						self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
-						stacking = True
-
-				elif self.istacked(my_dict, prevobj, min_stacktime, "end ") and "slider" not in my_dict["type"]:
-					if stacking:
-						self.to_stack[-1]["end"] = index
-					else:
-						self.to_stack.append({"start": index, "end": index, "reverse": True})
-						stacking = True
-						reverse = True
-
-				else:
-					stacking = False
-					reverse = False
-			else:
-				stacking = False
-				reverse = False
+			#
+			# if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
+			# 	prevobj = self.hitobjects[-1]
+			# 	if self.istacked(my_dict, prevobj, min_stacktime) and "slider" not in prevobj["type"] and not reverse:
+			# 		if stacking:
+			# 			self.to_stack[-1]["end"] = index
+			# 		else:
+			# 			self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
+			# 			stacking = True
+			#
+			# 	elif self.istacked(my_dict, prevobj, min_stacktime, "end ") and "slider" not in my_dict["type"]:
+			# 		if stacking:
+			# 			self.to_stack[-1]["end"] = index
+			# 		else:
+			# 			self.to_stack.append({"start": index, "end": index, "reverse": True})
+			# 			stacking = True
+			# 			reverse = True
+			#
+			# 	else:
+			# 		stacking = False
+			# 		reverse = False
+			# else:
+			# 	stacking = False
+			# 	reverse = False
 
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
@@ -301,23 +300,153 @@ class Beatmap:
 		self.start_time = self.hitobjects[0]["time"]
 		self.end_time = self.hitobjects[-1]["end time"]
 
+	def enddistance(self, obj1, obj2):
+		return math.sqrt((obj1["end x"] - obj2["x"]) ** 2 + (obj1["end y"] - obj2["y"]) ** 2)
+
+	def distance(self, obj1, obj2):
+		return math.sqrt((obj1["x"] - obj2["x"]) ** 2 + (obj1["y"] - obj2["y"]) ** 2)
+
 	def stack_position(self):
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
-		for info in self.to_stack:
-			for i in range(info["end"] - info["start"] + 1):
-				if info["reverse"]:
-					space = (i+1) * scale * 6.4
-				else:
-					space = (info["end"] - info["start"] - i) * scale * -6.4
-				index = info["start"] + i
+		stack_space = scale * 6.4
+		# for info in self.to_stack:
+		# 	for i in range(info["end"] - info["start"] + 1):
+		# 		if info["reverse"]:
+		# 			space = (i+1) * scale * 6.4
+		# 		else:
+		# 			space = (info["end"] - info["start"] - i) * scale * -6.4
+		# 		index = info["start"] + i
+		#
+		# 		if "slider" in self.hitobjects[index]["type"]:
+		# 			self.hitobjects[index]["stacking"] = space
+		# 			self.hitobjects[index]["end x"] += space
+		# 			self.hitobjects[index]["end y"] += space
+		#
+		# 		self.hitobjects[index]["x"] += space
+		# 		self.hitobjects[index]["y"] += space
 
-				if "slider" in self.hitobjects[index]["type"]:
-					self.hitobjects[index]["stacking"] = space
-					self.hitobjects[index]["end x"] += space
-					self.hitobjects[index]["end y"] += space
+		ar = self.diff["ApproachRate"]  # for stacks
+		if ar < 5:
+			preempt = 1200 + 600 * (5 - ar) / 5
+		elif ar == 5:
+			preempt = 1200
+		else:
+			preempt = 1200 - 750 * (ar - 5) / 5
 
-				self.hitobjects[index]["x"] += space
-				self.hitobjects[index]["y"] += space
+		cur_offset = 0
+		stackThreshold = preempt * self.general["StackLeniency"]
+		stack_distance = 3
+
+		endIndex = len(self.hitobjects) - 1
+		extendedEndIndex = endIndex
+
+		startIndex = 0
+		# Reverse pass for stack calculation.
+		extendedStartIndex = startIndex
+
+		for i in range(extendedEndIndex, startIndex, -1):
+
+			n = i
+			""" We should check every note which has not yet got a stack.
+				* Consider the case we have two erwound stacks and this will make sense.
+				*
+				* o <-1      o <-2
+				*  o <-3      o <-4
+				*
+				* We first process starting from 4 and handle 2,
+				* then we come backwards on the i loop iteration until we reach 3 and handle 1.
+				* 2 and 1 will be ignored in the i loop because they already have a stack value.
+			"""
+
+			objectI = self.hitobjects[i]
+			if objectI["stacking"] != 0 or "spinner" in objectI["type"]:
+				continue
+
+			""" If this object is a hitcircle, then we enter this "special" case.
+				* It either ends with a stack of hitcircles only, or a stack of hitcircles that are underneath a slider.
+				* Any other case is handled by the "is Slider" code below this.
+			"""
+			if "circle" in objectI["type"]:
+				n -= 1
+				while n >= 0:
+					objectN = self.hitobjects[n]
+					if "spinner" in objectN:
+						n -= 1
+						continue
+
+					if objectI["time"] - objectN["end time"] > stackThreshold:
+						break
+
+					endTime = objectN["end time"]
+
+					if objectI["time"] - endTime > stackThreshold:
+						# We are no longer within stacking range of the previous object.
+						break
+
+					# HitObjects before the specified update range haven't been reset yet
+					if n < extendedStartIndex:
+						objectN["stacking"] = 0
+						extendedStartIndex = n
+
+					""" This is a special case where hticircles are moved DOWN and RIGHT (negative stacking) if they are under the *last* slider in a stacked pattern.
+						*    o==o <- slider is at original location
+						*        o <- hitCircle has stack of -1
+						*         o <- hitCircle has stack of -2
+					"""
+					if "slider" in objectN and self.enddistance(objectN, objectI) < stack_distance:
+						offset = objectI["stacking"] - objectN["stacking"] + 1
+
+						for j in range(n + 1, i + 1):
+
+							# For each object which was declared under this slider, we will offset it to appear
+							# *below* the slider end (rather than above).
+							objectJ = self.hitobjects[j]
+							if self.enddistance(objectN, objectJ) < stack_distance:
+								objectJ["stacking"] -= offset
+
+						# We have hit a slider.  We should restart calculation using this as the new base.
+						# Breaking here will mean that the slider still has StackCount of 0, so will be handled in the i-outer-loop.
+						break
+
+					if self.distance(objectN, objectI) < stack_distance:
+						# Keep processing as if there are no sliders.  If we come across a slider, this gets cancelled out.
+						# NOTE: Sliders with start positions stacking are a special case that is also handled here.
+
+						objectN["stacking"] = objectI["stacking"] + 1
+						objectI = objectN
+
+					n -= 1
+
+			elif "slider" in objectI["type"]:
+				""" We have hit the first slider in a possible stack.
+						* From this po on, we ALWAYS stack positive regardless.
+				"""
+				n -= 1
+				while n >= startIndex:
+					objectN = self.hitobjects[n]
+					if "spinner" in objectN["type"]:
+						n -= 1
+						continue
+
+					if objectI["time"] - objectN["time"] > stackThreshold:
+						# We are no longer within stacking range of the previous object.
+						break
+
+					if self.enddistance(objectN, objectI) < stack_distance:
+						objectN["stacking"] = objectI["stacking"] + 1
+						objectI = objectN
+
+					n -= 1
+
+		for osuobj in self.hitobjects:
+			if "spinner" in osuobj["type"]:
+				continue
+
+			space = -stack_space * osuobj["stacking"]
+			osuobj["x"] += space
+			osuobj["y"] += space
+			osuobj["end x"] += space
+			osuobj["end y"] += space
 
 
 def split(delimiters, string):
@@ -328,7 +457,8 @@ def split(delimiters, string):
 def read_file(filename, scale, colors, hr):
 	fiel = open(filename, "r", encoding="utf-8")
 	content = fiel.read()
-	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
+	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
+	              "[HitObjects]"]
 	info = split(delimiters, content)
 	fiel.close()
 	return Beatmap(info, scale, colors, hr)

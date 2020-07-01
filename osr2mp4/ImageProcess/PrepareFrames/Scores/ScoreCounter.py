@@ -5,6 +5,6 @@ def prepare_scorecounter(scorenumber):
 	"""
 	img = []
 	for image in scorenumber.score_images:
-		image.change_size(0.8, 0.8)
+		image.change_size(0.87, 0.87)
 		img.append(image.img)
 	return img
