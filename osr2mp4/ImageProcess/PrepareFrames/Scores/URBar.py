@@ -8,7 +8,7 @@ def prepare_bar(scale, scorewindow):
 	:return: PIL.Image, [PIL.Image], float
 	"""
 	scale = scale * scorewindow[2]/100
-	w, h = int(160 * scale), int(20 * scale)
+	w, h = int(150 * scale), int(15 * scale)
 	bar_images = []
 
 	colors = [(255, 200, 77, 175), (89, 255, 9, 175), (44, 186, 255, 175)]
