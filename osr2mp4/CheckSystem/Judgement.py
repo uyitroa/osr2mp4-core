@@ -49,7 +49,7 @@ class DiffCalculator:
 		if od < 5:
 			multiplier = 5 - (5 - 3) * (5 - od) / 5
 		multiplier *= 0.6
-		return max(1, round(duration * multiplier / 1000 / 0.9))
+		return max(1, round(duration * multiplier / 1000))
 
 
 class Check:
@@ -277,10 +277,8 @@ class Check:
 		if osr[Replays.TIMES] >= osu_d["end time"]:
 			spin_d = self.spinners_memory[osu_d["id"]]
 			progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
-			if progress > 1 or Mod.SpunOut in self.mods:
+			if progress > 0.9 or Mod.SpunOut in self.mods:
 				hitresult = 300
-			elif progress > 0.9:
-				hitresult = 100
 			elif progress > 0.5:
 				hitresult = 100
 			elif progress > 0.1:
