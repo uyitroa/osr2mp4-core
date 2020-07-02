@@ -165,7 +165,7 @@ class FrameObjects:
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
 		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
 		self.slider = SliderManager(frames.slider, beatmap.diff, settings, hd)
-		self.spinner = SpinnerManager(frames.spinner, settings)
+		self.spinner = SpinnerManager((frames.spinner, frames.scorecounter), settings, check)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings)

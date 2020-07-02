@@ -11,12 +11,13 @@ spinnerspin = "spinner-spin"
 spinnermetre = "spinner-metre"
 spinnerapproachcircle = "spinner-approachcircle"
 spinnerbottom = "spinner-bottom"
+spinnerrpm = "spinner-rpm"
 
 
 def prepare_spinner(scale, settings):
 	scale = scale * 1.3 * 0.5
 	spinner_images = {}
-	n = [spinnercircle, spinnerbackground, spinnermiddle, spinnerspin, spinnermetre, spinnerbottom]
+	n = [spinnercircle, spinnerbackground, spinnermiddle, spinnerspin, spinnermetre, spinnerbottom, spinnerrpm]
 
 	spinv2 = False
 	for img in n:
