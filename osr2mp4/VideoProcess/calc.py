@@ -124,7 +124,12 @@ def check_break(beatmap, component, frame_info, updater):
 		component.scorebarbg.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
 		component.scorebar.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
 
+		endgamebreak = frame_info.break_index == len(beatmap.breakperiods) - 1
+		if not endgamebreak:
+			component.playinggrade.startbreak(breakperiod)
+
 	if frame_info.cur_time > breakperiod["End"] - 700 and in_break and breakperiod["Arrow"]:
 		component.arrowwarning.startbreak(breakperiod["Start"])
+
 
 	return in_break

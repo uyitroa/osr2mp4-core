@@ -1,5 +1,7 @@
 from osrparse.enums import Mod
 
+from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
+from ..ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from ..CheckSystem.Judgement import DiffCalculator
 from ..ImageProcess.Objects.RankingScreens.Menuback import Menuback
 from ..ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
@@ -93,6 +95,8 @@ class PreparedFrames:
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 
+		self.playinggrade = prepare_playinggrade(settings.scale * 0.75, settings)
+
 		self.urbar = prepare_bar(settings.scale * settings.settings["Score meter size"], check.scorewindow)
 
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
@@ -148,6 +152,7 @@ class FrameObjects:
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
 		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)
+		self.playinggrade = PlayingGrade(frames.playinggrade, self.timepie, replay_info, settings)
 		self.hitresult = HitResult(frames.hitresult, settings, replay_info.mod_combination)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)

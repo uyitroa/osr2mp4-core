@@ -8,6 +8,7 @@ class Updater:
 		self.resultinfo = resultinfo
 		self.component = component
 		self.info_index = 0
+		self.info = self.resultinfo[0]
 		self.idd = self.counter
 		self.counter += 1
 

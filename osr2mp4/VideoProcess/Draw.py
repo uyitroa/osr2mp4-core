@@ -87,6 +87,7 @@ class Drawer:
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
+		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
 		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
