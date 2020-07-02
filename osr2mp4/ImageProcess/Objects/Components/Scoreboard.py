@@ -110,7 +110,7 @@ class Scoreboard(FrameObject):
 		self.beatmaphash = replay_info.beatmap_hash
 		self.playerscore = replay_info.score
 		self.playername = replay_info.player_name
-		self.beatmapid = beatmap.meta["BeatmapID"]
+		self.beatmapid = beatmap.meta.get("BeatmapID", -1)
 
 		self.scoresid = []
 		self.getscores()
@@ -410,7 +410,7 @@ class Scoreboard(FrameObject):
 				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
 				self.effectalpha[i] -= 0.075
-				self.effectx[i] = min(0, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)
+				self.effectx[i] = min(0, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)  # big brain formula
 
 				if self.effectalpha[i] <= 0:
 					del self.effectalpha[i]

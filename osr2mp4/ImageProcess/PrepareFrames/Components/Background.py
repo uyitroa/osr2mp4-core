@@ -9,7 +9,10 @@ def prepare_background(backgroundname, settings):
 	:param backgroundname: string
 	:return: PIL.Image
 	"""
-	img = Image.open(backgroundname).convert("RGBA")
+	try:
+		img = Image.open(backgroundname).convert("RGBA")
+	except Exception as e:
+		img = Image.open(settings.path + "res/bg.png").convert("RGBA")
 
 	width = settings.width
 	height = settings.height

@@ -7,9 +7,9 @@ class Beatmap:
 	def __init__(self, info, scale, colors, hr):
 		self.info = info
 		self.general = {}
-		self.diff = {}
+		self.diff = {"ApproachRate": 0, "CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
-		self.bg = []
+		self.bg = [0, 0, "."]
 		self.breakperiods = []
 		self.timing_point = []
 		self.hitobjects = []
@@ -41,34 +41,38 @@ class Beatmap:
 		self.health_processor = None
 
 	def parse_general(self):
-		general = self.info[1]
+		general = self.info["General"]
 		general = general.split("\n")
 		for item in general:
+			item = item.strip()
 			if item != "":
 				my_list = item.split(": ")
 				self.general[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 
 	def parse_meta(self):
-		general = self.info[3]
+		general = self.info["Metadata"]
 		general = general.split("\n")
 		for item in general:
+			item = item.strip()
 			if item != "":
 				my_list = item.split(":")
 				self.meta[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 
 	def parse_diff(self):
-		general = self.info[4]
+		general = self.info["Difficulty"]
 		general = general.split("\n")
 		for item in general:
+			item = item.strip()
 			if item != "":
 				my_list = item.split(":")
 				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
 
 	def parse_event(self):
-		event = self.info[5].split("\n")
+		event = self.info["Events"].split("\n")
 
 		for line in event:
+			line = line.strip()
 			if line.startswith("0"):
 				self.bg = line.split(",")
 				self.bg[2] = self.bg[2].replace('"', '')
@@ -81,10 +85,11 @@ class Beatmap:
 				self.breakperiods.append(my_dict)
 
 	def parse_timingpoints(self):
-		timing = self.info[6]
+		timing = self.info["TimingPoints"]
 		timing = timing.split("\n")
 		inherited = 0
 		for line in timing:
+			line = line.strip()
 			if line == '':
 				continue
 			my_dict = {}
@@ -100,7 +105,7 @@ class Beatmap:
 			my_dict["SampleSet"] = items[3]
 			my_dict["SampleIndex"] = items[4]
 			my_dict["Volume"] = float(items[5])
-			my_dict["Kiai"] = int(items[7])
+			# my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
 		self.timing_point.append({"Offset": float('inf')})
 
@@ -111,7 +116,7 @@ class Beatmap:
 		return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < 3 and t1 - t2 < t_min
 
 	def parse_hitobject(self):
-		hitobject = self.info[-1]
+		hitobject = self.info["HitObjects"]
 		hitobject = hitobject.split("\n")
 		cur_combo_number = 1
 		cur_combo_color = 1
@@ -450,8 +455,26 @@ class Beatmap:
 
 
 def split(delimiters, string):
-	regrex_pattern = "|".join(map(re.escape, delimiters))
-	return re.split(regrex_pattern, string)
+	lines = string.split("\n")
+	curheader = "dummy"
+	info = {curheader: ""}
+	newheader = False
+	for line in lines:
+		line = line.strip()
+		if line == "":
+			continue
+
+		for header in delimiters:
+			if header == line:
+				header = header[1:-1]
+				info[header] = ""
+				newheader = True
+				curheader = header
+
+		if not newheader:
+			info[curheader] += line + "\n"
+		newheader = False
+	return info
 
 
 def read_file(filename, scale, colors, hr):
