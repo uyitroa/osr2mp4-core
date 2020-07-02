@@ -128,7 +128,10 @@ class Scoreboard(FrameObject):
 
 
 		playernames = [x.playername for x in self.scoreboards]
-		self.nameimg = prepare_text(playernames, 18 * self.settings.scale, (255, 255, 255, 255), self.settings)
+		self.nameimg = prepare_text(playernames, 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 0.5)
+		playertext = prepare_text([self.playername], 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 1)
+
+		self.nameimg[self.playername] = playertext[self.playername]
 
 	def setuppos(self):
 		x = 0
@@ -360,8 +363,10 @@ class Scoreboard(FrameObject):
 					coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
 					if coef >= 0:
 						step = max(1, 30 * coef)
-					else:
+					elif coef < 0:
 						step = min(-1, 30 * coef)
+					else:
+						step = 0
 					self.scoreboards[x].y = min(self.origposboards[boardindex][1], self.scoreboards[x].y - step)
 					self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
@@ -391,17 +396,17 @@ class Scoreboard(FrameObject):
 				step = max(1, 30 * coef)
 				self.scoreboards[x].y = max(self.scoreboards[x].y - step, self.origposboards[boardindex][1])
 
-				alpha = self.scoreboards[x].alpha
+				# alpha = self.scoreboards[x].alpha
 			else:
 				self.frame_index = 0
-				alpha = self.scoreboards[x].alpha * 0.7
+				# alpha = self.scoreboards[x].alpha * 0.7
 
 			if self.settings.settings["In-game interface"] or in_break:
 				if self.scoreboards[x].alpha > 0:
-					super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=alpha)
-					self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, alpha=alpha)
-					self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo,alpha=alpha)
-					self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, alpha=alpha)
+					super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
+					self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, alpha=self.scoreboards[x].alpha)
+					self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo,alpha=self.scoreboards[x].alpha)
+					self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, alpha=self.scoreboards[x].alpha)
 
 		for i in range(len(self.effectalpha)-1, -1, -1):
 			alpha = max(0, min(1, self.effectalpha[i]))
