@@ -8,4 +8,4 @@ recordclass
 requests
 autologging
 configparser
-dateutil
+python-dateutil
