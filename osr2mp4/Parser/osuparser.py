@@ -95,7 +95,7 @@ class Beatmap:
 			my_dict = {}
 			items = line.split(",")
 			my_dict["Offset"] = float(items[0])
-			if int(items[6]) == 1:
+			if len(items) >= 7 and int(items[6]) == 1:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
 			else:
