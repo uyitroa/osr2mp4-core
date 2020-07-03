@@ -41,7 +41,7 @@ class SpinnerManager(FrameObject):
 		# img, duration, startime left, alpha, index, progress
 		self.spinners[idd] = Spinner(0, duration, starttime - curtime, 0, 0, 0, self.check.spinrequired(duration), 1)
 
-	def update_spinner(self, idd, angle, progress, curtime):
+	def update_spinner(self, idd, angle, progress):
 		# angle = round(angle * 0.9)
 		# n_rot = int(angle/90)
 		# index = int(angle - 90*n_rot)

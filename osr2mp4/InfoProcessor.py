@@ -49,7 +49,7 @@ class Updater:
 		else:
 			idd = str(self.info.id) + "o"
 			y, x = 384 * 0.5, 512 * 0.5
-			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress, self.info.time)
+			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress)
 
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 			if self.info.more.bonusscore >= 1:
