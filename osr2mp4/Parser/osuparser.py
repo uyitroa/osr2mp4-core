@@ -6,7 +6,7 @@ from ..ImageProcess.Curves.curves import getclass
 class Beatmap:
 	def __init__(self, info, scale, colors, hr):
 		self.info = info
-		self.general = {}
+		self.general = {"StackLeniency": 7}
 		self.diff = {"ApproachRate": 0, "CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
 		self.bg = [0, 0, "."]
@@ -46,7 +46,8 @@ class Beatmap:
 		for item in general:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(": ")
+				my_list = item.split(":")
+				my_list[1] = my_list[1].strip()
 				self.general[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 
 	def parse_meta(self):
@@ -56,6 +57,7 @@ class Beatmap:
 			item = item.strip()
 			if item != "":
 				my_list = item.split(":")
+				my_list[1] = my_list[1].strip()
 				self.meta[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 
 	def parse_diff(self):
@@ -65,6 +67,7 @@ class Beatmap:
 			item = item.strip()
 			if item != "":
 				my_list = item.split(":")
+				my_list[1] = my_list[1].strip()
 				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
 
@@ -95,7 +98,7 @@ class Beatmap:
 			my_dict = {}
 			items = line.split(",")
 			my_dict["Offset"] = float(items[0])
-			if len(items) >= 7 and int(items[6]) == 1:
+			if len(items) < 7 or int(items[6]) == 1:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
 			else:
