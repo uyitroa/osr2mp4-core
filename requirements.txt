@@ -7,3 +7,5 @@ osrparse
 recordclass
 requests
 autologging
+configparser
+dateutil
