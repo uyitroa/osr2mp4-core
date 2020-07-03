@@ -8,5 +8,3 @@ recordclass
 requests
 autologging
 configparser
-python-dateutil
-pytz

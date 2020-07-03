@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 import time
 
 from PIL import Image
-from dateutil.relativedelta import relativedelta
-from pytz import timezone
+# from dateutil.relativedelta import relativedelta
+# from pytz import timezone
 
 from ... import imageproc
 from .ARankingScreen import ARankingScreen
@@ -34,14 +34,15 @@ class RankingTitle(ARankingScreen):
 		self.textimgs = {**titleimg, **creatorimg, **playerimg}
 
 	def set_timezone(self, replayinfo):
-		timestamp = replayinfo.timestamp
-		utcnow = timezone('utc').localize(datetime.utcnow())
-		mm = time.tzname[0]
-		here = utcnow.astimezone(timezone(mm)).replace(tzinfo=None)
-		there = utcnow.astimezone(timezone('utc')).replace(tzinfo=None)
-		offset = relativedelta(here, there).hours
-		timestamp += timedelta(hours=offset)
-		return timestamp
+		return replayinfo.timestamp
+		# timestamp = replayinfo.timestamp
+		# utcnow = timezone('utc').localize(datetime.utcnow())
+		# mm = time.tzname[0]
+		# here = utcnow.astimezone(timezone(mm)).replace(tzinfo=None)
+		# there = utcnow.astimezone(timezone('utc')).replace(tzinfo=None)
+		# offset = relativedelta(here, there).hours
+		# timestamp += timedelta(hours=offset)
+		# return timestamp
 
 	def drawname(self, background, x_offset, y_offset, text, alpha, size):
 		imageproc.add(self.textimgs[text], background, x_offset, y_offset, alpha=alpha, topleft=True)
