@@ -7,11 +7,11 @@
   "Automatic cursor size": false,
   "Rotate sliderball": false,
   "Score meter size": 1.25,
-  "Song volume": 50,
+  "Song volume": 75,
   "Effect volume": 100,
   "Ignore beatmap hitsounds": false,
   "Use skin's sound samples": false,
-  "Global leaderboard": true,
+  "Global leaderboard": false,
   "Mods leaderboard": "*",
-  "api key": "lol"
+  "api key": "b3a4c5add6bcd6c4e75613ea1b8caf663daa6402"
 }

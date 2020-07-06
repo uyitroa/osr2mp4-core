@@ -1,6 +1,5 @@
-import time
 
-import cv2
+import time
 from PIL import Image
 
 from ..Utils.skip import skip
@@ -55,8 +54,6 @@ class Drawer:
 
 		to_time = replay_event[self.start_index][Replays.TIMES]
 		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))
-
-		self.component.background.startbreak(self.beatmap.breakperiods[self.frame_info.break_index], self.frame_info.cur_time)
 
 		self.cursor_event = CursorEvent(replay_event[self.frame_info.osr_index], old_cursor_x, old_cursor_y)
 

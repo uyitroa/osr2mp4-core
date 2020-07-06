@@ -1,4 +1,5 @@
-from PIL import Image
+import cv2
+from PIL import Image, ImageDraw
 
 
 def changealpha(img, alpha):
@@ -128,3 +129,28 @@ def rotate_images(frames, angle):
 	for x in range(len(frames)):
 		images[x] = frames[x].rotate(angle, resample=Image.BILINEAR)
 	return images
+
+
+def debug(background, *args):
+	text = ""
+	pos = (100, 100)
+	for t in args:
+		text += str(t) + " "
+
+	if type(background).__name__ == "Image":
+		draw = ImageDraw.Draw(background)
+		draw.text(pos, text, (255, 255, 255))
+	else:
+		font = cv2.FONT_HERSHEY_SIMPLEX
+		bottomLeftCornerOfText = pos
+		fontScale = 1
+		fontColor = (255, 255, 255)
+		lineType = 2
+
+		cv2.putText(background, text,
+		            bottomLeftCornerOfText,
+		            font,
+		            fontScale,
+		            fontColor,
+		            lineType)
+

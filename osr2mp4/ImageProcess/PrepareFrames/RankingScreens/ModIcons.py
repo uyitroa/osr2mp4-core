@@ -7,6 +7,7 @@ selectionmod = "selection-mod-"
 
 def prepare_modicons(scale, settings):
 	modnames = {
+		Mod.Autoplay: "autoplay",
 		Mod.Perfect: "perfect",
 		Mod.Autopilot: "pilot",
 		Mod.Relax: "relax",

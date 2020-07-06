@@ -1,3 +1,5 @@
+from ... import imageproc
+
 from .AScorebar import AScorebar
 
 
@@ -10,8 +12,10 @@ class ScorebarBG(AScorebar):
 		AScorebar.animate(self)
 
 		if self.settings.settings["In-game interface"] or inbreak:
-			if inbreak or cur_time < self.map_start or not (not self.scrolling and self.interval == 0):
+			# if in break then reset frame will be background's job. Otherwise it's ScorebarBG's job.
+			animating = self.h != 0
+			if animating or cur_time < self.map_start:
 				self.frame_index = 0
 				super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
-			else:
+			elif not inbreak:
 				background.paste(self.frames[1], (0, -self.h))

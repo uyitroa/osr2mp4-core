@@ -16,7 +16,7 @@ setuptools.setup(
 	description="Convert osr replay file to video file",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	url="https://github.com/uyitroa/osr2mp4",
+	url="https://github.com/uyitroa/osr2mp4-core",
 	packages=setuptools.find_packages(),
 	install_requires=requirements,
 	include_package_data=True,
