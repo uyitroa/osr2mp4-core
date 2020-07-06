@@ -1,12 +1,21 @@
+import logging
 import time
 import numpy as np
 import cv2
 
 
 def write_frame(shared, conn, filename, settings, iii):
+	try:
+		write(shared, conn, filename, settings, iii)
+	except Exception as e:
+		logging.error("{} from {}\n\n\n".format(repr(e), filename))
+		raise
+
+
+def write(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
-	print(filename, vars(settings), "\n")
+	logging.log(logging.DEBUG, "{} {} \n".format(filename, vars(settings)))
 
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
@@ -16,10 +25,9 @@ def write_frame(shared, conn, filename, settings, iii):
 
 	timer2 = 0
 	timer3 = 0
-	timer4 = 0
 	a = 0
 	framecount = 1
-	print("start writing:", time.time() - asdfasdf)
+	logging.log(logging.DEBUG, "start writing: %f", time.time() - asdfasdf)
 
 	startwringtime = time.time()
 
@@ -44,19 +52,20 @@ def write_frame(shared, conn, filename, settings, iii):
 
 			framecount += 1
 			if iii and framecount % 200:
-				deltatime = timer
+				deltatime = max(1, timer)
+				filewriter.seek(0)
+				logging.log(1, "Writing progress {}, {}, {}, {}".format(framecount, deltatime, filename, startwringtime))
 				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, filename, startwringtime))
-				filewriter.flush()
+				filewriter.truncate()
 
 	if iii:
 		filewriter.write("done")
 		filewriter.close()
 
 	writer.release()
-	print("\nWriting time:", timer)
 
-	print("\nTotal time:", time.time() - asdfasdf)
-	print("Writing time:", timer)
-	print("Waiting time:", timer2)
-	print("Changing value time:", timer3)
-	print("??? value time:", timer4)
+	logging.debug("\nWriting done {}".format(filename))
+	logging.debug("Writing time: {}".format(timer))
+	logging.debug("Total time: {}".format(time.time() - asdfasdf))
+	logging.debug("Waiting time: {}".format(timer2))
+	logging.debug("Changing value time: {}".format(timer3))

@@ -1,7 +1,7 @@
 # Installing
 ```
-cd src/
-python setup.py
+cd osr2mp4/
+python install.py
 ```
 
 
@@ -19,12 +19,8 @@ Download ffmpeg here:
 https://www.ffmpeg.org/download.html#build-windows
 
 
-### Download the default skin link
-https://osu.ppy.sh/community/forums/topics/129191?start=2997865
-
-
 ### Setup config
-Setup path for skin, beatmap, replay, default skin and ffmpeg in `src/config.json`
+Setup path for skin, beatmap, replay, default skin and ffmpeg in `osr2mp4/config.json`
 
 
 `"Start time": 0, "End time": 60` means it will only convert the first minute of the replay.

@@ -110,7 +110,7 @@ class Scoreboard(FrameObject):
 		self.beatmaphash = replay_info.beatmap_hash
 		self.playerscore = replay_info.score
 		self.playername = replay_info.player_name
-		self.beatmapid = beatmap.meta["BeatmapID"]
+		self.beatmapid = beatmap.meta.get("BeatmapID", -1)
 
 		self.scoresid = []
 		self.getscores()
@@ -128,7 +128,10 @@ class Scoreboard(FrameObject):
 
 
 		playernames = [x.playername for x in self.scoreboards]
-		self.nameimg = prepare_text(playernames, 15 * self.settings.scale, (255, 255, 255, 255), self.settings)
+		self.nameimg = prepare_text(playernames, 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 0.5)
+		playertext = prepare_text([self.playername], 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 1)
+
+		self.nameimg[self.playername] = playertext[self.playername]
 
 	def setuppos(self):
 		x = 0
@@ -158,7 +161,6 @@ class Scoreboard(FrameObject):
 		mods = getmods(self.settings.settings["Mods leaderboard"])
 
 		for mod in mods:
-			print(mod)
 			if self.settings.settings["Global leaderboard"]:
 				self.getglobalscores(mod)
 			else:
@@ -197,6 +199,9 @@ class Scoreboard(FrameObject):
 				if int(score["score"]) == self.playerscore:
 					self.removeone = 1
 				continue
+
+			if len(score["username"]) > 13:
+				score["username"] = score["username"][:13] + ".."
 
 			keepgoing = self.filter(score["user_id"],  int(score["score"]))
 
@@ -278,7 +283,7 @@ class Scoreboard(FrameObject):
 
 	def getrange(self):
 		if self.currank < self.nboard - 1:
-			return 0, 6
+			return 0, min(6, self.nboard)
 		return self.currank - 4, self.currank
 
 	def setranktoanimate(self, prevrank=None):
@@ -337,11 +342,11 @@ class Scoreboard(FrameObject):
 			return
 		number = number + "x"
 		n = len(number)
-		x_start = self.frames[0].size[0] - int(n * self.combo[0].size[0])
+		x_start = self.frames[0].size[0] * 0.95 - int(n * self.combo[0].size[0])
 		self.drawnumber(background, x_start, y_offset, number, self.combo, alpha)
 
 	def drawname(self, background, y_offset, text, alpha):
-		imageproc.add(self.nameimg[text], background, 0, y_offset + self.height * 0.1, alpha, topleft=True)
+		imageproc.add(self.nameimg[text], background, 0, y_offset + self.height * 0.15, alpha, topleft=True)
 
 	def add_to_frame(self, np_img, background, in_break):
 		if not self.settings.settings["Show scoreboard"]:
@@ -358,8 +363,10 @@ class Scoreboard(FrameObject):
 					coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
 					if coef >= 0:
 						step = max(1, 30 * coef)
-					else:
+					elif coef < 0:
 						step = min(-1, 30 * coef)
+					else:
+						step = 0
 					self.scoreboards[x].y = min(self.origposboards[boardindex][1], self.scoreboards[x].y - step)
 					self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
@@ -388,15 +395,18 @@ class Scoreboard(FrameObject):
 				coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
 				step = max(1, 30 * coef)
 				self.scoreboards[x].y = max(self.scoreboards[x].y - step, self.origposboards[boardindex][1])
+
+				# alpha = self.scoreboards[x].alpha
 			else:
 				self.frame_index = 0
+				# alpha = self.scoreboards[x].alpha * 0.7
 
 			if self.settings.settings["In-game interface"] or in_break:
 				if self.scoreboards[x].alpha > 0:
 					super().add_to_frame(background, self.scoreboards[x].x, self.scoreboards[x].y, topleft=True, alpha=self.scoreboards[x].alpha)
-					self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, self.scoreboards[x].alpha)
-					self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo, self.scoreboards[x].alpha)
-					self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, self.scoreboards[x].alpha)
+					self.drawscore(background, self.scoreboards[x].y, self.scoreboards[x].score, alpha=self.scoreboards[x].alpha)
+					self.drawcombo(background, self.scoreboards[x].y, self.scoreboards[x].maxcombo,alpha=self.scoreboards[x].alpha)
+					self.drawname(background, self.scoreboards[x].y, self.scoreboards[x].playername, alpha=self.scoreboards[x].alpha)
 
 		for i in range(len(self.effectalpha)-1, -1, -1):
 			alpha = max(0, min(1, self.effectalpha[i]))
@@ -405,7 +415,7 @@ class Scoreboard(FrameObject):
 				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
 				self.effectalpha[i] -= 0.075
-				self.effectx[i] = min(0 * self.settings.scale, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)
+				self.effectx[i] = min(0, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)  # big brain formula
 
 				if self.effectalpha[i] <= 0:
 					del self.effectalpha[i]

@@ -10,4 +10,7 @@ def prepare_rankinggrade(scale, settings):
 	for grade in grades:
 		frames.append(YImage(ranking + grade, settings, scale).img)
 
-	return frames
+	frameshd = [YImage(ranking + "XH", settings, scale).img, YImage(ranking + "SH", settings, scale).img]
+	frameshd.extend(frames[2:])
+
+	return frames, frameshd

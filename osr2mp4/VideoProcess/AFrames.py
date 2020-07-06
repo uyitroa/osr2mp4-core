@@ -1,5 +1,7 @@
 from osrparse.enums import Mod
 
+from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
+from ..ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from ..CheckSystem.Judgement import DiffCalculator
 from ..ImageProcess.Objects.RankingScreens.Menuback import Menuback
 from ..ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
@@ -93,6 +95,8 @@ class PreparedFrames:
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 
+		self.playinggrade = prepare_playinggrade(settings.scale * 0.75, settings)
+
 		self.urbar = prepare_bar(settings.scale * settings.settings["Score meter size"], check.scorewindow)
 
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
@@ -117,8 +121,8 @@ class PreparedFrames:
 		self.rankingscore = prepare_rankingscorecounter(self.scorenumbers)
 		self.rankinggrades = prepare_rankinggrade(settings.scale, settings)
 		self.rankingtitle = prepare_rankingtitle(settings.scale, settings)
-		self.rankingcombo = prepare_rankingcombo(settings.scale, settings)
-		self.rankingaccuracy = prepare_rankingaccuracy(settings.scale, settings)
+		self.rankingcombo = prepare_rankingcombo(settings.scale * 1.05, settings)
+		self.rankingaccuracy = prepare_rankingaccuracy(settings.scale * 1.05, settings)
 		self.menuback = prepare_menuback(settings.scale, settings)
 		self.modicons = prepare_modicons(settings.scale, settings)
 		self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
@@ -148,7 +152,8 @@ class FrameObjects:
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
 		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)
-		self.hitresult = HitResult(frames.hitresult, settings)
+		self.playinggrade = PlayingGrade(frames.playinggrade, self.timepie, replay_info, settings)
+		self.hitresult = HitResult(frames.hitresult, settings, replay_info.mod_combination)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
 		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)
@@ -160,7 +165,7 @@ class FrameObjects:
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
 		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
 		self.slider = SliderManager(frames.slider, beatmap.diff, settings, hd)
-		self.spinner = SpinnerManager(frames.spinner, settings)
+		self.spinner = SpinnerManager((frames.spinner, frames.scorecounter), settings, check)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings)

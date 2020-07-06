@@ -1,9 +1,25 @@
 import os
-import numpy as np
-from PIL import Image
 
+import cv2
+import numpy as np
+from PIL import Image, UnidentifiedImageError
 from ...EEnum.EImageFrom import ImageFrom
 from .. import imageproc
+
+
+oldimg = Image.open
+def newimg(fp, mode: str = "r"):
+	try:
+		return oldimg(fp, mode)
+	except UnidentifiedImageError:
+		a = cv2.imread(fp, -1)
+		# cv2.imwrite("temp.png", a)
+		# r = oldimg("temp.png", mode)
+		# os.remove("temp.png")
+		a = cv2.cvtColor(a, cv2.COLOR_RGBA2BGRA)
+		r = Image.fromarray(a)
+		return r
+Image.open = newimg
 
 
 class YImage:
@@ -84,7 +100,7 @@ class YImage:
 			return
 
 		self.filename = "None"
-		self.img = Image.new("RGBA", (0, 0))
+		self.img = Image.new("RGBA", (1, 1))
 		self.imgfrom = ImageFrom.BLANK
 
 	def tosquare(self):

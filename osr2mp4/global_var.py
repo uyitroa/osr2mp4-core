@@ -45,3 +45,4 @@ class Settings:
 
 		self.codec = None
 		self.process = None
+		self.enablelog = False

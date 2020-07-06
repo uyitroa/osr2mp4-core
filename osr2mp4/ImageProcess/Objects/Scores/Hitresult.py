@@ -1,9 +1,11 @@
+from osrparse.enums import Mod
+
 from ... import imageproc
 from ..FrameObject import FrameObject
 
 
 class HitResult(FrameObject):
-	def __init__(self, frames, settings):
+	def __init__(self, frames, settings, mods):
 		super().__init__(frames, settings=settings)
 		self.moveright = self.settings.moveright
 		self.movedown = self.settings.movedown
@@ -14,6 +16,7 @@ class HitResult(FrameObject):
 		self.misscount = 0
 		self.multiplieranimation = {0: 2, 50: 1, 100: 1, 300: 1}
 		self.playfieldscale = self.settings.playfieldscale
+		self.showmiss = not (Mod.Relax in mods or Mod.Autopilot in mods)
 
 	def add_result(self, scores, x, y):
 		"""
@@ -31,6 +34,10 @@ class HitResult(FrameObject):
 
 		if scores == 300 and self.frames[300][0].size[0] == 1 and self.frames[300][0].size[1] == 1:
 			return
+
+		if scores == 0 and not self.showmiss:
+			return
+
 		# [score, x, y, index, alpha, time, go down]
 		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
 
@@ -56,7 +63,7 @@ class HitResult(FrameObject):
 			imageproc.add(img, background, x, y, alpha=self.hitresults[i][4] / 100)
 
 			if score == 0:
-				self.hitresults[i][2] += int(self.hitresults[i][6] * self.playfieldscale)
+				self.hitresults[i][2] += self.hitresults[i][6] * self.playfieldscale
 				self.hitresults[i][6] = max(0.5, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
 
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)

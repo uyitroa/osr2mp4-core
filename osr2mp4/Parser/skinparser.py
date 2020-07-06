@@ -2,6 +2,11 @@
 
 
 # return pos of the first char of the  comment or -1 if there is no comment
+import logging
+import os
+from configparser import ConfigParser
+
+
 def detect_comments(line):
 	ancient_char = ''
 	for k in range(len(line)):
@@ -83,64 +88,32 @@ class Skin:
 		# print(self.colours)
 		# print(self.fonts)
 
+	def filter(self, string):
+		start = "["
+		while string[0] != start:
+			string = string[1:]
+		return string
+
 	def read(self):
-		General = {}
-		Colours = {}
-		Fonts = {}
-		CatchTheBeat = {}
-		Mania = {}
+		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
+		config.optionxform = str
 
 		try:
-			with open(self.skin_path + 'skin.ini', 'rb') as file:
-				lines = file.readlines()
+			with open(self.skin_path + 'skin.ini', encoding='utf-8') as file:
+				lines = file.read()
 		except FileNotFoundError:
-			print("using default skin ini")
-			print(self.skin_path)
-			with open(self.default_path + 'skin.ini', 'rb') as file:
-				lines = file.readlines()
+			with open(self.default_path + 'skin.ini', encoding='utf-8') as file:
+				lines = file.read()
+		lines = self.filter(lines)
+		config.read_string(lines)
 
-		section = None
+		self.general = dict(config["General"])
+		self.colours = dict(config["Colours"])
+		self.fonts = dict(config["Fonts"])
 
-		for line in lines:
-			# remove shit like `\r\n` and leading and trailling whitespaces
-			try:
-				line = line.decode().strip()
-			except UnicodeDecodeError:
-				continue
-			line = raw(line)
-
-			# removing comments
-			line = del_comment(line)
-
-			# do not take care of void lines
-			if line == '':
-				continue
-
-			# if section tag
-			if '[' in line and ']' in line:
-				oldsection = section
-				section = getsection(line)
-				if section is not None:
-					continue
-				else:
-					section = oldsection
-					continue
-					#raise Exception('invalid section name found: ' + line[1:-1])
-
-			sl = line.split(':')
-			try:
-				key, value = sl[0], sl[1]
-			except IndexError as e:
-				continue
-
-			my_command = section + '["' + key + '"] = ' + '"' + str(value) + '"'
-			exec(my_command)
-
-		self.general = General
-		self.colours = Colours
-		self.fonts = Fonts
-		self.catchTheBeat = CatchTheBeat
-		self.mania = Mania
+		logging.log(1, self.general)
+		logging.log(1, self.colours)
+		logging.log(1, self.fonts)
 
 	def parse_general(self):
 		self.general['CursorRotate'] = iint(self.general.get('CursorRotate', 0))
@@ -164,21 +137,25 @@ class Skin:
 
 		cur_combo = 1
 		while True:
-			if "Combo" + str(cur_combo) in self.colours:
+			n = "Combo" + str(cur_combo)
+			if n in self.colours:
 				cur_combo += 1
 			else:
 				break
-		self.colours["Comb1"] = self.colours.get("Combo1", (255, 192, 0))
-		self.colours["Comb2"] = self.colours.get("Combo2", (0, 202, 0))
-		self.colours["Comb3"] = self.colours.get("Combo3", (18, 124, 255))
-		self.colours["Comb3"] = self.colours.get("Combo4", (242, 24, 57))
+		cur_combo -= 1
+
+		if cur_combo == 0:
+			self.colours["Combo1"] = self.colours.get("Combo1", (255, 192, 0))
+			self.colours["Combo2"] = self.colours.get("Combo2", (0, 202, 0))
+			self.colours["Combo3"] = self.colours.get("Combo3", (18, 124, 255))
+			self.colours["Combo4"] = self.colours.get("Combo4", (242, 24, 57))
+			cur_combo = 4
 		self.colours["InputOverlayText"] = self.colours.get("InputOverlayText", (0, 0, 0))
 		self.colours["SliderBall"] = self.colours.get("SliderBall", (2, 170, 255))
 		self.colours["SliderBorder"] = self.colours.get("SliderBorder", (255, 255, 255))
-		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride",
-		                                                       (0, 0, 0))  # TODO: use current combo color
+		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
 		self.colours["SpinnerBackground"] = self.colours.get("SpinnerBackground", (100, 100, 100))
-		self.colours["ComboNumber"] = cur_combo - 1
+		self.colours["ComboNumber"] = cur_combo
 
 	def parse_fonts(self):
 		self.fonts['HitCircleOverlap'] = iint(self.fonts.get('HitCircleOverlap', -2))

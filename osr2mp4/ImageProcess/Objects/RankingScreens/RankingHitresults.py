@@ -6,13 +6,14 @@ from .ARankingScreen import ARankingScreen
 
 class RankingHitresults(ARankingScreen):
 	def __init__(self, frames, replayinfo, numberframes, gap, settings):
-		dummy = [Image.new("RGBA", (0, 0))]
+		dummy = [Image.new("RGBA", (1, 1))]
 		super().__init__(dummy, settings=settings)
 		self.replayinfo = replayinfo
 		self.numberframes = numberframes
 		self.gap = gap * settings.scale
 		self.hitresultframes = frames
 
+		# guessed
 		self.hitresultx = 135 * settings.scale
 		self.hitresulty = 255 * settings.scale
 		self.hitresultwidth = 320 * settings.scale

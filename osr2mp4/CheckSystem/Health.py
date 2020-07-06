@@ -41,7 +41,6 @@ class HealthProcessor:
 		self.drain_starttime = beatmap.start_time
 		self.drain_endtime = beatmap.end_time
 		self.breakperiods = beatmap.breakperiods[:-1]
-		print("HP Drain Rate:", beatmap.diff["HPDrainRate"])
 		self.hpstat = (beatmap.diff["HPDrainRate"]/50)**2
 		self.target_min_health = diffcultyrange(beatmap.diff["HPDrainRate"], self.min_health_target, self.mid_health_target, self.max_health_target)
 		self.drain_rate = 1
@@ -60,6 +59,7 @@ class HealthProcessor:
 		return gain - self.hpstat
 
 	def compute_drainrate(self):
+		# source: https://github.com/ppy/osu/blob/b100fc7fc7252da1e769e670e146dae251df3a91/osu.Game/Rulesets/Scoring/DrainingHealthProcessor.cs#L120
 		if len(self.beatmap) == 0:
 			return 0
 

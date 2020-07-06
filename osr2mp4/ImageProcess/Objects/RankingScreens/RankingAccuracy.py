@@ -6,7 +6,7 @@ from .ARankingScreen import ARankingScreen
 
 class RankingAccuracy(ARankingScreen):
 	def __init__(self, frames, replayinfo, numberframes, gap, settings):
-		dummy = [Image.new("RGBA", (0, 0))]
+		dummy = [Image.new("RGBA", (1, 1))]
 		super().__init__(dummy, settings=settings)
 		maxscore = (replayinfo.number_300s + replayinfo.number_100s + replayinfo.number_50s + replayinfo.misses) * 300
 		score = replayinfo.number_300s * 300 + replayinfo.number_100s * 100 + replayinfo.number_50s * 50
@@ -37,6 +37,7 @@ class RankingAccuracy(ARankingScreen):
 			x += -self.gap + self.numberframes[index].size[0]
 
 	def add_to_frame(self, background):
+		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
 			self.draw_score(self.accuracy, background, 325 * self.settings.scale, 552 * self.settings.scale, self.alpha)

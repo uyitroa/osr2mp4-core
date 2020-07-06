@@ -97,12 +97,3 @@ class HitObjectManager:
 				continue
 
 			hitobj[0].add_to_frame(background, key, _)
-		#
-		# if len(self.objtime) == 0:
-		# 	return
-		# a = self.hitobjects[self.objtime[0]]
-		# if a[0] == SLIDER:
-		# 	key = self.objtime[0]
-		# 	l = self.objecttype[SLIDER][1][key].baiser.req_length
-		# 	cv2.putText(np_img, str(l), (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
-		# 	            (255, 255, 255, 255), 2)

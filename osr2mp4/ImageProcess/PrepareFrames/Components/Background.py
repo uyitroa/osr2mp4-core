@@ -9,8 +9,10 @@ def prepare_background(backgroundname, settings):
 	:param backgroundname: string
 	:return: PIL.Image
 	"""
-	print(backgroundname)
-	img = Image.open(backgroundname).convert("RGBA")
+	try:
+		img = Image.open(backgroundname).convert("RGBA")
+	except Exception as e:
+		img = Image.open(settings.path + "res/bg.png").convert("RGBA")
 
 	width = settings.width
 	height = settings.height
@@ -24,7 +26,7 @@ def prepare_background(backgroundname, settings):
 
 	scale = width/w
 	img = imageproc.change_size(img, scale, scale)
-	imgs = [Image.new("RGBA", (0, 0))]
+	imgs = [Image.new("RGBA", (1, 1))]
 
 	dim = max(0, min(100, (100 - settings.settings["Background dim"]))) * 2.55
 	color = np.array([dim, dim, dim])

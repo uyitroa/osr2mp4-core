@@ -14,7 +14,6 @@ class SpinBonusScore(FrameObject):
 	def set_bonusscore(self, rotated_bonus):
 		if rotated_bonus*1000 == int(self.spinbonuses[0]):
 			return
-		print(rotated_bonus)
 		self.spinbonuses = [str(rotated_bonus*1000), self.x, self.y, 0]
 
 	def xstart(self, n, x, size):

@@ -3,7 +3,7 @@ from ...PrepareFrames.YImage import YImages
 
 hitprefix = "hit"
 default_size = 128
-hitresult_size = 1.7
+hitresult_size = 1.5
 
 
 def prepare_hitresults(scale, beatmap, settings):

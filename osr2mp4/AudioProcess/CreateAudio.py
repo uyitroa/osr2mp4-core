@@ -4,6 +4,8 @@ import subprocess
 import time
 from copy import deepcopy
 from multiprocessing import Process
+
+from osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
 import numpy as np
@@ -68,20 +70,20 @@ def pydubtonumpy(audiosegment):
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
-def getaudiofromfile(filename, path, defaultpath, settings, fmt="mp3", volume=1.0, speed=1.0):
+def getaudiofromfile(filename, path, defaultpath, settings, fmt="wav", volume=1.0, speed=1.0):
 	try:
 		return read(path + filename + "." + fmt, settings, volume=volume, speed=speed)
 	except FileNotFoundError:
-		nxtfmt = "mp3"
-		if fmt == "mp3":
-			nxtfmt = "wav"
-		elif fmt == "wav":
+		nxtfmt = "wav"
+		if fmt == "wav":
+			nxtfmt = "mp3"
+		elif fmt == "mp3":
 			nxtfmt = "ogg"
 
 		if defaultpath is not None:
-			if fmt == "mp3":
-				return getaudiofromfile(filename, path, defaultpath, settings, fmt="wav")
-			elif fmt == "wav":
+			if fmt == "wav":
+				return getaudiofromfile(filename, path, defaultpath, settings, fmt="mp3")
+			elif fmt == "mp3":
 				return getaudiofromfile(filename, path, defaultpath, settings, fmt="ogg")
 			return getaudiofromfile(filename, defaultpath, None, settings, nxtfmt)
 
@@ -121,7 +123,7 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 		Hitsound.hitsounds[f] = Audio2p(*getaudiofromfile(f, skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
+	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100 * 1.05))
 	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
@@ -146,7 +148,10 @@ def getoffset(offset, endtime, song):
 	return out
 
 
-def processaudio(my_info, beatmap, offset, endtime, dt, settings):
+def processaudio(my_info, beatmap, offset, endtime, mods, settings):
+
+	nc = Mod.Nightcore in mods
+	addmisssound = not (Mod.Relax in mods or Mod.Autopilot in mods)
 
 	skin_path = settings.skin_path
 	default_skinpath = settings.default_path
@@ -155,11 +160,14 @@ def processaudio(my_info, beatmap, offset, endtime, dt, settings):
 
 	ccc = time.time()
 
-	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=not dt))
+	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	song.rate /= settings.timeframe/1000
 
 	filenames = getfilenames(beatmap, settings.settings["Ignore beatmap hitsounds"])
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)
+
+	if not addmisssound:
+		Hitsound.miss = Audio2p(1, np.zeros((0, 2), dtype=np.float32))
 
 	hitsoundm = HitsoundManager(beatmap)
 
@@ -179,15 +187,14 @@ def processaudio(my_info, beatmap, offset, endtime, dt, settings):
 	write(settings.temp + 'audio.mp3', round(song.rate * settings.timeframe/1000), out)
 
 
-
-def create_audio(my_info, beatmap_info, offset, endtime, settings, dt):
+def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):
 	beatmap_info = deepcopy(beatmap_info)
 
 	if settings.process >= 1:
-		audio_args = (my_info, beatmap_info, offset, endtime, dt, settings,)
+		audio_args = (my_info, beatmap_info, offset, endtime, mods, settings,)
 		audio = Process(target=processaudio, args=audio_args)
 		audio.start()
 		return audio
 	else:
-		processaudio(my_info, beatmap_info, offset, endtime, dt, settings)
+		processaudio(my_info, beatmap_info, offset, endtime, mods, settings)
 		return None
