@@ -1,5 +1,6 @@
 from osrparse.enums import Mod
 
+from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
 from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from ..ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from ..CheckSystem.Judgement import DiffCalculator
@@ -186,3 +187,4 @@ class FrameObjects:
 		self.modicons = ModIcons(frames.modicons, replay_info, settings)
 		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
+		self.ppcounter = PPCounter(settings)

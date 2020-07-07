@@ -53,7 +53,7 @@ def getinfos(mapname, upsidedown=False):
 		fname = str(x)
 		should_continue = os.path.isfile("{}{}{}.osr".format(abspath, mapname, fname))
 
-	return bmap, replay_infos
+	return bmap, replay_infos, f"{abspath}{mapname}.osu"
 
 
 def getbeatmap(mapname, upsidedown=False):
@@ -97,7 +97,7 @@ def setupenv(suffix, mapname):
 	beatmap_file = get_osu(settings.beatmap, replay_info.beatmap_hash)
 	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours,
 	                    Mod.HardRock in replay_info.mod_combination)
-	return settings, replay_info, beatmap
+	return settings, replay_info, beatmap, beatmap_file
 
 
 def updateframes(resultprefix, frames):
@@ -115,7 +115,7 @@ def updateframes(resultprefix, frames):
 
 def getframes(suffix, mapname, update=False, data=None):
 	if data is None:
-		settings, replay_info, beatmap = setupenv(suffix, mapname)
+		settings, replay_info, beatmap, beatmap_file = setupenv(suffix, mapname)
 	else:
 		settings, replay_info, beatmap = data
 	frames = PreparedFrames(settings, beatmap, Mod.Hidden in replay_info.mod_combination)
@@ -127,14 +127,14 @@ def getframes(suffix, mapname, update=False, data=None):
 
 def getdrawer(suffix, mapname, videotime):
 	from osr2mp4.VideoProcess.Draw import Drawer
-	settings, replay_info, beatmap = setupenv(suffix, mapname)
+	settings, replay_info, beatmap, beatmap_file = setupenv(suffix, mapname)
 	replay_event, cur_time = setupReplay("{}{}.osr".format(abspath, mapname), beatmap)
 	replay_info.play_data = replay_event
 	_, frames = getframes(suffix, mapname, data=(settings, replay_info, beatmap))
 
 	videotime = find_time(*videotime, replay_info.play_data, settings)
 
-	resultinfo = checkmain(beatmap, replay_info, settings, tests=True)
+	resultinfo = checkmain(beatmap_file, beatmap, replay_info, settings, tests=True)
 
 	shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
