@@ -401,7 +401,7 @@ class Beatmap:
 						*        o <- hitCircle has stack of -1
 						*         o <- hitCircle has stack of -2
 					"""
-					if "slider" in objectN and self.enddistance(objectN, objectI) < stack_distance:
+					if "slider" in objectN["type"] and self.enddistance(objectN, objectI) < stack_distance:
 						offset = objectI["stacking"] - objectN["stacking"] + 1
 
 						for j in range(n + 1, i + 1):
