@@ -18,6 +18,7 @@ class Beatmap:
 		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
+		self.path = None
 
 		self.ncombo = colors["ComboNumber"]
 		self.hr = hr
@@ -487,4 +488,6 @@ def read_file(filename, scale, colors, hr):
 	              "[HitObjects]"]
 	info = split(delimiters, content)
 	fiel.close()
-	return Beatmap(info, scale, colors, hr)
+	bmap = Beatmap(info, scale, colors, hr)
+	bmap.path = filename
+	return bmap

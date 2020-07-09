@@ -52,7 +52,7 @@ class Drawer:
 
 		self.preempt_followpoint = 800
 
-		self.updater = Updater(self.resultinfo, self.component)
+		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
 
 		to_time = replay_event[self.start_index][Replays.TIMES]
 		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))

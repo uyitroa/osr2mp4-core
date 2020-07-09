@@ -1,4 +1,4 @@
-import osrparse
+from ..osrparse import *
 
 
 # index for replay_event
@@ -10,7 +10,7 @@ from ..EEnum.EReplay import Replays
 
 
 def setupReplay(osrfile, beatmap):
-	replay_info = osrparse.parse_replay_file(osrfile)
+	replay_info = parse_replay_file(osrfile)
 	replay_data = [None] * len(replay_info.play_data)
 
 	start_time = beatmap.start_time
@@ -40,8 +40,6 @@ def setupReplay(osrfile, beatmap):
 
 	replay_data = replay_data[start_index:-1]
 	replay_data.sort(key=lambda x: x[Replays.TIMES])  # sort replay data based on time
-
-	start_time = replay_data[0][Replays.TIMES]
 
 	for x in range(10):
 		replay_data.append([replay_data[-1][Replays.CURSOR_X], replay_data[-1][Replays.CURSOR_Y], 0, max(replay_data[-1][Replays.TIMES], int(beatmap.end_time + 1000) + 17 * x)])

@@ -1,4 +1,4 @@
-from osrparse.enums import Mod
+from ....osrparse.enums import Mod
 
 from ...PrepareFrames.YImage import YImage
 

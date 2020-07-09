@@ -1,4 +1,4 @@
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
 from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade

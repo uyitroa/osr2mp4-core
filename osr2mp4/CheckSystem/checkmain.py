@@ -1,7 +1,7 @@
 import logging
 
 from oppai import ezpp_free
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from .HitObjectChecker import HitObjectChecker
 from ..EEnum.EReplay import Replays
@@ -99,13 +99,13 @@ def diffmod(replay_info, diff):
 	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
 
 
-def checkmain(osufile, beatmap, replay_info, settings, tests=False):
+def checkmain(beatmap, replay_info, settings, tests=False):
 	osr_index = 0
 	replay_event = replay_info.play_data
 
 	diffmod(replay_info, beatmap.diff)
 
-	hitobjectchecker = HitObjectChecker(osufile, beatmap, settings, replay_info.mod_combination, tests)
+	hitobjectchecker = HitObjectChecker(beatmap, settings, replay_info.mod_combination, tests)
 
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]
@@ -134,8 +134,6 @@ def checkmain(osufile, beatmap, replay_info, settings, tests=False):
 			breakperiod = beatmap.breakperiods[break_index]
 		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	if not tests and settings.settings["Enable PP counter"]:
-		ezpp_free(hitobjectchecker.ez)
 	logging.debug("check done")
 	logging.log(1, "RETURN %r", hitobjectchecker.info[-1])
 	return hitobjectchecker.info

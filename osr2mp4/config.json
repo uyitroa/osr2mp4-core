@@ -1,16 +1,16 @@
 {
     "osu! path": "/Users/yuitora./Documents/osu!.app/Contents/Resources/drive_c/osu!",
     "Skin path": "/Users/yuitora./Downloads/shige",
-    "Beatmap path": "/Users/yuitora./Downloads/golden",
-    ".osr path": "/Users/yuitora./Downloads/golden.osr",
+    "Beatmap path": "/Users/yuitora./Downloads/logic",
+    ".osr path": "/Users/yuitora./Downloads/logic.osr",
     "Default skin path": "",
     "Output path": "/Users/yuitora./PycharmProjects/osr2mp4-core/output.mkv",
     "Width": 1920,
     "Height": 1080,
     "FPS": 60,
     "Start time": 0,
-    "End time": -1,
+    "End time":  5,
     "Video codec": "X264",
-    "Process": 3,
+    "Process": 2,
     "ffmpeg path": "ffmpeg"
 }

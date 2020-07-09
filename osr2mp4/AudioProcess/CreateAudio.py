@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 from multiprocessing import Process
 
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
 import numpy as np

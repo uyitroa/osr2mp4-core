@@ -1,7 +1,7 @@
 import logging
 
 from autologging import traced, logged
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
 from ..Utils.Resolution import get_screensize

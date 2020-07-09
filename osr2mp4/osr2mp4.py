@@ -3,8 +3,8 @@ import inspect
 import os
 import sys
 import time
-import osrparse
-from osrparse.enums import Mod
+from .osrparse import *
+from .osrparse.enums import Mod
 import PIL
 from .Exceptions import ReplayNotFound
 from .Parser.jsonparser import read
@@ -108,7 +108,7 @@ class Osr2mp4:
 		self.settings.process = data["Process"]
 
 		try:
-			self.replay_info = osrparse.parse_replay_file(replaypath)
+			self.replay_info = parse_replay_file(replaypath)
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
 		#
@@ -120,7 +120,6 @@ class Osr2mp4:
 		self.audio = None
 
 		self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
-		print(self.beatmap_file)
 		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, upsidedown)
 
 		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
@@ -141,7 +140,7 @@ class Osr2mp4:
 		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
 
 	def analyse_replay(self):
-		self.resultinfo = checkmain(self.beatmap_file, self.beatmap, self.replay_info, self.settings)
+		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
 
 	def startaudio(self):
 		if self.resultinfo is None:

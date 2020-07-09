@@ -1,16 +1,46 @@
+import atexit
+
+from oppai import *
 from .EEnum.EState import States
 
 
 class Updater:
 	counter = 0
 
-	def __init__(self, resultinfo, component):
+	def __init__(self, resultinfo, component, settings, mods, osufile):
 		self.resultinfo = resultinfo
 		self.component = component
 		self.info_index = 0
 		self.info = self.resultinfo[0]
 		self.idd = self.counter
 		self.counter += 1
+		self.settings = settings
+		if settings.settings["Enable PP counter"]:
+			self.ez = ezpp_new()
+			ezpp_set_autocalc(self.ez, 1)
+			ezpp_dup(self.ez, osufile)
+			self.ezpp_setmods(mods)
+			atexit.register(self.freeezpp)
+
+	def ezpp_setmods(self, playermods):
+		playermodezpp = MODS_NOMOD
+		for playermod in playermods:
+			playermodezpp |= playermod
+		ezpp_set_mods(self.ez, playermodezpp)
+
+	def freeezpp(self):
+		ezpp_free(self.ez)
+
+	def process_pp(self):
+		if not self.settings.settings["Enable PP counter"]:
+			return
+		ezpp_set_accuracy(self.ez, self.info.accuracy[100], self.info.accuracy[50])
+		ezpp_set_nmiss(self.ez, self.info.accuracy[0])
+		ezpp_set_combo(self.ez, self.info.maxcombo)
+
+		ezpp_set_end(self.ez, self.info.id+1)
+		curpp = ezpp_pp(self.ez)
+		self.component.ppcounter.update_pp(curpp)
 
 	def process_combo(self):
 		if self.info.combostatus == 1:
@@ -64,7 +94,6 @@ class Updater:
 				self.component.scorecounter.update_score(self.info.score)
 
 		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
-		self.component.ppcounter.update_pp(self.info.pp)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
@@ -74,3 +103,4 @@ class Updater:
 			self.process_combo()
 			self.process_acc()
 			self.info_index += 1
+		self.process_pp()

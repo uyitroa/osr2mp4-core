@@ -1,5 +1,5 @@
 from PIL import Image
-from osrparse.enums import Mod
+from ....osrparse.enums import Mod
 
 from ....CheckSystem.getgrade import getgrade
 from ... import imageproc

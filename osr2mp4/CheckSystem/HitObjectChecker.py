@@ -1,7 +1,7 @@
 import logging
 import math
 
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from ..EEnum.EReplay import Replays
 from .Health import HealthProcessor, HealthDummy
@@ -12,7 +12,7 @@ from oppai import *
 from ..EEnum.EState import States
 
 
-Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo pp more")
+Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
 Slider = namedtuple("Slider", "followstate hitvalue tickend x y end arrowindex")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
@@ -43,7 +43,7 @@ def getmultiplier(mods):
 
 
 class HitObjectChecker:
-	def __init__(self, osufile, beatmap, settings, mods, tests=False):
+	def __init__(self, beatmap, settings, mods, tests=False):
 		self.diff = beatmap.diff
 		self.settings = settings
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
@@ -84,27 +84,6 @@ class HitObjectChecker:
 		self.drainrate = self.health_processor.drain_rate
 		self.health_value = 1
 
-		self.testing = tests
-		if not tests and settings.settings["Enable PP counter"]:
-			self.ez = ezpp_new()
-			ezpp_set_autocalc(self.ez, 1)
-			ezpp_dup(self.ez, osufile)
-			self.ezpp_setmods(mods)
-		self.curpp = 0
-		self.origobj_len = len(self.hitobjects)
-
-	def ezpp_setmods(self, playermods):
-		mods = {Mod.Easy: MODS_EZ, Mod.NoFail: MODS_NF, Mod.HalfTime: MODS_HT,
-	              Mod.HardRock: MODS_HR, Mod.DoubleTime: MODS_DT, Mod.Nightcore: MODS_NC, Mod.Hidden: MODS_HD, Mod.Flashlight: MODS_FL,
-	              Mod.Relax: MODS_RX, Mod.Autopilot: MODS_AP, Mod.SpunOut: MODS_SO, Mod.NoMod: MODS_NOMOD}
-
-		playermodezpp = MODS_NOMOD
-		for playermod in playermods:
-			if playermod not in mods:
-				continue
-			playermodezpp |= mods[playermod]
-		ezpp_set_mods(self.ez, playermodezpp)
-
 	def difficulty_multiplier(self):
 		return difficulty_multiplier(self.diff)
 
@@ -122,8 +101,6 @@ class HitObjectChecker:
 			objtype = []  # no bonus score for new combo
 			hitresult = 100 if hitresult < 1000 else 300
 		self.health_processor.updatehp(hitresult, objtype)
-		if not self.testing and self.settings.settings["Enable PP counter"]:
-			self.updatepp()
 
 	def getacc(self, acc):
 		total = (acc[300] + acc[100] + acc[50] + acc[0]) * 300
@@ -133,16 +110,6 @@ class HitObjectChecker:
 			return 0
 
 		return actual/total * 100
-
-	def updatepp(self):
-		# acc = self.getacc(self.results)
-		ezpp_set_accuracy(self.ez, self.results[100], self.results[50])
-		ezpp_set_nmiss(self.ez, self.results[0])
-		ezpp_set_combo(self.ez, self.maxcombo)
-
-		objcount = max(1, self.origobj_len - len(self.hitobjects))  # because we delete self.hitobject[0] everytime it's hit.
-		ezpp_set_end(self.ez, objcount)
-		self.curpp = ezpp_pp(self.ez)
 
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index,
@@ -158,7 +125,7 @@ class HitObjectChecker:
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
 					info = Info(replay[osr_index][3], self.combo, 0, self.scorecounter, self.scorecounter,
 					            copy.copy(self.results), copy.copy(self.clicks), None,
-					            timestamp, idd, self.health_processor.health_value, self.maxcombo, self.curpp, circle)
+					            timestamp, idd, self.health_processor.health_value, self.maxcombo, circle)
 					self.info.append(info)
 					return note_lock, sum_newclick, i
 
@@ -215,7 +182,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-			            self.health_processor.health_value, self.maxcombo, self.curpp, circle)
+			            self.health_processor.health_value, self.maxcombo, circle)
 			self.info.append(info)
 		else:
 			note_lock = True
@@ -251,7 +218,7 @@ class HitObjectChecker:
 					info = Info(replay[osr_index][3], 0, -1,
 					            self.scorecounter, self.scorecounter,
 					            copy.copy(self.results), copy.copy(self.clicks), 0, timestamp, idd,
-					            self.health_processor.health_value, self.maxcombo, self.curpp, circle)
+					            self.health_processor.health_value, self.maxcombo, circle)
 					self.info.append(info)
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
@@ -268,7 +235,7 @@ class HitObjectChecker:
 					info = Info(osrtime, self.combo-x, 1,
 					            self.scorecounter, self.scorecounter,
 					            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-					            self.health_processor.health_value, self.maxcombo, self.curpp, slider)
+					            self.health_processor.health_value, self.maxcombo, slider)
 					self.info.append(info)
 				combostatus = 1
 
@@ -279,7 +246,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-			            self.health_processor.health_value, self.maxcombo, self.curpp, slider)
+			            self.health_processor.health_value, self.maxcombo, slider)
 			self.info.append(info)
 
 		return notelock, i
@@ -317,7 +284,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 			            self.scorecounter, self.scorecounter,
 			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-			            self.health_processor.health_value, self.maxcombo, self.curpp, spinner)
+			            self.health_processor.health_value, self.maxcombo, spinner)
 			self.info.append(info)
 		return i
 

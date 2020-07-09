@@ -1,7 +1,7 @@
 from copy import copy
 
 from ... import imageproc
-from osrparse.enums import Mod
+from ....osrparse.enums import Mod
 
 from ....CheckSystem.getgrade import getgrade
 from ..FrameObject import FrameObject
