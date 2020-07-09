@@ -111,11 +111,10 @@ class Osr2mp4:
 			self.replay_info = parse_replay_file(replaypath)
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
-		#
+
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
-
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
