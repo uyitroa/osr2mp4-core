@@ -33,7 +33,7 @@ class TestScore(unittest.TestCase):
 		for i in range(len(self.tests)):
 			case = self.tests[i]
 			for x in range(len(case[1])):
-				resultinfo = checkmain(case[2], case[0], case[1][x], self.settings, True)
+				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
 				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
 				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
 				self.assertEqual(case[1][x].number_50s, resultinfo[-1].accuracy[50], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
