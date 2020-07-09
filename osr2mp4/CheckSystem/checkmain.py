@@ -119,14 +119,11 @@ def checkmain(osufile, beatmap, replay_info, settings, tests=False):
 		else:
 			f_k1, f_k2, f_m1, f_m2 = False, False, False, False
 
-
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
-
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1, in_break)
-
 
 		osr_index += 1
 
@@ -137,7 +134,7 @@ def checkmain(osufile, beatmap, replay_info, settings, tests=False):
 			breakperiod = beatmap.breakperiods[break_index]
 		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	if not tests:
+	if not tests and settings.settings["Enable PP counter"]:
 		ezpp_free(hitobjectchecker.ez)
 	logging.debug("check done")
 	logging.log(1, "RETURN %r", hitobjectchecker.info[-1])

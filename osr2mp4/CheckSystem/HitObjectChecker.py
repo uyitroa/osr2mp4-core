@@ -45,6 +45,7 @@ def getmultiplier(mods):
 class HitObjectChecker:
 	def __init__(self, osufile, beatmap, settings, mods, tests=False):
 		self.diff = beatmap.diff
+		self.settings = settings
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
 		if self.diff["ApproachRate"] < 5:
@@ -84,7 +85,7 @@ class HitObjectChecker:
 		self.health_value = 1
 
 		self.testing = tests
-		if not tests:
+		if not tests and settings.settings["Enable PP counter"]:
 			self.ez = ezpp_new()
 			ezpp_set_autocalc(self.ez, 1)
 			ezpp_dup(self.ez, osufile)
@@ -121,7 +122,7 @@ class HitObjectChecker:
 			objtype = []  # no bonus score for new combo
 			hitresult = 100 if hitresult < 1000 else 300
 		self.health_processor.updatehp(hitresult, objtype)
-		if not self.testing:
+		if not self.testing and self.settings.settings["Enable PP counter"]:
 			self.updatepp()
 
 	def getacc(self, acc):

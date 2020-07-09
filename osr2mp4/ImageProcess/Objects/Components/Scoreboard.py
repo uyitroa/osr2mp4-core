@@ -14,7 +14,7 @@ BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playernam
 
 
 def getsummods(mods):
-	if mods == "*":
+	if mods == "*" or mods == "":
 		return "*"
 	mods = re.findall('..', mods)
 	modidct = {
