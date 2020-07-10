@@ -1,2 +1,0 @@
-TRACE:__main__:my_function:CALL *('123',) **{}
-TRACE:__main__:my_function:RETURN '123asdf'
