@@ -4,6 +4,7 @@
 # return pos of the first char of the  comment or -1 if there is no comment
 import logging
 import os
+from collections import OrderedDict
 from configparser import ConfigParser
 
 
@@ -24,18 +25,18 @@ def del_comment(line):
 
 
 escape_dict = {'\a': '/a',
-               '\b': '/b',
-               '\c': '/c',
-               '\f': '/f',
-               '\n': '/n',
-               '\r': '/r',
-               '\t': '/t',
-               '\v': '/v',
-               '\'': "/'",
-               '\"': '/"',
-               '\\': '/',
-               ' ': '',
-               '\ufeff': ''}
+			   '\b': '/b',
+			   '\c': '/c',
+			   '\f': '/f',
+			   '\n': '/n',
+			   '\r': '/r',
+			   '\t': '/t',
+			   '\v': '/v',
+			   '\'': "/'",
+			   '\"': '/"',
+			   '\\': '/',
+			   ' ': '',
+			   '\ufeff': ''}
 
 
 def raw(text):
@@ -66,7 +67,15 @@ def getsection(line):
 	return None
 
 
-settings = {}  # why not put all sections into it at the end ?
+# settings = {}  # why not put all sections into it at the end ?
+
+
+class MultiOrderedDict(OrderedDict):
+	def __setitem__(self, key, value):
+		if isinstance(value, list) and key in self:
+			return
+
+		super().__setitem__(key, value)
 
 
 class Skin:
@@ -99,7 +108,7 @@ class Skin:
 		return newstring
 
 	def read(self):
-		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
+		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//", dict_type=MultiOrderedDict)
 		config.optionxform = str
 
 		try:
@@ -114,8 +123,6 @@ class Skin:
 		self.general = dict(config["General"])
 		self.colours = dict(config["Colours"])
 		self.fonts = dict(config["Fonts"])
-
-		print(self.colours)
 
 		logging.log(1, self.general)
 		logging.log(1, self.colours)

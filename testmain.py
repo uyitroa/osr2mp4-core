@@ -1,7 +1,13 @@
 from PIL import Image
+from osr2mp4.ImageProcess.Objects.HitObjects.CircleNumber import Number
+
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
+
+from osr2mp4.ImageProcess.Objects.HitObjects.Circles import CircleManager
+
 from osr2mp4.Parser.skinparser import Skin
 
-from osr2mp4.ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursormiddle
+# from osr2mp4.ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursormiddle
 from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle
 
@@ -116,12 +122,25 @@ def testplayinggrade(osr2mp4):
 
 
 def main():
-	osr2mp4 = Osr2mp4(filedata="/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/config.json",
-	                  filesettings="/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/settings.json", logtofile=True)
+	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json",
+	                  filesettings="osr2mp4/settings.json", logtofile=True)
 	osr2mp4.analyse_replay()
 	components = DummyFrameObjects()
-	s = Skin("skin.ini", osr2mp4.settings.default_path)
-	print(s.colours)
+	background = Image.new("RGBA", (osr2mp4.settings.width, osr2mp4.settings.height))
+
+	osr2mp4.settings.skin_ini = skin = Skin(osr2mp4.settings.skin_path, osr2mp4.settings.default_path)
+
+	frames = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.playfieldscale, osr2mp4.settings, False)
+	components.hitcirclenumber = Number(prepare_hitcirclenumber(osr2mp4.beatmap.diff, osr2mp4.settings.playfieldscale, osr2mp4.settings), skin.fonts)
+	components.circle = CircleManager(frames, 800, components.hitcirclenumber, osr2mp4.settings)
+	hitobject = osr2mp4.beatmap.hitobjects[40]
+	hitobject["combo_number"] = 11
+	components.circle.add_circle(hitobject, hitobject["x"], hitobject["y"], hitobject["time"] - 10)
+	components.circle.add_to_frame(background, str(hitobject["id"]) + "c", 0)
+
+	background.save("test.png")
+
+
 
 if __name__ == '__main__':
 	main()
