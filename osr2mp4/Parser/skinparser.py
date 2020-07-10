@@ -92,7 +92,11 @@ class Skin:
 		start = "["
 		while string[0] != start:
 			string = string[1:]
-		return string
+
+		newstring = ""
+		for line in string.split("\n"):
+			newstring += line.strip() + "\n"
+		return newstring
 
 	def read(self):
 		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
@@ -110,6 +114,8 @@ class Skin:
 		self.general = dict(config["General"])
 		self.colours = dict(config["Colours"])
 		self.fonts = dict(config["Fonts"])
+
+		print(self.colours)
 
 		logging.log(1, self.general)
 		logging.log(1, self.colours)
