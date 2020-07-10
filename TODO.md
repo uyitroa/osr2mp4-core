@@ -16,3 +16,6 @@
 - Circle, Slider, Spinner should be a class for one object. So those classes shouldn't have a list of objects
 - Put getglobalscores in InfoProcessor.
 - Refactor InfoProcessor.process_acc into smaller functions
+- Setup an env to test each object
+- Individual test
+- No recursion to find sound file
