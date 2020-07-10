@@ -57,4 +57,5 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.skin_ini = skin
 	settings.default_skin_ini = skin
 
+	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
 	settings.settings = gameplaydata
