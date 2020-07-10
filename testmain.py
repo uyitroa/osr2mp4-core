@@ -1,4 +1,5 @@
 from PIL import Image
+from osr2mp4.Parser.skinparser import Skin
 
 from osr2mp4.ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursormiddle
 from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
@@ -119,16 +120,8 @@ def main():
 	                  filesettings="/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/settings.json", logtofile=True)
 	osr2mp4.analyse_replay()
 	components = DummyFrameObjects()
-	# testpp(components, osr2mp4)
-	# testcircle(osr2mp4)
-	# testplayinggrade(osr2mp4)
-	b = prepare_cursor(osr2mp4.settings.scale, osr2mp4.settings)
-	print(b[1])
-	a = prepare_cursormiddle(osr2mp4.settings.scale, osr2mp4.settings, default=b[1])
-	print(a[1])
-
-
-
+	s = Skin("skin.ini", osr2mp4.settings.default_path)
+	print(s.colours)
 
 if __name__ == '__main__':
 	main()
