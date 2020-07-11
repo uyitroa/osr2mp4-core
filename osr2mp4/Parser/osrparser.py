@@ -39,6 +39,10 @@ def setupReplay(osrfile, beatmap):
 		replay_data[index][Replays.TIMES] = total_time
 
 	replay_data = replay_data[start_index:-1]
+
+	if replay_data[0] is None:
+		replay_data = replay_data[1:]
+
 	replay_data.sort(key=lambda x: x[Replays.TIMES])  # sort replay data based on time
 
 	for x in range(10):
