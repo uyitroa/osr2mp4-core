@@ -109,7 +109,10 @@ class Skin:
 
 		newstring = ""
 		for line in string.split("\n"):
-			newstring += line.strip() + "\n"
+			l = line.strip()
+			if ":" not in line and "[" not in line:
+				l = ""
+			newstring += l + "\n"
 		return newstring
 
 	def read(self):
