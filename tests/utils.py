@@ -1,4 +1,5 @@
 import ctypes
+import glob
 import inspect
 from multiprocessing.sharedctypes import RawArray
 
@@ -193,3 +194,8 @@ def get_res(filename):
 	width = vid.get(cv2.CAP_PROP_FRAME_WIDTH)
 
 	return width, height
+
+
+def getskins():
+	skinpath = os.path.join(abspath, "skininis", "*.ini")
+	return glob.glob(skinpath)

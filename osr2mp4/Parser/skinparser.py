@@ -79,15 +79,20 @@ class MultiOrderedDict(OrderedDict):
 
 
 class Skin:
-	def __init__(self, skin_path, default_path):
+	def __init__(self, skin_path, default_path, inipath=None):
 		# sections
 		self.general = {}
 		self.colours = {}
 		self.fonts = {}
 		self.catchTheBeat = {}
 		self.mania = {}
-		self.skin_path = skin_path
-		self.default_path = default_path
+		self.skin_path = os.path.join(skin_path, "skin.ini")
+		self.default_path = os.path.join(default_path, "skin.ini")
+
+		if inipath is not None:
+			self.skin_path = self.default_path = inipath
+
+
 		self.read()
 		self.parse_general()
 		self.parse_colors()
@@ -112,10 +117,10 @@ class Skin:
 		config.optionxform = str
 
 		try:
-			with open(self.skin_path + 'skin.ini', encoding='utf-8') as file:
+			with open(self.skin_path, encoding='utf-8') as file:
 				lines = file.read()
 		except FileNotFoundError:
-			with open(self.default_path + 'skin.ini', encoding='utf-8') as file:
+			with open(self.default_path, encoding='utf-8') as file:
 				lines = file.read()
 		lines = self.filter(lines)
 		config.read_string(lines)
