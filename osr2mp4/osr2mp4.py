@@ -3,6 +3,8 @@ import inspect
 import os
 import sys
 import time
+import traceback
+
 from .osrparse import *
 from .osrparse.enums import Mod
 import PIL
@@ -47,12 +49,20 @@ defaultsettings = {
 }
 
 
+def excepthook(exc_type, exc_value, exc_tb):
+	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+	logging.exception(tb)
+	print(tb)
+
+
+
 @logged(logging.getLogger(__name__))
 @traced
 class Osr2mp4:
 
 	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
+		sys.excepthook = excepthook
 		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
 		self.settings.path = os.path.relpath(self.settings.path)
 

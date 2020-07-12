@@ -142,6 +142,7 @@ class PreparedFrames:
 		self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
 		logging.debug('start preparing done')
 
+
 class FrameObjects:
 	def __init__(self, frames, settings, beatmap, replay_info):
 		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)

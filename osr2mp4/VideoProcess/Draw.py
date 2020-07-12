@@ -1,7 +1,10 @@
 
 import logging
+import sys
 
 import time
+import traceback
+
 from PIL import Image
 
 from ..global_var import Settings
@@ -156,7 +159,14 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 		raise
 
 
+def excepthook(exc_type, exc_value, exc_tb):
+	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+	logging.exception(tb)
+	print(tb)
+
+
 def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+	sys.excepthook = excepthook
 	asdfasdf = time.time()
 	Settings.usecv2 = settings.settings["Use opencv resize"]
 
