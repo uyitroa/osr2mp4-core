@@ -15,6 +15,7 @@ import os
 
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
+	logging.debug('entering preparedframes')
 	frames = PreparedFrames(settings, beatmap, Mod.Hidden in replay_info.mod_combination)
 
 	if settings.process >= 1:
