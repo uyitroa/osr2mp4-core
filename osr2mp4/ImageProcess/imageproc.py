@@ -96,6 +96,10 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 
 	elif channel == 4:
 
+		if Settings.usecv2:
+			print("HI")
+			return add(img, background, x_offset, y_offset, alpha=alpha, channel=3, topleft=True)
+
 		b = background.crop((x_offset, y_offset, x_offset + img.size[0], y_offset + img.size[1]))
 		c = Image.alpha_composite(b, img)
 		background.paste(c, (x_offset, y_offset))
