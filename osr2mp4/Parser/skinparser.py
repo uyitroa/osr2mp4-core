@@ -60,11 +60,10 @@ def iint(text):
 	return int(new_string)
 
 
-def getsection(line):
-	for s in ['[General]', '[Colours]', '[Fonts]', '[CatchTheBeat]', '[Mania]']:
-		if s in line:
-			return s[1:-1]
-	return None
+def getsection(config: ConfigParser, section):
+	if config.has_section(section):
+		return dict(config[section])
+	return {}
 
 
 # settings = {}  # why not put all sections into it at the end ?
@@ -128,9 +127,9 @@ class Skin:
 		lines = self.filter(lines)
 		config.read_string(lines)
 
-		self.general = dict(config["General"])
-		self.colours = dict(config["Colours"])
-		self.fonts = dict(config["Fonts"])
+		self.general = getsection(config, "General")
+		self.colours = getsection(config, "Colours")
+		self.fonts = getsection(config, "Fonts")
 
 		logging.log(1, self.general)
 		logging.log(1, self.colours)
