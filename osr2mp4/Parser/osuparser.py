@@ -1,12 +1,14 @@
 import math
 import re
+
+from ..Exceptions import GameModeNotSupported
 from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:
 	def __init__(self, info, scale, colors, hr):
 		self.info = info
-		self.general = {"StackLeniency": 7}
+		self.general = {"StackLeniency": 7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
 		self.bg = [0, 0, "."]
@@ -24,6 +26,10 @@ class Beatmap:
 		self.hr = hr
 
 		self.parse_general()
+
+		if self.general["Mode"] != 0:
+			raise GameModeNotSupported()
+
 		self.parse_meta()
 		self.parse_diff()
 
