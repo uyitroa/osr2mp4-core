@@ -167,10 +167,10 @@ class Osr2mp4:
 		if self.data["Process"] >= 1:
 			for i in range(self.data["Process"]):
 				self.drawers[i].join()
+				self.writers[i].join()  # temporary fixm might cause some infinite loop
 				conn1, conn2 = self.pipes[i]
 				conn1.close()
 				conn2.close()
-				self.writers[i].join()
 
 		self.drawers, self.writers, self.pipes = None, None, None
 
