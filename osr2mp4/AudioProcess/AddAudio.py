@@ -68,7 +68,6 @@ class HitsoundManager:
 				my_dict = self.hitobjects[objectindex]
 
 				tt = "soundcircle"
-				print(my_dict)
 				hitvolume = my_dict["hitSample"][Sound.volume]
 				if my_info[index].more.sliderhead:
 					tt = "soundhead"
