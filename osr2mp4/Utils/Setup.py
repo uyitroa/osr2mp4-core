@@ -1,6 +1,8 @@
 import logging
 
 from autologging import traced, logged
+
+from ..global_var import Settings
 from ..osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
@@ -36,7 +38,6 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	else:
 		time_frame = 1000
 
-
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings.width, settings.height, settings.scale = width, height, scale
 	settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight = playfield_scale, playfield_width, playfield_height
@@ -48,7 +49,6 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.beatmap = beatmap_path
 	settings.osu = osupath
 
-
 	skin = Skin(skin_path, default_path)
 	# defaultskin = Skin(default_path, default_path)
 
@@ -58,4 +58,7 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.default_skin_ini = skin
 
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
+	gameplaydata["Use opencv resize"] = gameplaydata.get("Use opencv resize", False)
 	settings.settings = gameplaydata
+	Settings.usecv2 = gameplaydata["Use opencv resize"]
+

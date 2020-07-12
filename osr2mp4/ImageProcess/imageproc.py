@@ -1,5 +1,8 @@
 import cv2
+import numpy
 from PIL import Image, ImageDraw
+
+from ..global_var import Settings
 
 
 def changealpha(img, alpha):
@@ -114,6 +117,13 @@ def change_size(img, scale_row, scale_col, rows=None, cols=None):
 	n_rows += int(n_rows % 2 == 1)  # need to be even
 	n_cols = max(2, int(scale_col * cols))
 	n_cols += int(n_cols % 2 == 1)  # need to be even
+
+	if Settings.usecv2:
+		npimg = numpy.array(img)
+		newimg = cv2.resize(npimg, (n_rows, n_cols))
+		a = Image.fromarray(newimg)
+		return Image.fromarray(newimg)
+
 	return img.resize((n_cols, n_rows), Image.ANTIALIAS)
 
 

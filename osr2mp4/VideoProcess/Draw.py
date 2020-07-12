@@ -4,6 +4,7 @@ import logging
 import time
 from PIL import Image
 
+from ..global_var import Settings
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
 from .AFrames import FrameObjects
@@ -157,9 +158,9 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 
 def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	asdfasdf = time.time()
+	Settings.usecv2 = settings.settings["Use opencv resize"]
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
-
 	logging.log(logging.DEBUG, "process start")
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
@@ -174,6 +175,7 @@ def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, sett
 		status = drawer.render_draw()
 		asdf = time.time()
 		if status:
+			print("HI")
 			conn.send(1)
 			timer3 += time.time() - asdf
 
