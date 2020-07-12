@@ -42,7 +42,8 @@ defaultsettings = {
 	"Use skin's sound samples": False,
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
-	"api key": "lol"
+	"api key": "lol",
+	"Use opencv resize": False
 }
 
 
