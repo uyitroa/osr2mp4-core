@@ -113,17 +113,17 @@ class Skin:
 			if ":" not in line and "[" not in line:
 				l = ""
 			newstring += l + "\n"
-		return newstring
+		return newstring.replace('\x00', '')
 
 	def read(self):
 		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//", dict_type=MultiOrderedDict)
 		config.optionxform = str
 
 		try:
-			with open(self.skin_path, encoding='utf-8') as file:
+			with open(self.skin_path, encoding='utf-8', errors='ignore') as file:
 				lines = file.read()
 		except FileNotFoundError:
-			with open(self.default_path, encoding='utf-8') as file:
+			with open(self.default_path, encoding='utf-8', errors='ignore') as file:
 				lines = file.read()
 		lines = self.filter(lines)
 		config.read_string(lines)
