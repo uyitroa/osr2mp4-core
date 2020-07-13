@@ -5,7 +5,7 @@ from PIL import Image
 from ....EEnum.EImageFrom import ImageFrom
 from ... import imageproc
 from ...Animation import alpha, size
-from ...PrepareFrames.YImage import YImage
+from ...PrepareFrames.YImage import YImage, YImages
 from ...imageproc import newalpha
 
 hitcircle = "hitcircle"
@@ -89,7 +89,7 @@ def calculate_ar(ar, settings):
 
 def load(settings):
 	circle = YImage(hitcircle, settings).img
-	c_overlay = YImage(hitcircleoverlay, settings).img
+	c_overlay = YImages(hitcircleoverlay, settings, delimiter="-").frames[0]
 	yslider = YImage(sliderstartcircle, settings, fallback=hitcircle)
 	slider = yslider.img
 	slideroverlay = sliderstartcircleoverlay
