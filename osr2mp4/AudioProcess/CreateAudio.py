@@ -44,8 +44,11 @@ def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	else:
 		a = AudioSegment.from_file(f)
 
-	addvolume = 30 * math.log(volume, 10)
-	a += addvolume
+	if volume > 0:
+		addvolume = 30 * math.log(volume, 10)
+		a += addvolume
+	else:
+		a = AudioSegment.silent(duration=a.duration_seconds * 1000, frame_rate=a.frame_rate)
 
 	if speed != 1.0:
 		if changepitch:
