@@ -8,7 +8,10 @@ def write_frame(shared, conn, filename, settings, iii):
 	try:
 		write(shared, conn, filename, settings, iii)
 	except Exception as e:
-		logging.error("{} from {}\n\n\n".format(repr(e), filename))
+		error = repr(e)
+		with open("error.txt", "w") as fwrite:  # temporary fix
+			fwrite.write(error)
+		logging.error("{} from {}\n\n\n".format(error, filename))
 		raise
 
 

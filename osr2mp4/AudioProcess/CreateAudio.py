@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import subprocess
@@ -149,7 +150,16 @@ def getoffset(offset, endtime, song):
 
 
 def processaudio(my_info, beatmap, offset, endtime, mods, settings):
+	try:
+		audioprc(my_info, beatmap, offset, endtime, mods, settings)
+	except Exception as e:
+		error = repr(e)
+		with open("error.txt", "w") as fwrite:  # temporary fix
+			fwrite.write(error)
+		logging.error("{} from audio\n\n\n".format(error))
+		raise
 
+def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	nc = Mod.Nightcore in mods
 	addmisssound = not (Mod.Relax in mods or Mod.Autopilot in mods)
 
