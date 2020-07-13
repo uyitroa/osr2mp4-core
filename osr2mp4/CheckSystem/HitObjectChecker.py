@@ -1,15 +1,16 @@
 import logging
 import math
 
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from ..EEnum.EReplay import Replays
 from .Health import HealthProcessor, HealthDummy
 from .Judgement import Check
 from collections import namedtuple
 import copy
-
+from oppai import *
 from ..EEnum.EState import States
+
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
@@ -44,6 +45,7 @@ def getmultiplier(mods):
 class HitObjectChecker:
 	def __init__(self, beatmap, settings, mods, tests=False):
 		self.diff = beatmap.diff
+		self.settings = settings
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
 		if self.diff["ApproachRate"] < 5:
@@ -99,6 +101,15 @@ class HitObjectChecker:
 			objtype = []  # no bonus score for new combo
 			hitresult = 100 if hitresult < 1000 else 300
 		self.health_processor.updatehp(hitresult, objtype)
+
+	def getacc(self, acc):
+		total = (acc[300] + acc[100] + acc[50] + acc[0]) * 300
+		actual = acc[300] * 300 + acc[100] * 100 + acc[50] * 50
+
+		if total == 0:
+			return 0
+
+		return actual/total * 100
 
 	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index,

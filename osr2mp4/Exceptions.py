@@ -4,3 +4,7 @@ class BeatmapNotFound(Exception):
 
 class ReplayNotFound(Exception):
 	pass
+
+
+class GameModeNotSupported(Exception):
+	pass

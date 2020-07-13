@@ -2,6 +2,7 @@ import os
 
 from PIL import Image
 
+from ....EEnum.EImageFrom import ImageFrom
 from ..YImage import YImage
 from ...Animation.alpha import fadein
 from ...Animation.size import grow
@@ -18,23 +19,22 @@ def prepare_cursor(scale, settings):
 	:param scale: float
 	:return: [PIL.Image]
 	"""
-	default = not os.path.isfile(settings.path + cursor + settings.format)
 	yimg = YImage(cursor, settings, scale)
 	frame = [yimg.img]
-	return frame, default
+	return frame, yimg.imgfrom == ImageFrom.DEFAULT_X or yimg.imgfrom == ImageFrom.DEFAULT_X2
 
 
 def prepare_cursormiddle(scale, settings, default=False):
-	if default:
-		path = settings.default_path
-	else:
-		path = settings.path
+	# if default:
+	# 	path = settings.default_path
+	# else:
+	# 	path = settings.path
 
-	exists = os.path.isfile(path + cursormiddle + settings.format)
-	yimg = YImage(cursormiddle, settings, scale, defaultpath=default, fallback="reeeee")
+	# exists = os.path.isfile(path + cursormiddle + settings.format)
+	yimg = YImage(cursormiddle, settings, scale, defaultpath=default)
 	frame = [yimg.img]
 
-	return frame, exists
+	return frame, yimg.imgfrom != ImageFrom.BLANK
 
 
 def prepare_cursortrail(scale, continuous, settings):

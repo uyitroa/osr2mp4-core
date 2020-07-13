@@ -1,4 +1,5 @@
 import ctypes
+import glob
 import inspect
 from multiprocessing.sharedctypes import RawArray
 
@@ -11,7 +12,7 @@ from osr2mp4.Utils.Timing import find_time
 from osr2mp4.VideoProcess.AFrames import PreparedFrames
 
 from osr2mp4.Utils.HashBeatmap import get_osu
-from osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.Utils.Setup import setupglobals
 
@@ -22,7 +23,7 @@ from osr2mp4.Parser.osrparser import setupReplay
 from osr2mp4.Parser.osuparser import read_file
 from osr2mp4.Parser.skinparser import Skin
 from osr2mp4 import osr2mp4
-import osrparse
+from osr2mp4.osrparse import *
 import os
 
 
@@ -30,7 +31,7 @@ class Dummy: pass
 
 
 abspath = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
-abspath = os.path.relpath(abspath)
+# abspath = os.path.relpath(abspath)
 if abspath[-1] != "/" and abspath[-1] != "\\":
 	abspath += "/"
 abspath += "resources/"
@@ -45,7 +46,7 @@ def getinfos(mapname, upsidedown=False):
 	fname = ''
 	while should_continue:
 		replay_event, cur_time = setupReplay("{}{}{}.osr".format(abspath, mapname, fname), bmap)
-		replay_info = osrparse.parse_replay_file("{}{}{}.osr".format(abspath, mapname, fname))
+		replay_info = parse_replay_file("{}{}{}.osr".format(abspath, mapname, fname))
 		replay_info.play_data = replay_event
 		replay_infos.append(replay_info)
 
@@ -81,7 +82,7 @@ def setupenv(suffix, mapname):
 	settings = Settings()
 	config = jsonparser.read("{}config{}.json".format(abspath, suffix))
 	gameplayconfig = jsonparser.read("{}settings{}.json".format(abspath, suffix))
-	replay_info = osrparse.parse_replay_file("{}{}.osr".format(abspath, mapname))
+	replay_info = parse_replay_file("{}{}.osr".format(abspath, mapname))
 
 	settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(osr2mp4.Dummy)))
 	settings.path = os.path.relpath(settings.path)
@@ -93,7 +94,6 @@ def setupenv(suffix, mapname):
 	config[".osr path"] = abspath + mapname + ".osr"
 
 	setupglobals(config, gameplayconfig, replay_info, settings)
-
 	beatmap_file = get_osu(settings.beatmap, replay_info.beatmap_hash)
 	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours,
 	                    Mod.HardRock in replay_info.mod_combination)
@@ -194,3 +194,8 @@ def get_res(filename):
 	width = vid.get(cv2.CAP_PROP_FRAME_WIDTH)
 
 	return width, height
+
+
+def getskins():
+	skinpath = os.path.join(abspath, "skininis", "*.ini")
+	return glob.glob(skinpath)

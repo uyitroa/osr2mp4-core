@@ -4,6 +4,7 @@
 # return pos of the first char of the  comment or -1 if there is no comment
 import logging
 import os
+from collections import OrderedDict
 from configparser import ConfigParser
 
 
@@ -24,18 +25,18 @@ def del_comment(line):
 
 
 escape_dict = {'\a': '/a',
-               '\b': '/b',
-               '\c': '/c',
-               '\f': '/f',
-               '\n': '/n',
-               '\r': '/r',
-               '\t': '/t',
-               '\v': '/v',
-               '\'': "/'",
-               '\"': '/"',
-               '\\': '/',
-               ' ': '',
-               '\ufeff': ''}
+			   '\b': '/b',
+			   '\c': '/c',
+			   '\f': '/f',
+			   '\n': '/n',
+			   '\r': '/r',
+			   '\t': '/t',
+			   '\v': '/v',
+			   '\'': "/'",
+			   '\"': '/"',
+			   '\\': '/',
+			   ' ': '',
+			   '\ufeff': ''}
 
 
 def raw(text):
@@ -59,26 +60,38 @@ def iint(text):
 	return int(new_string)
 
 
-def getsection(line):
-	for s in ['[General]', '[Colours]', '[Fonts]', '[CatchTheBeat]', '[Mania]']:
-		if s in line:
-			return s[1:-1]
-	return None
+def getsection(config: ConfigParser, section):
+	if config.has_section(section):
+		return dict(config[section])
+	return {}
 
 
-settings = {}  # why not put all sections into it at the end ?
+# settings = {}  # why not put all sections into it at the end ?
+
+
+class MultiOrderedDict(OrderedDict):
+	def __setitem__(self, key, value):
+		if isinstance(value, list) and key in self:
+			return
+
+		super().__setitem__(key, value)
 
 
 class Skin:
-	def __init__(self, skin_path, default_path):
+	def __init__(self, skin_path, default_path, inipath=None):
 		# sections
 		self.general = {}
 		self.colours = {}
 		self.fonts = {}
 		self.catchTheBeat = {}
 		self.mania = {}
-		self.skin_path = skin_path
-		self.default_path = default_path
+		self.skin_path = os.path.join(skin_path, "skin.ini")
+		self.default_path = os.path.join(default_path, "skin.ini")
+
+		if inipath is not None:
+			self.skin_path = self.default_path = inipath
+
+
 		self.read()
 		self.parse_general()
 		self.parse_colors()
@@ -92,24 +105,31 @@ class Skin:
 		start = "["
 		while string[0] != start:
 			string = string[1:]
-		return string
+
+		newstring = ""
+		for line in string.split("\n"):
+			l = line.strip()
+			if ":" not in line and "[" not in line:
+				l = ""
+			newstring += l + "\n"
+		return newstring.replace('\x00', '')
 
 	def read(self):
-		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//")
+		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//", dict_type=MultiOrderedDict)
 		config.optionxform = str
 
 		try:
-			with open(self.skin_path + 'skin.ini', encoding='utf-8') as file:
+			with open(self.skin_path, encoding='utf-8', errors='ignore') as file:
 				lines = file.read()
 		except FileNotFoundError:
-			with open(self.default_path + 'skin.ini', encoding='utf-8') as file:
+			with open(self.default_path, encoding='utf-8', errors='ignore') as file:
 				lines = file.read()
 		lines = self.filter(lines)
 		config.read_string(lines)
 
-		self.general = dict(config["General"])
-		self.colours = dict(config["Colours"])
-		self.fonts = dict(config["Fonts"])
+		self.general = getsection(config, "General")
+		self.colours = getsection(config, "Colours")
+		self.fonts = getsection(config, "Fonts")
 
 		logging.log(1, self.general)
 		logging.log(1, self.colours)

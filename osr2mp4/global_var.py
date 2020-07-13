@@ -1,4 +1,7 @@
 class Settings:
+
+	usecv2 = False  # this can be real global var because it depends on the pc
+
 	def __init__(self):
 		self.skin_path = None
 		self.default_path = None

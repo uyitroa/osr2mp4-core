@@ -3,8 +3,10 @@ import inspect
 import os
 import sys
 import time
-import osrparse
-from osrparse.enums import Mod
+import traceback
+
+from .osrparse import *
+from .osrparse.enums import Mod
 import PIL
 from .Exceptions import ReplayNotFound
 from .Parser.jsonparser import read
@@ -26,9 +28,32 @@ import logging
 class Dummy: pass
 
 
-# logging.basicConfig(
-# 	level=TRACE, stream=open("test.log", "w"),
-# 	format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+defaultsettings = {
+	"Cursor size": 1,
+	"In-game interface": True,
+	"Show scoreboard": True,
+	"Background dim": 100,
+	"Rotate sliderball": False,
+	"Always show key overlay": True,
+	"Automatic cursor size": False,
+	"Enable PP counter": False,
+	"Score meter size": 1,
+	"Song volume": 50,
+	"Effect volume": 50,
+	"Ignore beatmap hitsounds": False,
+	"Use skin's sound samples": False,
+	"Global leaderboard": False,
+	"Mods leaderboard": "*",
+	"api key": "lol",
+	"Use opencv resize": False
+}
+
+
+def excepthook(exc_type, exc_value, exc_tb):
+	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+	logging.exception(tb)
+	print(tb)
+
 
 
 @logged(logging.getLogger(__name__))
@@ -37,6 +62,7 @@ class Osr2mp4:
 
 	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
+		sys.excepthook = excepthook
 		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
 		self.settings.path = os.path.relpath(self.settings.path)
 
@@ -76,23 +102,7 @@ class Osr2mp4:
 		atexit.register(self.cleanup)
 
 		if gameplaysettings is None:
-			gameplaysettings = {
-				"Cursor size": 1,
-				"In-game interface": True,
-				"Show scoreboard": True,
-				"Background dim": 100,
-				"Rotate sliderball": False,
-				"Always show key overlay": True,
-				"Automatic cursor size": False,
-				"Score meter size": 1,
-				"Song volume": 50,
-				"Effect volume": 50,
-				"Ignore beatmap hitsounds": False,
-				"Use skin's sound samples": False,
-				"Global leaderboard": False,
-				"Mods leaderboard": "*",
-				"api key": "lol"
-			}
+			gameplaysettings = defaultsettings
 
 		if filedata is not None:
 			data = read(filedata)
@@ -109,19 +119,18 @@ class Osr2mp4:
 		self.settings.process = data["Process"]
 
 		try:
-			self.replay_info = osrparse.parse_replay_file(replaypath)
+			self.replay_info = parse_replay_file(replaypath)
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
-		#
+
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
-
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
-		beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
-		self.beatmap = read_file(beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, upsidedown)
+		self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
+		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, upsidedown)
 
 		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
 		self.replay_info.play_data = self.replay_event
@@ -158,10 +167,10 @@ class Osr2mp4:
 		if self.data["Process"] >= 1:
 			for i in range(self.data["Process"]):
 				self.drawers[i].join()
+				self.writers[i].join()  # temporary fixm might cause some infinite loop
 				conn1, conn2 = self.pipes[i]
 				conn1.close()
 				conn2.close()
-				self.writers[i].join()
 
 		self.drawers, self.writers, self.pipes = None, None, None
 

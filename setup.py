@@ -10,17 +10,13 @@ with open("requirements.txt", "r") as fr:
 
 setuptools.setup(
 	name="osr2mp4",
-<<<<<<< Updated upstream
-	version="0.0.1dev9",
-=======
 	version="0.0.3a4",
->>>>>>> Stashed changes
 	author="yuitora",
 	author_email="shintaridesu@gmail.com",
 	description="Convert osr replay file to video file",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	url="https://github.com/uyitroa/osr2mp4",
+	url="https://github.com/uyitroa/osr2mp4-core",
 	packages=setuptools.find_packages(),
 	install_requires=requirements,
 	include_package_data=True,

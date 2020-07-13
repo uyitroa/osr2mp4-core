@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 from multiprocessing import Process
 
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
 import numpy as np
@@ -24,7 +24,7 @@ def from_notwav(filename, settings):
 	if not os.path.isfile(filename):
 		raise FileNotFoundError
 
-	with open(settings.path + "logs/convert.log", "a") as cc:
+	with open(os.path.join(settings.temp, "convert.log"), "a") as cc:
 		subprocess.call([settings.ffmpeg, '-i', filename, settings.temp + 'converted.wav', '-y'], stdout=cc, stderr=cc)
 
 	a = AudioSegment.from_file(settings.temp + 'converted.wav')
@@ -33,7 +33,7 @@ def from_notwav(filename, settings):
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		with open(settings.path + "logs/speedup.log", "a") as cc:
+		with open(os.path.join(settings.path + "speedup.log"), "a") as cc:
 			subprocess.call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=cc, stderr=cc)
 
 		f = settings.temp + "spedup.mp3"

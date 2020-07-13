@@ -73,10 +73,6 @@ class HitsoundManager:
 					tt = "soundhead"
 					hitvolume = "0"
 
-				# overlay(my_info[index].time, song, Hitsound.hitsounds[my_dict[tt][0]], volume=self.getvolume(hitvolume))
-				# for f in my_dict[tt][1:]:
-				# 	overlay(my_info[index].time, song, Hitsound.hitsounds[f], volume=self.getvolume(hitvolume) * 0.5)
-
 				overlays(my_info[index].time, song, my_dict[tt], volume=self.getvolume(hitvolume))
 
 	def addslidersound(self, my_info, index, song):
@@ -96,7 +92,10 @@ class HitsoundManager:
 
 	def addspinnerhitsound(self, my_info, index, song):
 		if type(my_info[index].more).__name__ == "Spinner":
-			if my_info[index].time > self.spincooldown:
+			objectindex = my_info[index].id
+			my_dict = self.hitobjects[objectindex]
+
+			if self.spincooldown < my_info[index].time < my_dict["end time"] - 500:
 				if self.prevspin is None or self.prevspin.progress != my_info[index].more.progress:
 					spinsound = int(min(1, my_info[index].more.progress) * (len(Hitsound.spinnerspin)-1))
 					overlay(my_info[index].time, song, Hitsound.spinnerspin[spinsound])

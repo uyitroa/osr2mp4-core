@@ -111,6 +111,8 @@ def getfilenames(beatmap, ignore):
 		while my_dict["time"] >= beatmap.timing_point[timingpoint_i + 1]["Offset"]-1:
 			timingpoint_i += 1
 		soundinfo = my_dict["hitSample"].split(":")
+		if len(soundinfo) < 4:
+			soundinfo += (4 - len(soundinfo)) * ["0"]
 
 		hitsound = my_dict["hitSound"]
 

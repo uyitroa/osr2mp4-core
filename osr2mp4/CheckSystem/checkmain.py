@@ -1,6 +1,7 @@
 import logging
 
-from osrparse.enums import Mod
+from oppai import ezpp_free
+from ..osrparse.enums import Mod
 
 from .HitObjectChecker import HitObjectChecker
 from ..EEnum.EReplay import Replays
@@ -118,14 +119,11 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 		else:
 			f_k1, f_k2, f_m1, f_m2 = False, False, False, False
 
-
 		new_k1, new_k2 = f_k1 and not k1, f_k2 and not k2
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
-
 		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1, in_break)
-
 
 		osr_index += 1
 

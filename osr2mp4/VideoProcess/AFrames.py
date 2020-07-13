@@ -1,5 +1,8 @@
-from osrparse.enums import Mod
+import logging
 
+from ..osrparse.enums import Mod
+
+from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
 from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from ..ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from ..CheckSystem.Judgement import DiffCalculator
@@ -77,18 +80,24 @@ class PreparedFrames:
 		if settings.settings["Automatic cursor size"]:
 			circlescale = 4/beatmap.diff["CircleSize"]
 			settings.settings["Cursor size"] *= circlescale
+		logging.debug('start preparing cursor')
 		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
+		logging.debug('start preparing cursormiddle')
 		self.cursormiddle, self.continuous = prepare_cursormiddle(settings.scale * settings.settings["Cursor size"], settings, default)
+		logging.debug('start preparing cursortrail')
 		self.cursor_trail = prepare_cursortrail(settings.scale * settings.settings["Cursor size"], self.continuous, settings)
 
+		logging.debug('start preparing scorenetry')
 		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"], settings)
 		self.inputoverlayBG = prepare_inputoverlaybg(settings.scale, settings)
 		self.key = prepare_inputoverlay(settings.scale, [255, 220, 20], 2, settings)
 		self.mouse = prepare_inputoverlay(settings.scale, [220, 0, 220], 1, settings)
 
+		logging.debug('start preparing scorenumber')
 		self.scorenumbers = ScoreNumbers(settings.scale, settings)
 		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, settings.playfieldscale, settings)
 
+		logging.debug('start preparing accuracy')
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers, settings)
 		self.hitresult = prepare_hitresults(settings.scale, beatmap, settings)
@@ -101,17 +110,21 @@ class PreparedFrames:
 
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
 
+		logging.debug('start preparing circle')
 		self.circle = prepare_circle(beatmap, settings.playfieldscale, settings, hd)
 		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, settings)
 		self.spinner = prepare_spinner(settings.playfieldscale, settings)
 
+		logging.debug('start preparing background')
 		self.bg = prepare_background(settings.beatmap + beatmap.bg[2], settings)
 
+		logging.debug('start preparing sections')
 		self.sections = prepare_sections(settings.scale, settings)
 		self.scorebarbg = prepare_scorebarbg(settings.scale, self.bg, settings)
 		self.scorebar = prepare_scorebar(settings.scale, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
+		logging.debug('start preparing scoreboard')
 		self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
 		self.scoreboard = prepare_scoreboard(settings.scale, settings)
 		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
@@ -127,6 +140,7 @@ class PreparedFrames:
 		self.modicons = prepare_modicons(settings.scale, settings)
 		self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
 		self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
+		logging.debug('start preparing done')
 
 
 class FrameObjects:
@@ -186,3 +200,4 @@ class FrameObjects:
 		self.modicons = ModIcons(frames.modicons, replay_info, settings)
 		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
+		self.ppcounter = PPCounter(settings)

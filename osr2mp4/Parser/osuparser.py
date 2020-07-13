@@ -1,13 +1,15 @@
 import math
 import re
+
+from ..Exceptions import GameModeNotSupported
 from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:
 	def __init__(self, info, scale, colors, hr):
 		self.info = info
-		self.general = {"StackLeniency": 7}
-		self.diff = {"ApproachRate": 0, "CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
+		self.general = {"StackLeniency": 7, "Mode": 0}
+		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
 		self.bg = [0, 0, "."]
 		self.breakperiods = []
@@ -18,11 +20,16 @@ class Beatmap:
 		self.slider_combo = {}  # array of combo that are sliders. to prepare slider frames with those combo
 		self.to_stack = []
 		self.scale = scale
+		self.path = None
 
 		self.ncombo = colors["ComboNumber"]
 		self.hr = hr
 
 		self.parse_general()
+
+		if self.general["Mode"] != 0:
+			raise GameModeNotSupported()
+
 		self.parse_meta()
 		self.parse_diff()
 
@@ -70,6 +77,8 @@ class Beatmap:
 				my_list[1] = my_list[1].strip()
 				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
 				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
+		self.diff["ApproachRate"] = self.diff.get("ApproachRate", self.diff["OverallDifficulty"])
+		self.diff["BaseApproachRate"] = self.diff["ApproachRate"]
 
 	def parse_event(self):
 		event = self.info["Events"].split("\n")
@@ -401,7 +410,7 @@ class Beatmap:
 						*        o <- hitCircle has stack of -1
 						*         o <- hitCircle has stack of -2
 					"""
-					if "slider" in objectN and self.enddistance(objectN, objectI) < stack_distance:
+					if "slider" in objectN["type"] and self.enddistance(objectN, objectI) < stack_distance:
 						offset = objectI["stacking"] - objectN["stacking"] + 1
 
 						for j in range(n + 1, i + 1):
@@ -487,4 +496,6 @@ def read_file(filename, scale, colors, hr):
 	              "[HitObjects]"]
 	info = split(delimiters, content)
 	fiel.close()
-	return Beatmap(info, scale, colors, hr)
+	bmap = Beatmap(info, scale, colors, hr)
+	bmap.path = filename
+	return bmap

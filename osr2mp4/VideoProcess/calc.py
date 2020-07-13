@@ -106,12 +106,12 @@ def add_followpoints(beatmap, component, frame_info, preempt_followpoint):
 		find_followp_target(beatmap, frame_info)
 
 
-def check_break(beatmap, component, frame_info, updater):
+def check_break(beatmap, component, frame_info, updater, settings):
 	breakperiod = beatmap.breakperiods[frame_info.break_index]
 	next_break = frame_info.cur_time > breakperiod["End"]
 	if next_break:
 		frame_info.break_index = min(frame_info.break_index + 1, len(beatmap.breakperiods) - 1)
-		component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
+		# component.background.startbreak(beatmap.breakperiods[frame_info.break_index], frame_info.cur_time)
 		breakperiod = beatmap.breakperiods[frame_info.break_index]
 
 	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"])
@@ -121,8 +121,10 @@ def check_break(beatmap, component, frame_info, updater):
 		component.sections.startbreak(1, breakperiod["Start"], updater.resultinfo[updater.info_index].hp)
 
 	if in_break:
-		component.scorebarbg.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
-		component.scorebar.startbreak(breakperiod, breakperiod["End"] - frame_info.cur_time)
+		duration = (breakperiod["End"] - frame_info.cur_time) / settings.timeframe * 1000
+		component.scorebarbg.startbreak(breakperiod, duration)
+		component.scorebar.startbreak(breakperiod, duration)
+		component.background.startbreak(breakperiod, duration)
 
 		endgamebreak = frame_info.break_index == len(beatmap.breakperiods) - 1
 		if not endgamebreak:

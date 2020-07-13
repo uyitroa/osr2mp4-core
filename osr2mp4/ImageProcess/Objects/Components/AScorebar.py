@@ -13,6 +13,7 @@ class AScorebar(FrameObject):
 		self.interval = 0
 		self.alpha = 1
 		self.h = 0
+		self.dd = 0.2
 
 	def startbreak(self, breakk, duration):
 		if self.breakk == breakk["Start"]:
@@ -22,14 +23,14 @@ class AScorebar(FrameObject):
 		self.breakk = breakk["Start"]
 		self.duration = duration - 100
 		self.interval = 1000/self.settings.fps
-		self.direction = 0.5 * 60/self.settings.fps
+		self.direction = self.dd * 60/self.settings.fps
 
 	def animate(self):
 
 		self.duration -= self.interval
 
 		if self.duration < 0:
-			self.direction = -0.5 * 60/self.settings.fps
+			self.direction = -self.dd * 60/self.settings.fps
 			self.scrolling = True
 			self.duration = 0
 			self.interval = 0

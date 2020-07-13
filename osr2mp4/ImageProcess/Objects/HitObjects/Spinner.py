@@ -13,7 +13,7 @@ spinnertop = "spinner-top"
 spinnerrpm = "spinner-rpm"
 
 
-Spinner = recordclass("Spinner", "angle duration starttime_left alpha index progress spinrequired totaltime")
+Spinner = recordclass("Spinner", "angle duration starttime_left alpha index progress spinrequired totaltime" )
 
 
 class SpinnerManager(FrameObject):
@@ -66,6 +66,13 @@ class SpinnerManager(FrameObject):
 			imageproc.add(self.scoreframes[digit], background, x_start, y_offset, alpha=alpha)
 			x_start -= self.scoreframes[digit].size[0]
 
+	def getrpm(self, spinner):
+		nrot = spinner.progress * spinner.spinrequired
+		rpm = nrot * 60000 / spinner.totaltime
+		rpm = min(477, int(rpm * 1.25))
+		spinner.totaltime += self.interval
+		return rpm
+
 	def add_to_frame(self, background, i, _):
 		if self.spinners[i].starttime_left > 0:
 			self.spinners[i].starttime_left -= self.interval
@@ -96,10 +103,6 @@ class SpinnerManager(FrameObject):
 		y = 712/768 * self.settings.height
 		imageproc.add(img, background, x, y, alpha=self.spinners[i].alpha, topleft=True)
 
-		nrot = self.spinners[i].progress * self.spinners[i].spinrequired
-		rpm = nrot * 60000 / self.spinners[i].totaltime
-		rpm = min(477, int(rpm))
+		rpm = self.getrpm(self.spinners[i])
 		self.drawrpm(background, x + 250 * self.settings.scale, y + 25 * self.settings.scale, rpm, self.spinners[i].alpha)
-
-		self.spinners[i].totaltime += self.interval
 

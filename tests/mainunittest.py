@@ -10,6 +10,8 @@ from rankingscreentest import *
 from spinnerpositiontest import *
 from rankingscreencomparetest import *
 from specificframecomparetest import *
+from parseskintest import *
+# from osr2mp4test.InfoProcessTest import *
 
 if __name__ == "__main__":
 	unittest.main()

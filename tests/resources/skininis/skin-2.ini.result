@@ -1,0 +1,2 @@
+{'Combo1': [255, 105, 125], 'MenuGlow': [143, 61, 73], 'InputOverlayText': [232, 88, 107], 'SliderBorder': [122, 129, 153], 'SliderTrackOverride': [13, 19, 33], 'SongSelectActiveText': [240, 240, 240], 'SongSelectInactiveText': [150, 150, 150], 'SliderBall': (2, 170, 255), 'SpinnerBackground': (100, 100, 100), 'ComboNumber': 1}
+{'HitCirclePrefix': 'fonts/hitcircle/default', 'HitCircleOverlap': -5, 'ScorePrefix': 'fonts/score/score', 'ComboPrefix': 'fonts/combo/score', 'ScoreOverlap': -2, 'ComboOverlap': -2}

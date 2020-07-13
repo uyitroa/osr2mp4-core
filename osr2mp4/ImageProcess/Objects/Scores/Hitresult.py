@@ -1,4 +1,4 @@
-from osrparse.enums import Mod
+from ....osrparse.enums import Mod
 
 from ... import imageproc
 from ..FrameObject import FrameObject

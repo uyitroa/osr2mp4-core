@@ -70,7 +70,7 @@ class Cursortrail(FrameObject):
 				# stepy = abs(deltay//n_cursor)
 				# yy = self.radius**2 - stepy**2
 				# if xx >= 0:
-				stepy = math.sqrt(xx)
+				stepy = math.sqrt(max(0, xx))  # avoid maths domain error temporary fix(?)
 				# elif yy >= 0:
 				# 	stepx = math.sqrt(yy)
 				# else:

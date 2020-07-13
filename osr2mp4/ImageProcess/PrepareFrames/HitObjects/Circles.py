@@ -5,7 +5,7 @@ from PIL import Image
 from ....EEnum.EImageFrom import ImageFrom
 from ... import imageproc
 from ...Animation import alpha, size
-from ...PrepareFrames.YImage import YImage
+from ...PrepareFrames.YImage import YImage, YImages
 from ...imageproc import newalpha
 
 hitcircle = "hitcircle"
@@ -40,10 +40,18 @@ def prepare_approach(scale, time_preempt, settings):
 def overlayhitcircle(overlay, circle, color, scale):
 
 	color_circle = imageproc.add_color(circle, color)
+
+	maxwidth = max(color_circle.size[0], overlay.size[0])
+	maxheight = max(color_circle.size[1], overlay.size[1])
+
+	background = Image.new("RGBA", (maxwidth, maxheight))
+	background.paste(color_circle, (maxwidth//2 - color_circle.size[0]//2, maxheight//2 - color_circle.size[1]//2))
+	color_circle = background
+
 	overlay_img = overlay.copy()
 
-	x1 = circle.size[0] // 2
-	y1 = circle.size[1] // 2
+	x1 = color_circle.size[0] // 2
+	y1 = color_circle.size[1] // 2
 
 	imageproc.add(overlay_img, color_circle, x1, y1, channel=4)
 	return imageproc.change_size(color_circle, scale, scale)
@@ -81,7 +89,7 @@ def calculate_ar(ar, settings):
 
 def load(settings):
 	circle = YImage(hitcircle, settings).img
-	c_overlay = YImage(hitcircleoverlay, settings).img
+	c_overlay = YImages(hitcircleoverlay, settings, delimiter="-").frames[0]
 	yslider = YImage(sliderstartcircle, settings, fallback=hitcircle)
 	slider = yslider.img
 	slideroverlay = sliderstartcircleoverlay

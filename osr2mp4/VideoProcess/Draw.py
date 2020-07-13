@@ -1,11 +1,13 @@
-import PIL
+
 import logging
+import sys
+
 import time
+import traceback
 
-import cv2
 from PIL import Image
-from autologging import traced, logged, TRACE
 
+from ..global_var import Settings
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
 from .AFrames import FrameObjects
@@ -54,12 +56,10 @@ class Drawer:
 
 		self.preempt_followpoint = 800
 
-		self.updater = Updater(self.resultinfo, self.component)
+		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
 
 		to_time = replay_event[self.start_index][Replays.TIMES]
 		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))
-
-		self.component.background.startbreak(self.beatmap.breakperiods[self.frame_info.break_index], self.frame_info.cur_time)
 
 		self.cursor_event = CursorEvent(replay_event[self.frame_info.osr_index], old_cursor_x, old_cursor_y)
 
@@ -74,7 +74,7 @@ class Drawer:
 			if self.img.size[0] == 1:
 				self.img = self.pbuffer
 
-		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater)
+		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater, self.settings)
 		check_key(self.component, self.cursor_event, in_break)
 		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
@@ -109,6 +109,7 @@ class Drawer:
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.sections.add_to_frame(self.img)
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
+		self.component.ppcounter.add_to_frame(self.np_img)
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
@@ -154,15 +155,25 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 	try:
 		draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
-		logging.error("{} from {}\n\n\n".format(repr(e), videotime))
+		error = repr(e)
+		with open("error.txt", "w") as fwrite:  # temporary fix
+			fwrite.write(error)
+		logging.error("{} from {}\n\n\n".format(error, videotime))
 		raise
 
 
+def excepthook(exc_type, exc_value, exc_tb):
+	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+	logging.exception(tb)
+	print(tb)
+
+
 def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+	sys.excepthook = excepthook
 	asdfasdf = time.time()
+	Settings.usecv2 = settings.settings["Use opencv resize"]
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
-
 	logging.log(logging.DEBUG, "process start")
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)

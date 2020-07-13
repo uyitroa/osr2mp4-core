@@ -7,6 +7,7 @@ import cv2
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 
+from ..global_var import Settings
 from .AFrames import *
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
@@ -14,7 +15,7 @@ import os
 
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
-
+	logging.debug('entering preparedframes')
 	frames = PreparedFrames(settings, beatmap, Mod.Hidden in replay_info.mod_combination)
 
 	if settings.process >= 1:

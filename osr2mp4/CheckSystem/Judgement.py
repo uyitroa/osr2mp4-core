@@ -1,7 +1,7 @@
 import logging
 import math
 import numpy as np
-from osrparse.enums import Mod
+from ..osrparse.enums import Mod
 
 from ..EEnum.EReplay import Replays
 

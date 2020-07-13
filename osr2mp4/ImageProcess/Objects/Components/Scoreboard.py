@@ -14,7 +14,7 @@ BoardInfo = recordclass("BoardInfo", "score maxcombo intscore intcombo playernam
 
 
 def getsummods(mods):
-	if mods == "*":
+	if mods == "*" or mods == "":
 		return "*"
 	mods = re.findall('..', mods)
 	modidct = {
@@ -217,7 +217,7 @@ class Scoreboard(FrameObject):
 	def getlocalscores(self, mods):
 		try:
 			scores = getscores(self.beatmaphash, self.settings.osu + "scores.db")
-		except FileNotFoundError:
+		except Exception:
 			return
 
 		for i in range(len(scores["scores"])):

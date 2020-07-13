@@ -13,3 +13,6 @@ __pycache__/
 asdf/
 MANIFEST.in
 pypiREADME.md
+*.avi
+*.log
+osr2mp4/*.log

@@ -144,22 +144,23 @@ class Catmull(ASlider):  # Yes... I cry deep down on the inside aswell
 				if x + 1 < self.order:
 					v3 = self.points[x + 1]
 				else:
-					v3 = v2.calc(1, v2.calc(-1, v1))
+					v3 = calc(v2, 1, calc(v2, -1, v1))
 
 				if x + 2 < self.order:
 					v4 = self.points[x + 2]
 				else:
-					v4 = v3.calc(1, v3.calc(-1, v2))
+					v4 = calc(v3, 1, calc(v3, -1, v2))
 
 				point = get_point([v1, v2, v3, v4], t)
 				self.pos.append(point)
 				t += self.step
 
-	def at(self, dist, forward):
-		return {
-			0: False,
-			1: self.points[0],
-		}.get(self.order, self.rec(dist))
+	def at(self, dist, forward, alone=False):
+		# return {
+		# 	0: False,
+		# 	1: self.points[0],
+		# }.get(self.order, self.rec(dist))
+		return self.rec(dist), dist/self.pixel_length
 
 	def rec(self, length):
 		return mathhelper.point_at_distance(self.pos, length)
@@ -188,9 +189,9 @@ class Perfect(ASlider):
 
 
 def get_point(p, length):
-	x = mathhelper.catmull([o.x for o in p], length)
-	y = mathhelper.catmull([o.y for o in p], length)
-	return mathhelper.Vec2(x, y)
+	x = mathhelper.catmull([o[0] for o in p], length)
+	y = mathhelper.catmull([o[1] for o in p], length)
+	return [x, y]
 
 
 def get_circum_circle(p):
@@ -225,6 +226,11 @@ def rotate(cx, cy, p, radians):
 	return [x, y]
 
 
+def calc(p, value, other):
+	x = p[0] + value * other[0]
+	y = p[1] + value * other[1]
+	return [x, y]
+
 def getclass(slidertype, points, pixellength):
 	if slidertype == "L":
 		return Linear(points, pixellength)
@@ -232,6 +238,8 @@ def getclass(slidertype, points, pixellength):
 		return Bezier(points, pixellength)
 	if slidertype == "P":
 		return Perfect(points, pixellength)
+	if slidertype == "C":
+		return Catmull(points, pixellength)
 	return None
 
 

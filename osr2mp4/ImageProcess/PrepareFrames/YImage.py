@@ -126,7 +126,7 @@ class YImage:
 
 
 class YImages:
-	def __init__(self, filename, settings, scale, delimiter="", rotate=0):
+	def __init__(self, filename, settings, scale=1, delimiter="", rotate=0):
 		self.settings = settings
 		self.filename = filename
 		self.scale = scale
