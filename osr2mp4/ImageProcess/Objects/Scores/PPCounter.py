@@ -10,7 +10,7 @@ class PPCounter:
 
 		font = cv2.FONT_HERSHEY_SIMPLEX
 		bottomLeftCornerOfText = (self.x, self.y)
-		fontScale = 0.5 * self.settings.scale
+		fontScale = 0.55 * self.settings.scale
 		fontColor = (255, 255, 255)
 		lineType = 1
 		self.args = (bottomLeftCornerOfText, font, fontScale, fontColor, lineType)
