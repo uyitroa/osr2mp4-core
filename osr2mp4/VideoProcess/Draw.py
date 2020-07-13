@@ -155,7 +155,10 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 	try:
 		draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
-		logging.error("{} from {}\n\n\n".format(repr(e), videotime))
+		error = repr(e)
+		with open("error.txt", "w") as fwrite:  # temporary fix
+			fwrite.write(error)
+		logging.error("{} from {}\n\n\n".format(error, videotime))
 		raise
 
 
@@ -185,7 +188,6 @@ def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, sett
 		status = drawer.render_draw()
 		asdf = time.time()
 		if status:
-			print("HI")
 			conn.send(1)
 			timer3 += time.time() - asdf
 
