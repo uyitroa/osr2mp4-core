@@ -33,9 +33,9 @@ def convert_tomp4(settings, output="output.mp4"):
 def setup_dir(settings):
 	if not os.path.isdir(settings.temp):
 		os.makedirs(settings.temp)
-	if os.path.isdir(settings.path + "logs"):
-		shutil.rmtree(settings.path + "logs")
-	os.makedirs(settings.path + "logs")
+	if not os.path.isdir(settings.path + "logs"):
+		# shutil.rmtree(settings.path + "logs")
+		os.makedirs(settings.path + "logs")
 
 
 	exists = os.path.isfile(settings.temp + "speed.txt")
