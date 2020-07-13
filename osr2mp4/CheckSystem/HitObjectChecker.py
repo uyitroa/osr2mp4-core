@@ -34,7 +34,7 @@ def difficulty_multiplier(diff):
 
 def getmultiplier(mods):
 	multiplier = {Mod.Easy: 0.5, Mod.NoFail: 0.5, Mod.HalfTime: 0.3,
-	              Mod.HardRock: 1.06, Mod.SuddenDeath: 1, Mod.Perfect: 1, Mod.DoubleTime: 1.12, Mod.Nightcore: 1.12, Mod.Hidden: 1.06, Mod.Flashlight: 1.12,
+	              Mod.HardRock: 1.06, Mod.NoVideo: 1, Mod.SuddenDeath: 1, Mod.Perfect: 1, Mod.DoubleTime: 1.12, Mod.Nightcore: 1.12, Mod.Hidden: 1.06, Mod.Flashlight: 1.12,
 	              Mod.Relax: 0, Mod.Autopilot: 0, Mod.SpunOut: 0.9, Mod.Autoplay: 1, Mod.NoMod: 1}
 	result = 1
 	for m in mods:
