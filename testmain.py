@@ -1,4 +1,10 @@
 from PIL import Image
+from osr2mp4.Parser.osuparser import read_file
+
+from osr2mp4.ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
+
+from osr2mp4.ImageProcess.Objects.Components.Scoreboard import Scoreboard
+
 from osr2mp4.ImageProcess.Objects.HitObjects.CircleNumber import Number
 
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
@@ -127,18 +133,22 @@ def main():
 	osr2mp4.analyse_replay()
 	components = DummyFrameObjects()
 	background = Image.new("RGBA", (osr2mp4.settings.width, osr2mp4.settings.height))
-
-	osr2mp4.settings.skin_ini = skin = Skin(osr2mp4.settings.skin_path, osr2mp4.settings.default_path)
-
-	frames = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.playfieldscale, osr2mp4.settings, False)
-	components.hitcirclenumber = Number(prepare_hitcirclenumber(osr2mp4.beatmap.diff, osr2mp4.settings.playfieldscale, osr2mp4.settings), skin.fonts)
-	components.circle = CircleManager(frames, 800, components.hitcirclenumber, osr2mp4.settings)
-	hitobject = osr2mp4.beatmap.hitobjects[40]
-	hitobject["combo_number"] = 11
-	components.circle.add_circle(hitobject, hitobject["x"], hitobject["y"], hitobject["time"] - 10)
-	components.circle.add_to_frame(background, str(hitobject["id"]) + "c", 0)
-
-	background.save("test.png")
+	#
+	osr2mp4.settings.skin_ini = skin = Skin(osr2mp4.settings.skin_path, osr2mp4.settings.default_path, inipath="skin-5.ini")
+	# b = read_file("test.osu", osr2mp4.settings.scale, skin.colours, False)
+	# print(b)
+	#
+	# frames = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.playfieldscale, osr2mp4.settings, False)
+	# components.hitcirclenumber = Number(prepare_hitcirclenumber(osr2mp4.beatmap.diff, osr2mp4.settings.playfieldscale, osr2mp4.settings), skin.fonts)
+	# components.circle = CircleManager(frames, 800, components.hitcirclenumber, osr2mp4.settings)
+	# hitobject = osr2mp4.beatmap.hitobjects[40]
+	# hitobject["combo_number"] = 11
+	# components.circle.add_circle(hitobject, hitobject["x"], hitobject["y"], hitobject["time"] - 10)
+	# components.circle.add_to_frame(background, str(hitobject["id"]) + "c", 0)
+	#
+	# background.save("test.png")
+	# frames = prepare_scoreboard(osr2mp4.settings.scale, osr2mp4.settings)
+	# components.scoreboard = Scoreboard(frames, (frames, frames, frames), frames, osr2mp4.replay_info, osr2mp4.beatmap, osr2mp4.settings)
 
 
 
