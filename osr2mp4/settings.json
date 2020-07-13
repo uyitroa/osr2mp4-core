@@ -6,12 +6,14 @@
   "Always show key overlay": true,
   "Automatic cursor size": false,
   "Rotate sliderball": false,
+  "Enable PP counter": false,
   "Score meter size": 1.25,
   "Song volume": 50,
   "Effect volume": 100,
   "Ignore beatmap hitsounds": false,
-  "Use skin's sound samples": false,
-  "Global leaderboard": true,
+  "Use skin's sound samples": true,
+  "Global leaderboard": false,
   "Mods leaderboard": "*",
-  "api key": "lol"
+  "api key": "lol",
+  "Use opencv resize": false
 }

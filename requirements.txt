@@ -1,3 +1,4 @@
+oppai
 pydub
 numpy
 opencv-python
