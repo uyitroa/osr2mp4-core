@@ -18,7 +18,7 @@ def write_frame(shared, conn, filename, settings, iii):
 def write(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
-	logging.log(logging.DEBUG, "{} {} \n".format(filename, vars(settings)))
+	logging.log(logging.DEBUG, "{}\n".format(filename))
 
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)

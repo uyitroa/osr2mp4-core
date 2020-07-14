@@ -55,7 +55,6 @@ def excepthook(exc_type, exc_value, exc_tb):
 	print(tb)
 
 
-
 @logged(logging.getLogger(__name__))
 @traced
 class Osr2mp4:
@@ -125,6 +124,8 @@ class Osr2mp4:
 
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
+		apikey = gameplaysettings["api key"]
+		gameplaysettings["api key"] = None  # avoid logging api key
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
@@ -142,6 +143,7 @@ class Osr2mp4:
 		self.previousprogress = 0
 
 		logging.log(TRACE, "Settings vars {}".format(vars(self.settings)))
+		gameplaysettings["api key"] = apikey  # restore api key
 
 	def startvideo(self):
 		if self.resultinfo is None:
