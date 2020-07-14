@@ -7,7 +7,6 @@ import cv2
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 
-from ..global_var import Settings
 from .AFrames import *
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
