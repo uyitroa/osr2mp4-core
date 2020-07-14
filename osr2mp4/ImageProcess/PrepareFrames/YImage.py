@@ -164,15 +164,12 @@ class YImages:
 			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + self.settings.format)
 			should_continue = should_continue or os.path.isfile(path + self.filename + self.delimiter + str(counter) + self.settings.x2 + self.settings.format)
 
-
 		if not self.frames:
-			should_continue = os.path.isfile(path + self.filename + self.settings.format)
-			if should_continue:
-				self.unanimate = True
+			self.unanimate = True
 
-				a = YImage(self.filename, self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
-				self.imgfrom = a.imgfrom
-				self.frames.append(a.img)
+			a = YImage(self.filename, self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
+			self.imgfrom = a.imgfrom
+			self.frames.append(a.img)
 
 
 		self.n_frame = len(self.frames)
