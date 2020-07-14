@@ -105,7 +105,7 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 
 	diffmod(replay_info, beatmap.diff)
 
-	hitobjectchecker = HitObjectChecker(beatmap, settings, replay_info.mod_combination, tests)
+	hitobjectchecker = HitObjectChecker(beatmap, settings, replay_info, tests)
 
 	break_index = 0
 	breakperiod = beatmap.breakperiods[break_index]

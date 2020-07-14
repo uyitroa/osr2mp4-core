@@ -1,6 +1,8 @@
 import logging
 import math
 
+from ..osrparse.replay import Replay
+
 from ..osrparse.enums import Mod
 
 from ..EEnum.EReplay import Replays
@@ -8,7 +10,6 @@ from .Health import HealthProcessor, HealthDummy
 from .Judgement import Check
 from collections import namedtuple
 import copy
-from oppai import *
 from ..EEnum.EState import States
 
 
@@ -43,7 +44,7 @@ def getmultiplier(mods):
 
 
 class HitObjectChecker:
-	def __init__(self, beatmap, settings, mods, tests=False):
+	def __init__(self, beatmap, settings, replay: Replay, tests=False):
 		self.diff = beatmap.diff
 		self.settings = settings
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
@@ -64,15 +65,17 @@ class HitObjectChecker:
 		self.SLIDER = 1
 		self.SPINNER = 2
 
-		self.check = Check(beatmap.diff, self.hitobjects, mods)
+		self.mods = replay.mod_combination
+		self.check = Check(beatmap.diff, self.hitobjects, self.mods)
 		logging.log(1, "Diff {}".format(self.diff))
 		self.scorecounter = 0
 		self.combo = 0
 		self.maxcombo = 0
-		self.mods = mods
-		self.mod_multiplier = getmultiplier(mods)
+		self.mod_multiplier = getmultiplier(self.mods)
 		self.results = {300: 0, 100: 0, 50: 0, 0: 0}
 		self.clicks = [0, 0, 0, 0]
+
+		self.maxscore = replay.score  # temporary fix to limit the score to this one. Avoid getting higher on leaderboard incorrectly
 
 		self.info = []
 		self.starthitobjects = 0
@@ -89,6 +92,7 @@ class HitObjectChecker:
 
 	def update_score(self, hitresult, objtype, usecombo=True, combo=None):
 		# Always update score after updating combo
+
 		if usecombo:
 			if combo is None:
 				combo = self.combo - 2
@@ -100,6 +104,10 @@ class HitObjectChecker:
 				return
 			objtype = []  # no bonus score for new combo
 			hitresult = 100 if hitresult < 1000 else 300
+
+		if self.scorecounter >= self.maxscore:
+			self.scorecounter = self.maxscore
+
 		self.health_processor.updatehp(hitresult, objtype)
 
 	def getacc(self, acc):
