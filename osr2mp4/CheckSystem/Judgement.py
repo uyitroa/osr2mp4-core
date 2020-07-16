@@ -315,12 +315,12 @@ class Check:
 		if Mod.Relax in self.mods:
 			prevosr = replay[max(0, osrindex - 1)]
 			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = 100 * 360/60000 * timediff  # source: https://osu.ppy.sh/community/forums/topics/156295
+			bonusrot = min((lastangle - angle) - max(-0.05, min(angle, 0.05)), 60000/4) * 360/60000 * timediff  # source: https://osu.ppy.sh/community/forums/topics/156295
 
 		if Mod.SpunOut in self.mods:
 			prevosr = replay[max(0, osrindex - 1)]
 			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = min((lastangle - angle) - max(-0.05, min(angle, 0.05)), 60000/4) * 360 / 60000 * timediff  # source: https://osu.ppy.sh/help/wiki/Game_Modifiers
+			bonusrot = 286.48 * 360 / 60000 * timediff  # source: https://osu.ppy.sh/help/wiki/Game_Modifiers
 
 			angle = 0
 			lastangle = 0
