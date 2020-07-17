@@ -67,7 +67,7 @@ class Cursortrail(FrameObject):
 			xx = self.radius ** 2 - stepx ** 2
 			stepy = math.sqrt(max(0, xx))  # avoid maths domain error temporary fix(?)
 		count = 0
-		x, y = self.trail
+		x, y = self.trail.x, self.trail.y
 		while count < int(n_cursor):
 			x += copysign(stepx, deltax)
 			y += copysign(stepy, deltay)
