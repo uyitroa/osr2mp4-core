@@ -58,7 +58,5 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.default_skin_ini = skin
 
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
-	gameplaydata["Use opencv resize"] = gameplaydata.get("Use opencv resize", False)
 	settings.settings = gameplaydata
-	Settings.usecv2 = gameplaydata["Use opencv resize"]
 

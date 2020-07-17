@@ -171,7 +171,6 @@ def excepthook(exc_type, exc_value, exc_tb):
 def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	sys.excepthook = excepthook
 	asdfasdf = time.time()
-	Settings.usecv2 = settings.settings["Use opencv resize"]
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
 	logging.log(logging.DEBUG, "process start")

@@ -45,7 +45,6 @@ defaultsettings = {
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
 	"api key": "lol",
-	"Use opencv resize": False
 }
 
 
@@ -53,7 +52,6 @@ def excepthook(exc_type, exc_value, exc_tb):
 	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
 	logging.exception(tb)
 	print(tb)
-
 
 
 @logged(logging.getLogger(__name__))

@@ -17,12 +17,7 @@ def prepare_scoreboard(scale, settings):
 	"""
 	img = YImage(scoreboard, settings, scale).img
 	img = img.crop((int(img.size[0] * 2/3), 0, img.size[0], img.size[1]))
-	if not Settings.usecv2:
-		img = img.resize((int(140 * scale), int(64 * scale)))
-	else:
-		npimg = numpy.array(img)
-		newimg = cv2.resize(npimg, (int(140 * scale), int(64 * scale)))
-		img = Image.fromarray(newimg)
+	img = img.resize((int(140 * scale), int(64 * scale)))
 	imageproc.changealpha(img, 0.3)
 
 	playerimg = imageproc.add_color(img, [80, 80, 80])
