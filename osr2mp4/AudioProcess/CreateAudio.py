@@ -148,6 +148,17 @@ def getoffset(offset, endtime, song):
 	return out
 
 
+def apply_offset(song, offset):
+	if offset > 0:
+		out = np.zeros((len(song.audio) + int(offset / 1000 * song.rate), 2), dtype=song.audio.dtype)
+		out[int(offset / 1000 * song.rate):] = song.audio
+	else:
+		offset = -offset
+		out = song.audio[int(offset / 1000 * song.rate):]
+
+	return out
+
+
 def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 
 	nc = Mod.Nightcore in mods
@@ -162,6 +173,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 
 	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	song.rate /= settings.timeframe/1000
+	song.audio = apply_offset(song, settings.settings["Song delay"])
 
 	filenames = getfilenames(beatmap, settings.settings["Ignore beatmap hitsounds"])
 	setuphitsound(filenames, beatmap_path, skin_path, default_skinpath, settings)

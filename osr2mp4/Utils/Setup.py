@@ -58,5 +58,6 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.default_skin_ini = skin
 
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
+	gameplaydata["Delay song"] = gameplaydata.get("Delay song", 0)
 	settings.settings = gameplaydata
 

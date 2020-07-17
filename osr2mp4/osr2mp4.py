@@ -42,6 +42,7 @@ defaultsettings = {
 	"Effect volume": 50,
 	"Ignore beatmap hitsounds": False,
 	"Use skin's sound samples": False,
+	"Song delay": 0,
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
 	"api key": "lol",
