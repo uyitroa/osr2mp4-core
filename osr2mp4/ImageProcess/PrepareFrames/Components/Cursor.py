@@ -49,8 +49,8 @@ def prepare_cursortrail(scale, continuous, settings):
 	else:
 		end = 1
 	yimg = YImage(cursortrail, settings, scale)
-	trail_frames = fadein(yimg.img, 0.1, end, 0.1 * 60/settings.fps)
-	trail_frames = grow(trail_frames, 0.9, 1, 0.1/9 * 60/settings.fps)
+	trail_frames = fadein(yimg.img, 0.1, end, 0.1)
+	trail_frames = grow(trail_frames, 0.9, 1, 0.1/9)
 	trail_frames.append(Image.new("RGBA", (1, 1)))
 
 	return trail_frames

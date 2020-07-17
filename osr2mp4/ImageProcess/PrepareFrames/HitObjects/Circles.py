@@ -66,9 +66,9 @@ def overlayapproach(circle, approach, alpha):
 	return imageproc.newalpha(approach, alpha/100)
 
 
-def prepare_fadeout(img):
-	fade_out = alpha.fadeout(img, 1, 0, 0.1)
-	fade_out = size.grow(fade_out, 1.1, 1.6, 0.04)
+def prepare_fadeout(img, settings):
+	fade_out = alpha.fadeout(img, 1, 0, 0.1 * 60/settings.fps)
+	fade_out = size.grow(fade_out, 1.1, 1.6, 0.04 * 60/settings.fps)
 	return fade_out
 
 
@@ -123,15 +123,14 @@ def prepare_circle(beatmap, scale, settings, hd):
 		orig_circle = overlayhitcircle(c_overlay, circle, color, radius_scale)
 
 		if not hd:
-			fadeout[0].append(prepare_fadeout(orig_circle))
+			fadeout[0].append(prepare_fadeout(orig_circle, settings))
 		else:
 			fadeout[0].append([Image.new("RGBA", (1, 1))])
-
 
 		orig_slider = overlayhitcircle(s_overlay, slider, color, radius_scale)
 
 		if not hd:
-			fadeout[1].append(prepare_fadeout(orig_slider))
+			fadeout[1].append(prepare_fadeout(orig_slider, settings))
 		else:
 			fadeout[1].append([Image.new("RGBA", (1, 1))])
 

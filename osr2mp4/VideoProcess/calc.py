@@ -1,5 +1,7 @@
 import logging
 
+from .AFrames import FrameObjects
+
 from ..EEnum.EReplay import Replays
 
 
@@ -76,7 +78,7 @@ def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):
 	# check if it's time to draw circles
 	if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
 
-		logging.log(1, "Adding osu object {}\n{}".format(osu_d, frame_info))
+		# logging.log(1, "Adding osu object {}\n{}".format(osu_d, frame_info))
 
 		if "spinner" in osu_d["type"]:
 
@@ -132,6 +134,5 @@ def check_break(beatmap, component, frame_info, updater, settings):
 
 	if frame_info.cur_time > breakperiod["End"] - 700 and in_break and breakperiod["Arrow"]:
 		component.arrowwarning.startbreak(breakperiod["Start"])
-
 
 	return in_break

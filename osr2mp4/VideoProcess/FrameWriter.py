@@ -54,7 +54,7 @@ def write(shared, conn, filename, settings, iii):
 			if iii and framecount % 200:
 				deltatime = max(1, timer)
 				filewriter.seek(0)
-				logging.log(1, "Writing progress {}, {}, {}, {}".format(framecount, deltatime, filename, startwringtime))
+				# logging.log(1, "Writing progress {}, {}, {}, {}".format(framecount, deltatime, filename, startwringtime))
 				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, filename, startwringtime))
 				filewriter.truncate()
 
