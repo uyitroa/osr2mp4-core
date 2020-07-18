@@ -10,13 +10,23 @@ class PPCounter:
 		self.y = 100
 		self.pp = 0
 		self.size = 20
-		self.color = (255, 255, 255)
+		self.color = (100, 255, 255)
 		self.alpha = 1
 		self.fontpath = ""
 		self.gap = 0
 
+		self.loadsettings(settings.ppsettings)
 		self.loadimg()
 		# self.gap = self.frames["0"].size[0]
+
+	def loadsettings(self, json):
+		self.x = json["x"]
+		self.y = json["y"]
+		self.size = json["size"]
+		self.color = tuple(json["rgb"])
+		self.alpha = json["alpha"]
+		self.fontpath = json["Font"]
+		self.gap = json["gap"]
 
 	def loadimg(self):
 		char = [str(x) for x in range(10)]

@@ -48,6 +48,16 @@ defaultsettings = {
 	"api key": "lol",
 }
 
+defaultppconfig = {
+	"x": 1270,
+	"y": 100,
+	"size": 20,
+	"rgb": [255, 255, 255],
+	"alpha": 0.9,
+	"Font": "Arial.ttf",
+	"gap": 0
+}
+
 
 def excepthook(exc_type, exc_value, exc_tb):
 	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
@@ -59,7 +69,9 @@ def excepthook(exc_type, exc_value, exc_tb):
 @traced
 class Osr2mp4:
 
-	def __init__(self, data=None, gameplaysettings=None, filedata=None, filesettings=None, logtofile=False, enablelog=True, logpath=""):
+	def __init__(self, data=None, gameplaysettings=None, ppsettings=None,
+	             filedata=None, filesettings=None, filepp=None,
+	             logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
 		sys.excepthook = excepthook
 		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
@@ -87,11 +99,6 @@ class Osr2mp4:
 
 		self.settings.enablelog = enablelog
 
-		# else:
-		# 	logging.basicConfig(
-		# 		level=logging.CRITICAL, stream=open(self.settings.path + "logs/test.log", "w"),
-		# 		format="%(levelname)s:%(name)s:%(funcName)s:%(message)s")
-
 		self.settings.temp = self.settings.path + str(uuid.uuid1()) + "temp/"
 
 		self.__log.info("test")
@@ -102,11 +109,16 @@ class Osr2mp4:
 
 		if gameplaysettings is None:
 			gameplaysettings = defaultsettings
+		if ppsettings is None:
+			ppsettings = defaultppconfig
 
 		if filedata is not None:
 			data = read(filedata)
 		if filesettings is not None:
 			gameplaysettings = read(filesettings)
+		if filepp is not None:
+			ppsettings = read(filepp)
+
 		if os.path.isdir(data["Output path"]):
 			data["Output path"] = os.path.join(data["Output path"], "output.avi")
 		self.data = data
@@ -124,12 +136,14 @@ class Osr2mp4:
 
 		upsidedown = Mod.HardRock in self.replay_info.mod_combination
 
-		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings)
+		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings, ppsettings=ppsettings)
+
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
 		self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
-		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, upsidedown)
+		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours,
+		                         upsidedown)
 
 		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
 		self.replay_info.play_data = self.replay_event
@@ -146,7 +160,9 @@ class Osr2mp4:
 		if self.resultinfo is None:
 			self.analyse_replay()
 		videotime = (self.start_index, self.end_index)
-		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime, self.endtime == -1)
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap,
+		                                                                        self.replay_info, self.resultinfo,
+		                                                                        videotime, self.endtime == -1)
 
 	def analyse_replay(self):
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
@@ -155,7 +171,8 @@ class Osr2mp4:
 		if self.resultinfo is None:
 			self.analyse_replay()
 		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
-		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings, self.replay_info.mod_combination)
+		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings,
+		                          self.replay_info.mod_combination)
 
 	def startall(self):
 		self.analyse_replay()
@@ -216,9 +233,9 @@ class Osr2mp4:
 			starttime = float(info[3])
 
 			curdeltatime = time.time() - starttime
-			estimated_curframe = curdeltatime/deltatime * framecount
+			estimated_curframe = curdeltatime / deltatime * framecount
 
-			estimated_progress = estimated_curframe/(self.end_index - self.start_index)
+			estimated_progress = estimated_curframe / (self.end_index - self.start_index)
 		except ValueError:
 			if "done" in info:
 				estimated_progress = 100

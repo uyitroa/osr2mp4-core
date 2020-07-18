@@ -27,22 +27,32 @@ class Settings:
 		self.timeframe = None
 
 		self.settings = {
-					"Cursor size": 1,
-					"In-game interface": True,
-					"Show scoreboard": True,
-					"Background dim": 100,
-					"Rotate sliderball": False,
-					"Always show key overlay": True,
-					"Automatic cursor size": False,
-					"Score meter size": 1,
-					"Song volume": 50,
-					"Effect volume": 50,
-					"Ignore beatmap hitsounds": False,
-					"Use skin's sound samples": False,
-					"Global leaderboard": False,
-					"Mods leaderboard": "*",
-					"api key": "lol"
-				}
+			"Cursor size": 1,
+			"In-game interface": True,
+			"Show scoreboard": True,
+			"Background dim": 100,
+			"Rotate sliderball": False,
+			"Always show key overlay": True,
+			"Automatic cursor size": False,
+			"Score meter size": 1,
+			"Song volume": 50,
+			"Effect volume": 50,
+			"Ignore beatmap hitsounds": False,
+			"Use skin's sound samples": False,
+			"Global leaderboard": False,
+			"Mods leaderboard": "*",
+			"api key": "lol"
+		}
+
+		self.ppsettings = {
+			"x": 1270,
+			"y": 100,
+			"size": 20,
+			"rgb": [255, 255, 255],
+			"alpha": 0.9,
+			"Font": "",
+			"gap": 0
+		}
 
 		self.codec = None
 		self.process = None
