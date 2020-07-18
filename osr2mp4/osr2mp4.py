@@ -54,7 +54,7 @@ defaultppconfig = {
 	"size": 20,
 	"rgb": [255, 255, 255],
 	"alpha": 0.9,
-	"Font": "Arial.ttf",
+	"Font": "arial.ttf",
 	"gap": 0
 }
 
