@@ -1,11 +1,11 @@
 from math import ceil
-
+from ...Objects.Components.AScorebar import AScorebar
 from ... import imageproc
-from ..FrameObject import FrameObject
 
 
-class ComboCounter(FrameObject):
+class ComboCounter(AScorebar):
 	def __init__(self, frames, gap, settings):
+		AScorebar.__init__(self, frames[0], settings=settings)
 		self.settings = settings
 
 		self.score_frames, self.score_fadeout = frames
@@ -68,14 +68,16 @@ class ComboCounter(FrameObject):
 			img = frames[digit][int(index)]
 			y = self.height - img.size[1]
 			x, x_offset, y_offset = self.next_pos(x, y, img)
-			imageproc.add(img, background, x_offset, y_offset)
+			imageproc.add(img, background, x_offset - self.h, y_offset, alpha=self.alpha)
 
 		img = frames[10][int(index)]
 		y = self.height - img.size[1]
 		x, x_offset, y_offset = self.next_pos(x, y, img)
-		imageproc.add(img, background, x_offset, y_offset)
+		imageproc.add(img, background, x_offset - self.h, y_offset, alpha=self.alpha)
 
 	def add_to_frame(self, background, inbreak):
+		AScorebar.animate(self)
+
 		if int(self.fadeout_index) == len(self.score_fadeout[0]) - 1:
 			self.combo = self.combofadeout
 			self.score_index = 0
