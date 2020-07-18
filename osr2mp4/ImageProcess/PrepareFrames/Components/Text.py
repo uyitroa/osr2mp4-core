@@ -2,9 +2,11 @@ from PIL import ImageFont, ImageDraw, Image
 from ... import imageproc
 
 
-def prepare_text(texts, size, color, settings, alpha=1):
+def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
+	if fontpath == "":
+		fontpath = settings.path + "res/Aller_Rg.ttf"
 	size = int(size)
-	font = ImageFont.truetype(settings.path + "res/Aller_Rg.ttf", size=size)
+	font = ImageFont.truetype(fontpath, size=size)
 
 	img = Image.new("RGBA", (settings.width, settings.height))
 	imgdraw = ImageDraw.Draw(img)
