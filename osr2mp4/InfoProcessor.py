@@ -63,6 +63,9 @@ class Updater:
 
 		elif objtype == "Slider":
 			idd = str(self.info.id) + "s"
+			if idd not in self.component.hitobjmanager.slider_manager.sliders:
+				return
+
 			x, y = self.info.more.x, self.info.more.y
 			followbit = self.info.more.followstate
 			if int(followbit[0]):
