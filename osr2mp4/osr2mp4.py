@@ -8,7 +8,7 @@ import traceback
 from .osrparse import *
 from .osrparse.enums import Mod
 import PIL
-from .Exceptions import ReplayNotFound
+from .Exceptions import ReplayNotFound, HarumachiCloverBan
 from .Parser.jsonparser import read
 from .AudioProcess.CreateAudio import create_audio
 from .CheckSystem.checkmain import checkmain
@@ -158,6 +158,10 @@ class Osr2mp4:
 		self.audio = None
 
 		self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
+
+		if "harumachi" in self.beatmap_file.lower() and "clover" in self.beatmap_file.lower():
+			raise HarumachiCloverBan()
+
 		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours,
 		                         upsidedown)
 
