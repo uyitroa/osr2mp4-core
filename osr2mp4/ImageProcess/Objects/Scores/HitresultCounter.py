@@ -24,7 +24,7 @@ class HitresultCounter(ACounter):
 				continue
 			x = (self.countersettings[self.prefix + "x"] + self.countersettings["Hitresult Gap"] * counter) * self.settings.scale
 			y = self.countersettings[self.prefix + "y"] * self.settings.scale
-			for digit in str(self.score[n]):
+			for digit in str(self.score[n])[::-1]:
 				imageproc.add(self.frames[digit], background, x, y, self.countersettings["Hitresult Alpha"], topleft=True)
-				x += self.frames[digit].size[0]
+				x -= self.frames[digit].size[0]
 			counter += 1

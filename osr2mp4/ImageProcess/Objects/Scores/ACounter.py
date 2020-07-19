@@ -48,9 +48,9 @@ class ACounter:
 	def draw_number(self, background):
 		x = self.countersettings[self.prefix + "x"] * self.settings.scale
 		y = self.countersettings[self.prefix + "y"] * self.settings.scale
-		for digit in self.score:
+		for digit in self.score[::-1]:
+			x -= self.frames[digit].size[0]
 			imageproc.add(self.frames[digit], background, x, y, self.countersettings[self.prefix + "Alpha"], topleft=True)
-			x += self.frames[digit].size[0]
 
 	def add_to_frame(self, background):
 		"""
