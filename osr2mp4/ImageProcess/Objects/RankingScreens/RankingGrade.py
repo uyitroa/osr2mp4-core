@@ -21,9 +21,14 @@ class RankingGrade(ARankingScreen):
 		self.gradeframe = gradeframes[hd][grade]
 		self.gap = int(gap * self.settings.scale * 0.75)
 
+		if self.settings.skin_ini.general["Version"] == 1:
+			self.y = 272
+		else:
+			self.y = 320
+
 	def add_to_frame(self, background):
 		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-grades
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
 			imageproc.add(self.gradeframe, background, self.settings.width - 192 * self.settings.scale,
-			              320 * self.settings.scale, self.alpha)
+			              self.y * self.settings.scale, self.alpha)
