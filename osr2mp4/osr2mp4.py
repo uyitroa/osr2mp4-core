@@ -49,15 +49,30 @@ defaultsettings = {
 }
 
 defaultppconfig = {
-	"x": 1270,
-	"y": 100,
-	"size": 20,
-	"rgb": [255, 255, 255],
-	"alpha": 0.9,
-	"Font": "arial.ttf",
-	"gap": 0
+    "x": 1240,
+    "y": 725,
+    "Size": 25,
+    "Rgb": [
+        255,
+        255,
+        255
+    ],
+    "Alpha": 1,
+    "Font": "Arial.ttf",
+    "Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
+    "Hitresult x": 50,
+    "Hitresult y": 150,
+    "Hitresult Size": 16,
+    "Hitresult Rgb": [
+        255,
+        255,
+        255
+    ],
+    "Hitresult Alpha": 1,
+    "Hitresult Font": "Arial.ttf",
+    "Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
+    "Hitresult Gap": 50
 }
-
 
 def excepthook(exc_type, exc_value, exc_tb):
 	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))

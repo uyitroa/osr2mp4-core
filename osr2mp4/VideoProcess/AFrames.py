@@ -1,5 +1,6 @@
 import logging
 
+from ..ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
 from ..osrparse.enums import Mod
 
 from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
@@ -201,3 +202,4 @@ class FrameObjects:
 		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
 		self.ppcounter = PPCounter(settings)
+		self.hitresultcounter = HitresultCounter(settings)

@@ -110,6 +110,7 @@ class Drawer:
 		self.component.sections.add_to_frame(self.img)
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
 		self.component.ppcounter.add_to_frame(self.img)
+		self.component.hitresultcounter.add_to_frame(self.img)
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 

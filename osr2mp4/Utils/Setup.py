@@ -64,3 +64,4 @@ def setupglobals(data, gameplaydata, replay_info, settings, ppsettings=None):
 	if ppsettings is not None:
 		settings.ppsettings = ppsettings
 
+

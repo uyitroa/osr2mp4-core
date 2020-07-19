@@ -37,10 +37,9 @@ class Updater:
 		ezpp_set_accuracy(self.ez, self.info.accuracy[100], self.info.accuracy[50])
 		ezpp_set_nmiss(self.ez, self.info.accuracy[0])
 		ezpp_set_combo(self.ez, self.info.maxcombo)
-
 		ezpp_set_end(self.ez, self.info.id+1)
 		curpp = ezpp_pp(self.ez)
-		self.component.ppcounter.update_pp(curpp)
+		self.component.ppcounter.update(curpp)
 
 	def process_combo(self):
 		if self.info.combostatus == 1:
@@ -97,6 +96,7 @@ class Updater:
 				self.component.scorecounter.update_score(self.info.score)
 
 		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
+		self.component.hitresultcounter.update(self.info.accuracy)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
