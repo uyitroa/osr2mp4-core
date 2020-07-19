@@ -113,7 +113,7 @@ class Beatmap:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
 			else:
-				my_dict["BeatDuration"] = - float(items[1]) * inherited / 100
+				my_dict["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
 			my_dict["Base"] = inherited
 			my_dict["Meter"] = int(items[2])
 			my_dict["SampleSet"] = items[3]
