@@ -8,8 +8,8 @@
     "Width": 1920,
     "Height": 1080,
     "FPS": 60,
-    "Start time": 240,
-    "End time": 250,
+    "Start time": 0,
+    "End time": -1,
     "Video codec": "X264",
     "Process": 3,
     "ffmpeg path": "ffmpeg"

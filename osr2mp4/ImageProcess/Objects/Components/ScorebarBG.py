@@ -1,5 +1,3 @@
-from ... import imageproc
-
 from .AScorebar import AScorebar
 
 

@@ -30,7 +30,7 @@ def prepare_background(backgroundname, settings):
 
 	dim = max(0, min(100, (100 - settings.settings["Background dim"]))) * 2.55
 	color = np.array([dim, dim, dim])
-	interval = int(1000/settings.fps)
+	interval = int(1000/60)
 	c_interval = max(0, (settings.settings["Background dim"] - 50) * 2.55/interval)
 	color[:] = color[:] - c_interval
 	for x in range(interval):

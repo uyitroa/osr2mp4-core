@@ -26,8 +26,6 @@ class SliderManager:
 		self.reversearrow, self.sliderfollow, self.sliderfollow_fadeout, self.slidertick, self.sliderb_frames = frames
 		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
 
-		self.divide_by_255 = 1 / 255.0
-
 		self.arrows = {}
 		self.sliders = {}
 
@@ -196,7 +194,6 @@ class SliderManager:
 		else:
 			slider.opacity = total_cur_duration / (slider.osu_d["duration"] * slider.osu_d["repeated"]) * 100
 		self.draw_slider(slider.image, background, slider.x, slider.y, alpha=slider.opacity/100)
-
 
 		if going_forward:
 			delta_time = slider.osu_d["duration"] - slider.cur_duration

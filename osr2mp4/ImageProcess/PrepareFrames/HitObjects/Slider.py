@@ -49,8 +49,6 @@ def prepare_slider(diff, scale, settings):
 
 	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale, settings)
 
-	sframes = []
-	sliderfollow_fadeout = []
 	bframes = []
 
 	for c in range(1, settings.skin_ini.colours["ComboNumber"] + 1):
@@ -62,7 +60,6 @@ def prepare_slider(diff, scale, settings):
 			else:
 				color_sb = sliderb_frames[x].copy()
 			bframes[-1].append(color_sb)
-
 
 	startsize, endsize = 0.5, 1
 	scale_interval = (endsize - startsize) * interval/follow_fadein
@@ -82,19 +79,5 @@ def prepare_slider(diff, scale, settings):
 
 	sliderfollow_fadeout = fadein(sliderfollow_frames[0], startalpha, endalpha, alpha_interval)
 	sliderfollow_fadeout = grow(sliderfollow_fadeout, startsize, endsize, scale_interval)
-	# sliderfollow_fadeout = sliderfollow_fadeout[::-1]
-
-	# for x in range(follow_fadein, 0, -int(interval)):
-	# 	sfollow = imageproc.newalpha(sliderfollow_frames[0], cur_alpha)
-	# 	sfollow = imageproc.change_size(sfollow, cur_scale, cur_scale)
-	#
-	# 	follow_img = sfollow.copy()
-	# 	sliderfollow_fadeout.append(follow_img)
-	#
-	# 	sframes.append(sfollow)
-	#
-	# 	cur_scale -= scale_interval
-	# 	cur_alpha -= alpha_interval
-
 
 	return arrow_frames, sframes, sliderfollow_fadeout, slider_tick, bframes

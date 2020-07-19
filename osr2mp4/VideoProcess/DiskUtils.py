@@ -6,11 +6,8 @@ import shutil
 def concat_videos(settings):
 	_, file_extension = os.path.splitext(settings.output)
 	f = settings.temp + "outputf" + file_extension
-	# command = '"{}" -safe 0 -f concat -i ../temp/listvideo.txt -c copy "{}" -y'.format(settings.ffmpeg, f)
-	# if os.name == 'nt':
-	# 	command = '"' + command + '"'
-	# os.system(command)
-	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', settings.temp + 'listvideo.txt', '-c', 'copy', f, '-y'])
+	listvideopath = os.path.abspath(os.path.join(settings.temp, "listvideo.txt")).replace("\\", "/")
+	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', listvideopath, '-c', 'copy', f, '-y'])
 
 
 def cleanup(settings):
@@ -36,7 +33,6 @@ def setup_dir(settings):
 	if not os.path.isdir(settings.path + "logs"):
 		# shutil.rmtree(settings.path + "logs")
 		os.makedirs(settings.path + "logs")
-
 
 	exists = os.path.isfile(settings.temp + "speed.txt")
 	if exists:

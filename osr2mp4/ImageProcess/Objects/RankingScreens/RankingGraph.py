@@ -16,6 +16,7 @@ class RankingGraph(ARankingScreen):
 		else:
 			self.rankingperfect = Image.new("RGBA", (1, 1))
 
+		self.rankingur = frames[2]
 
 		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen
 		if self.settings.skin_ini.general["Version"] == 1:
@@ -30,3 +31,4 @@ class RankingGraph(ARankingScreen):
 		if self.fade == self.FADEIN:
 			imageproc.add(self.rankinggraph, background, 256 * self.settings.scale, self.y * self.settings.scale, self.alpha, topleft=True)
 			imageproc.add(self.rankingperfect, background, self.perfectx * self.settings.scale, 688 * self.settings.scale, self.alpha)
+			imageproc.add(self.rankingur, background, (self.perfectx+100) * self.settings.scale, 688 * self.settings.scale, self.alpha ** 10)

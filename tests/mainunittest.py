@@ -5,11 +5,11 @@ from moddiff_test import *
 # from framestest import *
 from scoretest import *
 from sliderfollowtest import *
-from rankingscreentest import *
+# from rankingscreentest import *
 # from specificframetest import *
 from spinnerpositiontest import *
-from rankingscreencomparetest import *
-from specificframecomparetest import *
+# from rankingscreencomparetest import *
+# from specificframecomparetest import *
 from parseskintest import *
 # from osr2mp4test.InfoProcessTest import *
 

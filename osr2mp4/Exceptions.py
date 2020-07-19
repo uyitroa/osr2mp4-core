@@ -8,3 +8,7 @@ class ReplayNotFound(Exception):
 
 class GameModeNotSupported(Exception):
 	pass
+
+
+class HarumachiCloverBan(Exception):
+	pass

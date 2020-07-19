@@ -11,7 +11,7 @@ from ..Utils.Resolution import get_screensize
 
 @logged(logging.getLogger(__name__))
 @traced
-def setupglobals(data, gameplaydata, replay_info, settings):
+def setupglobals(data, gameplaydata, replay_info, settings, ppsettings=None):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
 	output_path = data.get("Output path", "output.avi")
@@ -58,7 +58,10 @@ def setupglobals(data, gameplaydata, replay_info, settings):
 	settings.default_skin_ini = skin
 
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
-	gameplaydata["Use opencv resize"] = gameplaydata.get("Use opencv resize", False)
+	gameplaydata["Song delay"] = gameplaydata.get("Song delay", 0)
 	settings.settings = gameplaydata
-	Settings.usecv2 = gameplaydata["Use opencv resize"]
+
+	if ppsettings is not None:
+		settings.ppsettings = ppsettings
+
 

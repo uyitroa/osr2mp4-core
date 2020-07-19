@@ -51,7 +51,6 @@ def set_scores(to_time, resultinfo, component):
 	return resultinfo[cur_index].time
 
 
-
 def search_osrindex(to_time, replays):
 	# pass_counter = 0
 	cur_index = 0

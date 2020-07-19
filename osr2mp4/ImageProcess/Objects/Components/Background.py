@@ -4,7 +4,7 @@ from .AScorebar import AScorebar
 class Background(AScorebar):
 	def __init__(self, bg, start_time, settings):
 		super().__init__(bg, settings=settings)
-		self.map_start = start_time
+		self.map_start = start_time + 50
 
 	def add_to_frame(self, background, np, cur_time, inbreak):
 		AScorebar.animate(self)

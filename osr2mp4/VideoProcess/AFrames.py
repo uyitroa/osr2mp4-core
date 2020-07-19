@@ -1,5 +1,8 @@
 import logging
 
+from ..CheckSystem.mathhelper import getunstablerate
+from ..ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
+from ..ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
 from ..osrparse.enums import Mod
 
 from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
@@ -74,12 +77,18 @@ from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings, beatmap, hd):
+	def __init__(self, settings, beatmap, hd, resultinfo=None):
 		skin = settings.skin_ini
 		check = DiffCalculator(beatmap.diff)
 		if settings.settings["Automatic cursor size"]:
 			circlescale = 4/beatmap.diff["CircleSize"]
 			settings.settings["Cursor size"] *= circlescale
+		if resultinfo is not None:
+			ur = getunstablerate(resultinfo)
+		else:
+			ur = [0, 0, 0]
+
+
 		logging.debug('start preparing cursor')
 		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
 		logging.debug('start preparing cursormiddle')
@@ -140,6 +149,9 @@ class PreparedFrames:
 		self.modicons = prepare_modicons(settings.scale, settings)
 		self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
 		self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
+		logging.debug("start preparing ur ranking")
+		self.rankingur = prepare_rankingur(settings, ur)
+		self.rankinggraph.extend(self.rankingur)
 		logging.debug('start preparing done')
 
 
@@ -201,3 +213,4 @@ class FrameObjects:
 		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
 		self.ppcounter = PPCounter(settings)
+		self.hitresultcounter = HitresultCounter(settings)

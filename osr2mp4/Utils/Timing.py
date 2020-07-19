@@ -11,12 +11,15 @@ def get_offset(beatmap, start_index, end_index, replay_event, endtime):
 	start_time = replay_event[start_index][3]
 	diffcalculator = DiffCalculator(beatmap.diff)
 	timepreempt = diffcalculator.ar()
+
+	# same as skip() code
 	hitobjectindex = search_time(start_time, beatmap.hitobjects)
 	to_time = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, start_time)
 	osr_index = search_osrindex(to_time, replay_event)
-	print(replay_event[start_index][3], replay_event[osr_index][3])
+
+	# because we have if osr_index >= start_index: draw() in Dawer.render_draw()
 	index = max(osr_index, start_index)
-	# print(replay_event[osr_index][Replays.TIMES], replay_event[start_index][Replays.TIMES], replay_event[index][Replays.TIMES])
+
 	offset = replay_event[index][3]
 	endtime += replay_event[end_index][3] + 100
 	print("\n\nOFFSET:", offset)

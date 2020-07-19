@@ -109,7 +109,8 @@ class Drawer:
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.sections.add_to_frame(self.img)
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
-		self.component.ppcounter.add_to_frame(self.np_img)
+		self.component.ppcounter.add_to_frame(self.img)
+		self.component.hitresultcounter.add_to_frame(self.img)
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
@@ -171,7 +172,6 @@ def excepthook(exc_type, exc_value, exc_tb):
 def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
 	sys.excepthook = excepthook
 	asdfasdf = time.time()
-	Settings.usecv2 = settings.settings["Use opencv resize"]
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
 	logging.log(logging.DEBUG, "process start")

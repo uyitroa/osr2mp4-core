@@ -6,7 +6,7 @@ from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:
-	def __init__(self, info, scale, colors, hr):
+	def __init__(self, info, scale=1, colors=None, hr=False):
 		self.info = info
 		self.general = {"StackLeniency": 7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
@@ -22,6 +22,8 @@ class Beatmap:
 		self.scale = scale
 		self.path = None
 
+		if colors is None:
+			colors = {"ComboNumber": 1}
 		self.ncombo = colors["ComboNumber"]
 		self.hr = hr
 
@@ -111,7 +113,7 @@ class Beatmap:
 				my_dict["BeatDuration"] = float(items[1])
 				inherited = my_dict["BeatDuration"]
 			else:
-				my_dict["BeatDuration"] = - float(items[1]) * inherited / 100
+				my_dict["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
 			my_dict["Base"] = inherited
 			my_dict["Meter"] = int(items[2])
 			my_dict["SampleSet"] = items[3]
@@ -134,19 +136,8 @@ class Beatmap:
 		cur_combo_color = 1
 
 		index = 0
-		stacking = False
-		reverse = False
-
-		ar = self.diff["ApproachRate"]  # for stacks
-		if ar < 5:
-			preempt = 1200 + 600 * (5 - ar) / 5
-		elif ar == 5:
-			preempt = 1200
-		else:
-			preempt = 1200 - 750 * (ar - 5) / 5
 
 		cur_offset = 0
-		min_stacktime = preempt * self.general["StackLeniency"]
 
 		for item in hitobject:
 			if item == '':
