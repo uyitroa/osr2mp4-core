@@ -1,16 +1,16 @@
 {
-    "osu! path": "/Users/yuitora./pythonstuff/data",
-    "Skin path": "/Users/yuitora./Downloads/shige",
-    "Beatmap path": "/Users/yuitora./Downloads/cyclehit",
-    ".osr path": "/Users/yuitora./Downloads/cyclehit.osr",
+    "osu! path": "/Users/yuitora./Documents/osu!.app/Contents/Resources/drive_c/osu!",
+    "Skin path": "/Users/yuitora./Downloads/ChitandaPink",
+    "Beatmap path": "/Users/yuitora./Downloads/arlesfd",
+    ".osr path": "/Users/yuitora./Downloads/arlesfd.osr",
     "Default skin path": "",
     "Output path": "/Users/yuitora./PycharmProjects/osr2mp4-core/output.mkv",
     "Width": 1920,
     "Height": 1080,
     "FPS": 60,
-    "Start time": 120,
-    "End time": 140,
+    "Start time": 240,
+    "End time": 250,
     "Video codec": "X264",
-    "Process": 2,
+    "Process": 3,
     "ffmpeg path": "ffmpeg"
 }
