@@ -1,3 +1,5 @@
+import logging
+
 from PIL import Image
 
 from ... import imageproc
@@ -33,7 +35,8 @@ class ACounter:
 			self.background = Image.open(self.countersettings[self.prefix + "Background"]).convert("RGBA")
 			scale = self.settings.scale * self.countersettings[self.prefix + "Size"]/20
 			self.background = imageproc.change_size(self.background, scale, scale)
-		except FileNotFoundError:
+		except Exception as e:
+			logging.error(repr(e))
 			self.background = Image.new("RGBA", (1, 1))
 
 	def update(self, score):

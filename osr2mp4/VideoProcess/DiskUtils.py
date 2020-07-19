@@ -6,7 +6,7 @@ import shutil
 def concat_videos(settings):
 	_, file_extension = os.path.splitext(settings.output)
 	f = settings.temp + "outputf" + file_extension
-	listvideopath = os.path.abspath(os.path.join(settings.temp, "listvideo.txt"))
+	listvideopath = os.path.abspath(os.path.join(settings.temp, "listvideo.txt")).replace("\\", "/")
 	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', listvideopath, '-c', 'copy', f, '-y'])
 
 

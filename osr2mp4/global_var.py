@@ -45,13 +45,29 @@ class Settings:
 		}
 
 		self.ppsettings = {
-			"x": 1270,
-			"y": 100,
-			"size": 20,
-			"rgb": [255, 255, 255],
-			"alpha": 0.9,
-			"Font": "",
-			"gap": 0
+			"x": 1240,
+			"y": 725,
+			"Size": 25,
+			"Rgb": [
+				255,
+				255,
+				255
+			],
+			"Alpha": 1,
+			"Font": "arial.ttf",
+			"Background": "",
+			"Hitresult x": 50,
+			"Hitresult y": 150,
+			"Hitresult Size": 16,
+			"Hitresult Rgb": [
+				255,
+				255,
+				255
+			],
+			"Hitresult Alpha": 1,
+			"Hitresult Font": "arial.ttf",
+			"Hitresult Background": "",
+			"Hitresult Gap": 50
 		}
 
 		self.codec = None

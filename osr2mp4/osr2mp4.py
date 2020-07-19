@@ -58,7 +58,7 @@ defaultppconfig = {
         255
     ],
     "Alpha": 1,
-    "Font": "Arial.ttf",
+    "Font": "arial.ttf",
     "Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
     "Hitresult x": 50,
     "Hitresult y": 150,
@@ -69,7 +69,7 @@ defaultppconfig = {
         255
     ],
     "Hitresult Alpha": 1,
-    "Hitresult Font": "Arial.ttf",
+    "Hitresult Font": "arial.ttf",
     "Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
     "Hitresult Gap": 50
 }
