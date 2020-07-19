@@ -1,25 +1,4 @@
-from PIL import Image
-from osr2mp4.Parser.osuparser import read_file
-
-from osr2mp4.ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
-
-from osr2mp4.ImageProcess.Objects.Components.Scoreboard import Scoreboard
-
-from osr2mp4.ImageProcess.Objects.HitObjects.CircleNumber import Number
-
-from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
-
-from osr2mp4.ImageProcess.Objects.HitObjects.Circles import CircleManager
-
-from osr2mp4.Parser.skinparser import Skin
-
-# from osr2mp4.ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursormiddle
-from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
-from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle
-
-from osr2mp4.InfoProcessor import Updater
-
-from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
 from osr2mp4.osr2mp4 import Osr2mp4
 
 
@@ -102,6 +81,7 @@ def saveimage(listimg, filename="0", pdf=False):
 def savepdf(listimg, filename):
 	for i in range(len(listimg)):
 		if listimg[i].mode == "RGBA":
+			from PIL import Image
 			rgb = Image.new('RGB', listimg[i].size, (255, 255, 255))  # white background
 			rgb.paste(listimg[i], mask=listimg[i].split()[3])
 			listimg[i] = rgb
@@ -109,6 +89,9 @@ def savepdf(listimg, filename):
 
 
 def testpp(components, osr2mp4):
+	from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+	from osr2mp4.InfoProcessor import Updater
+
 	components.ppcounter = PPCounter(osr2mp4.settings)
 	updater = Updater(osr2mp4.resultinfo, components, osr2mp4.settings, osr2mp4.replay_info.mod_combination,
 	                  osr2mp4.beatmap_file)
@@ -118,38 +101,62 @@ def testpp(components, osr2mp4):
 
 
 def testcircle(osr2mp4):
+	from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle
 	a = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.scale, osr2mp4.settings, False)
 	saveimage(a[0][0])
 
 
 def testplayinggrade(osr2mp4):
+	from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 	a = prepare_playinggrade(osr2mp4.settings.scale, osr2mp4.settings)
 	saveimage(a[0], pdf=True)
 
 
+def drawcircle(background, components, osr2mp4, skin):
+	from osr2mp4.Parser.osuparser import read_file
+	from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle
+	from osr2mp4.ImageProcess.Objects.HitObjects.CircleNumber import Number
+	from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
+	from osr2mp4.ImageProcess.Objects.HitObjects.Circles import CircleManager
+
+	b = read_file("test.osu", osr2mp4.settings.scale, skin.colours, False)
+	print(b)
+	frames = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.playfieldscale, osr2mp4.settings, False)
+	components.hitcirclenumber = Number(
+		prepare_hitcirclenumber(osr2mp4.beatmap.diff, osr2mp4.settings.playfieldscale, osr2mp4.settings), skin.fonts)
+	components.circle = CircleManager(frames, 800, components.hitcirclenumber, osr2mp4.settings)
+	hitobject = osr2mp4.beatmap.hitobjects[40]
+	hitobject["combo_number"] = 11
+	components.circle.add_circle(hitobject, hitobject["x"], hitobject["y"], hitobject["time"] - 10)
+	components.circle.add_to_frame(background, str(hitobject["id"]) + "c", 0)
+	background.save("test.png")
+
+
+def drawpp(components, osr2mp4):
+	from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+	from PIL import Image
+
+	background = Image.open("pppp.png")
+	osr2mp4.settings.settings["Enable PP counter"] = True
+	components.ppcounter = PPCounter(osr2mp4.settings)
+	components.ppcounter.set(727.27)
+	components.ppcounter.add_to_frame(background)
+	background.save("test.png")
+
+
 def main():
-	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json",
-	                  filesettings="osr2mp4/settings.json", logtofile=True)
+	from PIL import Image
+	from osr2mp4.Parser.skinparser import Skin
+
+	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	osr2mp4.analyse_replay()
 	components = DummyFrameObjects()
 	background = Image.new("RGBA", (osr2mp4.settings.width, osr2mp4.settings.height))
 	#
 	osr2mp4.settings.skin_ini = skin = Skin(osr2mp4.settings.skin_path, osr2mp4.settings.default_path, inipath="skin-5.ini")
-	# b = read_file("test.osu", osr2mp4.settings.scale, skin.colours, False)
-	# print(b)
-	#
-	# frames = prepare_circle(osr2mp4.beatmap, osr2mp4.settings.playfieldscale, osr2mp4.settings, False)
-	# components.hitcirclenumber = Number(prepare_hitcirclenumber(osr2mp4.beatmap.diff, osr2mp4.settings.playfieldscale, osr2mp4.settings), skin.fonts)
-	# components.circle = CircleManager(frames, 800, components.hitcirclenumber, osr2mp4.settings)
-	# hitobject = osr2mp4.beatmap.hitobjects[40]
-	# hitobject["combo_number"] = 11
-	# components.circle.add_circle(hitobject, hitobject["x"], hitobject["y"], hitobject["time"] - 10)
-	# components.circle.add_to_frame(background, str(hitobject["id"]) + "c", 0)
-	#
-	# background.save("test.png")
-	# frames = prepare_scoreboard(osr2mp4.settings.scale, osr2mp4.settings)
-	# components.scoreboard = Scoreboard(frames, (frames, frames, frames), frames, osr2mp4.replay_info, osr2mp4.beatmap, osr2mp4.settings)
-
+	# drawpp(components, osr2mp4)
+	a = prepare_rankingur(osr2mp4.settings, 10)
+	a[0].save("test.png")
 
 
 if __name__ == '__main__':
