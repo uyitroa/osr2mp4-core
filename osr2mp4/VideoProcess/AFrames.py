@@ -1,5 +1,6 @@
 import logging
 
+from ..ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
 from ..CheckSystem.mathhelper import getunstablerate
 from ..ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
 from ..ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
@@ -175,6 +176,7 @@ class FrameObjects:
 		self.key2 = InputOverlay(frames.key, self.scoreentry, settings)
 		self.mouse1 = InputOverlay(frames.mouse, self.scoreentry, settings)
 		self.mouse2 = InputOverlay(frames.mouse, self.scoreentry, settings)
+		self.playingmodicons = PlayingModIcons(frames.modicons, replay_info, settings)
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
 		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)

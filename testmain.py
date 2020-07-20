@@ -1,3 +1,6 @@
+from osr2mp4.ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
+
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
 from osr2mp4.osr2mp4 import Osr2mp4
 
@@ -151,12 +154,13 @@ def main():
 	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	osr2mp4.analyse_replay()
 	components = DummyFrameObjects()
-	background = Image.new("RGBA", (osr2mp4.settings.width, osr2mp4.settings.height))
+	background = Image.open("../osr2mp4-app/osr2mp4app/res/pppp.png")
 	#
-	osr2mp4.settings.skin_ini = skin = Skin(osr2mp4.settings.skin_path, osr2mp4.settings.default_path, inipath="skin-5.ini")
 	# drawpp(components, osr2mp4)
-	a = prepare_rankingur(osr2mp4.settings, 10)
-	a[0].save("test.png")
+	a = prepare_modicons(osr2mp4.settings.scale, osr2mp4.settings)
+	f = PlayingModIcons(a, osr2mp4.replay_info, osr2mp4.settings)
+	f.add_to_frame(background)
+	background.save("test.png")
 
 
 if __name__ == '__main__':

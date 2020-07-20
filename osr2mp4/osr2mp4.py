@@ -36,6 +36,7 @@ defaultsettings = {
 	"Rotate sliderball": False,
 	"Always show key overlay": True,
 	"Automatic cursor size": False,
+	"Show mods icon": True,
 	"Enable PP counter": False,
 	"Score meter size": 1,
 	"Song volume": 50,

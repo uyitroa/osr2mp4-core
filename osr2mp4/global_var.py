@@ -1,3 +1,6 @@
+from .osrparse.enums import Mod
+
+
 class Settings:
 
 	def __init__(self):
@@ -73,3 +76,22 @@ class Settings:
 		self.codec = None
 		self.process = None
 		self.enablelog = False
+
+
+# source: ggjjwp
+sortedmods = [
+	Mod.NoFail,
+	Mod.Easy,
+	Mod.Hidden,
+	Mod.HardRock,
+	Mod.Relax,
+	Mod.SuddenDeath,
+	Mod.HalfTime,
+	Mod.Nightcore,
+	Mod.DoubleTime,
+	Mod.Flashlight,
+	Mod.Perfect,
+	Mod.Autopilot,
+	Mod.SpunOut,
+	Mod.Autoplay
+]

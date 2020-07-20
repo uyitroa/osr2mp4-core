@@ -1,4 +1,6 @@
 from PIL import Image
+
+from ....global_var import sortedmods
 from ....osrparse.enums import Mod
 
 from ... import imageproc
@@ -12,26 +14,6 @@ class ModIcons(ARankingScreen):
 		self.mods = replayinfo.mod_combination
 		self.modframes = frames
 
-		# source: ggjjwp
-		self.sortedmods = [
-			Mod.Autoplay,
-			Mod.SpunOut,
-			Mod.Autopilot,
-			Mod.Perfect,
-			Mod.Flashlight,
-			Mod.DoubleTime,
-			Mod.Nightcore,
-			Mod.HalfTime,
-			Mod.SuddenDeath,
-			Mod.Relax,
-			Mod.HardRock,
-			Mod.Hidden,
-			Mod.Easy,
-			Mod.NoFail
-		]
-
-		self.sortedmods.reverse()
-
 	def add_to_frame(self, background):
 		super().add_to_frame(background)
 		if self.fade == self.FADEIN:
@@ -39,8 +21,8 @@ class ModIcons(ARankingScreen):
 			x = 1300 * self.settings.scale
 			step_x = 60 * self.settings.scale
 			hasnc = Mod.Nightcore in self.mods
-			for mod in self.sortedmods:
-				# if there is nightcore, then doubletime mod in present in the frozenset
+			for mod in sortedmods:
+				# if there is nightcore, then doubletime mod is present in the frozenset
 				if mod == Mod.DoubleTime and hasnc:
 					return
 

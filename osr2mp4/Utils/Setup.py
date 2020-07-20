@@ -59,6 +59,7 @@ def setupglobals(data, gameplaydata, replay_info, settings, ppsettings=None):
 
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
 	gameplaydata["Song delay"] = gameplaydata.get("Song delay", 0)
+	gameplaydata["Show mods icon"] = gameplaydata.get("Show mods icon", True)
 	settings.settings = gameplaydata
 
 	if ppsettings is not None:
