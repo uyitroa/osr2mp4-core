@@ -116,7 +116,7 @@ class Drawer:
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		# choose correct osr index for the current time because in osr file there might be some lag
-		tt = nearer(self.frame_info.cur_time, self.replay_event, self.frame_info.osr_index)
+		tt = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
 		if tt == 0:
 			self.cursor_event.event = smoothcursor(self.replay_event, self.frame_info.osr_index, self.cursor_event)
 		else:
