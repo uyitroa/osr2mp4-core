@@ -21,7 +21,7 @@ def prepare_playinggrade(scale, settings):
 		effects = grow(img, 1, 2, step * 0.05)
 		effects = fadeout(effects, 1, 0, step * 0.05)
 		for x in effects:
-			imageproc.add(img, x, round(x.size[0]/2), round(x.size[1]/2), channel=4)
+			imageproc.add(img, x, x.size[0]/2, x.size[1]/2, channel=4)
 		effects.append(img)
 		frames.append(effects)
 
