@@ -70,7 +70,7 @@ class Settings:
 			"Hitresult Alpha": 1,
 			"Hitresult Font": "arial.ttf",
 			"Hitresult Background": "",
-			"Hitresult Gap": 50
+			"Hitresult Gap": 3
 		}
 
 		self.codec = None
