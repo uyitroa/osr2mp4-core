@@ -16,7 +16,7 @@ from ..EEnum.EState import States
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
 Slider = namedtuple("Slider", "followstate hitvalue tickend x y end arrowindex")
-Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
+Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue rpm")
 
 
 def difficulty_multiplier(diff):
@@ -260,7 +260,7 @@ class HitObjectChecker:
 		return notelock, i
 
 	def checkspinner(self, i, replay, osr_index):
-		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay, osr_index)
+		update, cur_rot, progress, hitresult, bonusscore, hitvalue, rpm = self.check.checkspinner(i, replay, osr_index)
 		combostatus = 0
 		idd = self.hitobjects[i]["id"]
 		timestamp = self.hitobjects[i]["time"]
@@ -287,8 +287,7 @@ class HitObjectChecker:
 			if bonusscore >= 1:
 				self.update_score(1000, self.hitobjects[i]["type"], usecombo=False)
 
-			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue)
-
+			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue, rpm)
 
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,
