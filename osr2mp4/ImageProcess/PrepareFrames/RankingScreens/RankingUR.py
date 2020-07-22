@@ -70,7 +70,7 @@ def prepare_rankingur(settings, ur):
 	image = Image.new("RGBA", (width, height))
 	d = ImageDraw(image)
 	rounded_rectangle(d, ((0, 0), (width, height)), 20, fill=(255, 255, 255, 200))
-	rounded_rectangle(d, ((2, 2), (width - 2, height - 2)), 15, fill=(0, 0, 0, 150))
+	rounded_rectangle(d, ((2, 2), (width - 2, height - 2)), 15, fill=(0, 0, 0, 200))
 
 	texti = prepare_text(text, settings.scale * 20, (255, 255, 255), settings)
 	y = height * 0.025
