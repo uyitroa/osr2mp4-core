@@ -16,7 +16,7 @@ from ..EEnum.EState import States
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
 Slider = namedtuple("Slider", "followstate hitvalue tickend x y end arrowindex")
-Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue")
+Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue rpm")
 
 
 def difficulty_multiplier(diff):
@@ -224,9 +224,9 @@ class HitObjectChecker:
 					self.combo = max(0, combostatus)
 					circle = Circle(0, 0, followappear, True, x, y)
 					info = Info(replay[osr_index][3], 0, -1,
-					            self.scorecounter, self.scorecounter,
-					            copy.copy(self.results), copy.copy(self.clicks), 0, timestamp, idd,
-					            self.health_processor.health_value, self.maxcombo, circle)
+								self.scorecounter, self.scorecounter,
+								copy.copy(self.results), copy.copy(self.clicks), 0, timestamp, idd,
+								self.health_processor.health_value, self.maxcombo, circle)
 					self.info.append(info)
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
@@ -241,9 +241,9 @@ class HitObjectChecker:
 				for x in range(combostatus, 0, -1):
 					slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
 					info = Info(osrtime, self.combo-x, 1,
-					            self.scorecounter, self.scorecounter,
-					            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-					            self.health_processor.health_value, self.maxcombo, slider)
+								self.scorecounter, self.scorecounter,
+								copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
+								self.health_processor.health_value, self.maxcombo, slider)
 					self.info.append(info)
 				combostatus = 1
 
@@ -252,15 +252,15 @@ class HitObjectChecker:
 			slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
 
 			info = Info(osrtime, self.combo, combostatus,
-			            self.scorecounter, self.scorecounter,
-			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-			            self.health_processor.health_value, self.maxcombo, slider)
+						self.scorecounter, self.scorecounter,
+						copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
+						self.health_processor.health_value, self.maxcombo, slider)
 			self.info.append(info)
 
 		return notelock, i
 
 	def checkspinner(self, i, replay, osr_index):
-		update, cur_rot, progress, hitresult, bonusscore, hitvalue = self.check.checkspinner(i, replay, osr_index)
+		update, cur_rot, progress, hitresult, bonusscore, hitvalue, rpm = self.check.checkspinner(i, replay, osr_index)
 		combostatus = 0
 		idd = self.hitobjects[i]["id"]
 		timestamp = self.hitobjects[i]["time"]
@@ -279,6 +279,7 @@ class HitObjectChecker:
 					combostatus = -1
 				osrtime = self.hitobjects[i]["end time"] + 1
 				del self.hitobjects[i]
+				del self.check.spinners_memory[idd]
 				i -= 1
 
 			self.maxcombo = max(self.maxcombo, self.combo)
@@ -286,13 +287,12 @@ class HitObjectChecker:
 			if bonusscore >= 1:
 				self.update_score(1000, self.hitobjects[i]["type"], usecombo=False)
 
-			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue)
-
+			spinner = Spinner(cur_rot, progress, bonusscore, hitvalue, rpm)
 
 			info = Info(osrtime, self.combo, combostatus,
-			            self.scorecounter, self.scorecounter,
-			            copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-			            self.health_processor.health_value, self.maxcombo, spinner)
+						self.scorecounter, self.scorecounter,
+						copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
+						self.health_processor.health_value, self.maxcombo, spinner)
 			self.info.append(info)
 		return i
 

@@ -21,7 +21,7 @@ class TestSpinnerPosition(unittest.TestCase):
 			osu_d = {"time": 0, "end time": 10, "id": 0}
 			drawer.component.spinner.add_spinner(osu_d, 1)
 			drawer.component.spinner.spinners["0o"].alpha = 1
-			drawer.component.spinner.update_spinner("0o", 100, 1)
+			drawer.component.spinner.update_spinner("0o", 100, 1, 1)
 			drawer.component.spinner.add_to_frame(drawer.pbuffer, "0o", "blank")
 			expectf = self.tests[i][0] + "spinner.png"
 

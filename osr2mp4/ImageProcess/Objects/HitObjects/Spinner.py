@@ -13,7 +13,7 @@ spinnertop = "spinner-top"
 spinnerrpm = "spinner-rpm"
 
 
-Spinner = recordclass("Spinner", "angle duration starttime_left alpha index progress spinrequired totaltime" )
+Spinner = recordclass("Spinner", "angle duration starttime_left alpha index rpm")
 
 
 class SpinnerManager(FrameObject):
@@ -39,24 +39,17 @@ class SpinnerManager(FrameObject):
 		idd = str(osu_d["id"]) + "o"
 		duration = endtime - starttime
 		# img, duration, startime left, alpha, index, progress
-		self.spinners[idd] = Spinner(0, duration, starttime - curtime, 0, 0, 0, self.check.spinrequired(duration), 1)
+		self.spinners[idd] = Spinner(0, duration, starttime - curtime, 0, 0, 0)
 
-	def update_spinner(self, idd, angle, progress):
-		# angle = round(angle * 0.9)
-		# n_rot = int(angle/90)
-		# index = int(angle - 90*n_rot)
-		# n_rot = n_rot % 4 + 1
+	def update_spinner(self, idd, angle, progress, rpm):
 		self.spinners[idd].angle = angle
-		# if n_rot != 1:
-		# 	self.spinners[idd][0] = self.spinners[idd][0].transpose(n_rot)
-
-		self.spinners[idd].progress = progress
 
 		progress = progress * 10
 		if 0.3 < progress - int(progress) < 0.35 or 0.6 < progress - int(progress) < 0.65:
 			progress -= 1
 
 		self.spinners[idd].index = min(10, int(progress))
+		self.spinners[idd].rpm = rpm
 
 	def drawrpm(self, background, x_offset, y_offset, number, alpha):
 		number = str(number)[::-1]
@@ -65,13 +58,6 @@ class SpinnerManager(FrameObject):
 			digit = int(digit)
 			imageproc.add(self.scoreframes[digit], background, x_start, y_offset, alpha=alpha)
 			x_start -= self.scoreframes[digit].size[0]
-
-	def getrpm(self, spinner):
-		nrot = spinner.progress * spinner.spinrequired
-		rpm = nrot * 60000 / spinner.totaltime
-		rpm = min(477, int(rpm * 1.25))
-		spinner.totaltime += self.interval
-		return rpm
 
 	def add_to_frame(self, background, i, _):
 		if self.spinners[i].starttime_left > 0:
@@ -103,6 +89,6 @@ class SpinnerManager(FrameObject):
 		y = 712/768 * self.settings.height
 		imageproc.add(img, background, x, y, alpha=self.spinners[i].alpha, topleft=True)
 
-		rpm = self.getrpm(self.spinners[i])
+		rpm = int(self.spinners[i].rpm)
 		self.drawrpm(background, x + 250 * self.settings.scale, y + 25 * self.settings.scale, rpm, self.spinners[i].alpha)
 

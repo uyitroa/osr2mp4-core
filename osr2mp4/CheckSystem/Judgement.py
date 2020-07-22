@@ -7,6 +7,8 @@ from ..EEnum.EReplay import Replays
 
 
 class DiffCalculator:
+	RELAX_BONUS_ACCEL = 4
+
 	def __init__(self, diff):
 		self.diff = diff
 		self.max_distance = self.cs()
@@ -42,23 +44,32 @@ class DiffCalculator:
 	def spinrequired(self, duration):
 		# source: https://github.com/ppy/osu/blob/a8b137bb715db0c370148f04a548e7db6cc3cc9c/osu.Game.Rulesets.Osu/Objects/Spinner.cs#L33
 		# TODO: use this source https://osu.ppy.sh/help/wiki/Beatmapping/Overall_difficulty
+		multiplier = self.spinratio()
+
+		return max(0, (duration-500)) / 1000 * multiplier
+
+	def spinratio(self):
 		od = self.diff["OverallDifficulty"]
 		multiplier = 5
 		if od > 5:
 			multiplier = 5 + (7.5 - 5) * (od - 5) / 5
 		if od < 5:
 			multiplier = 5 - (5 - 3) * (5 - od) / 5
-		multiplier *= 0.6
-		return max(1, round(duration * multiplier / 1000))
+		return multiplier * 0.5
+
+	def apply_mods_to_time(self, time, mods):
+		return time
 
 
 class Check:
+	HEIGHT = 384
+	WIDTH = 512
+	SIXTY_FRAME_TIME = 1000/60
+
 	def __init__(self, diff, hitobjects, mods):
 		self.diff = DiffCalculator(diff)
 		self.hitobjects = hitobjects
 		self.index = 0
-		self.height = 384
-		self.width = 512
 
 		self.mods = mods
 		self.rxclick = False
@@ -213,7 +224,6 @@ class Check:
 		baiser = osu_d["baiser"]
 		pos, t = baiser.at(dist, going_forward)
 
-
 		hastick, tickadd, tickt = self.tickover(t, osu_d, slider_d, hasreversetick)
 		slider_d["ticks index"] += tickadd
 
@@ -271,74 +281,103 @@ class Check:
 	def checkspinner(self, index, replay, osrindex):
 		osr = replay[osrindex]
 		osu_d = self.hitobjects[index]
+
 		if osr[Replays.TIMES] < osu_d["time"]:
-			return False, None, None, None, 0, 0
+			return False, None, None, None, 0, 0, 0
 
 		if osr[Replays.TIMES] >= osu_d["end time"]:
-			spin_d = self.spinners_memory[osu_d["id"]]
-			progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
-			if progress > 0.9 or Mod.SpunOut in self.mods:
+			spinner = self.spinners_memory[osu_d["id"]]
+			rotation = (spinner["rot count"] % 1) * 360
+			spinrequired = self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+			progress = spinner["rot count"] / spinrequired
+
+			if spinner["rot count"] > spinrequired + 1 or Mod.SpunOut in self.mods:
 				hitresult = 300
-			elif progress > 0.5:
+			elif spinner["rot count"] > spinrequired:
 				hitresult = 100
-			elif progress > 0.1:
+			elif spinner["rot count"] > 0.5:
 				hitresult = 50
 			else:
 				hitresult = 0
-			return True, spin_d["cur rotation"], progress, hitresult, 0, 0
 
-		spinning = osr[Replays.KEYS_PRESSED] != 0 or Mod.Relax in self.mods or Mod.SpunOut in self.mods or Mod.Autopilot in self.mods
+			return True, rotation, progress, hitresult, 0, 0, spinner["rpm"]
 
-		angle = -np.rad2deg(np.arctan2(osr[Replays.CURSOR_Y] - self.height / 2, osr[Replays.CURSOR_X] - self.width / 2))
+		duration = osu_d["end time"] - osu_d["time"]
+		max_accel = 0.00008 + max(0, (5000 - duration) / 1000 / 2000)
 
 		if osu_d["id"] not in self.spinners_memory:
-			self.spinners_memory[osu_d["id"]] = {"angle": angle, "spinning": spinning, "cur rotation": 0,
-			                                     "progress": 0, "extra": 0}
+			self.spinners_memory[osu_d["id"]] = {"rpm": 0, "cur speed": 0, "theoretical speed": 0, "prev angle": 0,
+												"frame variance": 0, "rot count": 0}
+			timediff = self.SIXTY_FRAME_TIME
+		else:
+			timediff = osr[Replays.TIMES] - replay[max(0, osrindex-1)][Replays.TIMES]
 
-		spin_d = self.spinners_memory[osu_d["id"]]
+		spinner = self.spinners_memory[osu_d["id"]]
 
-		if not spinning:
-			self.spinners_memory[osu_d["id"]]["spinning"] = False
-			return False, None, None, None, 0, 0
+		elapsedtime = timediff  # osr[Replays.TIMES] - replay[max(0, osrindex-1)][Replays.TIMES]
 
-		if not spin_d["spinning"] and spinning:
-			spin_d["angle"] = angle
-		spin_d["spinning"] = spinning
+		cursor_vector_x = osr[Replays.CURSOR_X] - self.WIDTH/2
+		cursor_vector_y = osr[Replays.CURSOR_Y] - self.HEIGHT/2
+		cursor_angle = math.atan2(cursor_vector_y, cursor_vector_x)
+		anglediff = cursor_angle - spinner["prev angle"]
 
-		lastangle = spin_d["angle"]
-		if angle - lastangle > 180:
-			lastangle += 360
-		elif lastangle - angle > 180:
-			lastangle -= 360
+		if cursor_angle - spinner["prev angle"] < -math.pi:
+			anglediff = (2 * math.pi) + cursor_angle - spinner["prev angle"]
+		elif spinner["prev angle"] - cursor_angle < -math.pi:
+			anglediff = (-2 * math.pi) - spinner["prev angle"] + cursor_angle
 
-		bonusrot = 0
-		if Mod.Relax in self.mods:
-			prevosr = replay[max(0, osrindex - 1)]
-			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = 100 * 360/60000 * timediff  # source: https://osu.ppy.sh/community/forums/topics/156295
+		decay = math.pow(0.999, timediff)
+		spinner["frame variance"] = decay * spinner["frame variance"] + (1 - decay) * timediff
+
+		if anglediff == 0:
+			spinner["theoretical speed"] /= 3
+		else:
+			if Mod.Relax not in self.mods and osr[Replays.KEYS_PRESSED] == 0:
+				# print(osr[Replays.TIMES])
+				anglediff = 0
+
+			if abs(anglediff) < math.pi:
+				# commented this block because it breaks spunout and auto mods
+				# if self.diff.apply_mods_to_time(timediff, self.mods) > self.SIXTY_FRAME_TIME * 1.04:
+				# 	spinner["theoretical speed"] = anglediff / self.diff.apply_mods_to_time(timediff, self.mods)
+				# else:
+				spinner["theoretical speed"] = anglediff / self.SIXTY_FRAME_TIME
+			else:
+				spinner["theoretical speed"] = 0
+
+		spinner["prev angle"] = cursor_angle
+
+		max_accel_this_frame = self.diff.apply_mods_to_time(max_accel * elapsedtime, self.mods)
 
 		if Mod.SpunOut in self.mods:
-			prevosr = replay[max(0, osrindex - 1)]
-			timediff = osr[Replays.TIMES] - prevosr[Replays.TIMES]
-			bonusrot = 286.48 * 360 / 60000 * timediff  # source: https://osu.ppy.sh/help/wiki/Game_Modifiers
+			spinner["cur speed"] = 0.03
+		elif spinner["theoretical speed"] > spinner["cur speed"]:
+			if spinner["cur speed"] < 0 and Mod.Relax in self.mods:
+				max_accel_this_frame /= self.diff.RELAX_BONUS_ACCEL
 
-			angle = 0
-			lastangle = 0
+			spinner["cur speed"] += min(spinner["theoretical speed"] - spinner["cur speed"], max_accel_this_frame)
+		else:
+			if spinner["cur speed"] > 0 and Mod.Relax in self.mods:
+				max_accel_this_frame /= self.diff.RELAX_BONUS_ACCEL
 
-		spin_d["cur rotation"] += angle - lastangle + bonusrot
-		if spin_d["cur rotation"] > 360:
-			spin_d["cur rotation"] -= 360
-		spin_d["progress"] += abs(angle - lastangle) + bonusrot
-		spin_d["extra"] += abs(angle - lastangle) + bonusrot
-		spin_d["angle"] = angle
-		progress = spin_d["progress"] / 360 / self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
+			spinner["cur speed"] += max(spinner["theoretical speed"] - spinner["cur speed"], -max_accel_this_frame)
 
-		bonus = int(spin_d["progress"] / 360 - self.diff.spinrequired(osu_d["end time"] - osu_d["time"]))
-		bonus = max(0, bonus + 2)
+		spinner["cur speed"] = max(-0.05, min(spinner["cur speed"], 0.05))
 
-		hitvalue = 0
-		if spin_d["extra"] >= 360 and progress <= 1:
-			spin_d["extra"] -= 360
-			hitvalue = 100
+		decay = math.pow(0.9, elapsedtime / self.SIXTY_FRAME_TIME)
+		rpm = spinner["rpm"] * decay + (1.0 - decay) * (abs(spinner["cur speed"]) * 1000) / (math.pi * 2) * 60
+		spinner["rpm"] = rpm
 
-		return spinning, spin_d["cur rotation"], progress, None, bonus, hitvalue
+		spinner["rot count"] += rpm * timediff / 60000
+
+		direction = -1 if spinner["cur speed"] >= 0 else 1
+		rotation = (spinner["rot count"] * 360) % 360 * direction
+		spinrequired = self.diff.spinrequired(duration)
+		progress = spinner["rot count"] / spinrequired
+		bonus = max(0, int(spinner["rot count"] - spinrequired - 3))
+		hitvalue = (spinner["rot count"] > 1 and spinner["rot count"] % 2 == 0) * 100
+
+		print(bonus, spinrequired)
+
+		return True, rotation, progress, None, bonus, hitvalue, rpm
+
