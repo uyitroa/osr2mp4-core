@@ -46,7 +46,7 @@ class DiffCalculator:
 		# TODO: use this source https://osu.ppy.sh/help/wiki/Beatmapping/Overall_difficulty
 		multiplier = self.spinratio()
 
-		return duration / 1000 * multiplier * 0.4
+		return max(0, (duration-500)) / 1000 * multiplier
 
 	def spinratio(self):
 		od = self.diff["OverallDifficulty"]
@@ -55,7 +55,7 @@ class DiffCalculator:
 			multiplier = 5 + (7.5 - 5) * (od - 5) / 5
 		if od < 5:
 			multiplier = 5 - (5 - 3) * (5 - od) / 5
-		return multiplier
+		return multiplier * 0.5
 
 	def apply_mods_to_time(self, time, mods):
 		return time
@@ -337,11 +337,11 @@ class Check:
 				anglediff = 0
 
 			if abs(anglediff) < math.pi:
-				if self.diff.apply_mods_to_time(spinner["frame variance"], self.mods) > self.SIXTY_FRAME_TIME * 1.04:
-					print("HI")
-					spinner["theoretical speed"] = anglediff / self.diff.apply_mods_to_time(timediff, self.mods)
-				else:
-					spinner["theoretical speed"] = anglediff / self.SIXTY_FRAME_TIME
+				# commented this block because it breaks spunout and auto mods
+				# if self.diff.apply_mods_to_time(timediff, self.mods) > self.SIXTY_FRAME_TIME * 1.04:
+				# 	spinner["theoretical speed"] = anglediff / self.diff.apply_mods_to_time(timediff, self.mods)
+				# else:
+				spinner["theoretical speed"] = anglediff / self.SIXTY_FRAME_TIME
 			else:
 				spinner["theoretical speed"] = 0
 
@@ -376,6 +376,8 @@ class Check:
 		progress = spinner["rot count"] / spinrequired
 		bonus = max(0, int(spinner["rot count"] - spinrequired - 3))
 		hitvalue = (spinner["rot count"] > 1 and spinner["rot count"] % 2 == 0) * 100
+
+		print(bonus, spinrequired)
 
 		return True, rotation, progress, None, bonus, hitvalue, rpm
 
