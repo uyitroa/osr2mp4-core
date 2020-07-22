@@ -1,5 +1,7 @@
 import logging
 import time
+import traceback
+
 import numpy as np
 import cv2
 
@@ -8,10 +10,10 @@ def write_frame(shared, conn, filename, settings, iii):
 	try:
 		write(shared, conn, filename, settings, iii)
 	except Exception as e:
-		error = repr(e)
+		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(error)
-		logging.error("{} from {}\n\n\n".format(error, filename))
+			fwrite.write(tb)
+		logging.error("{} from {}\n\n\n".format(tb, filename))
 		raise
 
 
