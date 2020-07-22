@@ -95,11 +95,11 @@ class HitsoundManager:
 			objectindex = my_info[index].id
 			my_dict = self.hitobjects[objectindex]
 
-			if self.spincooldown < my_info[index].time < my_dict["end time"] - 500:
+			if self.spincooldown < my_info[index].time < my_dict["end time"] - 1000 and my_info[index].time > my_dict["time"] + 1000:
 				if self.prevspin is None or self.prevspin.progress != my_info[index].more.progress:
 					spinsound = int(min(1, my_info[index].more.progress) * (len(Hitsound.spinnerspin)-1))
 					overlay(my_info[index].time, song, Hitsound.spinnerspin[spinsound])
-					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000
+					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000 + 100
 			self.prevspin = my_info[index].more
 
 			if self.prevbonusscore != my_info[index].more.bonusscore and my_info[index].more.bonusscore > 0:

@@ -74,30 +74,21 @@ def pydubtonumpy(audiosegment):
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
-def getaudiofromfile(filename, path, defaultpath, settings, fmt="wav", volume=1.0, speed=1.0):
-	try:
-		return read(path + filename + "." + fmt, settings, volume=volume, speed=speed)
-	except FileNotFoundError:
-		nxtfmt = "wav"
-		if fmt == "wav":
-			nxtfmt = "mp3"
-		elif fmt == "mp3":
-			nxtfmt = "ogg"
+def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.0):
+	fmts = ["wav", "mp3", "ogg"]
+	for fmt in fmts:
+		try:
+			return read(path + filename + "." + fmt, settings, volume=volume, speed=speed)
+		except FileNotFoundError:
+			pass
 
-		if defaultpath is not None:
-			if fmt == "wav":
-				return getaudiofromfile(filename, path, defaultpath, settings, fmt="mp3")
-			elif fmt == "mp3":
-				return getaudiofromfile(filename, path, defaultpath, settings, fmt="ogg")
-			return getaudiofromfile(filename, defaultpath, None, settings, nxtfmt)
-
-		if fmt == "ogg":
-			print(path, defaultpath)
+		except exceptions.CouldntDecodeError:
 			return 1, np.zeros((0, 2), dtype=np.float32)
-		return getaudiofromfile(filename, path, defaultpath, settings, nxtfmt)
 
-	except exceptions.CouldntDecodeError:
-		return 1, np.zeros((0, 2), dtype=np.float32)
+	if defaultpath is not None:
+		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
+
+	return 1, np.zeros((0, 2), dtype=np.float32)
 
 
 def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, settings, volume=1.0, speed=1.0):
@@ -127,7 +118,7 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 		Hitsound.hitsounds[f] = Audio2p(*getaudiofromfile(f, skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100 * 1.05))
+	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
