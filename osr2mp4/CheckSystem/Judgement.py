@@ -377,7 +377,5 @@ class Check:
 		bonus = max(0, int(spinner["rot count"] - spinrequired - 3))
 		hitvalue = (spinner["rot count"] > 1 and spinner["rot count"] % 2 == 0) * 100
 
-		print(bonus, spinrequired)
-
 		return True, rotation, progress, None, bonus, hitvalue, rpm
 

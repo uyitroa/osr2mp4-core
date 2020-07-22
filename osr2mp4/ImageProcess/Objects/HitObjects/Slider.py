@@ -173,7 +173,8 @@ class SliderManager:
 		if slider.cur_duration <= 0:
 			# if the slider is repeated
 			if slider.cur_repeated < slider.osu_d["repeated"]:
-				slider.cur_repeated += math.ceil((slider.cur_duration % slider.osu_d["duration"])/slider.osu_d["duration"])
+				duration = slider.osu_d["duration"] - slider.cur_duration
+				slider.cur_repeated += int(duration / slider.osu_d["duration"])
 				slider.cur_duration = slider.osu_d["duration"] + slider.cur_duration  # reset
 				going_forward = not going_forward
 
@@ -199,10 +200,13 @@ class SliderManager:
 			delta_time = slider.osu_d["duration"] - slider.cur_duration
 		else:
 			delta_time = slider.cur_duration
+
 		delta_time = min(slider.osu_d["duration"], max(0, delta_time))
 		dist = slider.osu_d["pixel length"] / slider.osu_d["duration"] * delta_time
 
 		pos, t = slider.osu_d["baiser"].at(dist, going_forward)
+
+		# imageproc.debug(background, going_forward, t)
 
 		self.draw_ticks(slider, background, going_forward, t)
 
