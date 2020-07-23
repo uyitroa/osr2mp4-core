@@ -43,9 +43,9 @@ jobs:
         python -m unittest discover -s tests/ -p *test.py
 
     - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: unittest-results-${{ matrix.python-version }}
-          path: junit/test-results-${{ matrix.python-version }}.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: unittest-results-${{ matrix.python-version }}
+        path: junit/test-results-${{ matrix.python-version }}.xml
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
