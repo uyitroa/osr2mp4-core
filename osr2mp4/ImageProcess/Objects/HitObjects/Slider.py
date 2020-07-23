@@ -24,7 +24,7 @@ class SliderManager:
 		self.settings = settings
 		
 		self.reversearrow, self.sliderfollow, self.sliderfollow_fadeout, self.slidertick, self.sliderb_frames = frames
-		self.slidermax_index = len(self.sliderfollow_fadeout) - 1
+		self.slidermax_index = len(self.sliderfollow_fadeout) - 1 * settings.fps/60
 
 		self.arrows = {}
 		self.sliders = {}
@@ -141,8 +141,7 @@ class SliderManager:
 
 	def draw_arrow(self, slider, background, going_forward, i):
 		cur_pos = slider.osu_d["arrow pos"] if going_forward else slider.osu_d["ps"][0]
-		self.to_frame(self.arrows[i][int(going_forward)][int(slider.arrow_i)], background, cur_pos, slider,
-		              slider.opacity / 100)
+		self.to_frame(self.arrows[i][int(going_forward)][int(slider.arrow_i)], background, cur_pos, slider, slider.opacity / 100)
 
 		slider.arrow_i += 0.6
 		if slider.arrow_i >= len(self.arrows[i][0]):
@@ -190,10 +189,13 @@ class SliderManager:
 				slider.opacity = max(-self.opacity_interval, slider.opacity - 4 * self.opacity_interval)
 
 		total_cur_duration = max(0, slider.cur_duration + slider.osu_d["duration"] * (slider.osu_d["repeated"] - slider.cur_repeated) - 50)
-		if total_cur_duration > slider.osu_d["duration"] * slider.osu_d["repeated"] or not self.hd:
+		appearing = total_cur_duration > slider.osu_d["duration"] * slider.osu_d["repeated"]
+
+		if appearing or not self.hd:
 			slider.opacity = min(100, slider.opacity + self.opacity_interval)
 		else:
 			slider.opacity = total_cur_duration / (slider.osu_d["duration"] * slider.osu_d["repeated"]) * 100
+
 		self.draw_slider(slider.image, background, slider.x, slider.y, alpha=slider.opacity/100)
 
 		if going_forward:

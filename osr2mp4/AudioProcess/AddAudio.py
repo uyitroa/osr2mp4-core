@@ -10,8 +10,8 @@ class HitsoundManager:
 		self.timingpoint = beatmap.timing_point
 		self.timingpoint_index = 0
 		self.spincooldown = 0
-		self.prevspin = None
-		self.prevbonusscore = None
+		self.prevspin = {}
+		self.prevbonusscore = {}
 		self.breakperiod_i = 0
 		self.sectionadded = False
 
@@ -95,13 +95,16 @@ class HitsoundManager:
 			objectindex = my_info[index].id
 			my_dict = self.hitobjects[objectindex]
 
-			if self.spincooldown < my_info[index].time < my_dict["end time"] - 500:
-				if self.prevspin is None or self.prevspin.progress != my_info[index].more.progress:
+			prevspin = self.prevspin.get(my_dict["id"], None)
+			prevbonusscore = self.prevbonusscore.get(my_dict["id"], None)
+
+			if self.spincooldown < my_info[index].time < my_dict["end time"] - 1000 and my_info[index].time > my_dict["time"] + 1000:
+				if prevspin is None or prevspin.progress != my_info[index].more.progress:
 					spinsound = int(min(1, my_info[index].more.progress) * (len(Hitsound.spinnerspin)-1))
 					overlay(my_info[index].time, song, Hitsound.spinnerspin[spinsound])
-					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000
-			self.prevspin = my_info[index].more
+					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000 + 100
+			self.prevspin[my_dict["id"]] = my_info[index].more
 
-			if self.prevbonusscore != my_info[index].more.bonusscore and my_info[index].more.bonusscore > 0:
+			if prevbonusscore != my_info[index].more.bonusscore and my_info[index].more.bonusscore > 0:
 				overlay(my_info[index].time, song, Hitsound.spinnerbonus)
-				self.prevbonusscore = my_info[index].more.bonusscore
+				self.prevbonusscore[my_dict["id"]] = my_info[index].more.bonusscore

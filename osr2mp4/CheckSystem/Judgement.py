@@ -368,6 +368,7 @@ class Check:
 		rpm = spinner["rpm"] * decay + (1.0 - decay) * (abs(spinner["cur speed"]) * 1000) / (math.pi * 2) * 60
 		spinner["rpm"] = rpm
 
+		prevcount = spinner["rot count"]
 		spinner["rot count"] += rpm * timediff / 60000
 
 		direction = -1 if spinner["cur speed"] >= 0 else 1
@@ -375,7 +376,9 @@ class Check:
 		spinrequired = self.diff.spinrequired(duration)
 		progress = spinner["rot count"] / spinrequired
 		bonus = max(0, int(spinner["rot count"] - spinrequired - 3))
-		hitvalue = (spinner["rot count"] > 1 and spinner["rot count"] % 2 == 0) * 100
+
+		rot_increased = int(spinner["rot count"]) > int(prevcount)
+		hitvalue = (spinner["rot count"] > 1 and rot_increased and int(spinner["rot count"]) % 2 == 0) * 100
 
 		return True, rotation, progress, None, bonus, hitvalue, rpm
 

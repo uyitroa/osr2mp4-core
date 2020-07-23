@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 from PIL import Image
 
@@ -12,6 +14,7 @@ def prepare_background(backgroundname, settings):
 	try:
 		img = Image.open(backgroundname).convert("RGBA")
 	except Exception as e:
+		logging.error(repr(e))
 		img = Image.open(settings.path + "res/bg.png").convert("RGBA")
 
 	width = settings.width
@@ -30,7 +33,7 @@ def prepare_background(backgroundname, settings):
 
 	dim = max(0, min(100, (100 - settings.settings["Background dim"]))) * 2.55
 	color = np.array([dim, dim, dim])
-	interval = int(1000/60)
+	interval = int(1000/45)
 	c_interval = max(0, (settings.settings["Background dim"] - 50) * 2.55/interval)
 	color[:] = color[:] - c_interval
 	for x in range(interval):

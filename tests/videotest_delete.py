@@ -3,7 +3,6 @@ import os
 import unittest
 
 from PIL import Image
-import bruh
 from osr2mp4.EEnum.EReplay import Replays
 from osr2mp4.osr2mp4 import Osr2mp4
 from utils import getdrawer, getexpect, getrightconfigs, get_length, get_res
@@ -30,7 +29,6 @@ class TestCompareFrames(unittest.TestCase):
 		cls.tests[-1].startall()
 		cls.tests[-1].joinall()
 
-
 		if True:  # to be able to disable sometimes for testing
 			atexit.register(cleanup, cls.tests)
 
@@ -49,7 +47,6 @@ class TestCompareFrames(unittest.TestCase):
 			outputlength = get_length(osr2mp4.settings.output)
 			print(outputlength, expectlength)
 			self.assertLessEqual(abs(expectlength - outputlength), 2)
-
 
 	def testresolution(self):
 		for i in range(len(self.tests)):

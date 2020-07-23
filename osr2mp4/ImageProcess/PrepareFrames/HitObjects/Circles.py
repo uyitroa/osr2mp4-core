@@ -83,7 +83,7 @@ def calculate_ar(ar, settings):
 	else:
 		time_preempt = 1200 - 750 * (ar - 5) / 5
 		fade_in = 800 - 500 * (ar - 5) / 5
-	opacity_interval = int(100 * interval / fade_in)
+	opacity_interval = 100 * interval / fade_in
 	return opacity_interval, time_preempt, fade_in
 
 

@@ -1,3 +1,4 @@
+import logging
 import math
 import re
 
@@ -103,22 +104,26 @@ class Beatmap:
 		timing = timing.split("\n")
 		inherited = 0
 		for line in timing:
-			line = line.strip()
-			if line == '':
+			try:
+				line = line.strip()
+				if line == '':
+					continue
+				my_dict = {}
+				items = line.split(",")
+				my_dict["Offset"] = float(items[0])
+				if len(items) < 7 or int(items[6]) == 1:
+					my_dict["BeatDuration"] = float(items[1])
+					inherited = my_dict["BeatDuration"]
+				else:
+					my_dict["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
+				my_dict["Base"] = inherited
+				my_dict["Meter"] = int(items[2])
+				my_dict["SampleSet"] = items[3]
+				my_dict["SampleIndex"] = items[4]
+				my_dict["Volume"] = float(items[5])
+			except Exception as e:
+				logging.error(repr(e))
 				continue
-			my_dict = {}
-			items = line.split(",")
-			my_dict["Offset"] = float(items[0])
-			if len(items) < 7 or int(items[6]) == 1:
-				my_dict["BeatDuration"] = float(items[1])
-				inherited = my_dict["BeatDuration"]
-			else:
-				my_dict["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
-			my_dict["Base"] = inherited
-			my_dict["Meter"] = int(items[2])
-			my_dict["SampleSet"] = items[3]
-			my_dict["SampleIndex"] = items[4]
-			my_dict["Volume"] = float(items[5])
 			# my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
 		self.timing_point.append({"Offset": float('inf')})
@@ -480,7 +485,7 @@ def split(delimiters, string):
 	return info
 
 
-def read_file(filename, scale, colors, hr):
+def read_file(filename, scale=1, colors=None, hr=False):
 	fiel = open(filename, "r", encoding="utf-8")
 	content = fiel.read()
 	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",

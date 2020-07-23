@@ -23,7 +23,7 @@ class HitObjectManager:
 
 		self.objecttype = {
 			CIRCLE: [self.circle_manager, self.circle_manager.circles, -self.maxtimewindow - self.interval * 2],
-			SLIDER: [self.slider_manager, self.slider_manager.sliders, -175],
+			SLIDER: [self.slider_manager, self.slider_manager.sliders, -230],
 			SPINNER: [self.spinner_manager, self.spinner_manager.spinners, -200]}
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
@@ -66,12 +66,12 @@ class HitObjectManager:
 
 		if followappear:
 			index_interval = -0.65
-			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3
+			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3 * self.settings.fps/60
 
 		self.slider_manager.sliders[idd].appear_f = index_interval
 
 	def slidertouchtick(self, idd):
-		self.slider_manager.sliders[idd].sliderf_i = 1
+		self.slider_manager.sliders[idd].sliderf_i = 1 * self.settings.fps/60
 		self.slider_manager.sliders[idd].appear_f = -0.1
 
 	# manager of circle add_to_frame and slider add_to_frame

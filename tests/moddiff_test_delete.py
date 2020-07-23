@@ -1,5 +1,4 @@
 import unittest
-import bruh
 from osr2mp4.CheckSystem.checkmain import dtod, dtar, htod, htar
 from utils import abspath
 

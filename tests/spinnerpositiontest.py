@@ -1,10 +1,9 @@
-import os
 import unittest
 
 from PIL import Image
 
-from utils import getdrawer, abspath
-from helper import assert_image_similar, contain_image
+from utils import getdrawer
+from helper import contain_image
 
 
 class TestSpinnerPosition(unittest.TestCase):
@@ -30,13 +29,16 @@ class TestSpinnerPosition(unittest.TestCase):
 			else:
 				expect = Image.open(expectf)
 				img = drawer.pbuffer.convert("RGB").crop((500 * drawer.settings.scale, 200 * drawer.settings.scale, 1000 * drawer.settings.scale, 400 * drawer.settings.scale))
-				img.save("test.png")
 				contain = False
 
 				for x in range(90, 110):
 					newimg = img.resize((int(img.size[0] * x/100), int(img.size[1] * x/100)))
 					contain = contain or contain_image(expect, newimg, 0.98)
-				self.assertTrue(contain)
+
+				if not contain:
+					drawer.pbuffer.convert("RGB").save("spinner.png")
+					print(f"Expectation {expectf}, result: spinner.png")
+				self.assertTrue(contain, msg=f"Expectation {expectf}, result: spinner.png")
 
 
 

@@ -165,7 +165,7 @@ def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime
 
 
 def excepthook(exc_type, exc_value, exc_tb):
-	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+	tb = traceback.format_exc()
 	logging.exception(tb)
 	print(tb)
 
