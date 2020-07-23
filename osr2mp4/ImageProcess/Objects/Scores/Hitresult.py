@@ -39,7 +39,7 @@ class HitResult(FrameObject):
 			return
 
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y, 0, 40, 0, 3])
+		self.hitresults.append([scores, x, y, 0, 40, 0, 3 * 60/self.settings.fps])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
@@ -64,12 +64,12 @@ class HitResult(FrameObject):
 
 			if score == 0:
 				self.hitresults[i][2] += self.hitresults[i][6] * self.playfieldscale
-				self.hitresults[i][6] = max(0.5, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
+				self.hitresults[i][6] = max(0.5 * 60/self.settings.fps, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
 
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)
-			self.hitresults[i][5] += self.interval * 60/self.settings.fps  #
+			self.hitresults[i][5] += self.interval
 
-			if self.hitresults[i][5] >= self.time - self.interval * 20:
+			if self.hitresults[i][5] >= self.time - 300:
 				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 5 * 60/self.settings.fps)
 			else:
 				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/self.settings.fps)

@@ -7,9 +7,11 @@ from ..FrameObject import FrameObject
 class URBar(FrameObject):
 	def __init__(self, frames, settings):
 		self.scale = settings.scale
+		self.settings = settings
 		self.w, self.h = int(frames[0].size[0]), int(frames[0].size[1])
 		self.y = settings.height - self.h//2
 		self.x = settings.width//2
+
 		self.x_offset = self.x - self.w // 2
 
 		self.bars = []
@@ -33,8 +35,9 @@ class URBar(FrameObject):
 		imageproc.add(img, background, self.x, self.y)
 
 	def add_to_frame(self, background):
-		self.c += 1
+		self.c += 60/self.settings.fps
 		img = self.bar_container
 		imageproc.add(img, background, self.x_offset + self.w//2, self.y)
-		if self.c % 4 == 0:
+		if self.c >= 4:
 			imageproc.addalpha(self.bar_container, -0.00001)
+			self.c = 0

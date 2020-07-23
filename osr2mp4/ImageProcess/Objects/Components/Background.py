@@ -1,3 +1,4 @@
+from ... import imageproc
 from .AScorebar import AScorebar
 
 
@@ -14,7 +15,8 @@ class Background(AScorebar):
 		else:
 			self.frame_index = (1 - self.alpha) * (len(self.frames) - 1)
 
-		notanimating = int(self.frame_index) == 0
+		notanimating = int(self.frame_index) == 0 and self.h == 0
+		# imageproc.debug(background, notanimating, self.frame_index, self.h)
 		if notanimating:
 			if inbreak or not self.settings.settings["In-game interface"]:
 				if self.settings.settings["Background dim"] == 100:
@@ -24,4 +26,5 @@ class Background(AScorebar):
 					background.paste(self.frames[1], (0, 0))
 			return
 
+		self.frame_index = round(self.frame_index)
 		super().add_to_frame(background, self.settings.width//2, self.settings.height//2)

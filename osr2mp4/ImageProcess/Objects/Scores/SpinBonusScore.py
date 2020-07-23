@@ -36,4 +36,4 @@ class SpinBonusScore(FrameObject):
 
 		self.draw_score(background)
 
-		self.spinbonuses[3] += 0.75
+		self.spinbonuses[3] += 0.75 * 60/self.settings.fps

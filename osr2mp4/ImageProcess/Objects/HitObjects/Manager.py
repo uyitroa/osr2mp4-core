@@ -66,12 +66,12 @@ class HitObjectManager:
 
 		if followappear:
 			index_interval = -0.65
-			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3
+			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3 * self.settings.fps/60
 
 		self.slider_manager.sliders[idd].appear_f = index_interval
 
 	def slidertouchtick(self, idd):
-		self.slider_manager.sliders[idd].sliderf_i = 1
+		self.slider_manager.sliders[idd].sliderf_i = 1 * self.settings.fps/60
 		self.slider_manager.sliders[idd].appear_f = -0.1
 
 	# manager of circle add_to_frame and slider add_to_frame

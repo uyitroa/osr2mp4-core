@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 from PIL import Image
 
@@ -12,6 +14,7 @@ def prepare_background(backgroundname, settings):
 	try:
 		img = Image.open(backgroundname).convert("RGBA")
 	except Exception as e:
+		logging.error(repr(e))
 		img = Image.open(settings.path + "res/bg.png").convert("RGBA")
 
 	width = settings.width
