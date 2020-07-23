@@ -3,9 +3,6 @@ import glob
 import inspect
 from multiprocessing.sharedctypes import RawArray
 
-from PIL import Image
-
-import bruh
 from osr2mp4.CheckSystem.checkmain import checkmain
 from osr2mp4.Utils.Timing import find_time
 
@@ -18,10 +15,8 @@ from osr2mp4.Utils.Setup import setupglobals
 
 from osr2mp4.Parser import jsonparser
 
-from osr2mp4.AudioProcess.Utils import getfilenames
 from osr2mp4.Parser.osrparser import setupReplay
 from osr2mp4.Parser.osuparser import read_file
-from osr2mp4.Parser.skinparser import Skin
 from osr2mp4 import osr2mp4
 from osr2mp4.osrparse import *
 import os
@@ -38,7 +33,7 @@ abspath += "resources/"
 
 
 def getinfos(mapname, upsidedown=False):
-	bmap = getbeatmap(mapname, upsidedown)
+	bmap = read_file("{}{}.osu".format(abspath, mapname), hr=upsidedown)
 
 	replay_infos = []
 	should_continue = True
@@ -54,13 +49,7 @@ def getinfos(mapname, upsidedown=False):
 		fname = str(x)
 		should_continue = os.path.isfile("{}{}{}.osr".format(abspath, mapname, fname))
 
-	return bmap, replay_infos
-
-
-def getbeatmap(mapname, upsidedown=False):
-	skin = Skin("{}".format(abspath), "{}".format(abspath))
-	bmap = read_file("{}{}.osu".format(abspath, mapname), 1, skin.colours, upsidedown)
-	return bmap
+	return bmap, replay_infos, os.path.join(abspath, mapname)
 
 
 def getlistfromtxt(filename):
@@ -68,13 +57,6 @@ def getlistfromtxt(filename):
 	mylist = eval(a.read())
 	a.close()
 	return mylist
-
-
-def getaudiofilename(mapname):
-	bmap = getbeatmap(mapname)
-	resultlist = getfilenames(bmap, False)
-	expectedlist = getlistfromtxt(abspath + mapname + "expect.txt")
-	return [list(resultlist[0].keys()), list(resultlist[1].keys())], expectedlist
 
 
 def setupenv(suffix, mapname):
@@ -195,7 +177,3 @@ def get_res(filename):
 
 	return width, height
 
-
-def getskins():
-	skinpath = os.path.join(abspath, "skininis", "*.ini")
-	return glob.glob(skinpath)

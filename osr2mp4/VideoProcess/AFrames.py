@@ -89,7 +89,6 @@ class PreparedFrames:
 		else:
 			ur = [0, 0, 0]
 
-
 		logging.debug('start preparing cursor')
 		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
 		logging.debug('start preparing cursormiddle')

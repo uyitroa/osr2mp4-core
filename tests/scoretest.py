@@ -1,5 +1,4 @@
 import unittest
-import bruh
 from osr2mp4.CheckSystem.checkmain import checkmain
 from osr2mp4.global_var import Settings
 from utils import getinfos
@@ -32,7 +31,13 @@ class TestScore(unittest.TestCase):
 	def testscore(self):
 		for i in range(len(self.tests)):
 			case = self.tests[i]
+			print(f"Checking {case[0].path}")
 			for x in range(len(case[1])):
+				name = x
+				if x == 0:
+					name = ""
+				print(f"Replay {case[2]}{name}.osr")
+
 				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
 				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
 				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))

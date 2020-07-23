@@ -1,5 +1,4 @@
 import unittest
-import bruh
 from osr2mp4.ImageProcess.Objects.Components.Scoreboard import getmods
 import re
 from utils import abspath

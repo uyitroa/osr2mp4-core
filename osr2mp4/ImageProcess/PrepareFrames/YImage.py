@@ -23,13 +23,14 @@ Image.open = newimg
 
 
 class YImage:
-	def __init__(self, filename, settings, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None, scaley=None):
+	def __init__(self, filename, settings, scale=1, rotate=0, defaultpath=False, prefix="", fallback=None, scaley=None, defaultfallback=True):
 		self.filename = filename
 		self.origfile = filename
 		self.x2 = False
 		self.imgfrom = None
 
 		self.settings = settings
+		self.defaultfallback = defaultfallback
 
 		self.loadimg(defaultpath, prefix, fallback)
 
@@ -43,7 +44,6 @@ class YImage:
 			# print(self.filename)
 			scale /= 2
 			scaley /= 2
-
 
 		self.orig_img = self.img.copy()
 		self.orig_rows = self.img.size[1]
@@ -60,15 +60,16 @@ class YImage:
 		if filename is None:
 			filename = self.filename
 		try:
-			self.img = Image.open(path + pre + filename + self.settings.x2 + self.settings.format).convert("RGBA")
-			self.filename = path + pre + filename + self.settings.x2 + self.settings.format
+			p = os.path.join(path, pre + filename + self.settings.x2 + self.settings.format)
+			self.img = Image.open(p).convert("RGBA")
+			self.filename = p
 			self.x2 = True
 			return True
 		except FileNotFoundError as er:
-			# print(er)
 			try:
-				self.img = Image.open(path + pre + filename + self.settings.format).convert("RGBA")
-				self.filename = path + pre + filename + self.settings.format
+				p = os.path.join(path, pre + filename + self.settings.format)
+				self.img = Image.open(p).convert("RGBA")
+				self.filename = p
 				return True
 			except FileNotFoundError as e:
 				return False
@@ -95,9 +96,10 @@ class YImage:
 				return
 			self.filename = fallback
 
-		if self.loadx2(self.settings.default_path, default_pre):
-			self.imgfrom = ImageFrom.DEFAULT_X2 if self.x2 else ImageFrom.DEFAULT_X
-			return
+		if self.defaultfallback:
+			if self.loadx2(self.settings.default_path, default_pre):
+				self.imgfrom = ImageFrom.DEFAULT_X2 if self.x2 else ImageFrom.DEFAULT_X
+				return
 
 		self.filename = "None"
 		self.img = Image.new("RGBA", (1, 1))
@@ -138,39 +140,29 @@ class YImages:
 		self.imgfrom = None
 
 		self.load(defaultpath=False)
-		if self.n_frame == 0:
+		if self.unanimate and self.imgfrom == ImageFrom.BLANK:
 			print("Loading default path YImagesss", filename)
+			self.frames = []
 			self.load(defaultpath=True)
 
 	def load(self, defaultpath=False):
 		counter = 0
 
-		if defaultpath:
-			path = self.settings.default_path
-		else:
-			path = self.settings.skin_path
-
-		should_continue = os.path.isfile(path + self.filename + self.delimiter + str(0) + self.settings.format)
-		should_continue = should_continue or os.path.isfile(path + self.filename + self.delimiter + str(0) + self.settings.x2 + self.settings.format)
-
-		while should_continue:
-
-			img = YImage(self.filename + self.delimiter + str(counter), self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
+		while True:
+			img = YImage(self.filename + self.delimiter + str(counter), self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath, defaultfallback=defaultpath)
+			if img.imgfrom == ImageFrom.BLANK:
+				break
 			self.imgfrom = img.imgfrom
 			self.frames.append(img.img)
 
 			counter += 1
 
-			should_continue = os.path.isfile(path + self.filename + self.delimiter + str(counter) + self.settings.format)
-			should_continue = should_continue or os.path.isfile(path + self.filename + self.delimiter + str(counter) + self.settings.x2 + self.settings.format)
-
 		if not self.frames:
 			self.unanimate = True
 
-			a = YImage(self.filename, self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath)
+			a = YImage(self.filename, self.settings, scale=self.scale, rotate=self.rotate, defaultpath=defaultpath, defaultfallback=defaultpath)
 			self.imgfrom = a.imgfrom
 			self.frames.append(a.img)
-
 
 		self.n_frame = len(self.frames)
 

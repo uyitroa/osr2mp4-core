@@ -1,22 +1,23 @@
 import glob
+import os
 import unittest
-import bruh
 from osr2mp4.Parser.skinparser import Skin
-from utils import getskins
+from utils import abspath
 
 
 class TestScore(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
-		cls.tests = []
 		cls.update = False
-		cls.tests = getskins()
+		skinpath = os.path.join(abspath, "skininis", "*.ini")
+		cls.tests = glob.glob(skinpath)
 
 	def testskin(self):
 		for i in range(len(self.tests)):
 			s = Skin("", "", inipath=self.tests[i])
 			result = str(s.colours) + "\n" + str(s.fonts)
-			if self.update:
+
+			if self.update:  # ignore this if
 				fwrite = open(self.tests[i] + ".result", "w")
 				fwrite.write(result)
 				fwrite.close()

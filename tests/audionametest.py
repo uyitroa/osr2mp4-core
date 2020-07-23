@@ -1,25 +1,33 @@
+import os
 import unittest
-import bruh
-from utils import getaudiofilename
+
+from osr2mp4.AudioProcess.Utils import getfilenames
+
+from osr2mp4.Parser.osuparser import read_file
+from utils import abspath, getlistfromtxt
 
 
 class TestAudio(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.test = []
-		cls.test.append(getaudiofilename("audiodearbrave"))
-		cls.test.append(getaudiofilename("audioyomi"))
-		cls.test.append(getaudiofilename("audioyomi2"))
-		cls.test.append(getaudiofilename("audioyomi3"))
-		cls.test.append(getaudiofilename("audioyomi4"))
+		cls.test.append("audiodearbrave")
+		cls.test.append("audioyomi")
+		cls.test.append("audioyomi2")
+		cls.test.append("audioyomi3")
+		cls.test.append("audioyomi4")
 
 	def testaudioname(self):
-		counter = 0
-		for case in self.test:
-			print(case)
-			print(counter)
-			self.assertCountEqual(case[0], case[1])
-			counter += 1
+		for mapname in self.test:
+			mappath = "{}{}.osu".format(abspath, mapname)
+			print(f"Checking {mappath}")
+			bmap = read_file(mappath)
+
+			resultlist = getfilenames(bmap, False)
+			resultlist = [list(resultlist[0].keys()), list(resultlist[1].keys())]  # reformat to have the same format as expectedlist
+
+			expectedlist = getlistfromtxt(os.path.join(abspath, mapname + "expect.txt"))
+			self.assertCountEqual(resultlist, expectedlist)
 
 if __name__ == '__main__':
 	unittest.main()
