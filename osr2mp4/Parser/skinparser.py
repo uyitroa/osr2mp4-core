@@ -115,7 +115,7 @@ class Skin:
 		return newstring.replace('\x00', '')
 
 	def read(self):
-		config = ConfigParser(strict=False, comment_prefixes="//", inline_comment_prefixes="//", dict_type=MultiOrderedDict)
+		config = ConfigParser(strict=False, comment_prefixes=["//", "\\"], inline_comment_prefixes="//", dict_type=MultiOrderedDict)
 		config.optionxform = str
 
 		try:
@@ -142,7 +142,7 @@ class Skin:
 		self.general['HitCircleOverlayAboveNumer'] = iint(self.general.get('HitCircleOverlayAboveNumer', 0))
 		self.general['SliderStyle'] = iint(self.general.get('SliderStyle', 0))
 		self.general['AllowSliderBallTint'] = iint(self.general.get('AllowSliderBallTint', 0))
-		self.general['SliderBallFlip'] = iint(self.general.get('SliderBallFlip', 1))
+		self.general['SliderBallFlip'] = iint(self.general.get('SliderBallFlip', 0))
 		self.general['AnimationFramerate'] = iint(self.general.get('AnimationFramerate', 60))
 		self.general['Version'] = self.general.get('Version', 1.0)
 		if self.general['Version'] != "latest":
