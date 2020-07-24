@@ -51,6 +51,9 @@ class Updater:
 		objtype = type(self.info.more).__name__
 		if objtype == "Circle":
 			idd = str(self.info.id) + "c"
+			if idd not in self.component.hitobjmanager.circle_manager.circles:
+				return
+
 			x, y = self.info.more.x, self.info.more.y
 			if self.info.more.state == States.NOTELOCK and self.info.more.sliderhead is False:
 				self.component.hitobjmanager.notelock_circle(idd)
@@ -80,6 +83,9 @@ class Updater:
 
 		else:
 			idd = str(self.info.id) + "o"
+			if idd not in self.component.hitobjmanager.spinner_manager.spinners:
+				return
+
 			y, x = 384 * 0.5, 512 * 0.5
 			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress, self.info.more.rpm)
 
