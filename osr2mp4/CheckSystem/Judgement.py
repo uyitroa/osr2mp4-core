@@ -285,17 +285,24 @@ class Check:
 		if osr[Replays.TIMES] < osu_d["time"]:
 			return False, None, None, None, 0, 0, 0
 
+		if osu_d["id"] not in self.spinners_memory:
+			self.spinners_memory[osu_d["id"]] = {"rpm": 0, "cur speed": 0, "theoretical speed": 0, "prev angle": 0,
+												"frame variance": 0, "rot count": 0}
+			timediff = self.SIXTY_FRAME_TIME
+		else:
+			timediff = osr[Replays.TIMES] - replay[max(0, osrindex-1)][Replays.TIMES]
+
 		if osr[Replays.TIMES] >= osu_d["end time"]:
 			spinner = self.spinners_memory[osu_d["id"]]
 			rotation = (spinner["rot count"] % 1) * 360
 			spinrequired = self.diff.spinrequired(osu_d["end time"] - osu_d["time"])
-			progress = spinner["rot count"] / spinrequired
+			progress = spinner["rot count"] / max(1, spinrequired)  # avoid divsion by 0 using max(1, spinrequired)
 
 			if spinner["rot count"] > spinrequired + 1 or Mod.SpunOut in self.mods:
 				hitresult = 300
 			elif spinner["rot count"] > spinrequired:
 				hitresult = 100
-			elif spinner["rot count"] > 0.5:
+			elif spinner["rot count"] > 0.1 * spinrequired:
 				hitresult = 50
 			else:
 				hitresult = 0
@@ -304,13 +311,6 @@ class Check:
 
 		duration = osu_d["end time"] - osu_d["time"]
 		max_accel = 0.00008 + max(0, (5000 - duration) / 1000 / 2000)
-
-		if osu_d["id"] not in self.spinners_memory:
-			self.spinners_memory[osu_d["id"]] = {"rpm": 0, "cur speed": 0, "theoretical speed": 0, "prev angle": 0,
-												"frame variance": 0, "rot count": 0}
-			timediff = self.SIXTY_FRAME_TIME
-		else:
-			timediff = osr[Replays.TIMES] - replay[max(0, osrindex-1)][Replays.TIMES]
 
 		spinner = self.spinners_memory[osu_d["id"]]
 
@@ -374,7 +374,7 @@ class Check:
 		direction = -1 if spinner["cur speed"] >= 0 else 1
 		rotation = (spinner["rot count"] * 360) % 360 * direction
 		spinrequired = self.diff.spinrequired(duration)
-		progress = spinner["rot count"] / spinrequired
+		progress = spinner["rot count"] / max(1, spinrequired)  # avoid divsion by 0 using max(1, spinrequired)
 		bonus = max(0, int(spinner["rot count"] - spinrequired - 3))
 
 		rot_increased = int(spinner["rot count"]) > int(prevcount)

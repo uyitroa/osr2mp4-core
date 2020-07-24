@@ -31,7 +31,7 @@ def prepare_cursormiddle(scale, settings, default=False):
 	# 	path = settings.path
 
 	# exists = os.path.isfile(path + cursormiddle + settings.format)
-	yimg = YImage(cursormiddle, settings, scale, defaultpath=default)
+	yimg = YImage(cursormiddle, settings, scale, defaultpath=default, defaultfallback=default)
 	frame = [yimg.img]
 
 	return frame, yimg.imgfrom != ImageFrom.BLANK
