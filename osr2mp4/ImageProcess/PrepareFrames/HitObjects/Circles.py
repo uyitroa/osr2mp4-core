@@ -59,6 +59,13 @@ def overlayhitcircle(overlay, circle, color, scale):
 
 def overlayapproach(circle, approach, alpha):
 
+	maxwidth = max(approach.size[0], circle.size[0])
+	maxheight = max(approach.size[1], circle.size[1])
+
+	background = Image.new("RGBA", (maxwidth, maxheight))
+	background.paste(approach, (maxwidth//2 - approach.size[0]//2, maxheight//2 - approach.size[1]//2))
+	approach = background
+
 	x1 = approach.size[0] // 2
 	y1 = approach.size[1] // 2
 

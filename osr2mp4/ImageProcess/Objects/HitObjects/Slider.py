@@ -120,18 +120,16 @@ class SliderManager:
 		color = slider.osu_d["combo_color"] - 1
 		index = int(slider.sliderf_i)
 		slider.sliderb_i = (slider.sliderb_i + 1) % len(self.sliderb_frames[color])
+
+		ball = self.sliderb_frames[color][slider.sliderb_i]
+
 		if self.settings.settings["Rotate sliderball"]:
 			vector_x1, vector_y1 = cur_pos[0] - slider.prev_pos[0], cur_pos[1] - slider.prev_pos[1]
 
-			if slider.cur_repeated % 2 == 0 and self.flip:
-				ball = self.sliderb_frames[color][slider.sliderb_i].transpose(Image.FLIP_LEFT_RIGHT)
-			else:
-				ball = self.sliderb_frames[color][slider.sliderb_i]
-
 			angle = -np.arctan2(vector_y1, vector_x1) * 180 / np.pi
 			ball = ball.rotate(angle)
-		else:
-			ball = self.sliderb_frames[color][slider.sliderb_i]
+		elif slider.cur_repeated % 2 == 1 and self.flip:
+			ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
 
 		self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)
