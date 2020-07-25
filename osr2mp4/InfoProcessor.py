@@ -47,6 +47,8 @@ class Updater:
 		elif self.info.combostatus == -1:
 			self.component.combocounter.breakcombo()
 
+		self.component.flashlight.set_combo(self.info.combo)
+
 	def process_acc(self):
 		objtype = type(self.info.more).__name__
 		if objtype == "Circle":
@@ -62,6 +64,8 @@ class Updater:
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
 				if self.info.more.sliderhead:
 					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate, str(self.info.id) + "s")
+				else:
+					self.component.flashlight.set_sliding(False)
 
 		elif objtype == "Slider":
 			idd = str(self.info.id) + "s"
@@ -72,6 +76,7 @@ class Updater:
 			followbit = self.info.more.followstate
 			if int(followbit[0]):
 				self.component.hitobjmanager.sliderchangestate(int(followbit[1]), idd)
+				self.component.flashlight.set_sliding(int(followbit[1]))
 
 			if self.info.more.hitvalue == 10:
 				self.component.hitobjmanager.slidertouchtick(idd)

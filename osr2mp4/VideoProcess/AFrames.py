@@ -1,5 +1,7 @@
 import logging
 
+from ..ImageProcess.Objects.Components.Flashlight import Flashlight
+from ..ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
 from ..ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
 from ..CheckSystem.mathhelper import getunstablerate
 from ..ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
@@ -154,6 +156,8 @@ class PreparedFrames:
 		self.rankinggraph.extend(self.rankingur)
 		logging.debug('start preparing done')
 
+		self.flashlight = prepare_flashlight(settings)
+
 
 class FrameObjects:
 	def __init__(self, frames, settings, beatmap, replay_info):
@@ -215,3 +219,4 @@ class FrameObjects:
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
 		self.ppcounter = PPCounter(settings)
 		self.hitresultcounter = HitresultCounter(settings)
+		self.flashlight = Flashlight(frames.flashlight, settings, replay_info)

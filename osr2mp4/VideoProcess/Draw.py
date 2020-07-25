@@ -53,6 +53,7 @@ class Drawer:
 		self.component = FrameObjects(self.frames, self.settings, self.beatmap, self.replay_info)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
+		self.component.flashlight.set_pos(old_cursor_x, old_cursor_y)
 
 		self.preempt_followpoint = 800
 
@@ -86,6 +87,11 @@ class Drawer:
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+		self.component.hitresult.add_to_frame(self.img)
+		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.flashlight.add_to_frame(self.img, in_break, cursor_x, cursor_y)
+
 		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
 		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
 		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
@@ -96,9 +102,6 @@ class Drawer:
 		self.component.key2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(398 * self.settings.scale), self.frame_info.cur_time)
 		self.component.mouse1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(446 * self.settings.scale), self.frame_info.cur_time)
 		self.component.mouse2.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(492 * self.settings.scale), self.frame_info.cur_time)
-		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.hitresult.add_to_frame(self.img)
 		self.component.spinbonus.add_to_frame(self.img)
 		self.component.combocounter.add_to_frame(self.img, in_break)
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
