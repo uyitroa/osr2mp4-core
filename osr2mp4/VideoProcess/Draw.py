@@ -90,7 +90,6 @@ class Drawer:
 		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
 		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.playingmodicons.add_to_frame(self.img)
 		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
 		self.component.urbar.add_to_frame_bar(self.img)
 		self.component.key1.add_to_frame(self.img, self.settings.width - int(24 * self.settings.scale), int(350 * self.settings.scale), self.frame_info.cur_time)
@@ -112,6 +111,7 @@ class Drawer:
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
 		self.component.ppcounter.add_to_frame(self.img)
 		self.component.hitresultcounter.add_to_frame(self.img)
+		self.component.playingmodicons.add_to_frame(self.img)
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 

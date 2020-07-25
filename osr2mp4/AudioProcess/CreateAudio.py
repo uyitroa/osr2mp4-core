@@ -82,12 +82,14 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 		except FileNotFoundError:
 			pass
 
-		except exceptions.CouldntDecodeError:
+		except exceptions.CouldntDecodeError as e:
+			logging.error(repr(e) + " filename " + path + filename + "." + fmt)
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
+	logging.error("file not found " + filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
 
