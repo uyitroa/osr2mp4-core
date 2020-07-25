@@ -129,6 +129,7 @@ def check_break(beatmap, component, frame_info, updater, settings):
 		component.scorebar.startbreak(breakperiod, duration)
 		component.background.startbreak(breakperiod, duration)
 		component.combocounter.startbreak(breakperiod, duration)
+		component.urbar.startbreak(breakperiod, duration)
 
 		endgamebreak = frame_info.break_index == len(beatmap.breakperiods) - 1
 		if not endgamebreak:

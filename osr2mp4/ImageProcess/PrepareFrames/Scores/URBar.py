@@ -1,3 +1,4 @@
+import numpy
 from PIL import Image
 
 
@@ -11,24 +12,32 @@ def prepare_bar(scale, scorewindow):
 	w, h = int(160 * scale), int(20 * scale)
 	bar_images = []
 
-	colors = [(255, 200, 77, 175), (89, 255, 9, 175), (44, 186, 255, 175)]
+	colors = [(218, 174, 70, 200), (87, 227, 19, 200), (50, 188, 231, 200)]
 
 	barheight = int(h / 4)
 	maxtime = scorewindow[2]
 	widths = [int(w), int(scorewindow[1] / maxtime * w), int(scorewindow[0] / maxtime * w)]
 	xstart = [0, (w - widths[1]) // 2, (w - widths[2]) // 2]
 
-
-	colorbar = [(255, 220, 100, 100), (110, 255, 30, 100), (70, 210, 255, 100)]
+	colorbar = [(210, 160,  60, 255), (70, 215, 10, 255), (40, 170, 220, 255)]
+	mask = []
 	for i in range(3):
-		cc = [*colorbar[:3], 5]
-		bar = Image.new("RGBA", (int(3 * scale), h), cc[i])
-		bar.paste(colorbar[i], (int(1.5 * scale), 0, int(2.5 * scale), h))
+		# colorbar[i] = colorbar[i][::-1]
+		# print(colorbar[i])
+		bar = numpy.full((h, int(2 * scale), 4), colorbar[i])
 		bar_images.append(bar)
 
+		m = min(colorbar[i])
+		r = m/colorbar[i][0] * 2
+		g = m/colorbar[i][1] * 2
+		b = m/colorbar[i][2] * 2
+		mask.append([r, g, b])
+
 	urbar = Image.new("RGBA", (w, h))
+	masknp = numpy.zeros((h, w, 3))
 	for i in range(len(xstart)):
 		urbar.paste(colors[i], (xstart[i], h//2 - barheight//2, xstart[i] + widths[i], h//2 + barheight//2))
+		masknp[:, xstart[i]:xstart[i]+widths[i], :] = mask[i]
 
-	return urbar, bar_images, maxtime
+	return urbar, bar_images, maxtime, masknp
 
