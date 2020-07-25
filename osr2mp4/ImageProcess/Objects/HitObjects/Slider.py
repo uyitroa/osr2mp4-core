@@ -119,9 +119,9 @@ class SliderManager:
 	def draw_sliderb(self, slider, background, cur_pos):
 		color = slider.osu_d["combo_color"] - 1
 		index = int(slider.sliderf_i)
-		slider.sliderb_i = (slider.sliderb_i + 1) % len(self.sliderb_frames[color])
+		slider.sliderb_i = (slider.sliderb_i + 1 * self.interval/(1000/60)) % len(self.sliderb_frames[color])
 
-		ball = self.sliderb_frames[color][slider.sliderb_i]
+		ball = self.sliderb_frames[color][int(slider.sliderb_i)]
 
 		if self.settings.settings["Rotate sliderball"]:
 			vector_x1, vector_y1 = cur_pos[0] - slider.prev_pos[0], cur_pos[1] - slider.prev_pos[1]
