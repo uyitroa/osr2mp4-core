@@ -227,7 +227,6 @@ class Check:
 		hastick, tickadd, tickt = self.tickover(t, osu_d, slider_d, hasreversetick)
 		slider_d["ticks index"] += tickadd
 
-
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)
 
 		in_ball = tick_inball

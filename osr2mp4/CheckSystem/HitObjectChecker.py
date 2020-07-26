@@ -123,15 +123,14 @@ class HitObjectChecker:
 
 		return actual/total * 100
 
-	def checkcircle(self, note_lock, i, replay, osr_index, sum_newclick):
+	def checkcircle(self, notelock, i, replay, osr_index, sum_newclick):
 		update, hitresult, timestamp, idd, x, y, reduceclick, deltat = self.check.checkcircle(i, replay, osr_index,
 		                                                                                      sum_newclick, self.combo)
 		update = update and (deltat > 0 or abs(deltat) <= self.time_preempt)
-
 		if update:
 			state = States.NORMAL
 			sum_newclick = max(0, sum_newclick - reduceclick)
-			if note_lock:
+			if replay[osr_index][Replays.TIMES] < notelock:
 				state = States.NOTELOCK
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
@@ -139,16 +138,18 @@ class HitObjectChecker:
 					            copy.copy(self.results), copy.copy(self.clicks), None,
 					            timestamp, idd, self.health_processor.health_value, self.maxcombo, circle)
 					self.info.append(info)
-					return note_lock, sum_newclick, i
+					return notelock, sum_newclick, i
 
 			if hitresult is None:
-				return note_lock, sum_newclick, i
+				notelock = self.hitobjects[i]["time"] + self.maxtimewindow + 2
+				return notelock, sum_newclick, i
 
 			if hitresult > 0:
 				self.combo += 1
 				combostatus = 1
 				state = States.FADEOUT
 			else:
+				notelock = self.hitobjects[i]["time"] + self.maxtimewindow + 20
 				combostatus = -1
 				self.combo = 0
 
@@ -197,15 +198,15 @@ class HitObjectChecker:
 			            self.health_processor.health_value, self.maxcombo, circle)
 			self.info.append(info)
 		else:
-			note_lock = True
-		return note_lock, sum_newclick, i
+			notelock = self.hitobjects[i]["time"] + self.maxtimewindow + 2
+		return notelock, sum_newclick, i
 
-	def checkslider(self, i, replay, osr_index):
+	def checkslider(self, i, replay, osr_index, notelock):
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend, updatefollow = self.check.checkslider(
 			i, replay, osr_index)
 
 		# slider has notelock and it depends on the hit time window, or if the slider is too short then it would be the duration of the slider
-		notelock = replay[osr_index][Replays.TIMES] < min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow)
+		notelock = max(notelock, min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow))
 
 		if combostatus > 0:
 			self.combo += combostatus
@@ -301,7 +302,7 @@ class HitObjectChecker:
 		return i
 
 	def checkcursor(self, replay, new_click, osr_index, in_break):
-		note_lock = False
+		notelock = 0
 		sum_newclick = sum(new_click)
 		self.clicks[0] += new_click[0]
 		self.clicks[1] += new_click[1]
@@ -315,12 +316,12 @@ class HitObjectChecker:
 
 		while inrange and i < len(self.hitobjects) - 1:
 			if "circle" in self.hitobjects[i]["type"]:
-				note_lock, sum_newclick, i = self.checkcircle(note_lock, i, replay, osr_index, sum_newclick)
+				notelock, sum_newclick, i = self.checkcircle(notelock, i, replay, osr_index, sum_newclick)
 
 			elif "slider" in self.hitobjects[i]["type"]:
 				if self.hitobjects[i]["head not done"]:
-					note_lock, sum_newclick, i = self.checkcircle(note_lock, i, replay, osr_index, sum_newclick)
-				note_lock, i = self.checkslider(i, replay, osr_index)
+					notelock, sum_newclick, i = self.checkcircle(notelock, i, replay, osr_index, sum_newclick)
+				notelock, i = self.checkslider(i, replay, osr_index, notelock)
 
 			elif "spinner" in self.hitobjects[i]["type"]:
 				i = self.checkspinner(i, replay, osr_index)
