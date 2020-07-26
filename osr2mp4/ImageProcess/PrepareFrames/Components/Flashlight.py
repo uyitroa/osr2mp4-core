@@ -5,7 +5,7 @@ def prepare_flashlight(settings):
 	width = int(settings.width * 2)
 	height = int(settings.height * 2)
 
-	fl_radius = 200 * settings.scale
+	fl_radius = 150 * settings.scale
 	fl_radius_100combo = fl_radius * 3.2
 	fl_radius_200combo = fl_radius * 2.6
 	fl_radius_bigcombo = fl_radius * 2

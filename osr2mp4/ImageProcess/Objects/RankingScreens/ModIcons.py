@@ -24,7 +24,7 @@ class ModIcons(ARankingScreen):
 			for mod in sortedmods:
 				# if there is nightcore, then doubletime mod is present in the frozenset
 				if mod == Mod.DoubleTime and hasnc:
-					return
+					continue
 
 				if mod in self.mods:
 					imageproc.add(self.modframes[mod], background, x, 420 * self.settings.scale, self.alpha)

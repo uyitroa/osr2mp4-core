@@ -26,8 +26,7 @@ class PlayingModIcons(FrameObject):
 		for mod in sortedmods:
 			# if there is nightcore, then doubletime mod is present in the frozenset
 			if mod == Mod.DoubleTime and hasnc:
-				return
-
+				continue
 			if mod in self.mods:
 				imageproc.add(self.modframes[mod], background, x, self.y)
 				x -= self.step_x

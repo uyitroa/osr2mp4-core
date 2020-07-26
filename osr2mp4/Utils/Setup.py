@@ -2,7 +2,6 @@ import logging
 
 from autologging import traced, logged
 
-from ..global_var import Settings
 from ..osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
