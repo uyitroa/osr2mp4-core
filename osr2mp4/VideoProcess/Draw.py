@@ -86,9 +86,9 @@ class Drawer:
 		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
-		self.component.hitresult.add_to_frame(self.img)
 		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.hitresult.add_to_frame(self.img)
 		self.component.flashlight.add_to_frame(self.img, in_break, cursor_x, cursor_y)
 
 		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
