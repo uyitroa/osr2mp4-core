@@ -147,8 +147,7 @@ class Osr2mp4:
 		if self.resultinfo is None:
 			self.analyse_replay()
 		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
-		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings,
-		                          self.replay_info.mod_combination)
+		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings, self.replay_info.mod_combination)
 
 	def startall(self):
 		self.analyse_replay()
@@ -158,11 +157,18 @@ class Osr2mp4:
 	def joinvideo(self):
 		if self.data["Process"] >= 1:
 			for i in range(self.data["Process"]):
+				logging.debug(self.drawers[i].is_alive())
+				logging.debug(self.writers[i].is_alive())
 				self.drawers[i].join()
+				logging.debug(f"Joined drawers {i}")
+
 				self.writers[i].join()  # temporary fixm might cause some infinite loop
+				logging.debug(f"Joined writers {i}")
+
 				conn1, conn2 = self.pipes[i]
 				conn1.close()
 				conn2.close()
+				logging.debug(f"Closed conn {i}")
 
 		self.drawers, self.writers, self.pipes = None, None, None
 
