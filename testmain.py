@@ -153,14 +153,16 @@ def main():
 
 	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	osr2mp4.analyse_replay()
-	components = DummyFrameObjects()
-	background = Image.open("../osr2mp4-app/osr2mp4app/res/pppp.png")
-	#
-	# drawpp(components, osr2mp4)
-	a = prepare_modicons(osr2mp4.settings.scale, osr2mp4.settings)
-	f = PlayingModIcons(a, osr2mp4.replay_info, osr2mp4.settings)
-	f.add_to_frame(background)
-	background.save("test.png")
+	print(osr2mp4.resultinfo[-1].accuracy)
+	print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses)
+	# components = DummyFrameObjects()
+	# background = Image.open("../osr2mp4-app/osr2mp4app/res/pppp.png")
+	# #
+	# # drawpp(components, osr2mp4)
+	# a = prepare_modicons(osr2mp4.settings.scale, osr2mp4.settings)
+	# f = PlayingModIcons(a, osr2mp4.replay_info, osr2mp4.settings)
+	# f.add_to_frame(background)
+	# background.save("test.png")
 
 
 if __name__ == '__main__':

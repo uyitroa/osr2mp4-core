@@ -22,6 +22,7 @@ class Beatmap:
 		self.to_stack = []
 		self.scale = scale
 		self.path = None
+		self.is2b = False
 
 		if colors is None:
 			colors = {"ComboNumber": 1}
@@ -282,34 +283,12 @@ class Beatmap:
 			my_dict["skip"] = skip
 			my_dict["sound"] = int(osuobject[4])
 
-			#
-			# if index != 0 and not int(bin_info[3]) and "spinner" not in self.hitobjects[-1]["type"]:
-			# 	prevobj = self.hitobjects[-1]
-			# 	if self.istacked(my_dict, prevobj, min_stacktime) and "slider" not in prevobj["type"] and not reverse:
-			# 		if stacking:
-			# 			self.to_stack[-1]["end"] = index
-			# 		else:
-			# 			self.to_stack.append({"start": index - 1, "end": index, "reverse": False})
-			# 			stacking = True
-			#
-			# 	elif self.istacked(my_dict, prevobj, min_stacktime, "end ") and "slider" not in my_dict["type"]:
-			# 		if stacking:
-			# 			self.to_stack[-1]["end"] = index
-			# 		else:
-			# 			self.to_stack.append({"start": index, "end": index, "reverse": True})
-			# 			stacking = True
-			# 			reverse = True
-			#
-			# 	else:
-			# 		stacking = False
-			# 		reverse = False
-			# else:
-			# 	stacking = False
-			# 	reverse = False
-
+			if len(self.hitobjects) > 0 and self.hitobjects[-1]["end time"] >= my_dict["time"]:
+				self.is2b = True
 			self.hitobjects.append(my_dict)
 			cur_combo_number += 1
 			index += 1
+
 		self.start_time = self.hitobjects[0]["time"]
 		self.end_time = self.hitobjects[-1]["end time"]
 
