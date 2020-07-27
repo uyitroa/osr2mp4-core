@@ -1,13 +1,15 @@
 import logging
 import math
-import re
+
+from ..osrparse.enums import Mod
+from ..CheckSystem.mathhelper import dtar, getar
 
 from ..Exceptions import GameModeNotSupported
 from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:
-	def __init__(self, info, scale=1, colors=None, hr=False):
+	def __init__(self, info, scale=1, colors=None, mods=None):
 		self.info = info
 		self.general = {"StackLeniency": 7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
@@ -26,7 +28,12 @@ class Beatmap:
 		if colors is None:
 			colors = {"ComboNumber": 1}
 		self.ncombo = colors["ComboNumber"]
-		self.hr = hr
+
+		if mods is None:
+			mods = []
+
+		self.mods = mods
+		self.hr = Mod.HardRock in mods
 
 		self.parse_general()
 
@@ -322,23 +329,9 @@ class Beatmap:
 	def stack_position(self):
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		stack_space = scale * 6.4
-		# for info in self.to_stack:
-		# 	for i in range(info["end"] - info["start"] + 1):
-		# 		if info["reverse"]:
-		# 			space = (i+1) * scale * 6.4
-		# 		else:
-		# 			space = (info["end"] - info["start"] - i) * scale * -6.4
-		# 		index = info["start"] + i
-		#
-		# 		if "slider" in self.hitobjects[index]["type"]:
-		# 			self.hitobjects[index]["stacking"] = space
-		# 			self.hitobjects[index]["end x"] += space
-		# 			self.hitobjects[index]["end y"] += space
-		#
-		# 		self.hitobjects[index]["x"] += space
-		# 		self.hitobjects[index]["y"] += space
 
-		ar = self.diff["ApproachRate"]  # for stacks
+		ar = getar(self.mods, self.diff["ApproachRate"])  # for stacks
+
 		if ar < 5:
 			preempt = 1200 + 600 * (5 - ar) / 5
 		elif ar == 5:
@@ -346,7 +339,6 @@ class Beatmap:
 		else:
 			preempt = 1200 - 750 * (ar - 5) / 5
 
-		cur_offset = 0
 		stackThreshold = preempt * self.general["StackLeniency"]
 		stack_distance = 3
 
@@ -485,13 +477,16 @@ def split(delimiters, string):
 	return info
 
 
-def read_file(filename, scale=1, colors=None, hr=False):
+def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None):
+	if hr:
+		print("hr args is depecrated")
+
 	fiel = open(filename, "r", encoding="utf-8")
 	content = fiel.read()
 	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
 	              "[HitObjects]"]
 	info = split(delimiters, content)
 	fiel.close()
-	bmap = Beatmap(info, scale, colors, hr)
+	bmap = Beatmap(info, scale, colors, mods=mods)
 	bmap.path = filename
 	return bmap

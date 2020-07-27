@@ -35,50 +35,6 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def dtar(value):
-	if value < 5:
-		hitwindow = 1200 + 600 * (5 - value) / 5
-	elif value == 5:
-		hitwindow = 1200
-	else:
-		hitwindow = 1200 - 750 * (value - 5) / 5
-
-	hitwindow /= 1.5
-
-	if hitwindow > 1200:
-		return round((1800 - hitwindow)/120, 2)
-	else:
-		return round((1200 - hitwindow)/150 + 5, 2)
-
-
-def dtod(value):
-	hitwindow = 50 + 30 * (5 - value) / 5 + 0.25  # it works don't ask
-	hitwindow /= 1.5
-	return round((80 - hitwindow)/6, 2)
-
-
-def htod(value):
-	hitwindow = 50 + 30 * (5 - value) / 5 - 0.125  # it works don't ask
-	hitwindow /= 0.75
-	return round((80 - hitwindow)/6, 2)
-
-
-def htar(value):
-	if value < 5:
-		hitwindow = 1200 + 600 * (5 - value) / 5
-	elif value == 5:
-		hitwindow = 1200
-	else:
-		hitwindow = 1200 - 750 * (value - 5) / 5
-
-	hitwindow /= 0.75
-
-	if hitwindow > 1200:
-		return round((1800 - hitwindow)/120, 2)
-	else:
-		return round((1200 - hitwindow)/150 + 5, 2)
-
-
 def diffmod(replay_info, diff):
 	mods = replay_info.mod_combination
 	if Mod.HardRock in mods:
@@ -91,12 +47,6 @@ def diffmod(replay_info, diff):
 		diff["CircleSize"] = diff["CircleSize"] * 0.5
 		diff["HPDrainRate"] = diff["HPDrainRate"] * 0.5
 		diff["OverallDifficulty"] = diff["OverallDifficulty"] * 0.5
-	# if Mod.DoubleTime in mods or Mod.Nightcore in mods:
-	# 	diff["ApproachRate"] = dtar(diff["ApproachRate"])
-	# 	diff["OverallDifficulty"] = dtod(diff["OverallDifficulty"])
-	# if Mod.HalfTime in mods:
-	# 	diff["ApproachRate"] = htar(diff["ApproachRate"])
-	# 	diff["OverallDifficulty"] = htod(diff["OverallDifficulty"])
 
 
 def checkmain(beatmap, replay_info, settings, tests=False):
