@@ -7,7 +7,6 @@ import traceback
 
 from PIL import Image
 
-from ..global_var import Settings
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
 from .AFrames import FrameObjects
