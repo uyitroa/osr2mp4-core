@@ -24,20 +24,20 @@ def prepare_bar(scale, scorewindow):
 	for i in range(3):
 		# colorbar[i] = colorbar[i][::-1]
 		# print(colorbar[i])
-		bar = numpy.full((h, int(2 * scale), 4), colorbar[i])
+		bar = numpy.full((int(2 * scale), 4), colorbar[i])
 		bar_images.append(bar)
 
-		m = min(colorbar[i])
-		r = m/colorbar[i][0] * 2
-		g = m/colorbar[i][1] * 2
-		b = m/colorbar[i][2] * 2
-		mask.append([r, g, b])
+		m = min(colorbar[i]) * 2
+		r = m/colorbar[i][0]
+		g = m/colorbar[i][1]
+		b = m/colorbar[i][2]
+		mask.append([r, g, b, 4])
 
 	urbar = Image.new("RGBA", (w, h))
-	masknp = numpy.zeros((h, w, 3))
+	masknp = numpy.zeros((w, 4))
 	for i in range(len(xstart)):
 		urbar.paste(colors[i], (xstart[i], h//2 - barheight//2, xstart[i] + widths[i], h//2 + barheight//2))
-		masknp[:, xstart[i]:xstart[i]+widths[i], :] = mask[i]
+		masknp[xstart[i]:xstart[i]+widths[i], :] = mask[i]
 
 	return urbar, bar_images, maxtime, masknp
 
