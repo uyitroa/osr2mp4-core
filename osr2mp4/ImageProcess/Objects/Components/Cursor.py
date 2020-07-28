@@ -38,6 +38,7 @@ class Cursortrail(FrameObject):
 		if self.continuous:
 			self.frame_index = len(self.frames) - 2
 			self.trail = Trail()
+			self.prevtime = 0
 			self.blank = Image.new("RGBA", (self.settings.width, self.settings.height))
 		else:
 			self.trail = [Trail() for _ in range(len(self.frames))]
@@ -87,4 +88,11 @@ class Cursortrail(FrameObject):
 		else:
 			self.apply_continuoustrail(x_offset, y_offset)
 			imageproc.add(self.blank, background, self.settings.width // 2, self.settings.height // 2)
-			imageproc.changealpha(self.blank, 0.92)
+
+			if self.prevtime == 0:
+				self.prevtime = cursor_time
+
+			deltatime = abs(cursor_time - self.prevtime)
+			for i in range(round(deltatime / self.updatetime - 0.25)):
+				imageproc.changealpha(self.blank, 0.92)
+				self.prevtime = cursor_time

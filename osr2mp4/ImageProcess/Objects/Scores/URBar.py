@@ -49,10 +49,10 @@ class URBar(AScorebar):
 		AScorebar.animate(self)
 		self.c += 60/self.settings.fps
 
+		self.np[:, :, :] = self.barthin
+
 		s = self.bar_container.size
 		self.bar_container.paste((255, 255, 255, 255), (s[0] // 2 - 1, 0, s[0] // 2 + 1, s[1]))
-
-		self.np[:, :, :] = self.barthin
 
 		img = self.bar_container
 		imageproc.add(img, background, self.x_offset + self.w//2, self.y, alpha=min(1, self.alpha*2))
