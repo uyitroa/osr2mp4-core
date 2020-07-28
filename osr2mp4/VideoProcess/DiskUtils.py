@@ -10,6 +10,13 @@ def concat_videos(settings):
 	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', listvideopath, '-c', 'copy', f, '-y'])
 
 
+def rename_video(settings):
+	_, file_extension = os.path.splitext(settings.output)
+	f = os.path.join(settings.temp, "outputf" + file_extension)
+	current_file = os.path.join(settings.temp, "output0" + file_extension)
+	os.rename(current_file, f)
+
+
 def cleanup(settings):
 	if os.path.isdir(settings.temp):
 		shutil.rmtree(settings.temp)

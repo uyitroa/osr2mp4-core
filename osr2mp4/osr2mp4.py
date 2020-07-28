@@ -18,7 +18,7 @@ from .Utils.HashBeatmap import get_osu
 from .Utils.Setup import setupglobals
 from .Utils.Timing import find_time, get_offset
 from .VideoProcess.CreateFrames import create_frame
-from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup
+from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
 from .global_var import Settings, defaultsettings, defaultppconfig
 import uuid
 from autologging import traced, logged, TRACE
@@ -181,8 +181,10 @@ class Osr2mp4:
 		if self.audio is not None:
 			self.joinaudio()
 
-		if self.data["Process"] >= 1:
+		if self.data["Process"] > 1:
 			concat_videos(self.settings)
+		elif self.data["Process"] == 1:
+			rename_video(self.settings)
 		mix_video_audio(self.settings)
 
 	def cleanup(self):
