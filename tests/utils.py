@@ -32,8 +32,13 @@ if abspath[-1] != "/" and abspath[-1] != "\\":
 abspath += "resources/"
 
 
-def getinfos(mapname, upsidedown=False):
-	bmap = read_file("{}{}.osu".format(abspath, mapname), hr=upsidedown)
+def getinfos(mapname, hr=False, dt=False):
+	mods = []
+	if hr:
+		mods.append(Mod.HardRock)
+	if dt:
+		mods.append(Mod.DoubleTime)
+	bmap = read_file("{}{}.osu".format(abspath, mapname), mods=mods)
 
 	replay_infos = []
 	should_continue = True
