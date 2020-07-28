@@ -1,7 +1,10 @@
 from PIL import Image, ImageDraw
 
 
-def prepare_flashlight(settings):
+def prepare_flashlight(settings, hasfl):
+	if not hasfl:
+		blank = Image.new("RGBA", (1, 1))
+		return [blank, blank, blank, blank]
 	width = int(settings.width * 2)
 	height = int(settings.height * 2)
 

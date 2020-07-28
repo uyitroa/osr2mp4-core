@@ -80,9 +80,11 @@ from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings, beatmap, hd, resultinfo=None):
+	def __init__(self, settings, beatmap, mod_combination, resultinfo=None):
 		skin = settings.skin_ini
 		check = DiffCalculator(beatmap.diff)
+		hd = Mod.Hidden in mod_combination
+		fl = Mod.Flashlight in mod_combination
 		if settings.settings["Automatic cursor size"]:
 			circlescale = 4/beatmap.diff["CircleSize"]
 			settings.settings["Cursor size"] *= circlescale
@@ -156,7 +158,7 @@ class PreparedFrames:
 		self.rankinggraph.extend(self.rankingur)
 		logging.debug('start preparing done')
 
-		self.flashlight = prepare_flashlight(settings)
+		self.flashlight = prepare_flashlight(settings, fl)
 
 
 class FrameObjects:
@@ -166,6 +168,7 @@ class FrameObjects:
 		rankinggap = 0
 		skin = settings.skin_ini
 		hd = Mod.Hidden in replay_info.mod_combination
+		hasfl = Mod.Flashlight in replay_info.mod_combination
 
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
@@ -199,9 +202,9 @@ class FrameObjects:
 		self.spinner = SpinnerManager((frames.spinner, frames.scorecounter), settings, check)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
-		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings)
+		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings, hasfl)
 		self.sections = Sections(frames.sections, settings)
-		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt, settings)
+		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt, settings, hasfl)
 		self.scorebar = Scorebar(frames.scorebar, beatmap, settings)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
@@ -219,4 +222,4 @@ class FrameObjects:
 		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
 		self.ppcounter = PPCounter(settings)
 		self.hitresultcounter = HitresultCounter(settings)
-		self.flashlight = Flashlight(frames.flashlight, settings, replay_info)
+		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)

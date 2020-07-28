@@ -100,7 +100,7 @@ def getframes(suffix, mapname, update=False, data=None):
 		settings, replay_info, beatmap = setupenv(suffix, mapname)
 	else:
 		settings, replay_info, beatmap = data
-	frames = PreparedFrames(settings, beatmap, Mod.Hidden in replay_info.mod_combination)
+	frames = PreparedFrames(settings, beatmap, replay_info)
 	resultprefix = abspath + "frames/" + suffix + mapname
 	if update:
 		updateframes(resultprefix, frames)

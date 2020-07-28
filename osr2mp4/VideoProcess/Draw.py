@@ -6,8 +6,8 @@ import time
 import traceback
 
 from PIL import Image
+from ..osrparse.enums import Mod
 
-from ..global_var import Settings
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
 from .AFrames import FrameObjects
@@ -25,6 +25,7 @@ class Drawer:
 		self.frames = frames
 		self.replay_info = replay_info
 		self.replay_event = replay_info.play_data
+		self.hasfl = Mod.Flashlight in replay_info.mod_combination
 		self.resultinfo = resultinfo
 		self.start_index = videotime[0]
 		self.end_index = videotime[1]
@@ -86,12 +87,19 @@ class Drawer:
 		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		if not self.hasfl:
+			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+
+		self.component.hitresult.add_to_frame(self.img)
 		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitresult.add_to_frame(self.img)
 		self.component.flashlight.add_to_frame(self.img, in_break, cursor_x, cursor_y)
 
-		self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+		# we don't want the flashlight black screen to overlay the scorebarbg
+		if self.hasfl:
+			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
+
 		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
 		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
 		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)

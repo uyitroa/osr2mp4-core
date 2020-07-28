@@ -12,14 +12,17 @@ class Flashlight(AScorebar):
 	COMBO_BIG = 2
 	BREAK = 3
 
-	def __init__(self, frames, settings, replay):
+	def __init__(self, frames, settings, hasfl):
 		super().__init__(frames, settings=settings)
 		self.frame_index = 0
 		self.x, self.y = 0, 0
 		self.sliding = False
 		self.timeframe = self.settings.timeframe/self.settings.fps
-		self.blackshit = Image.new("RGBA", (settings.width, settings.height), (0, 0, 0, 255))
-		self.hasfl = Mod.Flashlight in replay.mod_combination
+		self.hasfl = hasfl
+		if self.hasfl:
+			self.blackshit = Image.new("RGBA", (settings.width, settings.height), (0, 0, 0, 255))
+		else:
+			self.blackshit = Image.new("RGBA", (1, 1))
 
 	def set_pos(self, x, y):
 		self.x, self.y = x, y
