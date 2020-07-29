@@ -21,6 +21,7 @@ def write(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
 	logging.log(logging.DEBUG, "{}\n".format(filename))
+	print("Start write")
 
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	np_img = np.frombuffer(shared, dtype=np.uint8)
@@ -67,7 +68,10 @@ def write(shared, conn, filename, settings, iii):
 		filewriter.write("done")
 		filewriter.close()
 
+	print("Release write")
 	writer.release()
+
+	print("End write")
 
 	logging.debug("\nWriting done {}".format(filename))
 	logging.debug("Writing time: {}".format(timer))
