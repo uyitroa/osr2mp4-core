@@ -1,13 +1,11 @@
 import ctypes
-import logging
 import time
 
 import cv2
 
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
-
-from .AFrames import *
+import logging
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
 import os
@@ -15,7 +13,6 @@ import os
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
 	logging.debug('entering preparedframes')
-	frames = PreparedFrames(settings, beatmap, replay_info.mod_combination, resultinfo)
 
 	if settings.process >= 1:
 		shared_array = []
@@ -46,7 +43,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			vid = (start, end)
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
+				shared, conn1, beatmap, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
 
 			writer = Process(target=write_frame, args=(shared, conn2, settings.temp + f, settings, i == settings.process-1))
 
@@ -68,10 +65,14 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 		return drawers, writers, shared_pipe, shared_array
 
-
 	else:
+		from .AFrames import PreparedFrames
+		from ..CheckSystem.mathhelper import getunstablerate
 
 		logging.debug("process start")
+
+		ur = getunstablerate(resultinfo)
+		frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)

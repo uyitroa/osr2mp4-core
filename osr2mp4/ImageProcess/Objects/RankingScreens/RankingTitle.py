@@ -11,14 +11,14 @@ from ...PrepareFrames.Components.Text import prepare_text
 
 
 class RankingTitle(ARankingScreen):
-	def __init__(self, frames, replayinfo, beatmap, settings):
+	def __init__(self, frames, replayinfo, meta, settings):
 		dummy = [Image.new("RGBA", (1, 1))]
 		super().__init__(dummy, settings=settings)
 		self.replayinfo = replayinfo
-		self.artist = beatmap.meta["Artist"]
-		self.beatmapname = beatmap.meta["Title"]
-		self.mapper = beatmap.meta["Creator"]
-		self.diff = beatmap.meta["Version"]
+		self.artist = meta["Artist"]
+		self.beatmapname = meta["Title"]
+		self.mapper = meta["Creator"]
+		self.diff = meta["Version"]
 		self.player = replayinfo.player_name
 
 		timestamp = self.set_timezone(replayinfo)

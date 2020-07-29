@@ -6,16 +6,21 @@ import time
 import traceback
 
 from PIL import Image
+from ..osrparse.replay import Replay
+
+from ..CheckSystem.Health import HealthProcessor
+
 from ..osrparse.enums import Mod
 
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
-from .AFrames import FrameObjects
+from .AFrames import *
 from ..CheckSystem.Judgement import DiffCalculator
 from ..EEnum.EReplay import Replays
 from .smoothing import smoothcursor
 from .Setup import FrameInfo, CursorEvent, get_buffer
 from .calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
+from ..CheckSystem.mathhelper import getunstablerate
 
 
 class Drawer:
@@ -51,7 +56,12 @@ class Drawer:
 		diffcalculator = DiffCalculator(self.beatmap.diff)
 		self.time_preempt = diffcalculator.ar()
 
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap, self.replay_info)
+		healthproc = HealthProcessor(self.beatmap, self.beatmap.health_processor.drain_rate)
+		map_time = (self.beatmap.start_time, self.beatmap.end_time)
+		light_replay_info = Replay()
+		light_replay_info.set(self.replay_info.get())
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, map_time)
+		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 		self.component.flashlight.set_pos(old_cursor_x, old_cursor_y)
@@ -164,9 +174,9 @@ class Drawer:
 		self.component.rankinggraph.add_to_frame(self.pbuffer)
 
 
-def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
 	try:
-		draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking)
+		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
 		error = repr(e)
 		with open("error.txt", "w") as fwrite:  # temporary fix
@@ -181,12 +191,15 @@ def excepthook(exc_type, exc_value, exc_tb):
 	print(tb)
 
 
-def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
 	sys.excepthook = excepthook
 	asdfasdf = time.time()
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
 	logging.log(logging.DEBUG, "process start")
+
+	ur = getunstablerate(resultinfo)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 

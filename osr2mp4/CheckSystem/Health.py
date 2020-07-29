@@ -102,6 +102,7 @@ class HealthProcessor:
 			adjustment *= 2
 			result += 1.0 / adjustment * sign(lowestHealth - self.target_min_health)
 
+		del self.beatmap
 		return result
 
 	def drainhp(self, cur_time, last_time, in_break):

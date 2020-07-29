@@ -17,27 +17,28 @@ class Replay(object):
     __LONG = 8
 
     #Order of field initilization matters.
-    def __init__(self, replay_data):
-        self.offset = 0
-        self.game_mode = None
-        self.game_version = None
-        self.beatmap_hash = None
-        self.player_name = None
-        self.replay_hash = None
-        self.number_300s = None
-        self.number_100s = None
-        self.number_50s = None
-        self.gekis = None
-        self.katus = None
-        self.misses = None
-        self.score = None
-        self.max_combo = None
-        self.is_perfect_combo = None
-        self.mod_combination = None
-        self.life_bar_graph = None
-        self.timestamp = None
-        self.play_data = None
-        self.parse_replay_and_initialize_fields(replay_data)
+    def __init__(self, replay_data=None):
+        if replay_data is not None:
+            self.offset = 0
+            self.game_mode = None
+            self.game_version = None
+            self.beatmap_hash = None
+            self.player_name = None
+            self.replay_hash = None
+            self.number_300s = None
+            self.number_100s = None
+            self.number_50s = None
+            self.gekis = None
+            self.katus = None
+            self.misses = None
+            self.score = None
+            self.max_combo = None
+            self.is_perfect_combo = None
+            self.mod_combination = None
+            self.life_bar_graph = None
+            self.timestamp = None
+            self.play_data = None
+            self.parse_replay_and_initialize_fields(replay_data)
 
     def parse_replay_and_initialize_fields(self, replay_data):
         self.parse_game_mode_and_version(replay_data)
@@ -136,6 +137,14 @@ class Replay(object):
             events = [eventstring.split('|') for eventstring in datastring.split(',')]
             self.play_data = [ReplayEvent(int(event[0]), float(event[1]), float(event[2]), int(event[3])) for event in events]
         self.offset = offset_end
+
+    def get(self):
+        d = self.__dict__
+        self_dict = {k: d[k] for k in d if k != 'play_data'}
+        return self_dict
+
+    def set(self, state):
+        self.__dict__ = state
 
 def parse_replay(replay_data):
     return Replay(replay_data)

@@ -83,7 +83,7 @@ def getmods(mods):
 
 
 class Scoreboard(FrameObject):
-	def __init__(self, frames, scorenetryframes, effectframes, replay_info, beatmap, settings):
+	def __init__(self, frames, scorenetryframes, effectframes, replay_info, meta, settings):
 		FrameObject.__init__(self, frames, settings=settings)
 
 		self.score = scorenetryframes[0]
@@ -110,7 +110,7 @@ class Scoreboard(FrameObject):
 		self.beatmaphash = replay_info.beatmap_hash
 		self.playerscore = replay_info.score
 		self.playername = replay_info.player_name
-		self.beatmapid = beatmap.meta.get("BeatmapID", -1)
+		self.beatmapid = meta.get("BeatmapID", -1)
 
 		self.scoresid = []
 		self.getscores()

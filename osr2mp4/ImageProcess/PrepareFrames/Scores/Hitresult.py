@@ -6,9 +6,9 @@ default_size = 128
 hitresult_size = 1.5
 
 
-def prepare_hitresults(scale, beatmap, settings):
+def prepare_hitresults(scale, diff, settings):
 
-	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
+	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	scale = cs * 2 * hitresult_size / default_size
 
 	scores_frames = {}
