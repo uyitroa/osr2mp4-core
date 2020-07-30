@@ -73,8 +73,7 @@ class Bezier(ASlider):
 		step = 0.25/constants.SLIDER_QUALITY/order  # Normaly 0.0025
 		i = 0
 		n = order - 1
-		reachend = False
-		while i < 1 + step:
+		while i <= 1:
 			# if reachend:
 			# 	break
 			# if i >= 1:
@@ -96,6 +95,16 @@ class Bezier(ASlider):
 				break
 			self.pos.append(point)
 			i += step
+
+		# if self.dist_cur < self.pixel_length:
+		# 	diff = [self.pos[-1][0] - self.pos[-2][0], self.pos[-1][1] - self.pos[-2][1]]
+		# 	d = np.linalg.norm(diff)
+		#
+		# 	if d <= 0:
+		# 		return
+		#
+		# 	self.pos[-1] = [diff[0] * (self.pixel_length - 1)/d, diff[1] * (self.pixel_length - 1)/d]
+		# 	self.dist_cur = self.pixel_length
 
 	def at(self, dist, forward, alone=None):
 		if forward is None:
@@ -230,6 +239,7 @@ def calc(p, value, other):
 	x = p[0] + value * other[0]
 	y = p[1] + value * other[1]
 	return [x, y]
+
 
 def getclass(slidertype, points, pixellength):
 	if slidertype == "L":

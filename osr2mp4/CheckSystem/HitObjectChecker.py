@@ -244,6 +244,10 @@ class HitObjectChecker:
 					self.info.append(info)
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
+
+				sliderendtime = min(36, (self.hitobjects[i]["duration"] * self.hitobjects[i]["repeated"]) / 2)
+				notelock = self.hitobjects[i]["end time"] - sliderendtime + time_from_previous_frame
+
 				del self.hitobjects[i]
 				del self.check.sliders_memory[idd]
 				i -= 1
