@@ -38,7 +38,7 @@ def getinfos(mapname, hr=False, dt=False):
 		mods.append(Mod.HardRock)
 	if dt:
 		mods.append(Mod.DoubleTime)
-	bmap = read_file("{}{}.osu".format(abspath, mapname), mods=mods)
+	bmap = read_file("{}{}.osu".format(abspath, mapname), mods=mods, lazy=False)
 
 	replay_infos = []
 	should_continue = True
@@ -82,8 +82,7 @@ def setupenv(suffix, mapname):
 
 	setupglobals(config, gameplayconfig, replay_info, settings)
 	beatmap_file = get_osu(settings.beatmap, replay_info.beatmap_hash)
-	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours,
-	                    Mod.HardRock in replay_info.mod_combination)
+	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours, mods=replay_info.mod_combination, lazy=False)
 	return settings, replay_info, beatmap
 
 
