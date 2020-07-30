@@ -20,6 +20,8 @@ class Beatmap:
 		self.scale = scale
 		self.path = None
 		self.is2b = False
+		self.start_time = 0
+		self.end_time = 0
 
 		if colors is None:
 			colors = {"ComboNumber": 1}
@@ -50,6 +52,9 @@ class Beatmap:
 			# self.breakperiods.append({"Start": -500, "End": self.start_time-timepreempt, "Arrow": True})
 			self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
 			                        "type": ["end"], "id": -1})  # to avoid index out of range
+
+		else:
+			self.parse_hitobjecttime()
 
 		self.health_processor = None
 
@@ -136,6 +141,39 @@ class Beatmap:
 		x2, y2 = prevobj[end + "x"], prevobj[end + "y"]
 		t1, t2 = curobj["time"], prevobj[end + "time"]
 		return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < 3 and t1 - t2 < t_min
+
+	def parse_hitobjecttime(self):
+		hitobject = self.info["HitObjects"]
+		hitobject = hitobject.split("\n")
+		for item in hitobject:
+			if item == '':
+				continue
+			osuobject = item.split(",")
+			self.start_time = int(osuobject[2])
+			break
+		for item in hitobject[::-1]:
+			if item == '':
+				continue
+			osuobject = item.split(",")
+			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
+			bin_info = bin_info[::-1]  # reverse the binary
+			osutime = int(osuobject[2])
+			if int(bin_info[0]):
+				self.end_time = osutime
+
+			if int(bin_info[1]):
+				cur_offset = 0
+				while osutime >= self.timing_point[cur_offset + 1]["Offset"]:
+					cur_offset += 1
+				beatduration = self.timing_point[cur_offset]["BeatDuration"]
+				length = float(osuobject[7])
+				duration = beatduration * length / (100 * self.diff["SliderMultiplier"]) * int(osuobject[6])
+				self.end_time = osutime + duration
+
+			if int(bin_info[3]):
+				endtime = osuobject[5].split(":")[0]
+				self.end_time = int(endtime)
+			break
 
 	def parse_hitobject(self):
 		from ..osrparse.enums import Mod

@@ -152,9 +152,9 @@ def debug(background, *args):
 		lineType = 2
 
 		cv2.putText(background, text,
-		            bottomLeftCornerOfText,
-		            font,
-		            fontScale,
-		            fontColor,
-		            lineType)
+					bottomLeftCornerOfText,
+					font,
+					fontScale,
+					fontColor,
+					lineType)
 
