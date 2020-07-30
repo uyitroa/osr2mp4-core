@@ -141,7 +141,7 @@ class SliderManager:
 		cur_pos = slider.osu_d["arrow pos"] if going_forward else slider.osu_d["ps"][0]
 		self.to_frame(self.arrows[i][int(going_forward)][int(slider.arrow_i)], background, cur_pos, slider, slider.opacity / 100)
 
-		slider.arrow_i += 0.6
+		slider.arrow_i += 0.3 * 60/self.settings.fps
 		if slider.arrow_i >= len(self.arrows[i][0]):
 			slider.arrow_i = 0
 
