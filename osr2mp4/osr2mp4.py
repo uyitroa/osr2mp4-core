@@ -117,7 +117,7 @@ class Osr2mp4:
 		if "harumachi" in self.beatmap_file.lower() and "clover" in self.beatmap_file.lower():
 			raise HarumachiCloverBan()
 
-		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, mods=self.replay_info.mod_combination)
+		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, mods=self.replay_info.mod_combination, lazy=False)
 
 		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
 		self.replay_info.play_data = self.replay_event
