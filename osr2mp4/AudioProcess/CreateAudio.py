@@ -84,11 +84,13 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 
 		except exceptions.CouldntDecodeError as e:
 			logging.error(repr(e) + " filename " + path + filename + "." + fmt)
+			print(repr(e) + " filename " + path + filename + "." + fmt)
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
+	print("file not found" + filename)
 	logging.error("file not found " + filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
@@ -165,6 +167,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 			fwrite.write(error)
 		logging.error("{} from audio\n\n\n".format(error))
 		raise
+
 
 def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	nc = Mod.Nightcore in mods

@@ -102,7 +102,7 @@ class HitsoundManager:
 				if prevspin is None or prevspin.progress != my_info[index].more.progress:
 					spinsound = int(min(1, my_info[index].more.progress) * (len(Hitsound.spinnerspin)-1))
 					overlay(my_info[index].time, song, Hitsound.spinnerspin[spinsound])
-					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000 + 100
+					self.spincooldown = my_info[index].time + len(Hitsound.spinnerspin[spinsound].audio)/Hitsound.spinnerspin[spinsound].rate * 1000
 			self.prevspin[my_dict["id"]] = my_info[index].more
 
 			if prevbonusscore != my_info[index].more.bonusscore and my_info[index].more.bonusscore > 0:

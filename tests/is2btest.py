@@ -3,9 +3,7 @@ import unittest
 
 from osr2mp4.Parser.osuparser import read_file
 
-from osr2mp4.CheckSystem.checkmain import checkmain
-from osr2mp4.global_var import Settings
-from utils import getinfos, abspath
+from utils import abspath
 
 
 class TestSliderfollow(unittest.TestCase):
@@ -27,13 +25,13 @@ class TestSliderfollow(unittest.TestCase):
 
 	def test_non2b(self):
 		for i in range(len(self.non2b)):
-			case = read_file(os.path.join(abspath, self.non2b[i] + ".osu"))
+			case = read_file(os.path.join(abspath, self.non2b[i] + ".osu"), lazy=False)
 			print(f"Checking {case.path}")
 			self.assertFalse(case.is2b, msg=f"{case.path} is not 2b")
 
 	def test_2b(self):
 		for i in range(len(self.is2b)):
-			case = read_file(os.path.join(abspath, self.is2b[i] + ".osu"))
+			case = read_file(os.path.join(abspath, self.is2b[i] + ".osu"), lazy=False)
 			print(f"Checking {case.path}")
 			self.assertTrue(case.is2b, msg=f"{case.path} is 2b")
 

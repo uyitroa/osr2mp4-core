@@ -206,6 +206,7 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	logging.log(1, "PROCESS {}, {}".format(videotime, drawer))
 
 	logging.log(logging.DEBUG, "setup done")
+	print("Starting draw")
 	timer = 0
 	timer2 = 0
 	timer3 = 0
@@ -227,6 +228,7 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 			i = conn.recv()
 
 	conn.send(10)
+	print("End draw", time.time() - asdfasdf)
 	logging.debug("\nprocess done {}, {}".format(videotime, drawer))
 	logging.debug("Drawing time: {}".format(timer))
 	logging.debug("Total time: {}".format(time.time() - asdfasdf))

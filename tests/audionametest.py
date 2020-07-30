@@ -21,7 +21,7 @@ class TestAudio(unittest.TestCase):
 		for mapname in self.test:
 			mappath = "{}{}.osu".format(abspath, mapname)
 			print(f"Checking {mappath}")
-			bmap = read_file(mappath)
+			bmap = read_file(mappath, lazy=False)
 
 			resultlist = getfilenames(bmap, False)
 			resultlist = [list(resultlist[0].keys()), list(resultlist[1].keys())]  # reformat to have the same format as expectedlist

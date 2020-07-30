@@ -14,7 +14,7 @@ class PlayingGrade(FrameObject):
 		self.x = timepie.x - 40 * settings.scale
 		self.y = timepie.y
 
-		self.hd = int(Mod.Hidden in replayinfo.mod_combination)
+		self.is_silver = int(Mod.Hidden in replayinfo.mod_combination or Mod.Flashlight in replayinfo.mod_combination)
 		self.gradewait = 0
 		self.breakperiod = None
 		self.gradeframes = frames
@@ -36,13 +36,13 @@ class PlayingGrade(FrameObject):
 			return
 		if self.breakperiod["Start"] <= curtime <= self.breakperiod["End"] - 300:
 			grade = getgrade(accuracy)
-			gradeframes = self.gradeframes[self.hd][grade]
+			gradeframes = self.gradeframes[self.is_silver][grade]
 			self.frame_index = min(self.frame_index + 0.5, len(gradeframes) - 1)
 			gradeframe = gradeframes[int(self.frame_index)]
 			imageproc.add(gradeframe, background, self.x, self.y)
 		elif self.breakperiod["End"] - 300 < curtime <= self.breakperiod["End"]:
 			grade = getgrade(accuracy)
-			gradeframe = self.gradeframes[self.hd][grade][-1]
+			gradeframe = self.gradeframes[self.is_silver][grade][-1]
 			self.alpha -= 0.1 * 60/self.settings.fps
 			imageproc.add(gradeframe, background, self.x, self.y, alpha=max(0, self.alpha))
 

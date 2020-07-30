@@ -12,13 +12,13 @@ class RankingGrade(ARankingScreen):
 		super().__init__(dummy, settings)
 
 		acc = {300: replayinfo.number_300s,
-		       100: replayinfo.number_100s,
-		       50: replayinfo.number_50s,
-		       0: replayinfo.misses}
+			100: replayinfo.number_100s,
+			50: replayinfo.number_50s,
+			0: replayinfo.misses}
 		grade = getgrade(acc)
 
-		hd = int(Mod.Hidden in replayinfo.mod_combination)
-		self.gradeframe = gradeframes[hd][grade]
+		is_silver = int(Mod.Hidden in replayinfo.mod_combination or Mod.Flashlight in replayinfo.mod_combination)
+		self.gradeframe = gradeframes[is_silver][grade]
 		self.gap = int(gap * self.settings.scale * 0.75)
 
 		if self.settings.skin_ini.general["Version"] == 1:

@@ -1,15 +1,10 @@
 import logging
 import math
-
-from ..osrparse.enums import Mod
-from ..CheckSystem.mathhelper import dtar, getar
-
 from ..Exceptions import GameModeNotSupported
-from ..ImageProcess.Curves.curves import getclass
 
 
 class Beatmap:
-	def __init__(self, info, scale=1, colors=None, mods=None):
+	def __init__(self, info, scale=1, colors=None, mods=None, lazy=True):
 		self.info = info
 		self.general = {"StackLeniency": 7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
@@ -34,7 +29,6 @@ class Beatmap:
 			mods = []
 
 		self.mods = mods
-		self.hr = Mod.HardRock in mods
 
 		self.parse_general()
 
@@ -46,15 +40,16 @@ class Beatmap:
 
 		self.parse_event()
 		self.parse_timingpoints()
-		self.parse_hitobject()
-		self.stack_position()
+		if not lazy:
+			self.parse_hitobject()
+			self.stack_position()
 
-		endtime_fp = self.hitobjects[-1]["time"] + 800
-		# diffcalculator = DiffCalculator(self.diff)
-		# timepreempt = int(diffcalculator.ar() + 500)
-		# self.breakperiods.append({"Start": -500, "End": self.start_time-timepreempt, "Arrow": True})
-		self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
-		                        "type": ["end"], "id": -1})  # to avoid index out of range
+			endtime_fp = self.hitobjects[-1]["time"] + 800
+			# diffcalculator = DiffCalculator(self.diff)
+			# timepreempt = int(diffcalculator.ar() + 500)
+			# self.breakperiods.append({"Start": -500, "End": self.start_time-timepreempt, "Arrow": True})
+			self.hitobjects.append({"x": 0, "y": 0, "time": endtime_fp, "end time": endtime_fp, "combo_number": 0,
+			                        "type": ["end"], "id": -1})  # to avoid index out of range
 
 		self.health_processor = None
 
@@ -143,6 +138,11 @@ class Beatmap:
 		return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < 3 and t1 - t2 < t_min
 
 	def parse_hitobject(self):
+		from ..osrparse.enums import Mod
+		from ..ImageProcess.Curves.curves import getclass
+
+		hr = Mod.HardRock in self.mods
+
 		hitobject = self.info["HitObjects"]
 		hitobject = hitobject.split("\n")
 		cur_combo_number = 1
@@ -158,7 +158,7 @@ class Beatmap:
 			my_dict = {}
 			osuobject = item.split(",")
 
-			if self.hr:
+			if hr:
 				osuobject[1] = 384 - int(osuobject[1])
 
 			my_dict["x"] = int(osuobject[0])
@@ -217,7 +217,7 @@ class Beatmap:
 				slider_path = slider_path[1:]
 				for pos in slider_path:
 					pos = pos.split(":")
-					if self.hr:
+					if hr:
 						pos[1] = 384 - int(pos[1])
 					ps.append([int(pos[0]), int(pos[1])])
 				my_dict["ps"] = ps
@@ -306,6 +306,8 @@ class Beatmap:
 		return math.sqrt((obj1["x"] - obj2["x"]) ** 2 + (obj1["y"] - obj2["y"]) ** 2)
 
 	def stack_position(self):
+		from ..CheckSystem.mathhelper import getar
+
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		stack_space = scale * 6.4
 
@@ -456,8 +458,8 @@ def split(delimiters, string):
 	return info
 
 
-def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None):
-	if hr:
+def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
+	if hr or dt:
 		print("hr args is depecrated")
 
 	fiel = open(filename, "r", encoding="utf-8")
@@ -466,6 +468,6 @@ def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None):
 	              "[HitObjects]"]
 	info = split(delimiters, content)
 	fiel.close()
-	bmap = Beatmap(info, scale, colors, mods=mods)
+	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
 	return bmap
