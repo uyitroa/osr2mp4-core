@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++  -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/Bezier.dir/curves.cpp.o CMakeFiles/Bezier.dir/Vector2.cpp.o CMakeFiles/Bezier.dir/BezierApproximator.cpp.o CMakeFiles/Bezier.dir/PerfectApproximator.cpp.o CMakeFiles/Bezier.dir/CatmullApproximator.cpp.o CMakeFiles/Bezier.dir/LinearApproximator.cpp.o  -o Bezier 
