@@ -1,0 +1,3 @@
+/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/ImageProcess/Curves/libcurves/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/ImageProcess/Curves/libcurves/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/yuitora./PycharmProjects/osr2mp4-core/osr2mp4/ImageProcess/Curves/libcurves/cmake-build-debug/CMakeFiles/Bezier.dir

@@ -181,7 +181,7 @@ class HitObjectChecker:
 						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i][
 							"duration"])
 						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
-						pos, t = self.hitobjects[i]["baiser"].at(dist, True, alone=True)  # TODO: what if kick slider too fast and clicked too late
+						pos = self.hitobjects[i]["slider_c"].at(dist)  # TODO: what if kick slider too fast and clicked too late
 						in_ball = math.sqrt(
 							(replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= \
 								  self.check.sliders_memory[idd]["dist"]

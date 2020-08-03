@@ -31,7 +31,7 @@ class TestScore(unittest.TestCase):
 			lazy = read_file(mappath)
 			nonlazy = read_file(mappath, lazy=False)
 			self.assertEqual(lazy.start_time, nonlazy.start_time, msg="case {}".format(str(i)))
-			self.assertEqual(lazy.end_time, nonlazy.end_time, msg="case {}".format(str(i)))
+			self.assertAlmostEqual(lazy.end_time, nonlazy.end_time, msg="case {}".format(str(i)), places=3)
 
 
 if __name__ == '__main__':

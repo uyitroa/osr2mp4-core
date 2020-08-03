@@ -1,9 +1,7 @@
 import cv2
 from PIL import Image
-
+import numpy as np
 from .curves import getclass
-from .curve2 import *
-
 
 
 class GenerateSlider:
@@ -52,19 +50,19 @@ class GenerateSlider:
 		return ps
 
 	@staticmethod
-	def get_pos_from_class(baiser_class, slider_type):
+	def get_pos_from_class(slider_c_class, slider_type):
 		# get pos from t = 0 to t = 1
-		tol = 1/max(1, baiser_class.req_length/400)
+		tol = 1/max(1, slider_c_class.req_length/400)
 
 		tolerance = {"L": 1, "B": 0.02 * tol, "P": 0.05 * tol}
 
-		baiser_class(0)
+		slider_c_class(0)
 		t = 0
 		# curve_pos = [[int(cur_pos.x), int(cur_pos.y)]]
 		curve_pos = []
 		# c_pos = []
 		while t <= 1:
-			cur_pos = baiser_class(t)
+			cur_pos = slider_c_class(t)
 			x, y = int(cur_pos.x), int(cur_pos.y)
 			curve_pos.append([x, y])
 			# c_pos.append(Position(x - self.extended, y - self.extended))
@@ -99,8 +97,8 @@ class GenerateSlider:
 
 	def get_slider_img(self, slidertype, ps, pixel_length):
 		ps = self.convert(ps)
-		baiser = getclass(slidertype, ps, pixel_length * self.scale)
-		curve_pos = np.int32(baiser.pos)
+		slider_c = getclass(slidertype, ps, pixel_length * self.scale)
+		curve_pos = np.int32(slider_c.pos)
 		min_x, min_y, max_x, max_y = self.get_min_max(curve_pos)  # start y end y start x end x
 
 		self.draw(curve_pos)

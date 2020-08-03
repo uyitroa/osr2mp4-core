@@ -261,22 +261,23 @@ class Beatmap:
 				my_dict["ps"] = ps
 				my_dict["slider type"] = slider_type
 				my_dict["pixel length"] = float(osuobject[7])
-				baiser = getclass(slider_type, ps, my_dict["pixel length"])
-				my_dict["baiser"] = baiser
+				slider_c = getclass(slider_type, ps, my_dict["pixel length"])
+				my_dict["slider_c"] = slider_c
 
 				my_dict["repeated"] = int(osuobject[6])
 				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (
 						100 * self.diff["SliderMultiplier"])
 				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
+				my_dict["pixel length"] = slider_c.cum_length[-1]
 
 				end_goingforward = my_dict["repeated"] % 2 == 1
-				endpos, _ = baiser.at(int(end_goingforward) * my_dict["pixel length"], None)
+				endpos = slider_c.at(int(end_goingforward) * my_dict["pixel length"])
 				my_dict["end x"] = int(endpos[0])
 				my_dict["end y"] = int(endpos[1])
 
 				my_dict["slider ticks"] = []
 				my_dict["ticks pos"] = []
-				my_dict["arrow pos"], _ = baiser.at(my_dict["pixel length"] * 0.98, None)
+				my_dict["arrow pos"] = slider_c.at(my_dict["pixel length"])
 				speedmultiplier = self.timing_point[cur_offset]["Base"] / my_dict["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance / self.timing_point[cur_offset]["Base"] * 10
@@ -286,14 +287,12 @@ class Beatmap:
 				my_dict["ticks dist"] = []
 				d = tickdistance
 				while d < my_dict["pixel length"] - mindist_fromend:
-					pos, t = baiser.at(d, True)
-					my_dict["slider ticks"].append(t)
+					pos = slider_c.at(d)
+					my_dict["slider ticks"].append(d/my_dict["pixel length"])
 					my_dict["ticks pos"].append(pos)
 					my_dict["ticks dist"].append(d)
 					d += tickdistance
 				# print(len(my_dict["slider ticks"]))
-
-				baiser.clear()
 
 				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:
