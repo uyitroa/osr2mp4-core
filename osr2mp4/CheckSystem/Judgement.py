@@ -141,7 +141,7 @@ class Check:
 				slider_d["last osr index"] = osrindex - 1
 			followappear, hitvalue, combostatus = self.checkcursor_incurve(osu_d, replay, osrindex, slider_d)
 		elif osu_d["time"] - self.diff.score[2]/2 < osr[3] <= osu_d["time"]:
-			pos, _ = osu_d["baiser"].at(0, True, alone=True)
+			pos = osu_d["slider_c"].at(0)
 			in_ball = self.cursor_inslider(slider_d, replay, osrindex, pos)
 			if in_ball:
 				slider_d["dist"] = self.diff.slidermax_distance
@@ -175,13 +175,18 @@ class Check:
 	def cursor_inslider(self, slider_d, replay, osr_index, pos):
 		osr_index = max(0, min(len(replay)-1, osr_index))
 		rep = replay[osr_index]
-		dist = math.sqrt((rep[Replays.CURSOR_X] - pos[0]) ** 2 + (rep[Replays.CURSOR_Y] - pos[1]) ** 2)
+		dist = (rep[Replays.CURSOR_X] - pos[0]) ** 2 + (rep[Replays.CURSOR_Y] - pos[1]) ** 2
 
 		clicked = rep[Replays.KEYS_PRESSED] != 0
 		if Mod.Relax in self.mods:
 			clicked = True
 
-		return dist <= slider_d["dist"] and clicked
+		return dist <= slider_d["dist"]**2 and clicked
+
+	def aaa(self, replay, osr_index, pos):
+		osr_index = max(0, min(len(replay)-1, osr_index))
+		rep = replay[osr_index]
+		return math.sqrt((rep[Replays.CURSOR_X] - pos[0]) ** 2 + (rep[Replays.CURSOR_Y] - pos[1]) ** 2)
 
 	def closestreplay(self, replay, index, curtime):
 		prev_index = max(0, index - 1)
@@ -209,25 +214,30 @@ class Check:
 		# source: https://www.reddit.com/r/osugame/comments/9rki8o/how_are_slider_judgements_calculated/e8hwx85?utm_source=share&utm_medium=web2x
 		slider_leniency = min(36, (osu_d["duration"] * osu_d["repeated"]) / 2)
 
-		hasendtick = osr[3] + slider_leniency >= int(osu_d["end time"])
+		hasendtick = osr[3] >= int(osu_d['end time'] - slider_leniency)
 		hasendtick = hasendtick and not slider_d["tickend"]
 
-		if hasendtick:
-			if osr[3] + slider_leniency > int(osu_d["end time"]):
-				osr_index += self.closestreplay(replay, osr_index, int(osu_d["end time"]) - slider_leniency)
+		# if hasendtick:
+		# 	osr_index += self.closestreplay(replay, osr_index, int(osu_d["end time"]) - slider_leniency)
 
 		delta_time = (osr[3] - osu_d["time"]) % osu_d["duration"]
 		if not going_forward:
 			delta_time = osu_d["duration"] - delta_time
 		dist = osu_d["pixel length"] / osu_d["duration"] * delta_time
 
-		baiser = osu_d["baiser"]
-		pos, t = baiser.at(dist, going_forward)
+		slider_c = osu_d["slider_c"]
+		pos = slider_c.at(dist)
 
-		hastick, tickadd, tickt = self.tickover(t, osu_d, slider_d, hasreversetick)
+		hastick, tickadd, tickt = self.tickover(dist/osu_d["pixel length"], osu_d, slider_d, hasreversetick)
 		slider_d["ticks index"] += tickadd
 
 		tick_inball = self.cursor_inslider(slider_d, replay, osr_index, pos)
+
+		# if osu_d["time"] == 307397:
+		# if osu_d["time"] == 23065:
+		# 	print(self.diff.slidermax_distance, self.diff.max_distance)
+		# 	print(self.aaa(replay, osr_index, pos), self.aaa(replay, osr_index-1, pos), self.aaa(replay, osr_index+1, pos))
+		# 	print(f"osr: {osr}\nosr -1: {replay[osr_index-1]}\nosr +1: {replay[osr_index+1]}\nosu id {osu_d['time']} osu endtick: {osu_d['end time'] - slider_leniency} pos: {pos} endtick: {hasendtick} inball: {tick_inball} duration {osu_d['duration']}\n\n")
 
 		in_ball = tick_inball
 		if in_ball:
@@ -246,7 +256,7 @@ class Check:
 		slider_d["done"] = osr[3] + slider_leniency >= int(osu_d["end time"]) and osu_d["repeated"] == slider_d["repeated slider"]
 		slider_d["repeat checked"] += hasendtick or (int(hasreversetick) * (cur_repeated - slider_d["repeated slider"]))
 		slider_d["repeated slider"] = cur_repeated
-		# baiser.update(t, dist)
+		# slider_c.update(t, dist)
 
 		if touchtick or touchend or touchreverse:
 			hitvalue = touchtick * 10

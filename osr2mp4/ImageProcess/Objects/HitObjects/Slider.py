@@ -1,12 +1,10 @@
-import cv2
 from recordclass import recordclass
 
 from PIL import Image
 
 from ... import imageproc
 from ...Curves.generate_slider import GenerateSlider
-from ...Curves.curve2 import *
-
+import numpy as np
 from ...PrepareFrames.HitObjects.Circles import calculate_ar
 
 Slider = recordclass("Slider", "image x y cur_duration opacity sliderf_i sliderb_i cur_repeated appear_f tick_a arrow_i prev_pos osu_d")
@@ -45,11 +43,11 @@ class SliderManager:
 
 		self.hd = hd
 
-	def get_arrow(self, osu_d, baiser):
+	def get_arrow(self, osu_d, slider_c):
 		pos1 = osu_d["ps"][-1]
 		t = 0.99
 		while True:
-			pos2, _ = baiser.at(t * osu_d["pixel length"], None)
+			pos2 = slider_c.at(t * osu_d["pixel length"])
 			t -= 0.025
 			if not almost_equal(pos1, pos2) or t <= 0:
 				break
@@ -57,7 +55,7 @@ class SliderManager:
 		pos3 = osu_d["ps"][0]
 		t = 0.01
 		while True:
-			pos4, _ = baiser.at(t * osu_d["pixel length"], None)
+			pos4 = slider_c.at(t * osu_d["pixel length"])
 			t += 0.025
 			if not almost_equal(pos3, pos4) or t >= 1:
 				break
@@ -96,10 +94,8 @@ class SliderManager:
 		key = str(osu_d["id"]) + "s"
 		self.sliders[key] = Slider(img, x_pos, y_pos, duration, 0, self.slidermax_index, 0, 1, 0, ticks_a, 0, [x_pos, y_pos], osu_d)
 
-		img1, img2 = self.get_arrow(osu_d, osu_d["baiser"])
+		img1, img2 = self.get_arrow(osu_d, osu_d["slider_c"])
 		self.arrows[key] = [img2, img1]
-
-		osu_d["baiser"].clear()
 
 	def draw_slider(self, img, background, x_offset, y_offset, alpha=1.0):
 		a = img
@@ -162,7 +158,7 @@ class SliderManager:
 		slider = self.sliders[i]
 
 		slider.cur_duration -= self.interval
-		baiser = slider.osu_d["baiser"]
+		slider_c = slider.osu_d["slider_c"]
 
 		# if sliderball is going forward
 		going_forward = slider.cur_repeated % 2 == 1
@@ -176,7 +172,7 @@ class SliderManager:
 				going_forward = not going_forward
 
 			else:
-				cur_pos, t = baiser.at(int(going_forward) * slider.osu_d["pixel length"], going_forward)  # if going_foward is true then t = 1 otherwise it's 0
+				cur_pos = slider_c.at(int(going_forward) * slider.osu_d["pixel length"])  # if going_foward is true then t = 1 otherwise it's 0
 				index = int(slider.sliderf_i)
 				self.to_frame(self.sliderfollow_fadeout[index], background, cur_pos, slider)
 
@@ -204,11 +200,11 @@ class SliderManager:
 		delta_time = min(slider.osu_d["duration"], max(0, delta_time))
 		dist = slider.osu_d["pixel length"] / slider.osu_d["duration"] * delta_time
 
-		pos, t = slider.osu_d["baiser"].at(dist, going_forward)
+		pos = slider.osu_d["slider_c"].at(dist)
 
 		# imageproc.debug(background, going_forward, t)
 
-		self.draw_ticks(slider, background, going_forward, t)
+		self.draw_ticks(slider, background, going_forward, dist/slider.osu_d["pixel length"])
 
 		if 0 < slider.cur_duration <= slider.osu_d["duration"]:
 			self.draw_sliderb(slider, background, pos)

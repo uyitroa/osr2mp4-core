@@ -103,8 +103,6 @@ class Osr2mp4:
 		except FileNotFoundError as e:
 			raise ReplayNotFound() from None
 
-		upsidedown = Mod.HardRock in self.replay_info.mod_combination
-
 		apikey = gameplaysettings["api key"]
 		gameplaysettings["api key"] = None  # avoid logging api key
 		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings, ppsettings=ppsettings)

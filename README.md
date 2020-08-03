@@ -2,6 +2,9 @@
 ```
 cd osr2mp4/
 python install.py
+pip install cython
+cd ImageProcess/Curves/libcurves/
+python setup build_ext --inplace
 ```
 
 

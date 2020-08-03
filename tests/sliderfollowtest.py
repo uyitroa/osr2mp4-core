@@ -43,8 +43,8 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("72kikoku"))
 		cls.custom.append(getinfos("blends"))
 		cls.custom.append(getinfos("date"))
-		# cls.custom.append(getinfos("69reimei"))
-		# cls.custom.append(getinfos("73kikoku")) ## TODO: fix these commented cases
+		cls.custom.append(getinfos("69reimei"))
+		cls.custom.append(getinfos("73kikoku"))
 		# cls.custom.append(getinfos("74kikoku"))
 
 		cls.real.append(getinfos("realtool"))
@@ -64,9 +64,9 @@ class TestSliderfollow(unittest.TestCase):
 				print(f"Replay {case[2]}{name}.osr")
 
 				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
-				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
-				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
-				self.assertEqual(case[1][x].number_50s, resultinfo[-1].accuracy[50], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
+				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg=f"Replay {case[2]}{name}.osr")
+				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg=f"Replay {case[2]}{name}.osr")
+				self.assertEqual(case[1][x].number_50s, resultinfo[-1].accuracy[50], msg=f"Replay {case[2]}{name}.osr")
 
 	def test_sliderfollowcustom(self):
 		for i in range(len(self.custom)):
@@ -80,18 +80,23 @@ class TestSliderfollow(unittest.TestCase):
 				print(f"Replay {case[2]}{name}.osr")
 
 				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
-				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg="custom replay {} case {}".format(str(x), str(i)))
-				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg="custom replay {} case {}".format(str(x), str(i)))
+				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg=f"Replay {case[2]}{name}.osr")
+				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg=f"Replay {case[2]}{name}.osr")
 
 
 	def test_real(self):
 		for i in range(len(self.real)):
 			case = self.real[i]
 			for x in range(len(case[1])):
+				name = x
+				if x == 0:
+					name = ""
+				print(f"Replay {case[2]}{name}.osr")
+
 				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
-				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
-				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
-				self.assertEqual(case[1][x].number_50s, resultinfo[-1].accuracy[50], msg="replay {} case {} {}".format(str(x), str(i), str(case[1][x].timestamp)))
+				self.assertEqual(case[1][x].number_300s, resultinfo[-1].accuracy[300], msg=f"Replay {case[2]}{name}.osr")
+				self.assertEqual(case[1][x].number_100s, resultinfo[-1].accuracy[100], msg=f"Replay {case[2]}{name}.osr")
+				self.assertEqual(case[1][x].number_50s, resultinfo[-1].accuracy[50], msg=f"Replay {case[2]}{name}.osr")
 
 
 
