@@ -1,4 +1,4 @@
-
+import copy
 import sys
 
 import time
@@ -92,8 +92,10 @@ class Drawer:
 
 		self.updater.update(self.frame_info.cur_time)
 
-		cursor_x = int(self.cursor_event.event[Replays.CURSOR_X] * self.settings.playfieldscale) + self.settings.moveright
-		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
+		cx, cy = smoothcursor(self.replay_event, self.frame_info.osr_index, self.frame_info.cur_time)
+
+		cursor_x = int(cx * self.settings.playfieldscale) + self.settings.moveright
+		cursor_y = int(cy * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		if not self.hasfl:
@@ -124,7 +126,7 @@ class Drawer:
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
 		self.component.accuracy.add_to_frame(self.img, in_break)
 		self.component.urbar.add_to_frame(self.img)
-		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.cursor_event.event[Replays.TIMES])
+		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.sections.add_to_frame(self.img)
@@ -135,13 +137,10 @@ class Drawer:
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
-		# choose correct osr index for the current time because in osr file there might be some lag
-		tt = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
-		if tt == 0:
-			self.cursor_event.event = smoothcursor(self.replay_event, self.frame_info.osr_index, self.cursor_event)
-		else:
-			self.frame_info.osr_index += tt
-			self.cursor_event.event = self.replay_event[self.frame_info.osr_index]
+		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
+		self.frame_info.osr_index += tt
+		self.cursor_event.event = copy.copy(self.replay_event[self.frame_info.osr_index])
+		self.cursor_event.event[Replays.KEYS_PRESSED] = keys #self.replay_event[max(0, self.frame_info.osr_index-1)][Replays.KEYS_PRESSED]
 		return self.img.size[0] != 1
 
 	def initialiseranking(self):
