@@ -76,12 +76,6 @@ class SliderManager:
 		return image, x_offset, y_offset
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
-		pixel_length, color = osu_d["pixel length"], osu_d["combo_color"]
-
-		# bezier info to calculate curve for sliderball. Actually the first three info is needed for the curve computing
-		# function, but we add stack to reduce sliders list size
-		# b_info = (osu_d["slider type"], osu_d["ps"], pixel_length, osu_d["stacking"], osu_d["slider ticks"], osu_d["ticks pos"])
-
 		img, x_offset, y_offset = self.get_slider_img(osu_d)
 
 		x_pos -= x_offset
