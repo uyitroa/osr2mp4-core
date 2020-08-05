@@ -11,6 +11,10 @@ from .FrameWriter import write_frame
 import os
 
 
+def update_progress(framecount, deltatime, videotime):
+	pass
+
+
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
 	logging.debug('entering preparedframes')
 
@@ -92,11 +96,13 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 				writer.write(im)
 
 				framecount += 1
-				if framecount == 100:
+				if framecount % 100 == 0:
 					filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
 					deltatime = time.time() - startwritetime
 					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
 					filewriter.close()
+
+					update_progress(framecount, deltatime, videotime)
 
 		if showranking:
 			for x in range(int(5 * settings.fps)):
