@@ -112,6 +112,8 @@ class Osr2mp4:
 
 		gameplaysettings["Custom mods"] = gameplaysettings.get("Custom mods", "")
 
+		self.replayedit = False
+
 		if not auto:
 
 			try:
@@ -122,6 +124,7 @@ class Osr2mp4:
 			reverse_replay = False
 
 			if gameplaysettings["Custom mods"] != "":
+				self.replayedit = True
 				original = self.replay_info.mod_combination
 				self.replay_info.mod_combination = mod_string_to_enums(gameplaysettings["Custom mods"])
 				if Mod.HardRock in self.replay_info.mod_combination and Mod.HardRock not in original:
@@ -171,12 +174,23 @@ class Osr2mp4:
 		                                                                        videotime, self.endtime == -1)
 
 	def analyse_replay(self):
+
+		if self.replayedit:
+			# remove score limiter
+			self.replay_info.score = float("inf")
+
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
 
-		if self.auto:
+		if self.auto or self.replayedit:
 			self.replay_info.score = self.resultinfo[-1].score
 			self.replay_info.max_combo = self.resultinfo[-1].maxcombo
 			self.replay_info.number_300s = self.resultinfo[-1].accuracy[300]
+			self.replay_info.number_100s = self.resultinfo[-1].accuracy[100]
+			self.replay_info.number_50s = self.resultinfo[-1].accuracy[50]
+			self.replay_info.misses = self.resultinfo[-1].accuracy[0]
+
+			self.replay_info.gekis = self.replay_info.number_300s//3 # TODO: LOL
+			self.replay_info.katus = self.replay_info.number_100s//3 # TODO: LOL
 
 	def startaudio(self):
 		if self.resultinfo is None:
