@@ -1,4 +1,5 @@
 import logging
+import os
 
 from autologging import traced, logged
 
@@ -10,29 +11,29 @@ from ..Utils.Resolution import get_screensize
 
 @logged(logging.getLogger(__name__))
 @traced
-def setupglobals(data, gameplaydata, replay_info, settings, ppsettings=None):
+def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
 	output_path = data.get("Output path", "output.avi")
 	ffmpeg = data.get("ffmpeg path", "ffmpeg")
-	default_path = settings.path + "res/default/"
+	default_path = os.path.join(settings.path, "res/default/")
 	fps = data.get("FPS", 60)
 	width = data.get("Width", 1920)
 	height = data.get("Height", 1080)
 	osupath = data.get("osu! path", None)
+	#
+	# if skin_path[-1] != "/" and skin_path[-1] != "\\":
+	# 	skin_path += "/"
+	#
+	# if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
+	# 	beatmap_path += "/"
+	#
+	# if osupath[-1] != "/" and osupath[-1] != "\\":
+	# 	osupath += "/"
 
-	if skin_path[-1] != "/" and skin_path[-1] != "\\":
-		skin_path += "/"
-
-	if beatmap_path[-1] != "/" and beatmap_path[-1] != "\\":
-		beatmap_path += "/"
-
-	if osupath[-1] != "/" and osupath[-1] != "\\":
-		osupath += "/"
-
-	if Mod.DoubleTime in replay_info.mod_combination or Mod.Nightcore in replay_info.mod_combination:
+	if Mod.DoubleTime in mod_combination or Mod.Nightcore in mod_combination:
 		time_frame = 1500
-	elif Mod.HalfTime in replay_info.mod_combination:
+	elif Mod.HalfTime in mod_combination:
 		time_frame = 750
 	else:
 		time_frame = 1000
@@ -59,6 +60,7 @@ def setupglobals(data, gameplaydata, replay_info, settings, ppsettings=None):
 	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
 	gameplaydata["Song delay"] = gameplaydata.get("Song delay", 0)
 	gameplaydata["Show mods icon"] = gameplaydata.get("Show mods icon", True)
+	gameplaydata["Custom mods"] = gameplaydata.get("Custom mods", "")
 	settings.settings = gameplaydata
 
 	if ppsettings is not None:

@@ -11,9 +11,10 @@
   "Song volume": 50,
   "Effect volume": 100,
   "Ignore beatmap hitsounds": false,
-  "Use skin's sound samples": false,
+  "Use skin's sound samples": true,
   "Song delay": 0,
   "Global leaderboard": false,
   "Mods leaderboard": "HD",
+  "Custom mods": "",
   "api key": "lol"
 }

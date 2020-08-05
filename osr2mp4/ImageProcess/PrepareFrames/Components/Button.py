@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image
 import numpy as np
 
@@ -23,7 +25,7 @@ def prepare_scoreentry(scale, color, settings):
 	for x in range(10):
 		number = YImage(scoreentry + str(x), settings, scale)
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open(settings.path + "res/" + scoreentry + str(x) + "@2x.png")
+			img = Image.open(os.path.join(settings.path, "res", scoreentry + str(x) + "@2x.png"))
 			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img

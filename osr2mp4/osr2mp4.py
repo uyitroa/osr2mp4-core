@@ -5,14 +5,18 @@ import sys
 import time
 import traceback
 
-from .osrparse import *
 from .osrparse.enums import Mod
+from .Utils.getmods import mod_string_to_enums
+from .EEnum.EReplay import Replays
+
+from .Utils.Auto import get_auto
+from .osrparse import *
 import PIL
-from .Exceptions import ReplayNotFound, HarumachiCloverBan
+from .Exceptions import ReplayNotFound
 from .Parser.jsonparser import read
 from .AudioProcess.CreateAudio import create_audio
 from .CheckSystem.checkmain import checkmain
-from .Parser.osrparser import setupReplay
+from .Parser.osrparser import setup_replay, add_useless_shits
 from .Parser.osuparser import read_file
 from .Utils.HashBeatmap import get_osu
 from .Utils.Setup import setupglobals
@@ -50,7 +54,7 @@ class Osr2mp4:
 			self.settings.path += "/"
 
 		if logpath == "":
-			logpath = self.settings.path + "logosr2mp4.log"
+			logpath = os.path.join(self.settings.path, "logosr2mp4.log")
 
 		if logtofile:
 			logging.basicConfig(
@@ -68,7 +72,7 @@ class Osr2mp4:
 
 		self.settings.enablelog = enablelog
 
-		self.settings.temp = self.settings.path + str(uuid.uuid1()) + "temp/"
+		self.settings.temp = os.path.join(self.settings.path, str(uuid.uuid1()) + "temp/")
 
 		self.__log.info("test")
 
@@ -98,27 +102,56 @@ class Osr2mp4:
 		self.settings.codec = data["Video codec"]
 		self.settings.process = data["Process"]
 
-		try:
-			self.replay_info = parse_replay_file(replaypath)
-		except FileNotFoundError as e:
-			raise ReplayNotFound() from None
-
 		apikey = gameplaysettings["api key"]
 		gameplaysettings["api key"] = None  # avoid logging api key
-		setupglobals(self.data, gameplaysettings, self.replay_info, self.settings, ppsettings=ppsettings)
 
 		self.drawers, self.writers, self.pipes, self.sharedarray = None, None, None, None
 		self.audio = None
 
-		self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
+		self.auto = auto = replaypath == "auto"
 
-		if "harumachi" in self.beatmap_file.lower() and "clover" in self.beatmap_file.lower():
-			raise HarumachiCloverBan()
+		gameplaysettings["Custom mods"] = gameplaysettings.get("Custom mods", "")
 
-		self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, mods=self.replay_info.mod_combination, lazy=False)
+		if not auto:
 
-		self.replay_event, self.cur_time = setupReplay(replaypath, self.beatmap)
-		self.replay_info.play_data = self.replay_event
+			try:
+				self.replay_info = parse_replay_file(replaypath)
+			except FileNotFoundError as e:
+				raise ReplayNotFound() from None
+
+			reverse_replay = False
+
+			if gameplaysettings["Custom mods"] != "":
+				original = self.replay_info.mod_combination
+				self.replay_info.mod_combination = mod_string_to_enums(gameplaysettings["Custom mods"])
+				if Mod.HardRock in self.replay_info.mod_combination and Mod.HardRock not in original:
+					reverse_replay = True
+				if Mod.HardRock not in self.replay_info.mod_combination and Mod.HardRock in original:
+					reverse_replay = True
+
+			setupglobals(self.data, gameplaysettings, self.replay_info.mod_combination, self.settings, ppsettings=ppsettings)
+
+			self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
+
+			self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, mods=self.replay_info.mod_combination, lazy=False)
+
+			self.replay_event, self.cur_time = setup_replay(replaypath, self.beatmap, reverse=reverse_replay)
+			self.replay_info.play_data = self.replay_event
+
+		else:
+			gameplaysettings["Custom mods"] = gameplaysettings.get("Custom mods", "")
+			mod_combination = mod_string_to_enums(gameplaysettings["Custom mods"])
+			setupglobals(self.data, gameplaysettings, mod_combination, self.settings, ppsettings=ppsettings)
+
+			self.beatmap_file = self.settings.beatmap
+			self.settings.beatmap = os.path.dirname(self.settings.beatmap)
+			self.beatmap = read_file(self.beatmap_file, self.settings.playfieldscale, self.settings.skin_ini.colours, mods=mod_combination, lazy=False)
+			self.replay_info = get_auto(self.beatmap)
+			self.replay_info.mod_combination = mod_combination
+			add_useless_shits(self.replay_info.play_data, self.beatmap)
+			self.cur_time = self.replay_info.play_data[0][Replays.TIMES]
+			self.replay_event = self.replay_info.play_data
+
 		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.settings)
 		self.starttimne, self.endtime = starttime, endtime
 
@@ -139,6 +172,11 @@ class Osr2mp4:
 
 	def analyse_replay(self):
 		self.resultinfo = checkmain(self.beatmap, self.replay_info, self.settings)
+
+		if self.auto:
+			self.replay_info.score = self.resultinfo[-1].score
+			self.replay_info.max_combo = self.resultinfo[-1].maxcombo
+			self.replay_info.number_300s = self.resultinfo[-1].accuracy[300]
 
 	def startaudio(self):
 		if self.resultinfo is None:
@@ -201,11 +239,11 @@ class Osr2mp4:
 		cleanup(self.settings)
 
 	def getprogress(self):
-		should_continue = os.path.isfile(self.settings.temp + "speed.txt")
+		should_continue = os.path.isfile(os.path.join(self.settings.temp, "speed.txt"))
 		if not should_continue:
 			return 0
 
-		fileopen = open(self.settings.temp + "speed.txt", "r")
+		fileopen = open(os.path.join(self.settings.temp, "speed.txt"), "r")
 		try:
 			info = fileopen.read().split("\n")
 			framecount = int(info[0])

@@ -4,14 +4,14 @@ from ..EEnum.EReplay import Replays
 def nearer(cur_time, replay_info, index):
 	replay = replay_info.play_data
 	x = index
-	keys = None
+	keys = []
 	while x < len(replay) and replay[x][Replays.TIMES] <= cur_time:
 		x += 1
-		if replay[index][Replays.KEYS_PRESSED] != replay[x][Replays.KEYS_PRESSED]:
-			keys = replay[x][Replays.KEYS_PRESSED]
+		if replay[x-1][Replays.KEYS_PRESSED] != replay[x][Replays.KEYS_PRESSED]:
+			keys.append(replay[x][Replays.KEYS_PRESSED])
 
-	if keys is None:
-		keys = replay[max(0, x-1)][Replays.KEYS_PRESSED]
+	if not keys and replay[max(0, x-1)][Replays.KEYS_PRESSED] != 0:
+		keys.append(replay[max(0, x-1)][Replays.KEYS_PRESSED])
 
 	return x - index, keys
 
@@ -49,19 +49,19 @@ def new_keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def check_key(component, cursor_event, in_break):
+def check_key(component, cur_key, curtime, in_break):
 	if in_break:
 		return
 
-	k1, k2, m1, m2 = new_keys(cursor_event.event[Replays.KEYS_PRESSED])
+	k1, k2, m1, m2 = new_keys(cur_key)
 	if k1:
-		component.key1.clicked(cursor_event.event[Replays.TIMES])
+		component.key1.clicked(curtime)
 	if k2:
-		component.key2.clicked(cursor_event.event[Replays.TIMES])
+		component.key2.clicked(curtime)
 	if m1:
-		component.mouse1.clicked(cursor_event.event[Replays.TIMES])
+		component.mouse1.clicked(curtime)
 	if m2:
-		component.mouse2.clicked(cursor_event.event[Replays.TIMES])
+		component.mouse2.clicked(curtime)
 
 
 def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):

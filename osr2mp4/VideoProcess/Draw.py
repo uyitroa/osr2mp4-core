@@ -44,6 +44,7 @@ class Drawer:
 		self.time_preempt = None
 		self.np_img, self.pbuffer = None, None
 		self.initialised_ranking = False
+		self.key_queue = []
 
 		self.setup_draw()
 
@@ -86,7 +87,10 @@ class Drawer:
 				self.img = self.pbuffer
 
 		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater, self.settings)
-		check_key(self.component, self.cursor_event, in_break)
+		cur_key = None
+		if self.key_queue:
+			cur_key = self.key_queue.pop(0)
+			check_key(self.component, cur_key, self.frame_info.cur_time, in_break)
 		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
 
@@ -138,9 +142,10 @@ class Drawer:
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
+
+		self.key_queue.extend(keys)
 		self.frame_info.osr_index += tt
 		self.cursor_event.event = copy.copy(self.replay_event[self.frame_info.osr_index])
-		self.cursor_event.event[Replays.KEYS_PRESSED] = keys #self.replay_event[max(0, self.frame_info.osr_index-1)][Replays.KEYS_PRESSED]
 		return self.img.size[0] != 1
 
 	def initialiseranking(self):

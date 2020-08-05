@@ -25,7 +25,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		osr_interval = int((end_index - start_index) / settings.process)
 		start = start_index
 
-		my_file = open(settings.temp + "listvideo.txt", "w")
+		my_file = open(os.path.join(settings.temp, "listvideo.txt"), "w")
 		for i in range(settings.process):
 
 			if i == settings.process - 1:
@@ -78,7 +78,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
 		_, file_extension = os.path.splitext(settings.output)
-		f = settings.temp + "outputf" + file_extension
+		f = os.path.join(settings.temp, "outputf" + file_extension)
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 
 		logging.debug("setup done")
@@ -93,7 +93,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 				framecount += 1
 				if framecount == 100:
-					filewriter = open(settings.temp + "speed.txt", "w")
+					filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
 					deltatime = time.time() - startwritetime
 					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
 					filewriter.close()

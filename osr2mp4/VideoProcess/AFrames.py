@@ -1,4 +1,5 @@
 import logging
+import os
 
 from ..ImageProcess.Objects.Components.Flashlight import Flashlight
 from ..ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
@@ -129,7 +130,7 @@ class PreparedFrames:
 		self.spinner = prepare_spinner(settings.playfieldscale, settings)
 
 		logging.debug('start preparing background')
-		self.bg = prepare_background(settings.beatmap + bg[2], settings)
+		self.bg = prepare_background(os.path.join(settings.beatmap, bg[2]), settings)
 
 		logging.debug('start preparing sections')
 		self.sections = prepare_sections(settings.scale, settings)
