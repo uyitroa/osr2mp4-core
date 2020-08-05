@@ -311,7 +311,7 @@ class Check:
 				hitresult = 300
 			elif spinner["rot count"] > spinrequired:
 				hitresult = 100
-			elif spinner["rot count"] > 0.1 * spinrequired:
+			elif spinner["rot count"] >= 0.1 * spinrequired:
 				hitresult = 50
 			else:
 				hitresult = 0
