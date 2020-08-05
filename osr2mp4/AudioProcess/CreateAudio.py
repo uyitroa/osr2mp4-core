@@ -69,7 +69,8 @@ def pydubtonumpy(audiosegment):
 	try:
 		h = max(2, audiosegment.sample_width) * 8
 		maxvalue = max(np.amax(y), 2 ** h)
-	except ValueError:
+	except ValueError as e:
+		print(repr(e))
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
@@ -86,6 +87,8 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 			logging.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			print(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
+
+	print("file not found",  filename, "using default skin")
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
