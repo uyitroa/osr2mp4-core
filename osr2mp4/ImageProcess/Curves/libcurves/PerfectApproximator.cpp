@@ -1,7 +1,3 @@
-//
-// Created by yuitora . on 01/08/2020.
-//
-
 #define pi 3.14159265358979323846
 
 #include <cmath>

@@ -1,6 +1,3 @@
-//
-// Created by yuitora . on 01/08/2020.
-//
 
 #include "Vector2.h"
 #define list_vector std::vector<Vector2<float> >

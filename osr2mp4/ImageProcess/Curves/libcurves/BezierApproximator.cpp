@@ -1,5 +1,5 @@
 //
-// Created by yuitora . on 31/07/2020.
+//  . on 31/07/2020.
 //
 
 #include <vector>
@@ -74,12 +74,10 @@ void create_singlebezier(list_pos &output, list_vector &control_points) {
 
     list_vector left_child = subdivision_buffer2;
 
-    while (!to_flatten.empty())
-    {
+    while (!to_flatten.empty()) {
         list_vector parent = to_flatten.back();
         to_flatten.pop_back();
-        if (is_flat_enough(parent, TOLERANCE_SQ))
-        {
+        if (is_flat_enough(parent, TOLERANCE_SQ)) {
             // If the control points we currently operate on are sufficiently "flat", we use
             // an extension to De Casteljau's algorithm to obtain a piecewise-linear approximation
             // of the bezier curve represented by our control points, consisting of the same amount

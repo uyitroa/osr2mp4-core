@@ -1,5 +1,5 @@
 //
-// Created by yuitora . on 31/07/2020.
+//  . on 31/07/2020.
 //
 
 #ifndef BEZIER_BEZIERAPPROXIMATOR_H

@@ -1,6 +1,4 @@
-//
-// Created by yuitora . on 31/07/2020.
-//
+
 
 #ifndef BEZIER_VECTOR_H
 #define BEZIER_VECTOR_H

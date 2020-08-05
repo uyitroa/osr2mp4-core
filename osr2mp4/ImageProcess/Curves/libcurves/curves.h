@@ -1,6 +1,3 @@
-//
-// Created by yuitora . on 01/08/2020.
-//
 
 #ifndef BEZIER_CURVES_H
 #define BEZIER_CURVES_H

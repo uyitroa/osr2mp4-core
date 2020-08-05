@@ -1,7 +1,3 @@
-//
-// Created by yuitora . on 31/07/2020.
-//
-
 #include "Vector2.h"
 #include <cmath>
 
