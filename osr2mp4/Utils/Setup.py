@@ -31,12 +31,13 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 	# if osupath[-1] != "/" and osupath[-1] != "\\":
 	# 	osupath += "/"
 
+	time_frame = 1000
+
 	if Mod.DoubleTime in mod_combination or Mod.Nightcore in mod_combination:
-		time_frame = 1500
-	elif Mod.HalfTime in mod_combination:
-		time_frame = 750
-	else:
-		time_frame = 1000
+		time_frame *= 1.5
+	if Mod.HalfTime in mod_combination:
+		time_frame *= 0.75
+	print(time_frame)
 
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings.width, settings.height, settings.scale = width, height, scale
