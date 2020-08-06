@@ -26,8 +26,7 @@ def get_auto(beatmap):
 	minbpm = 150
 	mintime_stream = 1000/(minbpm * 4/60)
 
-	add(replay_event, width//2, height//2, 0, 0)
-	add(replay_event, width//2, height//2, 0, 1)
+	add(replay_event, width//2, height//2, 0, beatmap.hitobjects[0]["time"] - 5000)
 
 	for i in range(len(beatmap.hitobjects)):
 		cur_obj = beatmap.hitobjects[i]

@@ -195,7 +195,7 @@ class Osr2mp4:
 	def startaudio(self):
 		if self.resultinfo is None:
 			self.analyse_replay()
-		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_event, self.endtime)
+		offset, endtime = get_offset(self.beatmap, self.start_index, self.end_index, self.replay_info, self.endtime)
 		self.audio = create_audio(self.resultinfo, self.beatmap, offset, endtime, self.settings, self.replay_info.mod_combination)
 
 	def startall(self):

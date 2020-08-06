@@ -1,9 +1,11 @@
+from ..VideoProcess.calc import nearer
 from ..CheckSystem.Judgement import DiffCalculator
 from ..EEnum.EReplay import Replays
 from ..Utils.skip import search_time, search_osrindex
 
 
-def get_offset(beatmap, start_index, end_index, replay_event, endtime):
+def get_offset(beatmap, start_index, end_index, replay_info, endtime, fps=60):
+	replay_event = replay_info.play_data
 	if endtime == -1:
 		endtime = 5000
 	else:
@@ -16,12 +18,18 @@ def get_offset(beatmap, start_index, end_index, replay_event, endtime):
 	hitobjectindex = search_time(start_time, beatmap.hitobjects)
 	to_time = min(beatmap.hitobjects[hitobjectindex]["time"] - timepreempt, start_time)
 	osr_index = search_osrindex(to_time, replay_event)
+	old = osr_index
+	# simulate video draw code
+	curtime = replay_event[osr_index][Replays.TIMES]
+	interval = 1000/fps
+	while osr_index < start_index:
+		curtime += interval
+		tt, _ = nearer(curtime, replay_info, osr_index)
+		osr_index += tt
+	osr_index = max(0, osr_index-1)
 
-	# because we have if osr_index >= start_index: draw() in Dawer.render_draw()
-	index = max(osr_index, start_index)
-
-	offset = replay_event[index][3]
-	endtime += replay_event[end_index][3] + 100
+	offset = replay_event[osr_index][Replays.TIMES]
+	endtime += replay_event[end_index][Replays.TIMES] + 100
 	print("\n\nOFFSET:", offset)
 	return offset, endtime
 
