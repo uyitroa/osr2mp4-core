@@ -314,7 +314,7 @@ class HitObjectChecker:
 			self.info.append(info)
 		return i
 
-	def checkcursor(self, replay, new_click, osr_index, in_break):
+	def checkcursor(self, replay, new_click, osr_index, in_break, prevbreakperiod):
 		notelock = 0
 		sum_newclick = sum(new_click)
 		self.clicks[0] += new_click[0]
@@ -325,7 +325,8 @@ class HitObjectChecker:
 		i = 0
 		inrange = True
 
-		self.health_processor.drainhp(replay[osr_index][3], replay[osr_index - 1][3], in_break)
+		if replay[osr_index-1][3] > prevbreakperiod["End"]:
+			self.health_processor.drainhp(replay[osr_index][3], replay[osr_index - 1][3], in_break)
 
 		while inrange and i < len(self.hitobjects) - 1:
 			if "circle" in self.hitobjects[i]["type"]:

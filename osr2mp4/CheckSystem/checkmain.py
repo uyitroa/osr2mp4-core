@@ -73,7 +73,7 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 		new_m1, new_m2 = f_m1 and not m1, f_m2 and not m2
 		new_click = [new_k1, new_k2, new_m1, new_m2]
 
-		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1, in_break)
+		hitobjectchecker.checkcursor(replay_event, new_click, osr_index+1, in_break, breakperiod)
 
 		osr_index += 1
 
