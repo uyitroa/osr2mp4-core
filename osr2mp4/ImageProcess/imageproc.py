@@ -1,8 +1,5 @@
 import cv2
-import numpy
 from PIL import Image, ImageDraw
-
-from ..global_var import Settings
 
 
 def changealpha(img, alpha):
