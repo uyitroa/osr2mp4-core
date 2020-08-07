@@ -65,7 +65,7 @@ class HitObjectManager:
 			self.slider_manager.sliders[idd].sliderf_i = 0
 
 		if followappear:
-			index_interval = -0.65
+			index_interval = -1.4
 			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3 * self.settings.fps/60
 
 		self.slider_manager.sliders[idd].appear_f = index_interval

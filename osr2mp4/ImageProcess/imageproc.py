@@ -1,8 +1,5 @@
 import cv2
-import numpy
 from PIL import Image, ImageDraw
-
-from ..global_var import Settings
 
 
 def changealpha(img, alpha):
@@ -152,9 +149,9 @@ def debug(background, *args):
 		lineType = 2
 
 		cv2.putText(background, text,
-		            bottomLeftCornerOfText,
-		            font,
-		            fontScale,
-		            fontColor,
-		            lineType)
+					bottomLeftCornerOfText,
+					font,
+					fontScale,
+					fontColor,
+					lineType)
 

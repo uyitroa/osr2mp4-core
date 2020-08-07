@@ -31,4 +31,4 @@ class RankingGraph(ARankingScreen):
 		if self.fade == self.FADEIN:
 			imageproc.add(self.rankinggraph, background, 256 * self.settings.scale, self.y * self.settings.scale, self.alpha, topleft=True)
 			imageproc.add(self.rankingperfect, background, self.perfectx * self.settings.scale, 688 * self.settings.scale, self.alpha)
-			imageproc.add(self.rankingur, background, (self.perfectx+100) * self.settings.scale, 688 * self.settings.scale, self.alpha ** 10)
+			imageproc.add(self.rankingur, background, (self.perfectx+225) * self.settings.scale, 688 * self.settings.scale, self.alpha ** 10)

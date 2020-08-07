@@ -1,5 +1,4 @@
 import ctypes
-import glob
 import inspect
 from multiprocessing.sharedctypes import RawArray
 
@@ -15,7 +14,7 @@ from osr2mp4.Utils.Setup import setupglobals
 
 from osr2mp4.Parser import jsonparser
 
-from osr2mp4.Parser.osrparser import setupReplay
+from osr2mp4.Parser.osrparser import setup_replay
 from osr2mp4.Parser.osuparser import read_file
 from osr2mp4 import osr2mp4
 from osr2mp4.osrparse import *
@@ -45,7 +44,7 @@ def getinfos(mapname, hr=False, dt=False):
 	x = 0
 	fname = ''
 	while should_continue:
-		replay_event, cur_time = setupReplay("{}{}{}.osr".format(abspath, mapname, fname), bmap)
+		replay_event, cur_time = setup_replay("{}{}{}.osr".format(abspath, mapname, fname), bmap)
 		replay_info = parse_replay_file("{}{}{}.osr".format(abspath, mapname, fname))
 		replay_info.play_data = replay_event
 		replay_infos.append(replay_info)
@@ -80,7 +79,7 @@ def setupenv(suffix, mapname):
 	config["Beatmap path"] = abspath + mapname
 	config[".osr path"] = abspath + mapname + ".osr"
 
-	setupglobals(config, gameplayconfig, replay_info, settings)
+	setupglobals(config, gameplayconfig, replay_info.mod_combination, settings)
 	beatmap_file = get_osu(settings.beatmap, replay_info.beatmap_hash)
 	beatmap = read_file(beatmap_file, settings.playfieldscale, settings.skin_ini.colours, mods=replay_info.mod_combination, lazy=False)
 	return settings, replay_info, beatmap
@@ -104,7 +103,7 @@ def getframes(suffix, mapname, update=False, data=None):
 		settings, replay_info, beatmap = setupenv(suffix, mapname)
 	else:
 		settings, replay_info, beatmap = data
-	frames = PreparedFrames(settings, beatmap, replay_info.mod_combination)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination)
 	resultprefix = abspath + "frames/" + suffix + mapname
 	if update:
 		updateframes(resultprefix, frames)
@@ -114,7 +113,7 @@ def getframes(suffix, mapname, update=False, data=None):
 def getdrawer(suffix, mapname, videotime):
 	from osr2mp4.VideoProcess.Draw import Drawer
 	settings, replay_info, beatmap = setupenv(suffix, mapname)
-	replay_event, cur_time = setupReplay("{}{}.osr".format(abspath, mapname), beatmap)
+	replay_event, cur_time = setup_replay("{}{}.osr".format(abspath, mapname), beatmap)
 	replay_info.play_data = replay_event
 	_, frames = getframes(suffix, mapname, data=(settings, replay_info, beatmap))
 

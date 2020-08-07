@@ -4,11 +4,11 @@ from .AScorebar import AScorebar
 
 
 class Scorebar(AScorebar):
-	def __init__(self, frames, beatmap, settings):
+	def __init__(self, frames, settings, healthproc=None):
 		AScorebar.__init__(self, frames[0], settings=settings)
 		self.marker = frames[1]
 		self.hasmarker = frames[2]
-		self.healthprocessor = HealthProcessor(beatmap, beatmap.health_processor.drain_rate)
+		self.healthprocessor = healthproc
 		self.lasttime = None
 		self.endtime = None
 		self.hp = 1
@@ -20,6 +20,9 @@ class Scorebar(AScorebar):
 		else:
 			self.x = 12 * self.settings.scale
 			self.y = 12 * self.settings.scale
+
+	def set_healthproc(self, healthproc):
+		self.healthprocessor = healthproc
 
 	def startbreak(self, breakk, duration):
 		self.endtime = breakk["End"]

@@ -44,6 +44,9 @@ jobs:
     #    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Unittest
       run: |
+        cd osr2mp4/ImageProcess/Curves/libcurves/
+	python setup.py build_ext --inplace
+	cd ../../../../
         python -m unittest discover -s tests/ -p *test.py
 
     - name: Upload pytest test results

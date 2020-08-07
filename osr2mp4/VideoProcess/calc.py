@@ -1,27 +1,19 @@
-from ..EEnum.EMods import Mod
 from ..EEnum.EReplay import Replays
 
 
 def nearer(cur_time, replay_info, index):
 	replay = replay_info.play_data
-	# decide the next replay_data index, by finding the closest to the frame_info.cur_time
-	min_time = abs(replay[index][Replays.TIMES] - cur_time)
+	x = index
+	keys = []
+	while x < len(replay) and replay[x][Replays.TIMES] <= cur_time:
+		x += 1
+		if replay[x-1][Replays.KEYS_PRESSED] != replay[x][Replays.KEYS_PRESSED]:
+			keys.append(replay[x][Replays.KEYS_PRESSED])
 
-	returnindex = 0
+	if not keys and replay[max(0, x-1)][Replays.KEYS_PRESSED] != 0:
+		keys.append(replay[max(0, x-1)][Replays.KEYS_PRESSED])
 
-	# relax replyas have a lot of frames during slider
-	if Mod.Relax in replay_info.mod_combination:
-		end = min(100, len(replay) - index - 1)
-	else:
-		end = min(10, len(replay) - index - 1)
-
-	for x in range(0, end):
-		delta_t = abs(replay[index + x][Replays.TIMES] - cur_time)
-		if delta_t <= min_time:
-			min_time = delta_t
-			returnindex = x
-
-	return returnindex
+	return x - index, keys
 
 
 def find_followp_target(beatmap, frame_info):
@@ -48,7 +40,7 @@ def find_followp_target(beatmap, frame_info):
 	frame_info.index_fp = index
 
 
-def keys(n):
+def new_keys(n):
 	k1 = n & 5 == 5
 	k2 = n & 10 == 10
 	m1 = not k1 and n & 1 == 1
@@ -57,19 +49,19 @@ def keys(n):
 	return k1, k2, m1, m2  # fuck smoke
 
 
-def check_key(component, cursor_event, in_break):
+def check_key(component, cur_key, curtime, in_break):
 	if in_break:
 		return
 
-	k1, k2, m1, m2 = keys(cursor_event.event[Replays.KEYS_PRESSED])
+	k1, k2, m1, m2 = new_keys(cur_key)
 	if k1:
-		component.key1.clicked(cursor_event.event[Replays.TIMES])
+		component.key1.clicked(curtime)
 	if k2:
-		component.key2.clicked(cursor_event.event[Replays.TIMES])
+		component.key2.clicked(curtime)
 	if m1:
-		component.mouse1.clicked(cursor_event.event[Replays.TIMES])
+		component.mouse1.clicked(curtime)
 	if m2:
-		component.mouse2.clicked(cursor_event.event[Replays.TIMES])
+		component.mouse2.clicked(curtime)
 
 
 def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):

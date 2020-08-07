@@ -106,13 +106,13 @@ def load(settings):
 	return circle, c_overlay, slider, s_overlay
 
 
-def prepare_circle(beatmap, scale, settings, hd):
+def prepare_circle(diff, scale, settings, hd):
 	# prepare every single frame before entering the big loop, this will save us a ton of time since we don't need
 	# to overlap number, circle overlay and approach circle every single time.
 
-	opacity_interval, time_preempt, fade_in = calculate_ar(beatmap.diff["ApproachRate"], settings)
+	opacity_interval, time_preempt, fade_in = calculate_ar(diff["ApproachRate"], settings)
 
-	cs = (54.4 - 4.48 * beatmap.diff["CircleSize"]) * scale
+	cs = (54.4 - 4.48 * diff["CircleSize"]) * scale
 	radius_scale = cs * overlay_scale * 2 / default_size
 
 	circle, c_overlay, slider, s_overlay = load(settings)

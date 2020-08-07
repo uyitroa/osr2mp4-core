@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image
 
 from ....EEnum.EImageFrom import ImageFrom
@@ -28,7 +30,7 @@ def prepare_scoreboardscore(scale, settings):
 		number = YImage(scoreentry + str(x), settings, scale)
 
 		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open(settings.path + "res/" + scoreentry + str(x) + "@2x.png")
+			img = Image.open(os.path.join(settings.path, "res", scoreentry + str(x) + "@2x.png"))
 			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
 		else:
 			img = number.img

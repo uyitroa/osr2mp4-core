@@ -35,6 +35,7 @@ class Cursortrail(FrameObject):
 		self.radius = self.settings.scale * 3
 		self.alphas = []  # for continuous trail
 		self.updatetime = 1000/60
+		self.updatecooldown = 0
 		if self.continuous:
 			self.frame_index = len(self.frames) - 2
 			self.trail = Trail()
@@ -80,8 +81,10 @@ class Cursortrail(FrameObject):
 		if not self.continuous:
 			deltatime = abs(cursor_time - self.trail[-1].timeframe)
 			# print(deltatime/self.updatetime)
-			for i in range(round(deltatime/self.updatetime - 0.25)):
+			self.updatecooldown += 60/self.settings.fps
+			for i in range(int(self.updatecooldown)):
 				self.apply_normaltrail(cursor_time, x_offset, y_offset)
+			self.updatecooldown -= int(self.updatecooldown)
 			for i in range(len(self.trail)-1):
 				self.frame_index = i
 				super().add_to_frame(background, self.trail[i].x, self.trail[i].y)

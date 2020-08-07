@@ -1,21 +1,25 @@
-
-import logging
+import copy
 import sys
 
 import time
 import traceback
 
 from PIL import Image
-from ..osrparse.enums import Mod
+
+from ..ImageProcess import imageproc
+from ..osrparse.replay import Replay
+
+from ..CheckSystem.Health import HealthProcessor
 
 from ..Utils.skip import skip
 from ..InfoProcessor import Updater
-from .AFrames import FrameObjects
+from .AFrames import *
 from ..CheckSystem.Judgement import DiffCalculator
 from ..EEnum.EReplay import Replays
 from .smoothing import smoothcursor
 from .Setup import FrameInfo, CursorEvent, get_buffer
 from .calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
+from ..CheckSystem.mathhelper import getunstablerate
 
 
 class Drawer:
@@ -40,6 +44,7 @@ class Drawer:
 		self.time_preempt = None
 		self.np_img, self.pbuffer = None, None
 		self.initialised_ranking = False
+		self.key_queue = []
 
 		self.setup_draw()
 
@@ -51,7 +56,12 @@ class Drawer:
 		diffcalculator = DiffCalculator(self.beatmap.diff)
 		self.time_preempt = diffcalculator.ar()
 
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap, self.replay_info)
+		healthproc = HealthProcessor(self.beatmap, self.beatmap.health_processor.drain_rate)
+		map_time = (self.beatmap.start_time, self.beatmap.end_time)
+		light_replay_info = Replay()
+		light_replay_info.set(self.replay_info.get())
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, map_time)
+		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 		self.component.flashlight.set_pos(old_cursor_x, old_cursor_y)
@@ -77,14 +87,19 @@ class Drawer:
 				self.img = self.pbuffer
 
 		in_break = check_break(self.beatmap, self.component, self.frame_info, self.updater, self.settings)
-		check_key(self.component, self.cursor_event, in_break)
+		cur_key = None
+		if self.key_queue:
+			cur_key = self.key_queue.pop(0)
+			check_key(self.component, cur_key, self.frame_info.cur_time, in_break)
 		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
 
 		self.updater.update(self.frame_info.cur_time)
 
-		cursor_x = int(self.cursor_event.event[Replays.CURSOR_X] * self.settings.playfieldscale) + self.settings.moveright
-		cursor_y = int(self.cursor_event.event[Replays.CURSOR_Y] * self.settings.playfieldscale) + self.settings.movedown
+		cx, cy = smoothcursor(self.replay_event, self.frame_info.osr_index, self.frame_info.cur_time)
+
+		cursor_x = int(cx * self.settings.playfieldscale) + self.settings.moveright
+		cursor_y = int(cy * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		if not self.hasfl:
@@ -115,7 +130,7 @@ class Drawer:
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
 		self.component.accuracy.add_to_frame(self.img, in_break)
 		self.component.urbar.add_to_frame(self.img)
-		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.cursor_event.event[Replays.TIMES])
+		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.sections.add_to_frame(self.img)
@@ -126,13 +141,11 @@ class Drawer:
 
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
-		# choose correct osr index for the current time because in osr file there might be some lag
-		tt = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
-		if tt == 0:
-			self.cursor_event.event = smoothcursor(self.replay_event, self.frame_info.osr_index, self.cursor_event)
-		else:
-			self.frame_info.osr_index += tt
-			self.cursor_event.event = self.replay_event[self.frame_info.osr_index]
+		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
+
+		self.key_queue.extend(keys)
+		self.frame_info.osr_index += tt
+		self.cursor_event.event = copy.copy(self.replay_event[self.frame_info.osr_index])
 		return self.img.size[0] != 1
 
 	def initialiseranking(self):
@@ -164,9 +177,9 @@ class Drawer:
 		self.component.rankinggraph.add_to_frame(self.pbuffer)
 
 
-def draw_frame(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
 	try:
-		draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking)
+		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
 		error = repr(e)
 		with open("error.txt", "w") as fwrite:  # temporary fix
@@ -181,12 +194,15 @@ def excepthook(exc_type, exc_value, exc_tb):
 	print(tb)
 
 
-def draw(shared, conn, beatmap, frames, replay_info, resultinfo, videotime, settings, showranking):
+def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
 	sys.excepthook = excepthook
 	asdfasdf = time.time()
 
 	logging.log(1, "CALL {}, {}".format(videotime, showranking))
 	logging.log(logging.DEBUG, "process start")
+
+	ur = getunstablerate(resultinfo)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 

@@ -1,21 +1,22 @@
 import ctypes
-import logging
 import time
 
 import cv2
 
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
-
-from .AFrames import *
+import logging
 from .Draw import draw_frame, Drawer
 from .FrameWriter import write_frame
 import os
 
 
+def update_progress(framecount, deltatime, videotime):
+	pass
+
+
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
 	logging.debug('entering preparedframes')
-	frames = PreparedFrames(settings, beatmap, replay_info.mod_combination, resultinfo)
 
 	if settings.process >= 1:
 		shared_array = []
@@ -28,7 +29,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		osr_interval = int((end_index - start_index) / settings.process)
 		start = start_index
 
-		my_file = open(settings.temp + "listvideo.txt", "w")
+		my_file = open(os.path.join(settings.temp, "listvideo.txt"), "w")
 		for i in range(settings.process):
 
 			if i == settings.process - 1:
@@ -46,7 +47,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			vid = (start, end)
 
 			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, frames, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
+				shared, conn1, beatmap, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
 
 			writer = Process(target=write_frame, args=(shared, conn2, settings.temp + f, settings, i == settings.process-1))
 
@@ -68,16 +69,20 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 		return drawers, writers, shared_pipe, shared_array
 
-
 	else:
+		from .AFrames import PreparedFrames
+		from ..CheckSystem.mathhelper import getunstablerate
 
 		logging.debug("process start")
+
+		ur = getunstablerate(resultinfo)
+		frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
 		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
 		_, file_extension = os.path.splitext(settings.output)
-		f = settings.temp + "outputf" + file_extension
+		f = os.path.join(settings.temp, "outputf" + file_extension)
 		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 
 		logging.debug("setup done")
@@ -91,11 +96,13 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 				writer.write(im)
 
 				framecount += 1
-				if framecount == 100:
-					filewriter = open(settings.temp + "speed.txt", "w")
+				if framecount % 100 == 0:
+					filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
 					deltatime = time.time() - startwritetime
 					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
 					filewriter.close()
+
+					update_progress(framecount, deltatime, videotime)
 
 		if showranking:
 			for x in range(int(5 * settings.fps)):

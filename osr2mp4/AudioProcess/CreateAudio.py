@@ -34,10 +34,10 @@ def from_notwav(filename, settings):
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		with open(os.path.join(settings.path + "speedup.log"), "a") as cc:
+		with open(os.path.join(settings.path, "speedup.log"), "a") as cc:
 			subprocess.call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=cc, stderr=cc)
 
-		f = settings.temp + "spedup.mp3"
+		f = os.path.join(settings.temp, "spedup.mp3")
 
 	if f[-4:] != ".wav":
 		a = from_notwav(f, settings)
@@ -69,7 +69,8 @@ def pydubtonumpy(audiosegment):
 	try:
 		h = max(2, audiosegment.sample_width) * 8
 		maxvalue = max(np.amax(y), 2 ** h)
-	except ValueError:
+	except ValueError as e:
+		print(repr(e))
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
@@ -78,14 +79,16 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 	fmts = ["wav", "mp3", "ogg"]
 	for fmt in fmts:
 		try:
-			return read(path + filename + "." + fmt, settings, volume=volume, speed=speed)
+			return read(os.path.join(path, filename + "." + fmt), settings, volume=volume, speed=speed)
 		except FileNotFoundError:
 			pass
 
 		except exceptions.CouldntDecodeError as e:
-			logging.error(repr(e) + " filename " + path + filename + "." + fmt)
-			print(repr(e) + " filename " + path + filename + "." + fmt)
+			logging.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
+			print(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
+
+	print("file not found",  filename, "using default skin")
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
@@ -97,10 +100,10 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 
 def getaudiofrombeatmap(filename, beatmappath, path, defaultpath, settings, volume=1.0, speed=1.0):
 	try:
-		return read(beatmappath + filename + "." + "wav", settings, volume=volume, speed=speed)
+		return read(os.path.join(beatmappath,filename + "." + "wav"), settings, volume=volume, speed=speed)
 	except FileNotFoundError:
 		try:
-			return read(beatmappath + filename + "." + "ogg", settings, volume=volume, speed=speed)
+			return read(os.path.join(beatmappath, filename + "." + "ogg"), settings, volume=volume, speed=speed)
 		except FileNotFoundError:
 			filename = ''.join(filter(lambda x: not x.isdigit(), filename))
 			return getaudiofromfile(filename, path, defaultpath, settings, volume=volume, speed=speed)
@@ -180,7 +183,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	ccc = time.time()
 
-	song = Audio2p(*read(beatmap_path + audio_name, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
+	song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	song.rate /= settings.timeframe/1000
 	song.audio = apply_offset(song, settings.settings["Song delay"])
 

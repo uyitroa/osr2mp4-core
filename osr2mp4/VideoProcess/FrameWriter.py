@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 import traceback
 
@@ -38,7 +39,7 @@ def write(shared, conn, filename, settings, iii):
 	startwringtime = time.time()
 
 	if iii:
-		filewriter = open(settings.temp + "speed.txt", "w")
+		filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
 
 	while a != 10:
 

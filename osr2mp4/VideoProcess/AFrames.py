@@ -1,9 +1,9 @@
 import logging
+import os
 
 from ..ImageProcess.Objects.Components.Flashlight import Flashlight
 from ..ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
 from ..ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
-from ..CheckSystem.mathhelper import getunstablerate
 from ..ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
 from ..ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
 from ..osrparse.enums import Mod
@@ -80,18 +80,19 @@ from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings, beatmap, mod_combination, resultinfo=None):
+	def __init__(self, settings, diff, mod_combination, ur=None, bg=None, loadranking=True):
 		skin = settings.skin_ini
-		check = DiffCalculator(beatmap.diff)
+		self.loadranking = loadranking
+		check = DiffCalculator(diff)
 		hd = Mod.Hidden in mod_combination
 		fl = Mod.Flashlight in mod_combination
 		if settings.settings["Automatic cursor size"]:
-			circlescale = 4/beatmap.diff["CircleSize"]
+			circlescale = 4/diff["CircleSize"]
 			settings.settings["Cursor size"] *= circlescale
-		if resultinfo is not None:
-			ur = getunstablerate(resultinfo)
-		else:
+		if ur is None:
 			ur = [0, 0, 0]
+		if bg is None:
+			bg = [0, 0, ""]
 
 		logging.debug('start preparing cursor')
 		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
@@ -108,12 +109,12 @@ class PreparedFrames:
 
 		logging.debug('start preparing scorenumber')
 		self.scorenumbers = ScoreNumbers(settings.scale, settings)
-		self.hitcirclenumber = prepare_hitcirclenumber(beatmap.diff, settings.playfieldscale, settings)
+		self.hitcirclenumber = prepare_hitcirclenumber(diff, settings.playfieldscale, settings)
 
 		logging.debug('start preparing accuracy')
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers, settings)
-		self.hitresult = prepare_hitresults(settings.scale, beatmap, settings)
+		self.hitresult = prepare_hitresults(settings.scale, diff, settings)
 		self.spinbonus = prepare_spinbonus(self.scorenumbers)
 		self.scorecounter = prepare_scorecounter(self.scorenumbers)
 
@@ -124,12 +125,12 @@ class PreparedFrames:
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
 
 		logging.debug('start preparing circle')
-		self.circle = prepare_circle(beatmap, settings.playfieldscale, settings, hd)
-		self.slider = prepare_slider(beatmap.diff, settings.playfieldscale, settings)
+		self.circle = prepare_circle(diff, settings.playfieldscale, settings, hd)
+		self.slider = prepare_slider(diff, settings.playfieldscale, settings)
 		self.spinner = prepare_spinner(settings.playfieldscale, settings)
 
 		logging.debug('start preparing background')
-		self.bg = prepare_background(settings.beatmap + beatmap.bg[2], settings)
+		self.bg = prepare_background(os.path.join(settings.beatmap, bg[2]), settings)
 
 		logging.debug('start preparing sections')
 		self.sections = prepare_sections(settings.scale, settings)
@@ -142,29 +143,30 @@ class PreparedFrames:
 		self.scoreboard = prepare_scoreboard(settings.scale, settings)
 		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
 
-		self.rankingpanel = prepare_rankingpanel(settings.scale, self.bg, settings)
-		self.rankinghitresults = prepare_rankinghitresults(settings.scale, settings)
-		self.rankingscore = prepare_rankingscorecounter(self.scorenumbers)
-		self.rankinggrades = prepare_rankinggrade(settings.scale, settings)
-		self.rankingtitle = prepare_rankingtitle(settings.scale, settings)
-		self.rankingcombo = prepare_rankingcombo(settings.scale * 1.05, settings)
-		self.rankingaccuracy = prepare_rankingaccuracy(settings.scale * 1.05, settings)
-		self.menuback = prepare_menuback(settings.scale, settings)
 		self.modicons = prepare_modicons(settings.scale, settings)
-		self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
-		self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
-		logging.debug("start preparing ur ranking")
-		self.rankingur = prepare_rankingur(settings, ur)
-		self.rankinggraph.extend(self.rankingur)
-		logging.debug('start preparing done')
+		if loadranking:
+			self.rankingpanel = prepare_rankingpanel(settings.scale, self.bg, settings)
+			self.rankinghitresults = prepare_rankinghitresults(settings.scale, settings)
+			self.rankingscore = prepare_rankingscorecounter(self.scorenumbers)
+			self.rankinggrades = prepare_rankinggrade(settings.scale, settings)
+			self.rankingtitle = prepare_rankingtitle(settings.scale, settings)
+			self.rankingcombo = prepare_rankingcombo(settings.scale * 1.05, settings)
+			self.rankingaccuracy = prepare_rankingaccuracy(settings.scale * 1.05, settings)
+			self.menuback = prepare_menuback(settings.scale, settings)
+			self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
+			self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
+			logging.debug("start preparing ur ranking")
+			self.rankingur = prepare_rankingur(settings, ur)
+			self.rankinggraph.extend(self.rankingur)
 
 		self.flashlight = prepare_flashlight(settings, fl)
+		logging.debug('start preparing done')
 
 
 class FrameObjects:
-	def __init__(self, frames, settings, beatmap, replay_info):
-		opacity_interval, timepreempt, _ = calculate_ar(beatmap.diff["ApproachRate"], settings)
-		check = DiffCalculator(beatmap.diff)
+	def __init__(self, frames, settings, diff, replay_info, meta, map_time):
+		opacity_interval, timepreempt, _ = calculate_ar(diff["ApproachRate"], settings)
+		check = DiffCalculator(diff)
 		rankinggap = 0
 		skin = settings.skin_ini
 		hd = Mod.Hidden in replay_info.mod_combination
@@ -185,12 +187,12 @@ class FrameObjects:
 		self.playingmodicons = PlayingModIcons(frames.modicons, replay_info, settings)
 
 		self.accuracy = Accuracy(frames.accuracy, skin.fonts["ScoreOverlap"], settings)
-		self.timepie = TimePie(self.accuracy, beatmap.start_time, beatmap.end_time, frames.scorebarbg, settings)
+		self.timepie = TimePie(self.accuracy, map_time[0], map_time[1], frames.scorebarbg, settings)
 		self.playinggrade = PlayingGrade(frames.playinggrade, self.timepie, replay_info, settings)
 		self.hitresult = HitResult(frames.hitresult, settings, replay_info.mod_combination)
 		self.spinbonus = SpinBonusScore(frames.spinbonus, skin.fonts["ScoreOverlap"], settings)
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
-		self.scorecounter = ScoreCounter(frames.scorecounter, beatmap.diff, skin.fonts["ScoreOverlap"], settings)
+		self.scorecounter = ScoreCounter(frames.scorecounter, diff, skin.fonts["ScoreOverlap"], settings)
 
 		self.urbar = URBar(frames.urbar, settings)
 
@@ -198,28 +200,30 @@ class FrameObjects:
 
 		self.hitcirclenumber = Number(frames.hitcirclenumber, skin.fonts)
 		self.circle = CircleManager(frames.circle, timepreempt, self.hitcirclenumber, settings)
-		self.slider = SliderManager(frames.slider, beatmap.diff, settings, hd)
+		self.slider = SliderManager(frames.slider, diff, settings, hd)
 		self.spinner = SpinnerManager((frames.spinner, frames.scorecounter), settings, check)
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
-		self.background = Background(frames.bg, beatmap.start_time - timepreempt, settings, hasfl)
+		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
 		self.sections = Sections(frames.sections, settings)
-		self.scorebarbg = ScorebarBG(frames.scorebarbg, beatmap.start_time - timepreempt, settings, hasfl)
-		self.scorebar = Scorebar(frames.scorebar, beatmap, settings)
+		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
+		self.scorebar = Scorebar(frames.scorebar, settings)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, beatmap, settings)
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, meta, settings)
 
-		self.rankingpanel = RankingPanel(frames.rankingpanel, settings)
-		self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap, settings)
-		self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, beatmap, settings)
-		self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, rankinggap, settings)
-		self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, rankinggap, settings)
-		self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, rankinggap, settings)
-		self.menuback = Menuback(frames.menuback, settings)
-		self.modicons = ModIcons(frames.modicons, replay_info, settings)
-		self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
-		self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
+		if frames.loadranking:
+			self.rankingpanel = RankingPanel(frames.rankingpanel, settings)
+			self.rankinghitresults = RankingHitresults(frames.rankinghitresults, replay_info, frames.rankingscore, rankinggap, settings)
+			self.rankingtitle = RankingTitle(frames.rankingtitle, replay_info, meta, settings)
+			self.rankingcombo = RankingCombo(frames.rankingcombo, replay_info, frames.rankingscore, rankinggap, settings)
+			self.rankingaccuracy = RankingAccuracy(frames.rankingaccuracy, replay_info, frames.rankingscore, rankinggap, settings)
+			self.rankinggrade = RankingGrade(replay_info, frames.rankinggrades, rankinggap, settings)
+			self.menuback = Menuback(frames.menuback, settings)
+			self.modicons = ModIcons(frames.modicons, replay_info, settings)
+			self.rankingreplay = RankingReplay(frames.rankingreplay, settings)
+			self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
+
 		self.ppcounter = PPCounter(settings)
 		self.hitresultcounter = HitresultCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)

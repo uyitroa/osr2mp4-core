@@ -181,7 +181,7 @@ class HitObjectChecker:
 						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i][
 							"duration"])
 						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
-						pos, t = self.hitobjects[i]["baiser"].at(dist, True, alone=True)  # TODO: what if kick slider too fast and clicked too late
+						pos = self.hitobjects[i]["slider_c"].at(dist)  # TODO: what if kick slider too fast and clicked too late
 						in_ball = math.sqrt(
 							(replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= \
 								  self.check.sliders_memory[idd]["dist"]
@@ -244,6 +244,10 @@ class HitObjectChecker:
 					self.info.append(info)
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
+
+				sliderendtime = min(36, (self.hitobjects[i]["duration"] * self.hitobjects[i]["repeated"]) / 2)
+				notelock = self.hitobjects[i]["end time"] - sliderendtime + time_from_previous_frame
+
 				del self.hitobjects[i]
 				del self.check.sliders_memory[idd]
 				i -= 1
@@ -310,7 +314,7 @@ class HitObjectChecker:
 			self.info.append(info)
 		return i
 
-	def checkcursor(self, replay, new_click, osr_index, in_break):
+	def checkcursor(self, replay, new_click, osr_index, in_break, prevbreakperiod):
 		notelock = 0
 		sum_newclick = sum(new_click)
 		self.clicks[0] += new_click[0]
@@ -321,7 +325,8 @@ class HitObjectChecker:
 		i = 0
 		inrange = True
 
-		self.health_processor.drainhp(replay[osr_index][3], replay[osr_index - 1][3], in_break)
+		if replay[osr_index-1][3] > prevbreakperiod["End"]:
+			self.health_processor.drainhp(replay[osr_index][3], replay[osr_index - 1][3], in_break)
 
 		while inrange and i < len(self.hitobjects) - 1:
 			if "circle" in self.hitobjects[i]["type"]:
