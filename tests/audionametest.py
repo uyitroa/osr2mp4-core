@@ -29,5 +29,6 @@ class TestAudio(unittest.TestCase):
 			expectedlist = getlistfromtxt(os.path.join(abspath, mapname + "expect.txt"))
 			self.assertCountEqual(resultlist, expectedlist)
 
+
 if __name__ == '__main__':
 	unittest.main()

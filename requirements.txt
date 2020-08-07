@@ -9,3 +9,4 @@ recordclass
 requests
 autologging
 configparser
+cython
