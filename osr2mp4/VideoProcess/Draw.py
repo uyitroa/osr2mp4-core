@@ -181,10 +181,10 @@ def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settin
 	try:
 		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
-		error = repr(e)
+		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(error)
-		logging.error("{} from {}\n\n\n".format(error, videotime))
+			fwrite.write(repr(e))
+		logging.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
 		raise
 
 

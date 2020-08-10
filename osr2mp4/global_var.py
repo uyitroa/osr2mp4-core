@@ -21,7 +21,8 @@ defaultsettings = {
 	"Song delay": 0,
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
-	"api key": "lol",
+	"Custom mods": "",
+	"api key": "lol"
 }
 
 defaultppconfig = {
@@ -68,6 +69,9 @@ sortedmods = [
 	Mod.SpunOut,
 	Mod.Autoplay
 ]
+
+
+videoextensions = ["mp4", "avi", "mkv", "mov"]
 
 
 class Settings:

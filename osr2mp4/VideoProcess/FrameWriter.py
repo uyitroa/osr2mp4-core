@@ -2,9 +2,10 @@ import logging
 import os
 import time
 import traceback
-
 import numpy as np
 import cv2
+from ..global_var import videoextensions
+from ..Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc
 
 
 def write_frame(shared, conn, filename, settings, iii):
@@ -13,8 +14,8 @@ def write_frame(shared, conn, filename, settings, iii):
 	except Exception as e:
 		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(tb)
-		logging.error("{} from {}\n\n\n".format(tb, filename))
+			fwrite.write(repr(e))
+		logging.error("{} from {}\n{}\n\n\n".format(tb, filename, repr(e)))
 		raise
 
 
@@ -24,7 +25,17 @@ def write(shared, conn, filename, settings, iii):
 	logging.log(logging.DEBUG, "{}\n".format(filename))
 	print("Start write")
 
+	if settings.codec.lower() in videoextensions:
+		raise FourccIsNotExtension()
+
+	if len(settings.codec) != 4:
+		raise WrongFourcc()
+
 	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
+
+	if not writer.isOpened():
+		raise CannotCreateVideo()
+
 	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((settings.height, settings.width, 4))
 
