@@ -1,5 +1,7 @@
 import logging
 import math
+
+from ..Utils.maphash import osuhash
 from ..Exceptions import GameModeNotSupported
 
 
@@ -19,6 +21,7 @@ class Beatmap:
 		self.to_stack = []
 		self.scale = scale
 		self.path = None
+		self.hash = None
 		self.is2b = False
 		self.start_time = 0
 		self.end_time = 0
@@ -512,4 +515,5 @@ def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, laz
 	fiel.close()
 	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
+	bmap.hash = osuhash(filename)
 	return bmap

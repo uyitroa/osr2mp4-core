@@ -60,7 +60,7 @@ class Drawer:
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, map_time)
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
 		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
