@@ -180,8 +180,4 @@ def parse_replay_file(replay_path):
 			data = f.read()
 		return parse_replay(data)
 	except _lzma.LZMAError as e:
-		if repr(e) == "Compressed data ended before the end-of-stream marker was reached":
-			raise NoDataReplay()
-		else:
-			raise
-
+		raise NoDataReplay()
