@@ -16,19 +16,17 @@ def prepare_hitresults(scale, diff, settings):
 		yimg = YImages(hitprefix + str(x), settings, scale, delimiter="-", rotate=x == 0)
 		f = []
 		f1 = yimg.frames
-		if yimg.unanimate:
+		if yimg.unanimate or len(yimg.frames) == 1:
 			img = yimg.frames[0]
 			f = []
 			if x != 0:
 				f = size.grow(img, 0.7, 1.1, 0.05)
 
 		if x == 0:
-			if yimg.unanimate:
+			if yimg.unanimate or len(yimg.frames) == 1:
 				f1 = f1[0]
-			f1 = size.shrink(f1, 1.45, 0.9, 0.05)
+				f1 = size.shrink(f1, 1.45, 0.9, 0.05)
 			f = []
-			# for a in range(len(f1)):
-			# 	f1[a] = f1[a].rotate(-10 - a * 0.5)
 		scores_frames[x] = f+f1
 
 	return scores_frames
