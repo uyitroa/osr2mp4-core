@@ -100,6 +100,7 @@ class Osr2mp4:
 		endtime = data["End time"]
 
 		self.settings.codec = data["Video codec"]
+		self.settings.audiocodec = data.get("Audio codec", "aac")
 		self.settings.process = data["Process"]
 
 		apikey = gameplaysettings["api key"]

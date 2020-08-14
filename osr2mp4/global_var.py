@@ -110,5 +110,6 @@ class Settings:
 		self.ppsettings = defaultppconfig
 
 		self.codec = None
+		self.audiocodec = None
 		self.process = None
 		self.enablelog = False
