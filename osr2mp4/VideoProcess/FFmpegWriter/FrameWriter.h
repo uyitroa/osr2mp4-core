@@ -8,6 +8,8 @@
 #include "cap_ffmpeg_legacy_api.h"
 #include <stdint.h>
 #include <vector>
+#include <string>
+
 
 class FrameWriter {
 private:
@@ -15,6 +17,7 @@ private:
 public:
     CvVideoWriter_FFMPEG* framewriter;
     uint8_t *data;
+    std::string error;
     int width;
     int height;
     double fps;
@@ -26,6 +29,7 @@ public:
     int write_frame();
     void close_video();
     bool is_opened();
+    std::string geterror();
     ~FrameWriter();
 
 };

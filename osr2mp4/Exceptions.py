@@ -26,8 +26,14 @@ class NoDataReplay(Exception):
 
 
 class CannotCreateVideo(Exception):
+	def __init__(self, msg=None):
+		if msg is None:
+			self.msg = "Cannot start writing video, make sure your video fourcc codec is correct and supported (https://www.fourcc.org), your output filename has correct video extensions (.mp4, .avi, etc), and your output folder exists."
+		else:
+			self.msg = msg
+
 	def __repr__(self):
-		return "Cannot start writing video, make sure your video fourcc codec is correct and supported (https://www.fourcc.org), your output filename has correct video extensions (.mp4, .avi, etc), and your output folder exists."
+		return self.msg
 
 
 class WrongFourcc(Exception):

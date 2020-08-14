@@ -4,6 +4,7 @@ import ctypes
 import numpy as np
 cimport numpy as np
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 
 # Declare the class with cdef
 cdef extern from "FrameWriter.h":
@@ -19,6 +20,8 @@ cdef extern from "FrameWriter.h":
 		void close_video();
 		int write_frame();
 		int is_opened();
+		string geterror();
+
 	vector[const char *] getcodecname();
 	vector[const char *] getcodeclongname();
 
@@ -38,6 +41,9 @@ cdef class PyFrameWriter:
 
 	def isOpened(self):
 		return self.c_writer.is_opened()
+
+	def geterror(self):
+		return self.c_writer.geterror()
 
 
 def getcodec():

@@ -31,6 +31,7 @@ def write(shared, conn, filename, settings, iii):
 
 	buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
 
+	videoerror = None
 	if not settings.settings["Use FFmpeg video writer"]:
 		if len(settings.codec) != 4:
 			raise WrongFourcc()
@@ -43,8 +44,13 @@ def write(shared, conn, filename, settings, iii):
 		ffmpegargs = str.encode(settings.settings["FFmpeg custom commands"])
 		writer = PyFrameWriter(str.encode(filename), ffmpegcodec, settings.fps, settings.width, settings.height, ffmpegargs, buf)
 
+		try:
+			videoerror = writer.geterror().decode()
+		except UnicodeDecodeError:
+			pass
+
 	if not writer.isOpened():
-		raise CannotCreateVideo()
+		raise CannotCreateVideo(msg=videoerror)
 
 	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((settings.height, settings.width, 4))
