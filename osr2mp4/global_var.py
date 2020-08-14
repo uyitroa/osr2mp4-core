@@ -22,7 +22,10 @@ defaultsettings = {
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
 	"Custom mods": "",
-	"api key": "lol"
+	"api key": "lol",
+	"Use FFmpeg video writer": False,
+	"FFmpeg codec": "libx264",
+	"FFmpeg custom commands": "-preset ultrafast -crf 23"
 }
 
 defaultppconfig = {

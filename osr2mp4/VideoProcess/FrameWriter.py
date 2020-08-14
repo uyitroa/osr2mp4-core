@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 from ..global_var import videoextensions
 from ..Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc
+from .FFmpegWriter.osr2mp4cv import PyFrameWriter
 
 
 def write_frame(shared, conn, filename, settings, iii):
@@ -28,16 +29,26 @@ def write(shared, conn, filename, settings, iii):
 	if settings.codec.lower() in videoextensions:
 		raise FourccIsNotExtension()
 
-	if len(settings.codec) != 4:
-		raise WrongFourcc()
+	buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
 
-	writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
+	if not settings.settings["Use FFmpeg video writer"]:
+		if len(settings.codec) != 4:
+			raise WrongFourcc()
+
+		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
+	else:
+		if settings.settings["FFmpeg codec"] == "":
+			settings.settings["FFmpeg codec"] = "libx264"
+		ffmpegcodec = str.encode(settings.settings["FFmpeg codec"])
+		ffmpegargs = str.encode(settings.settings["FFmpeg custom commands"])
+		writer = PyFrameWriter(str.encode(filename), ffmpegcodec, settings.fps, settings.width, settings.height, ffmpegargs, buf)
 
 	if not writer.isOpened():
 		raise CannotCreateVideo()
 
 	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((settings.height, settings.width, 4))
+	buf = buf.reshape((settings.height, settings.width, 3))
 
 	timer = 0
 
@@ -60,12 +71,17 @@ def write(shared, conn, filename, settings, iii):
 
 		if a == 1:
 			asdf = time.time()
-			im = cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB)
+			cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB, dst=buf)
 			conn.send(0)
 			timer3 += time.time() - asdf
 
 			asdf = time.time()
-			writer.write(im)
+
+			if not settings.settings["Use FFmpeg video writer"]:
+				writer.write(buf)
+			else:
+				writer.write()
+
 			timer += time.time() - asdf
 
 			framecount += 1
