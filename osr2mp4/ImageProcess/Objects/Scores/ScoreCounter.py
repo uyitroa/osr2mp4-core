@@ -1,3 +1,4 @@
+from ...Animation.easing import easingout
 from ..FrameObject import FrameObject
 
 
@@ -38,16 +39,6 @@ class ScoreCounter(FrameObject):
 			super().add_to_frame(background, x, y)
 			x += -self.gap + self.frames[0].size[0]
 
-	def proc_showscore(self):
-		if self.showscore == self.score:
-			return
-
-		delta = str(self.score - self.showscore)
-		# print(delta, self.score, self.showscore)
-		self.showscore += int("1" * (len(delta) - 1))
-		# print(delta, self.score, self.showscore, "\n")
-
-
 	def add_to_frame(self, background, cur_time, inbreak):
 		if not self.settings.settings["In-game interface"]:
 			return
@@ -57,13 +48,7 @@ class ScoreCounter(FrameObject):
 		if self.settings.settings["In-game interface"] or inbreak:
 			self.draw_score(score_string, background)
 
-		# self.proc_showscore()
-		if self.showscore < self.score:
-			self.showscore += 1
-		if cur_time >= self.freeze:
-			add_up = max(7.27, (self.score - self.showscore)/12.72) * 60/self.settings.fps
-			if self.showscore + add_up > self.score:
-				self.showscore = min(self.score, max(self.score - 1, self.showscore + 0.05))
-			else:
-				self.showscore += add_up
-
+		current = self.settings.timeframe/self.settings.fps
+		change = self.score - self.showscore
+		duration = 500
+		self.showscore = easingout(current, self.showscore, change, duration)

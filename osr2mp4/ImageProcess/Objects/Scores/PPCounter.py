@@ -1,3 +1,4 @@
+from ...Animation.easing import easingout
 from .ACounter import ACounter
 
 
@@ -18,10 +19,6 @@ class PPCounter(ACounter):
 	def set(self, pp):
 		self.score = "{:.2f}".format(pp)
 
-	def easingout(self, time, initial, change, duration):
-		t = time / duration
-		return -change * t * (t - 2) + initial
-
 	def add_to_frame(self, background):
 
 		score = float(self.score)
@@ -32,6 +29,6 @@ class PPCounter(ACounter):
 		change = self.realscore - score
 		duration = 500
 
-		score = max(0, self.easingout(current, score, change, duration))
+		score = max(0, easingout(current, score, change, duration))
 
 		self.score = "{:.2f}".format(score)
