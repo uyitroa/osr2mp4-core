@@ -94,3 +94,39 @@ std::vector<const char *> getcodeclongname() {
     }
     return codecname;
 }
+
+
+
+std::vector<const char *> getaudiocodecname() {
+    const AVCodec *current_codec = nullptr;
+    void *i = 0;
+    std::vector<const char *> codecname;
+    current_codec = av_codec_iterate(&i);
+    while(current_codec)
+    {
+        if (current_codec->type == AVMEDIA_TYPE_AUDIO) {
+            if (is_valid_codec(current_codec->name)) {
+                codecname.push_back(current_codec->name);
+            }
+        }
+        current_codec = av_codec_iterate(&i);
+    }
+    return codecname;
+}
+
+std::vector<const char *> getaudiocodeclongname() {
+    const AVCodec *current_codec = nullptr;
+    void *i = 0;
+    std::vector<const char *> codecname;
+    current_codec = av_codec_iterate(&i);
+    while(current_codec)
+    {
+        if (current_codec->type == AVMEDIA_TYPE_AUDIO) {
+            if (is_valid_codec(current_codec->name)) {
+                codecname.push_back(current_codec->long_name);
+            }
+        }
+        current_codec = av_codec_iterate(&i);
+    }
+    return codecname;
+}

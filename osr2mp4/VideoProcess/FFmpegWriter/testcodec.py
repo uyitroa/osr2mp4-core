@@ -1,6 +1,6 @@
-from osr2mp4cv import getcodec
+from osr2mp4cv import getaudiocodec
 
-a = getcodec()
+a = getaudiocodec()
 
 codec = {}
 for x in a:

@@ -25,6 +25,9 @@ cdef extern from "FrameWriter.h":
 	vector[const char *] getcodecname();
 	vector[const char *] getcodeclongname();
 
+	vector[const char *] getaudiocodecname();
+	vector[const char *] getaudiocodeclongname();
+
 cdef class PyFrameWriter:
 	cdef FrameWriter c_writer
 
@@ -50,6 +53,15 @@ def getcodec():
 	codecs = {}
 	codecname = getcodecname()
 	codeclongname = getcodeclongname()
+
+	for i in range(len(codecname)):
+		codecs[codecname[i]] = codeclongname[i]
+	return codecs
+
+def getaudiocodec():
+	codecs = {}
+	codecname = getaudiocodecname()
+	codeclongname = getaudiocodeclongname()
 
 	for i in range(len(codecname)):
 		codecs[codecname[i]] = codeclongname[i]

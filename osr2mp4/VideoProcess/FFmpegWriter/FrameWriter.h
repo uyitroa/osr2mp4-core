@@ -36,7 +36,8 @@ public:
 
 std::vector<const char *> getcodecname();
 std::vector<const char *> getcodeclongname();
-
+std::vector<const char *> getaudiocodecname();
+std::vector<const char *> getaudiocodeclongname();
 
 
 #endif //CVFFMPEG_FRAMEWRITER_H
