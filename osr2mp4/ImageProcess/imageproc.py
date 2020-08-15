@@ -93,8 +93,15 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 
 	elif channel == 4:
 
+		img2 = img.copy()
+		if 0 < alpha < 1:
+			a = img.getchannel("A")
+			a = a.point(lambda i: i * alpha)
+			img2.putalpha(a)
+		if alpha <= 0:
+			return
 		b = background.crop((x_offset, y_offset, x_offset + img.size[0], y_offset + img.size[1]))
-		c = Image.alpha_composite(b, img)
+		c = Image.alpha_composite(b, img2)
 		background.paste(c, (x_offset, y_offset))
 
 
