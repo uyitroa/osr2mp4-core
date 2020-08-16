@@ -935,7 +935,7 @@ static AVStream *icv_add_video_stream_FFMPEG(AVFormatContext *oc,
     /* put sample parameters */
     int64_t lbit_rate = (int64_t)bitrate;
     lbit_rate += (bitrate / 2);
-    lbit_rate = std::min(lbit_rate, (int64_t)INT_MAX);
+    lbit_rate = fmin(lbit_rate, (int64_t)INT_MAX);
     c->bit_rate = lbit_rate;
 
     // took advice from
@@ -1532,7 +1532,7 @@ bool CvVideoWriter_FFMPEG::open( const char * filename, const char *codec_name,
 
     int64_t lbit_rate = (int64_t)c->bit_rate;
     lbit_rate += (bitrate / 2);
-    lbit_rate = std::min(lbit_rate, (int64_t)INT_MAX);
+    lbit_rate = fmin(lbit_rate, (int64_t)INT_MAX);
     c->bit_rate_tolerance = (int)lbit_rate;
     c->bit_rate = (int)lbit_rate;
 
