@@ -6,7 +6,6 @@ import numpy as np
 import cv2
 from ..global_var import videoextensions
 from ..Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc
-from .FFmpegWriter.osr2mp4cv import PyFrameWriter
 
 
 def write_frame(shared, conn, filename, settings, iii):
@@ -38,6 +37,7 @@ def write(shared, conn, filename, settings, iii):
 
 		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	else:
+		from .FFmpegWriter.osr2mp4cv import PyFrameWriter
 		if settings.settings["FFmpeg codec"] == "":
 			settings.settings["FFmpeg codec"] = "libx264"
 		ffmpegcodec = str.encode(settings.settings["FFmpeg codec"])
