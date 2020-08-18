@@ -1,7 +1,6 @@
 from PIL import Image
 
-from ....osrparse.enums import Mod
-from ..FrameObject import FrameObject
+from ...Animation.easing import easingout
 from ... import imageproc
 from .AScorebar import AScorebar
 
@@ -31,8 +30,8 @@ class Flashlight(AScorebar):
 		current = self.timeframe
 		duration = 120
 
-		self.x = self.easingout(current, self.x, x - self.x, duration)
-		self.y = self.easingout(current, self.y, y - self.y, duration)
+		self.x = easingout(current, self.x, x - self.x, duration)
+		self.y = easingout(current, self.y, y - self.y, duration)
 
 	def set_sliding(self, sliding):
 		self.sliding = bool(sliding)
@@ -44,10 +43,6 @@ class Flashlight(AScorebar):
 			self.frame_index = self.COMBO_200
 		else:
 			self.frame_index = self.COMBO_100
-
-	def easingout(self, time, initial, change, duration):
-		t = time / duration
-		return -change * t * (t - 2) + initial
 
 	def add_to_frame(self, background, inbreak, cursorx, cursory):
 		if not self.hasfl:

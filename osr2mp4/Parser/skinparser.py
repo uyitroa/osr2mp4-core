@@ -112,6 +112,8 @@ class Skin:
 			if ":" not in line and "[" not in line:
 				l = ""
 			newstring += l + "\n"
+
+		newstring = newstring.replace("//", " //")
 		return newstring.replace('\x00', '')
 
 	def read(self):

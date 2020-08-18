@@ -22,8 +22,6 @@ def prepare_bar(scale, scorewindow):
 	colorbar = [(210, 160,  60, 255), (70, 215, 10, 255), (40, 170, 220, 255)]
 	mask = []
 	for i in range(3):
-		# colorbar[i] = colorbar[i][::-1]
-		# print(colorbar[i])
 		bar = numpy.full((int(2 * scale), 4), colorbar[i])
 		bar_images.append(bar)
 

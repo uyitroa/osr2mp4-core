@@ -3,6 +3,7 @@ import os
 
 from autologging import traced, logged
 
+from ..global_var import defaultsettings
 from ..osrparse.enums import Mod
 
 from ..Parser.skinparser import Skin
@@ -58,10 +59,18 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 	settings.skin_ini = skin
 	settings.default_skin_ini = skin
 
-	gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
-	gameplaydata["Song delay"] = gameplaydata.get("Song delay", 0)
-	gameplaydata["Show mods icon"] = gameplaydata.get("Show mods icon", True)
-	gameplaydata["Custom mods"] = gameplaydata.get("Custom mods", "")
+	# gameplaydata["Enable PP counter"] = gameplaydata.get("Enable PP counter", False)
+	# gameplaydata["Song delay"] = gameplaydata.get("Song delay", 0)
+	# gameplaydata["Show mods icon"] = gameplaydata.get("Show mods icon", True)
+	# gameplaydata["Custom mods"] = gameplaydata.get("Custom mods", "")
+	# gameplaydata["Use FFmpeg video writer"] = gameplaydata.get("Use FFmpeg video writer", False)
+	# gameplaydata["FFmpeg codec"] = gameplaydata.get("Use FFmpeg video writer", False)
+	# gameplaydata["Use FFmpeg video writer"] = gameplaydata.get("Use FFmpeg video writer", False)
+
+	for setting in defaultsettings:
+		if setting not in gameplaydata:
+			gameplaydata[setting] = defaultsettings[setting]
+
 	settings.settings = gameplaydata
 
 	if ppsettings is not None:

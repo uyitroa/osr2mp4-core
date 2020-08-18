@@ -1,5 +1,7 @@
 import logging
 import math
+
+from ..Utils.maphash import osuhash
 from ..Exceptions import GameModeNotSupported
 
 
@@ -19,6 +21,7 @@ class Beatmap:
 		self.to_stack = []
 		self.scale = scale
 		self.path = None
+		self.hash = None
 		self.is2b = False
 		self.start_time = 0
 		self.end_time = 0
@@ -112,11 +115,11 @@ class Beatmap:
 		timing = timing.split("\n")
 		inherited = 0
 		for line in timing:
+			my_dict = {}
 			try:
 				line = line.strip()
 				if line == '':
 					continue
-				my_dict = {}
 				items = line.split(",")
 				my_dict["Offset"] = float(items[0])
 				if len(items) < 7 or int(items[6]) == 1:
@@ -130,10 +133,16 @@ class Beatmap:
 				my_dict["SampleIndex"] = items[4]
 				my_dict["Volume"] = float(items[5])
 			except Exception as e:
+				my_dict["Meter"] = my_dict.get("Meter", 0)
+				my_dict["SampleSet"] = my_dict.get("SampleSet", "0")
+				my_dict["SampleIndex"] = my_dict.get("SampleIndex", "0")
+				my_dict["Volume"] = my_dict.get("Volume", 100)
+				self.timing_point.append(my_dict)
 				logging.error(repr(e))
 				continue
 			# my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
+		self.timing_point.append({"Offset": float('inf')})
 		self.timing_point.append({"Offset": float('inf')})
 
 	def istacked(self, curobj, prevobj, t_min, end=""):
@@ -204,7 +213,6 @@ class Beatmap:
 			my_dict["time"] = int(osuobject[2])
 			my_dict["id"] = index
 
-			# use next off_set or not
 			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
 			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
@@ -507,4 +515,5 @@ def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, laz
 	fiel.close()
 	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
+	bmap.hash = osuhash(filename)
 	return bmap

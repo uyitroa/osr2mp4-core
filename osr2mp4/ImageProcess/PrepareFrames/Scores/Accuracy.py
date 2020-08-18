@@ -6,7 +6,7 @@ def prepare_accuracy(scorenumbers):
 	:return: int, [PIL.Image]
 	"""
 	score_images = [None] * 10
-	y = int(scorenumbers.score_images[0].img.size[1] * 0.75)
+	y = int(scorenumbers.score_images[0].img.size[1])
 	for index, img in enumerate(scorenumbers.score_images):
 		img.change_size(0.5, 0.5)
 		score_images[index] = img.img

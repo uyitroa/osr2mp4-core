@@ -5,7 +5,7 @@ import subprocess
 import time
 from copy import deepcopy
 from multiprocessing import Process
-
+from ..Exceptions import AudioNotFound
 from ..osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
@@ -167,7 +167,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 	except Exception as e:
 		error = repr(e)
 		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(error)
+			fwrite.write(repr(e))
 		logging.error("{} from audio\n\n\n".format(error))
 		raise
 
@@ -183,7 +183,10 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	ccc = time.time()
 
-	song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
+	try:
+		song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
+	except FileNotFoundError:
+		raise AudioNotFound()
 	song.rate /= settings.timeframe/1000
 	song.audio = apply_offset(song, settings.settings["Song delay"])
 

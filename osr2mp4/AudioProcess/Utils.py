@@ -110,7 +110,11 @@ def getfilenames(beatmap, ignore):
 		# use next off_set or not
 		while my_dict["time"] >= beatmap.timing_point[timingpoint_i + 1]["Offset"]-1:
 			timingpoint_i += 1
-		soundinfo = my_dict["hitSample"].split(":")
+
+		if my_dict["hitSample"] == "":
+			soundinfo = []
+		else:
+			soundinfo = my_dict["hitSample"].split(":")
 		if len(soundinfo) < 4:
 			soundinfo += (4 - len(soundinfo)) * ["0"]
 
@@ -118,7 +122,6 @@ def getfilenames(beatmap, ignore):
 
 		if "slider" in my_dict["type"]:
 			sampleset_name = sampleset[beatmap.timing_point[timingpoint_i]["SampleSet"]]
-
 
 		my_dict["hitSample"] = soundinfo
 		if ignore:
@@ -130,7 +133,6 @@ def getfilenames(beatmap, ignore):
 				my_dict["soundtick"] = ["normal-slidertick"]
 				my_dict["soundend"] = ["normal-hitnormal"]
 			continue
-
 
 		objtype = "circle"
 		soundset = hitsoundset

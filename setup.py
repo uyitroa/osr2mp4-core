@@ -3,8 +3,11 @@ import sys
 import subprocess
 import os
 # from distutils.command.install import install
-import atexit
-from wheel.bdist_wheel import bdist_wheel
+try:
+	from wheel.bdist_wheel import bdist_wheel
+except ImportError:
+	subprocess.call([sys.executable, "-m", "pip", "install", "wheel", "--upgrade"])
+	from wheel.bdist_wheel import bdist_wheel
 
 
 class cd:
@@ -22,6 +25,8 @@ class cd:
 
 
 def compile_():
+	if os.name == 'nt':
+		return
 	try:
 		from Cython.Distutils import build_ext
 	except ImportError:
@@ -30,7 +35,7 @@ def compile_():
 	curpath = os.path.dirname(__file__)
 	curvepath = os.path.join(curpath, "osr2mp4/ImageProcess/Curves/libcurves/")
 	with cd(curvepath):
-		subprocess.call([sys.executable, "setup.py", "build_ext", "--inplace"])
+		subprocess.check_call([sys.executable, "setup.py", "build_ext", "--inplace"])
 
 
 class new_install(bdist_wheel):
@@ -49,14 +54,14 @@ with open("requirements.txt", "r") as fr:
 print(sys.argv)
 setuptools.setup(
 	name="osr2mp4",
-	version="0.0.4dev3",
+	version="0.0.5.a1",
 	author="yuitora",
 	author_email="shintaridesu@gmail.com",
 	description="Convert osr replay file to video file",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	url="https://github.com/uyitroa/osr2mp4-core",
-	packages=setuptools.find_packages(),
+	packages=setuptools.find_packages(exclude=("tests/",)),
 	install_requires=requirements,
 	include_package_data=True,
 	classifiers=[

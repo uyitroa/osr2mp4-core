@@ -1,3 +1,6 @@
+import _lzma
+
+from ..Exceptions import NoDataReplay
 from .enums import GameMode, Mod
 import lzma, struct, datetime
 
@@ -166,10 +169,15 @@ class Replay(object):
 	def set(self, state):
 		self.__dict__ = state
 
+
 def parse_replay(replay_data):
 	return Replay(replay_data)
 
+
 def parse_replay_file(replay_path):
-	with open(replay_path, 'rb') as f:
-		data = f.read()
-	return parse_replay(data)
+	try:
+		with open(replay_path, 'rb') as f:
+			data = f.read()
+		return parse_replay(data)
+	except _lzma.LZMAError as e:
+		raise NoDataReplay()

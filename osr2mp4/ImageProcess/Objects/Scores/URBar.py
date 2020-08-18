@@ -21,10 +21,12 @@ class URBar(AScorebar):
 
 		self.c = 0
 
-		self.np = numpy.zeros((self.h, self.w, 4), dtype=numpy.uint8)
+		barheight = int(self.h * 0.85)
+
+		self.np = numpy.zeros((barheight, self.w, 4), dtype=numpy.uint8)
 		self.np[:, :, 3] = 0
 		self.barthin = self.np[0, :, :].copy()
-		self.bar_container = Image.frombuffer("RGBA", (self.w, self.h), self.np, 'raw', "RGBA", 0, 1)
+		self.bar_container = Image.frombuffer("RGBA", (self.w, barheight), self.np, 'raw', "RGBA", 0, 1)
 		self.bar_container.readonly = False
 		self.urbar, self.bar_images, self.maxtime, self.mask = frames
 

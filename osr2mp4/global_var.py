@@ -21,7 +21,11 @@ defaultsettings = {
 	"Song delay": 0,
 	"Global leaderboard": False,
 	"Mods leaderboard": "*",
+	"Custom mods": "",
 	"api key": "lol",
+	"Use FFmpeg video writer": False,
+	"FFmpeg codec": "libx264",
+	"FFmpeg custom commands": "-preset ultrafast -crf 23"
 }
 
 defaultppconfig = {
@@ -70,6 +74,9 @@ sortedmods = [
 ]
 
 
+videoextensions = ["mp4", "avi", "mkv", "mov"]
+
+
 class Settings:
 
 	def __init__(self):
@@ -103,5 +110,6 @@ class Settings:
 		self.ppsettings = defaultppconfig
 
 		self.codec = None
+		self.audiocodec = None
 		self.process = None
 		self.enablelog = False

@@ -12,7 +12,7 @@ from .EEnum.EReplay import Replays
 from .Utils.Auto import get_auto
 from .osrparse import *
 import PIL
-from .Exceptions import ReplayNotFound
+from .Exceptions import ReplayNotFound, CannotCreateVideo
 from .Parser.jsonparser import read
 from .AudioProcess.CreateAudio import create_audio
 from .CheckSystem.checkmain import checkmain
@@ -100,6 +100,7 @@ class Osr2mp4:
 		endtime = data["End time"]
 
 		self.settings.codec = data["Video codec"]
+		self.settings.audiocodec = data.get("Audio codec", "aac")
 		self.settings.process = data["Process"]
 
 		apikey = gameplaysettings["api key"]
@@ -169,6 +170,10 @@ class Osr2mp4:
 		if self.resultinfo is None:
 			self.analyse_replay()
 		videotime = (self.start_index, self.end_index)
+
+		if not os.path.isdir(os.path.dirname(self.settings.output)):
+			raise CannotCreateVideo()
+
 		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap,
 		                                                                        self.replay_info, self.resultinfo,
 		                                                                        videotime, self.endtime == -1)

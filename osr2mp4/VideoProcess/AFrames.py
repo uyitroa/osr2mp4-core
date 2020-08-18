@@ -164,7 +164,7 @@ class PreparedFrames:
 
 
 class FrameObjects:
-	def __init__(self, frames, settings, diff, replay_info, meta, map_time):
+	def __init__(self, frames, settings, diff, replay_info, meta, maphash, map_time):
 		opacity_interval, timepreempt, _ = calculate_ar(diff["ApproachRate"], settings)
 		check = DiffCalculator(diff)
 		rankinggap = 0
@@ -210,7 +210,7 @@ class FrameObjects:
 		self.scorebar = Scorebar(frames.scorebar, settings)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, meta, settings)
+		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, meta, maphash, settings)
 
 		if frames.loadranking:
 			self.rankingpanel = RankingPanel(frames.rankingpanel, settings)

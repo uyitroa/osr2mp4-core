@@ -60,7 +60,7 @@ class Drawer:
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, map_time)
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
 		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
@@ -181,10 +181,10 @@ def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settin
 	try:
 		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking)
 	except Exception as e:
-		error = repr(e)
+		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(error)
-		logging.error("{} from {}\n\n\n".format(error, videotime))
+			fwrite.write(repr(e))
+		logging.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
 		raise
 
 

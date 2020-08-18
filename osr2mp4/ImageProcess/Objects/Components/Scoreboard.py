@@ -83,7 +83,7 @@ def getmods(mods):
 
 
 class Scoreboard(FrameObject):
-	def __init__(self, frames, scorenetryframes, effectframes, replay_info, meta, settings):
+	def __init__(self, frames, scorenetryframes, effectframes, replay_info, meta, maphash, settings):
 		FrameObject.__init__(self, frames, settings=settings)
 
 		self.score = scorenetryframes[0]
@@ -110,7 +110,7 @@ class Scoreboard(FrameObject):
 		self.beatmaphash = replay_info.beatmap_hash
 		self.playerscore = replay_info.score
 		self.playername = replay_info.player_name
-		self.beatmapid = meta.get("BeatmapID", -1)
+		self.beatmapid =self.getmapid(meta, maphash)
 
 		self.scoresid = []
 		self.getscores()
@@ -126,12 +126,31 @@ class Scoreboard(FrameObject):
 
 		self.animate = False
 
-
 		playernames = [x.playername for x in self.scoreboards]
 		self.nameimg = prepare_text(playernames, 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 0.5)
 		playertext = prepare_text([self.playername], 18 * self.settings.scale, (255, 255, 255, 255), self.settings, 1)
 
 		self.nameimg[self.playername] = playertext[self.playername]
+
+	def getmapid(self, meta, maphash):
+		if "BeatmapID" in meta:
+			return meta["BeatmapID"]
+
+		if not self.settings.settings["Global leaderboard"]:
+			return -1
+
+		k = self.settings.settings["api key"]
+		if k is None:
+			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			return
+
+		data = {'k': k, 'h': maphash}
+		r = requests.post("https://osu.ppy.sh/api/get_beatmaps", data=data)
+		try:
+			data = json.loads(r.text)
+		except json.decoder.JSONDecodeError:
+			return
+		return data[0].get("beatmap_id", -1)
 
 	def setuppos(self):
 		x = 0
@@ -173,13 +192,11 @@ class Scoreboard(FrameObject):
 			self.getlocalscores(mods)
 			return
 
-
 		if mods == "*":
 			data = {'k': k, 'b': self.beatmapid}
 		else:
 			summods = getsummods(mods)
 			data = {'k': k, 'b': self.beatmapid, 'mods': summods}
-
 
 		r = requests.post("https://osu.ppy.sh/api/get_scores", data=data)
 		try:
@@ -212,7 +229,6 @@ class Scoreboard(FrameObject):
 			strcombo = re.sub(r'(?<!^)(?=(\d{3})+$)', r'.', str(score["maxcombo"]))
 			self.scoreboards.append(BoardInfo(strscore, strcombo, int(score["score"]), int(score["maxcombo"]), score["username"], None, None, None, i))
 		self.oldrankid = None
-
 
 	def getlocalscores(self, mods):
 		try:
