@@ -44,3 +44,8 @@ class WrongFourcc(Exception):
 class FourccIsNotExtension(Exception):
 	def __repr__(self):
 		return "Video codec is not video file extension (.mp4, .avi, etc...). XVID is a video codec, .mp4 is not."
+
+
+class LibAvNotFound(Exception):
+	def __repr__(self):
+		return "To use ffmpeg video writer, you need to download ffmpeg's library here: https://ffmpeg.zeranoe.com/builds/. Select linking shared instead of static, then put all the files from 'bin' folder to osr2mp4 folder (put all files from 'lib' folder to osr2mp4 if you are on macOS)."

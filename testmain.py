@@ -1,3 +1,4 @@
+from osr2mp4.ImageProcess.PrepareFrames.Scores.Hitresult import prepare_particles
 from osr2mp4.ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
 
@@ -148,13 +149,13 @@ def drawpp(components, osr2mp4):
 
 
 def main():
-	from PIL import Image
-	from osr2mp4.Parser.skinparser import Skin
+	# from PIL import Image
+	# from osr2mp4.Parser.skinparser import Skin
 
 	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
-	osr2mp4.analyse_replay()
-	print(osr2mp4.resultinfo[-1].accuracy)
-	print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses)
+	# osr2mp4.analyse_replay()
+	# print(osr2mp4.resultinfo[-1].accuracy)
+	# print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses)
 	# components = DummyFrameObjects()
 	# background = Image.open("../osr2mp4-app/osr2mp4app/res/pppp.png")
 	# #
@@ -163,7 +164,7 @@ def main():
 	# f = PlayingModIcons(a, osr2mp4.replay_info, osr2mp4.settings)
 	# f.add_to_frame(background)
 	# background.save("test.png")
-
+	a = prepare_particles(osr2mp4.settings.scale, osr2mp4.settings)
 
 if __name__ == '__main__':
 	main()

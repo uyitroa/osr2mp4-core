@@ -7,6 +7,12 @@ cd ImageProcess/Curves/libcurves/
 python setup build_ext --inplace
 ```
 
+To enable ffmpeg video writer:
+```
+cd VideoProcess/FFmpegWriter/
+python setup build_ext --inplace
+```
+
 
 Then
 
