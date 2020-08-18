@@ -43,6 +43,6 @@ To select a custom mods for replays and auto, put your mods in the "Custom mods"
 
 ### Run tests
 ```
-osr2mp4-core$ python -m unittest discover -s tests -p *test.py
+osr2mp4-core$ python -m unittest discover -s tests -p '*test.py'
 ```
 
