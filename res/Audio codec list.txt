@@ -1,0 +1,78 @@
+comfortnoise: RFC 3389 comfort noise generator
+s302m: SMPTE 302M
+aac: AAC (Advanced Audio Coding)
+ac3: ATSC A/52A (AC-3)
+ac3_fixed: ATSC A/52A (AC-3)
+alac: ALAC (Apple Lossless Audio Codec)
+aptx: aptX (Audio Processing Technology for Bluetooth)
+aptx_hd: aptX HD (Audio Processing Technology for Bluetooth)
+dca: DCA (DTS Coherent Acoustics)
+eac3: ATSC A/52B (AC-3, E-AC-3)
+flac: FLAC (Free Lossless Audio Codec)
+g723_1: G.723.1
+mlp: MLP (Meridian Lossless Packing)
+mp2: MP2 (MPEG audio layer 2)
+mp2fixed: MP2 fixed point (MPEG audio layer 2)
+nellymoser: Nellymoser Asao
+opus: Opus
+real_144: RealAudio 1.0 (14.4K)
+sbc: SBC (low-complexity subband codec)
+sonic: Sonic
+sonicls: Sonic lossless
+truehd: TrueHD
+tta: TTA (True Audio)
+vorbis: Vorbis
+wavpack: WavPack
+wmav1: Windows Media Audio 1
+wmav2: Windows Media Audio 2
+pcm_alaw: PCM A-law / G.711 A-law
+pcm_dvd: PCM signed 16|20|24-bit big-endian for DVD media
+pcm_f32be: PCM 32-bit floating point big-endian
+pcm_f32le: PCM 32-bit floating point little-endian
+pcm_f64be: PCM 64-bit floating point big-endian
+pcm_f64le: PCM 64-bit floating point little-endian
+pcm_mulaw: PCM mu-law / G.711 mu-law
+pcm_s8: PCM signed 8-bit
+pcm_s8_planar: PCM signed 8-bit planar
+pcm_s16be: PCM signed 16-bit big-endian
+pcm_s16be_planar: PCM signed 16-bit big-endian planar
+pcm_s16le: PCM signed 16-bit little-endian
+pcm_s16le_planar: PCM signed 16-bit little-endian planar
+pcm_s24be: PCM signed 24-bit big-endian
+pcm_s24daud: PCM D-Cinema audio signed 24-bit
+pcm_s24le: PCM signed 24-bit little-endian
+pcm_s24le_planar: PCM signed 24-bit little-endian planar
+pcm_s32be: PCM signed 32-bit big-endian
+pcm_s32le: PCM signed 32-bit little-endian
+pcm_s32le_planar: PCM signed 32-bit little-endian planar
+pcm_s64be: PCM signed 64-bit big-endian
+pcm_s64le: PCM signed 64-bit little-endian
+pcm_u8: PCM unsigned 8-bit
+pcm_u16be: PCM unsigned 16-bit big-endian
+pcm_u16le: PCM unsigned 16-bit little-endian
+pcm_u24be: PCM unsigned 24-bit big-endian
+pcm_u24le: PCM unsigned 24-bit little-endian
+pcm_u32be: PCM unsigned 32-bit big-endian
+pcm_u32le: PCM unsigned 32-bit little-endian
+pcm_vidc: PCM Archimedes VIDC
+roq_dpcm: DPCM id RoQ
+adpcm_adx: SEGA CRI ADX ADPCM
+g722: G.722 ADPCM
+g726: G.726 ADPCM
+g726le: G.726 ADPCM little-endian
+adpcm_ima_qt: ADPCM IMA QuickTime
+adpcm_ima_ssi: ADPCM IMA Simon & Schuster Interactive
+adpcm_ima_wav: ADPCM IMA WAV
+adpcm_ms: ADPCM Microsoft
+adpcm_swf: ADPCM Shockwave Flash
+adpcm_yamaha: ADPCM Yamaha
+aac_at: aac (AudioToolbox)
+alac_at: alac (AudioToolbox)
+ilbc_at: ilbc (AudioToolbox)
+pcm_alaw_at: pcm_alaw (AudioToolbox)
+pcm_mulaw_at: pcm_mulaw (AudioToolbox)
+libmp3lame: libmp3lame MP3 (MPEG audio layer 3)
+libopencore_amrnb: OpenCORE AMR-NB (Adaptive Multi-Rate Narrow-Band)
+libopus: libopus Opus
+libspeex: libspeex Speex
+libvorbis: libvorbis
