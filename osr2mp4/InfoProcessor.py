@@ -109,7 +109,7 @@ class Updater:
 			if not (objtype == "Circle" and self.info.more.sliderhead):
 				self.component.hitresult.add_result(self.info.hitresult, x, y)
 				self.component.accuracy.update_acc(self.info.hitresult)
-			if objtype != "Slider" or self.info.more.tickend:
+			if objtype != "Slider" or self.info.more.hitend:
 				self.component.scorecounter.update_score(self.info.score)
 
 		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
