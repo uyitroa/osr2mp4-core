@@ -27,7 +27,7 @@ def cleanup(settings):
 def mix_video_audio(settings):
 	_, file_extension = os.path.splitext(settings.output)
 	f = os.path.join(settings.temp, "outputf" + file_extension)
-	subprocess.check_call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', settings.audiocodec, settings.output, '-y'])
+	subprocess.check_call([settings.ffmpeg, '-i', f, '-i', settings.temp + 'audio.mp3', '-c:v', 'copy', '-c:a', settings.audiocodec, '-ab', str(settings.settings["Audio bitrate"]) + "k", settings.output, '-y'])
 
 
 def convert_tomp4(settings, output="output.mp4"):

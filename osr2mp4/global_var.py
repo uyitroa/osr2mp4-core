@@ -25,7 +25,8 @@ defaultsettings = {
 	"api key": "lol",
 	"Use FFmpeg video writer": False,
 	"FFmpeg codec": "libx264",
-	"FFmpeg custom commands": "-preset ultrafast -crf 23"
+	"FFmpeg custom commands": "-preset ultrafast -crf 23",
+	"Audio bitrate": 10000
 }
 
 defaultppconfig = {
