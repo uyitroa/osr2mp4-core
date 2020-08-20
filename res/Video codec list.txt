@@ -9,6 +9,7 @@ avrp: Avid 1:1 10-bit RGB Packer
 avui: Avid Meridien Uncompressed
 ayuv: Uncompressed packed MS 4:4:4:4
 bmp: BMP (Windows and OS/2 bitmap)
+cfhd: Cineform HD
 cinepak: Cinepak
 cljr: Cirrus Logic AccuPak
 dnxhd: VC3/DNxHD
@@ -78,7 +79,6 @@ zlib: LCL (LossLess Codec Library) ZLIB
 zmbv: Zip Motion Blocks Video
 libaom-av1: libaom AV1
 libopenjpeg: OpenJPEG JPEG 2000
-librav1e: librav1e AV1
 libtheora: libtheora Theora
 libvpx: libvpx VP8
 libvpx-vp9: libvpx VP9
@@ -88,6 +88,17 @@ libx264: libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10
 libx264rgb: libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 RGB
 libx265: libx265 H.265 / HEVC
 libxvid: libxvidcore MPEG-4 part 2
-h264_videotoolbox: VideoToolbox H.264 Encoder
-hevc_videotoolbox: VideoToolbox H.265 Encoder
-h264_nvenc: NVidia hardware assisted H.264 video encoder
+h264_amf: AMD AMF H.264 Encoder
+h264_mf: H264 via MediaFoundation
+h264_nvenc: NVIDIA NVENC H.264 encoder
+h264_qsv: H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (Intel Quick Sync Video acceleration)
+nvenc: NVIDIA NVENC H.264 encoder
+nvenc_h264: NVIDIA NVENC H.264 encoder
+nvenc_hevc: NVIDIA NVENC hevc encoder
+hevc_amf: AMD AMF HEVC encoder
+hevc_mf: HEVC via MediaFoundation
+hevc_nvenc: NVIDIA NVENC hevc encoder
+hevc_qsv: HEVC (Intel Quick Sync Video acceleration)
+mjpeg_qsv: MJPEG video (Intel Quick Sync Video acceleration)
+mpeg2_qsv: MPEG-2 video (Intel Quick Sync Video acceleration)
+vp9_qsv: VP9 video (Intel Quick Sync Video acceleration)
