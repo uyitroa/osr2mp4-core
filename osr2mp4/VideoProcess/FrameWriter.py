@@ -19,17 +19,7 @@ def write_frame(shared, conn, filename, settings, iii):
 		raise
 
 
-def write(shared, conn, filename, settings, iii):
-	asdfasdf = time.time()
-
-	logging.log(logging.DEBUG, "{}\n".format(filename))
-	print("Start write")
-
-	if settings.codec.lower() in videoextensions:
-		raise FourccIsNotExtension()
-
-	buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
-
+def getwriter(filename, settings, buf):
 	videoerror = None
 	if not settings.settings["Use FFmpeg video writer"]:
 		if len(settings.codec) != 4:
@@ -54,6 +44,20 @@ def write(shared, conn, filename, settings, iii):
 
 	if not writer.isOpened():
 		raise CannotCreateVideo(msg=videoerror)
+	return writer
+
+
+def write(shared, conn, filename, settings, iii):
+	asdfasdf = time.time()
+
+	logging.log(logging.DEBUG, "{}\n".format(filename))
+	print("Start write")
+
+	if settings.codec.lower() in videoextensions:
+		raise FourccIsNotExtension()
+
+	buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
+	writer = getwriter(filename, settings, buf)
 
 	np_img = np.frombuffer(shared, dtype=np.uint8)
 	np_img = np_img.reshape((settings.height, settings.width, 4))

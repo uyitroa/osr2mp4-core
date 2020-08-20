@@ -7,7 +7,7 @@ from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 import logging
 from .Draw import draw_frame, Drawer
-from .FrameWriter import write_frame
+from .FrameWriter import write_frame, getwriter
 import os
 
 
@@ -72,6 +72,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 	else:
 		from .AFrames import PreparedFrames
 		from ..CheckSystem.mathhelper import getunstablerate
+		import numpy as np
 
 		logging.debug("process start")
 
@@ -83,7 +84,9 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 		_, file_extension = os.path.splitext(settings.output)
 		f = os.path.join(settings.temp, "outputf" + file_extension)
-		writer = cv2.VideoWriter(f, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
+
+		buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
+		writer = getwriter(f, settings, buf)
 
 		logging.debug("setup done")
 		framecount = 0
@@ -92,8 +95,12 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			status = drawer.render_draw()
 
 			if status:
-				im = cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB)
-				writer.write(im)
+				cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
+
+				if not settings.settings["Use FFmpeg video writer"]:
+					writer.write(buf)
+				else:
+					writer.write()
 
 				framecount += 1
 				if framecount % 100 == 0:
