@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 
 import requests
 from recordclass import recordclass
@@ -232,8 +234,9 @@ class Scoreboard(FrameObject):
 
 	def getlocalscores(self, mods):
 		try:
-			scores = getscores(self.beatmaphash, self.settings.osu + "scores.db")
-		except Exception:
+			scores = getscores(self.beatmaphash, os.path.join(self.settings.osu, "scores.db"))
+		except Exception as e:
+			logging.error("from scoreboard", repr(e))
 			return
 
 		for i in range(len(scores["scores"])):
