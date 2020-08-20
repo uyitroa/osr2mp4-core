@@ -138,7 +138,7 @@ class Drawer:
 		self.component.ppcounter.add_to_frame(self.img)
 		self.component.hitresultcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
-
+		imageproc.debug(self.img, self.updater.info.timestamp, self.updater.info.more)
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
