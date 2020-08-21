@@ -1,5 +1,4 @@
 from recordclass import recordclass
-
 from ... import imageproc
 from ..FrameObject import FrameObject
 
