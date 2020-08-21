@@ -171,7 +171,7 @@ class Osr2mp4:
 			self.analyse_replay()
 		videotime = (self.start_index, self.end_index)
 
-		if not os.path.isdir(os.path.dirname(self.settings.output)):
+		if not os.path.isdir(os.path.dirname(os.path.abspath(self.settings.output))):
 			raise CannotCreateVideo()
 
 		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap,

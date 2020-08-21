@@ -87,6 +87,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 		buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
 		writer = getwriter(f, settings, buf)
+		buf = buf.reshape((settings.height, settings.width, 3))
 
 		logging.debug("setup done")
 		framecount = 0
