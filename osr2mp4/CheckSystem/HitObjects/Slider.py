@@ -23,7 +23,7 @@ class Slider(HitObject):
 		self.starttime, self.duration = int(self.osu_d["time"]), int(self.osu_d["duration"])
 		self.endtime = self.starttime + self.duration * self.osu_d["repeated"]
 
-		velocity = self.osu_d["pixel length"]/self.osu_d["duration"]
+		velocity = self.osu_d["pixel length"]/self.duration
 		time_interval = 0
 		if len(self.osu_d["ticks dist"]) > 0:
 			tick_distance = self.osu_d["ticks dist"][0]
@@ -65,8 +65,8 @@ class Slider(HitObject):
 
 	def cursor_inslider(self, osr, pos):
 		radius = self.diff.slidermax_distance if self.issliding else self.diff.max_distance
-		cursor_distance = (osr[Replays.CURSOR_X] - pos[0]) ** 2 + (osr[Replays.CURSOR_Y] - pos[1]) ** 2
-		if self.starttime == 269482:
+		cursor_distance = (round(osr[Replays.CURSOR_X], 2) - pos[0]) ** 2 + (round(osr[Replays.CURSOR_Y], 2) - pos[1]) ** 2
+		if self.starttime == 307397:
 			print(cursor_distance, self.diff.max_distance**2, self.diff.slidermax_distance**2)
 		return cursor_distance < radius * radius
 
@@ -81,7 +81,7 @@ class Slider(HitObject):
 
 		elif self.starttime - self.diff.score[2] < osr[Replays.TIMES] <= self.starttime:
 			pos = self.osu_d["slider_c"].at(0)
-			if self.starttime == 269482:
+			if self.starttime == 307397:
 				print(osr, pos)
 			self.issliding = self.cursor_inslider(osr, pos) and osr[Replays.KEYS_PRESSED] != 0
 
@@ -107,7 +107,7 @@ class Slider(HitObject):
 		if mousedown:
 			distance = slidertime/self.duration * self.osu_d["pixel length"]
 			pos = self.osu_d["slider_c"].at(distance)
-			if self.starttime == 269482:
+			if self.starttime == 307397:
 				print(slidertime, distance, pos, self.osu_d["slider_c"].slider_type)
 			allowable = self.cursor_inslider(osr, pos)
 
@@ -145,7 +145,7 @@ class Slider(HitObject):
 				if pointcount % (len(self.slider_score_timingpoints) / self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
 
-		if self.starttime == 269482:
+		if self.starttime == 307397:
 			print(self.osu_d["repeated"])
 			print(mousedown, allowable, self.ticks_miss, self.ticks_hit, pointcount, self.slider_score_timingpoints, osr, self.endtime, pos, self.duration, "\n")
 

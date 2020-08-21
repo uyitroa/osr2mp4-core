@@ -1,9 +1,7 @@
 import math
 from .HitObjects.HitObject import HitObject
 from .HitObjects.Slider import Slider
-from ..VideoProcess.smoothing import smoothcursor
 from ..osrparse.enums import Mod
-
 from ..EEnum.EReplay import Replays
 
 
