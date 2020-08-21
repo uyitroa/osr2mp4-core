@@ -20,7 +20,8 @@ class Slider(HitObject):
 		self.ticks_hit = 0
 		self.ticks_miss = 0
 
-		self.starttime, self.endtime, self.duration = int(self.osu_d["time"]), int(self.osu_d["end time"]), int(self.osu_d["duration"])
+		self.starttime, self.duration = int(self.osu_d["time"]), int(self.osu_d["duration"])
+		self.endtime = self.starttime + self.duration * self.osu_d["repeated"]
 
 		velocity = self.osu_d["pixel length"]/self.osu_d["duration"]
 		time_interval = 0
@@ -29,13 +30,13 @@ class Slider(HitObject):
 			time_interval = tick_distance/velocity
 
 		count = 0
-		for i in range(self.osu_d["repeated"]-1):
+		for i in range(self.osu_d["repeated"]):
+			if i > 0:
+				arrowtime = self.starttime + self.duration * i
+				self.slider_score_timingpoints.append(int(arrowtime))
 
 			self.slider_score_timingpoints.extend([self.starttime + time_interval * (count + x + 1) for x in range(len(self.osu_d["ticks dist"]))])
 			count += len(self.osu_d["ticks dist"])
-
-			arrowtime = self.starttime + self.duration * (i+1)
-			self.slider_score_timingpoints.append(int(arrowtime))
 
 		sliderendtime = max(self.starttime + (self.endtime - self.starttime)/2, self.endtime - 36)
 		self.slider_score_timingpoints.append(int(sliderendtime))
@@ -57,13 +58,15 @@ class Slider(HitObject):
 
 	def getsliderelapsedtime(self, curtime):
 		slidertime = curtime - self.starttime
-		slidertime = slidertime / self.n_arrow
-		return slidertime
+		reverse = int(slidertime/self.duration) % 2 == 1
+		timeatlength = slidertime % self.duration
+		timeatlength = self.duration - timeatlength if reverse else timeatlength
+		return timeatlength
 
 	def cursor_inslider(self, osr, pos):
 		radius = self.diff.slidermax_distance if self.issliding else self.diff.max_distance
 		cursor_distance = (osr[Replays.CURSOR_X] - pos[0]) ** 2 + (osr[Replays.CURSOR_Y] - pos[1]) ** 2
-		if self.starttime == 229737:
+		if self.starttime == 269482:
 			print(cursor_distance, self.diff.max_distance**2, self.diff.slidermax_distance**2)
 		return cursor_distance < radius * radius
 
@@ -73,18 +76,18 @@ class Slider(HitObject):
 		hitvalue = combostatus = 0
 		prev_state = self.issliding
 
-		if self.endtime > osr[3] > self.starttime:
+		if self.endtime >= osr[3] >= self.starttime:
 			hitvalue, combostatus = self.check_cursor_incurve(replay, osrindex)
 
 		elif self.starttime - self.diff.score[2] < osr[Replays.TIMES] <= self.starttime:
 			pos = self.osu_d["slider_c"].at(0)
-			if self.starttime == 229737:
+			if self.starttime == 269482:
 				print(osr, pos)
 			self.issliding = self.cursor_inslider(osr, pos) and osr[Replays.KEYS_PRESSED] != 0
 
 		updatefollow = prev_state != self.issliding
 
-		if osr[3] >= self.endtime:
+		if osr[3] > self.endtime:
 			hitresult = self.gethitresult()
 			return True, hitresult, self.starttime, self.osu_d["id"], self.osu_d["end x"], self.osu_d["end y"], False, hitvalue, combostatus, self.hitend, True
 
@@ -104,7 +107,7 @@ class Slider(HitObject):
 		if mousedown:
 			distance = slidertime/self.duration * self.osu_d["pixel length"]
 			pos = self.osu_d["slider_c"].at(distance)
-			if self.starttime == 229737:
+			if self.starttime == 269482:
 				print(slidertime, distance, pos, self.osu_d["slider_c"].slider_type)
 			allowable = self.cursor_inslider(osr, pos)
 
@@ -142,7 +145,8 @@ class Slider(HitObject):
 				if pointcount % (len(self.slider_score_timingpoints) / self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
 
-		if self.starttime == 229737:
+		if self.starttime == 269482:
+			print(self.osu_d["repeated"])
 			print(mousedown, allowable, self.ticks_miss, self.ticks_hit, pointcount, self.slider_score_timingpoints, osr, self.endtime, pos, self.duration, "\n")
 
 		self.issliding = allowable
