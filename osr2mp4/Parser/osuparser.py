@@ -300,7 +300,14 @@ class Beatmap:
 					my_dict["ticks pos"].append(pos)
 					my_dict["ticks dist"].append(d)
 					d += tickdistance
-				# print(len(my_dict["slider ticks"]))
+
+				sliderscoringdistance = (100 * self.diff["SliderMultiplier"])/self.diff["SliderTickRate"]
+				if my_dict["BeatDuration"] > 0:
+					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"] * (1000/my_dict["BeatDuration"])
+				else:
+					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"]
+
+				# print(my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
 
 				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:

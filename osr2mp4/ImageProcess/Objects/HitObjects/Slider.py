@@ -192,7 +192,7 @@ class SliderManager:
 			delta_time = slider.cur_duration
 
 		delta_time = min(slider.osu_d["duration"], max(0, delta_time))
-		dist = slider.osu_d["pixel length"] / slider.osu_d["duration"] * delta_time
+		dist = delta_time * slider.osu_d["velocity"] / 1000
 
 		pos = slider.osu_d["slider_c"].at(dist)
 
