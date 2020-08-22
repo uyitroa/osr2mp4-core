@@ -23,9 +23,7 @@ class HitresultCounter(ACounter):
 		for n in self.score:
 			if n == 300:
 				continue
-			x = (self.countersettings[self.prefix + "x"] + gap * counter) * self.settings.scale
-			y = self.countersettings[self.prefix + "y"] * self.settings.scale
-			for digit in str(self.score[n])[::-1]:
-				imageproc.add(self.frames[digit], background, x, y, self.countersettings["Hitresult Alpha"], topleft=True)
-				x -= self.frames[digit].size[0]
+			x = (self.countersettings[self.prefix + "x"] + gap * counter) * self.settings.scale - self.frames[0].size[0]/2
+			y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
+			imageproc.draw_number(background, self.score[n], self.frames, x, y, self.countersettings["Hitresult Alpha"], origin="right", gap=0)
 			counter += 1

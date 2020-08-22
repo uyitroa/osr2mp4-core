@@ -26,10 +26,13 @@ class ACounter:
 		char = [str(x) for x in range(10)]
 		char.append(".")
 		char.append(" ")
-		self.frames = prepare_text(char, self.countersettings[self.prefix + "Size"] * self.settings.scale,
+		frames = prepare_text(char, self.countersettings[self.prefix + "Size"] * self.settings.scale,
 		                           self.countersettings[self.prefix + "Rgb"], self.settings,
 		                           alpha=self.countersettings[self.prefix + "Alpha"],
 		                           fontpath=self.countersettings[self.prefix + "Font"])
+
+		for i in frames:
+			self.frames[int(i) if i.isdigit() else i] = frames[i]
 
 		try:
 			self.background = Image.open(self.countersettings[self.prefix + "Background"]).convert("RGBA")
@@ -46,11 +49,9 @@ class ACounter:
 		pass
 
 	def draw_number(self, background):
-		x = self.countersettings[self.prefix + "x"] * self.settings.scale
-		y = self.countersettings[self.prefix + "y"] * self.settings.scale
-		for digit in self.score[::-1]:
-			x -= self.frames[digit].size[0]
-			imageproc.add(self.frames[digit], background, x, y, self.countersettings[self.prefix + "Alpha"], topleft=True)
+		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
+		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
+		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin="right", gap=0)
 
 	def add_to_frame(self, background):
 		"""

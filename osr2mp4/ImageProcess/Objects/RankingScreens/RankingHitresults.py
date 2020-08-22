@@ -23,24 +23,13 @@ class RankingHitresults(ARankingScreen):
 		self.snake = 5 * settings.scale
 
 	def draw_score(self, score_string, background, x, y, alpha, gap=None):
-
 		frames = self.numberframes[0]
 		if gap is None:
 			gap = self.gap
 			frames = self.numberframes[1]
-			# score_string += "x"
+			score_string += "x"
 
-		for digit in score_string:
-			if digit == "x":
-				index = 11
-			else:
-				index = int(digit)
-			imageproc.add(frames[index], background, x, y, alpha=alpha)
-			x += -gap + frames[0].size[0]
-
-		if gap == self.gap:
-			x += 15 * self.settings.scale
-			imageproc.add(frames[11], background, x, y, alpha=alpha)
+		imageproc.draw_number(background, score_string, frames, x, y, alpha, origin="left", gap=gap)
 
 	def add_to_frame(self, background):
 		super().add_to_frame(background)

@@ -139,6 +139,42 @@ def rotate_images(frames, angle):
 	return images
 
 
+def draw_number(background, number, frames, x, y, alpha, origin, gap, constantgap=False):
+	direction = 1 if origin == "left" else -1
+	scorestr = str(number) if origin == "left" else str(number)[::-1]
+
+	first = True
+	for n in scorestr:
+		index = int(n) if n.isdigit() else n
+		if not first and not constantgap:
+			x += (frames[index].size[0] - gap) * direction/2
+		first = False
+
+		add(frames[index], background, x, y, alpha=alpha)
+
+		if constantgap:
+			x += (frames[0].size[0] - gap) * direction
+		else:
+			x += (frames[index].size[0] - gap) * direction/2
+
+
+def get_number_size(number, frames, gap, constantgap=False):
+	x = 0
+	first = True
+	for n in str(number):
+		index = int(n) if n.isdigit() else n
+		if not first and not constantgap:
+			x += (frames[index].size[0] - gap)/2
+		first = False
+
+		if constantgap:
+			x += (frames[0].size[0] - gap)
+		else:
+			x += (frames[index].size[0] - gap)/2
+
+	return x
+
+
 def debug(background, *args):
 	text = ""
 	pos = (100, 100)

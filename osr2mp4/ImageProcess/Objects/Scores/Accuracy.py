@@ -1,3 +1,5 @@
+from ... import imageproc
+
 from ..FrameObject import FrameObject
 
 
@@ -44,19 +46,11 @@ class Accuracy(FrameObject):
 		:param y: int
 		:return:
 		"""
-		self.frame_index = 10  # score_percent
 		y = self.y + self.h()/2
-		super().add_to_frame(background, x, y)
-		x = x + self.gap - self.w()
+		imageproc.add(self.frames["%"], background, x, y)
+		x = x + self.gap - self.frames["%"].size[0]
 
-		for digit in acc[::-1]:
-			if digit == '.':
-				self.frame_index = 11  # score_dot
-			else:
-				self.frame_index = int(digit)
-			y = self.y + self.h() / 2
-			super().add_to_frame(background, x, y)
-			x += self.sizegap
+		imageproc.draw_number(background, acc, self.frames, x, y, alpha=1, origin="right", gap=self.gap, constantgap=False)
 
 	def add_to_frame(self, background, inbreak):
 		if self.maxscore == 0:

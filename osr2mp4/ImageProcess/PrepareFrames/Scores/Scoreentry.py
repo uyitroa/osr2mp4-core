@@ -10,6 +10,18 @@ from ...PrepareFrames.YImage import YImage
 scoreentry = "scoreentry-"
 
 
+def scorelist_to_dict(frames):
+	frames_dict = {}
+	for i in range(len(frames)):
+		x = i
+		if i == 10:
+			x = "x"
+		if i == 11:
+			x = "."
+		frames_dict[x] = frames[i]
+	return frames_dict
+
+
 def prepare_scoreboardscore(scale, settings):
 	"""
 	:param settings:
@@ -38,5 +50,10 @@ def prepare_scoreboardscore(scale, settings):
 		numbers_animation.append(img)
 	combo_number = imageproc.change_sizes(numbers_animation, 0.9, 0.9)
 	combo_number = imageproc.add_color_s(combo_number, [200, 255, 255])
+	combo_number = scorelist_to_dict(combo_number)
+
 	bigger_numbers_animation = imageproc.change_sizes(numbers_animation, 2, 2)
+	bigger_numbers_animation = scorelist_to_dict(bigger_numbers_animation)
+
+	numbers_animation = scorelist_to_dict(numbers_animation)
 	return numbers_animation, bigger_numbers_animation, combo_number

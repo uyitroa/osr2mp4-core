@@ -20,17 +20,8 @@ class RankingCombo(ARankingScreen):
 		else:
 			self.y = 480
 
-
 	def draw_score(self, score_string, background, x, y, alpha):
-		for digit in score_string:
-			if digit == "x":
-				index = 11
-			else:
-				index = int(digit)
-			imageproc.add(self.numberframes[index], background, x, y, alpha=alpha)
-			x += -self.gap + self.numberframes[index].size[0]
-		x += 15 * self.settings.scale
-		imageproc.add(self.numberframes[11], background, x, y, alpha=alpha)
+		imageproc.draw_number(background, score_string + "x", self.numberframes, x, y, alpha, origin="left", gap=self.gap)
 
 	def add_to_frame(self, background):
 		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen

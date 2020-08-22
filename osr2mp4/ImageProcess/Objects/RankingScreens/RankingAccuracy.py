@@ -23,18 +23,8 @@ class RankingAccuracy(ARankingScreen):
 		else:
 			self.y = 480
 
-
 	def draw_score(self, score_string, background, x, y, alpha):
-		score_string += "%"
-		for digit in score_string:
-			if digit == ".":
-				index = 10
-			elif digit == "%":
-				index = 12
-			else:
-				index = int(digit)
-			imageproc.add(self.numberframes[index], background, x, y, alpha=alpha)
-			x += -self.gap + self.numberframes[index].size[0]
+		imageproc.draw_number(background, score_string + "%", self.numberframes, x, y, alpha, origin="left", gap=self.gap)
 
 	def add_to_frame(self, background):
 		# source: https://osu.ppy.sh/help/wiki/Skinning/Interface#ranking-screen

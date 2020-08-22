@@ -3,20 +3,22 @@ def prepare_rankingscorecounter(scorenumber):
 	:param scorenumber: ScoreNumber
 	:return: [PIL.Image]
 	"""
-	img = []
-	hitresultimg = []
+	img = {}
+	hitresultimg = {}
+	c = 0
 	for image in scorenumber.score_images:
 		image.change_size(1.2999, 1.2999)
-		img.append(image.img)
+		img[c] = image.img
 
 		image.change_size(1, 1)
-		hitresultimg.append(image.img)
+		hitresultimg[c] = image.img
+		c += 1
 	scorenumber.score_dot.change_size(1, 1)
-	hitresultimg.append(scorenumber.score_dot.img)
+	hitresultimg["."] = scorenumber.score_dot.img
 
 	scorenumber.combo_x.change_size(1, 1)
-	hitresultimg.append(scorenumber.score_x.img)
+	hitresultimg["x"] = scorenumber.score_x.img
 
 	scorenumber.score_percent.change_size(1, 1)
-	hitresultimg.append(scorenumber.score_percent.img)
+	hitresultimg["%"] = scorenumber.score_percent.img
 	return img, hitresultimg
