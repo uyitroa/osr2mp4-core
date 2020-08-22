@@ -29,15 +29,19 @@ def search_updateindex(idd, resultinfo, component, to_time):
 	component.mouse2.set_freeze(resultinfo[cur_index].time, info.clicks[3])
 	urindex = cur_index
 	diff = 0
-	while diff < 3400:
-		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
-			if resultinfo[urindex].hitresult > 0:
-				component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
-				pass
+	while diff < 5000:
 		urindex -= 1
 		if urindex <= -1:
 			break
 		diff = info.time - resultinfo[urindex].time
+	while urindex < cur_index:
+		if type(resultinfo[urindex].more).__name__ == "Circle" and resultinfo[urindex].hitresult is not None:
+			if resultinfo[urindex].hitresult > 0:
+				component.urbar.add_bar(resultinfo[urindex].more.deltat, resultinfo[urindex].hitresult)
+				component.urbar.movearrow()
+		urindex += 1
+
+	print("done")
 	return cur_index
 
 

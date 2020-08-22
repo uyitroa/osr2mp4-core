@@ -1,6 +1,7 @@
 import logging
 import os
 
+from ..ImageProcess.PrepareFrames.Scores.URArrow import prepare_urarrow
 from ..ImageProcess.Objects.Components.Flashlight import Flashlight
 from ..ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
 from ..ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
@@ -160,6 +161,7 @@ class PreparedFrames:
 			self.rankinggraph.extend(self.rankingur)
 
 		self.flashlight = prepare_flashlight(settings, fl)
+		self.urarrow = prepare_urarrow(settings)
 		logging.debug('start preparing done')
 
 
@@ -194,7 +196,7 @@ class FrameObjects:
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
 		self.scorecounter = ScoreCounter(frames.scorecounter, diff, skin.fonts["ScoreOverlap"], settings)
 
-		self.urbar = URBar(frames.urbar, settings)
+		self.urbar = URBar(frames.urbar, frames.urarrow, settings)
 
 		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
