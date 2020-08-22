@@ -35,6 +35,7 @@ class URBar(AScorebar):
 		self.destarrowx = 0
 		self.arrowx = 0
 		self.urarrow = urarrow[0]
+		self.arrowy = self.h // 4
 
 	def add_bar(self, delta_t, hitresult):
 		pos = int(self.w/2 + delta_t/self.maxtime * self.w/2)
@@ -51,6 +52,8 @@ class URBar(AScorebar):
 		self.barthin[xstart:xend, :] = a.clip(0, 255)
 
 	def add_to_frame_bar(self, background):
+		if not self.settings.settings["Show score meter"]:
+			return
 		img = self.urbar
 		imageproc.add(img, background, self.x, self.y, alpha=min(1, self.alpha*2))
 
@@ -61,6 +64,8 @@ class URBar(AScorebar):
 		self.arrowx = easingout(current, self.arrowx, change, duration)
 
 	def add_to_frame(self, background):
+		if not self.settings.settings["Show score meter"]:
+			return
 		AScorebar.animate(self)
 
 		self.c += 60/self.settings.fps
@@ -79,4 +84,4 @@ class URBar(AScorebar):
 
 		self.movearrow()
 		imageproc.debug(background, self.arrowx)
-		imageproc.add(self.urarrow, background, self.x_offset + self.arrowx, self.y-7*self.settings.scale, alpha=min(1, self.alpha*2))
+		imageproc.add(self.urarrow, background, self.x_offset + self.arrowx, self.y-self.arrowy, alpha=min(1, self.alpha*2))

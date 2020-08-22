@@ -14,6 +14,7 @@ defaultsettings = {
 	"Show mods icon": True,
 	"Enable PP counter": False,
 	"Score meter size": 1,
+	"Show score meter": True,
 	"Song volume": 50,
 	"Effect volume": 50,
 	"Ignore beatmap hitsounds": False,

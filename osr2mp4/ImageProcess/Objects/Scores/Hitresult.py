@@ -39,8 +39,11 @@ class HitResult(FrameObject):
 		if scores == 0 and not self.showmiss:
 			return
 
+		if scores == 0 and self.singleframemiss:
+			y = y - 40 * self.settings.playfieldscale
+
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y-30*self.settings.playfieldscale*(self.singleframemiss), 0, 40, 0, 3 * 60/self.settings.fps])
+		self.hitresults.append([scores, x, y, 0, 40, 0, 3 * 60/self.settings.fps])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
