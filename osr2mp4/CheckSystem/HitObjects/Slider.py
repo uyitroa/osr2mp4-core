@@ -7,13 +7,13 @@ from ...EEnum.EReplay import Replays
 from .HitObject import HitObject
 
 
-Transformation = recordclass("Transformation", "p1 p2 current_time next_time")
+Transformation = recordclass("Transformation", "startvector endvector current_time next_time")
 
 
 class Slider(HitObject):
 	def __init__(self, hitobject, combo):
 		self.osu_d = hitobject
-		self.sliderballtime = []
+		self.sliderballtransformations = []
 		self.slider_score_timingpoints = []
 		self.curscore = 0
 		self.maxscore = 1
@@ -30,9 +30,26 @@ class Slider(HitObject):
 		self.endtime = self.starttime + self.duration * self.osu_d["repeated"]
 
 		self.getscoretimingpoints()
-		self.getsliderballtime()
+		self.getsliderballtransformations()
 
-	def getsliderballtime(self):
+	def getscoretimingpoints(self):
+		time_interval = 0
+		if len(self.osu_d["ticks dist"]) > 0:
+			tick_distance = self.osu_d["ticks dist"][0]
+			time_interval = tick_distance / self.osu_d["velocity"] * 1000
+		count = 0
+		for i in range(self.osu_d["repeated"]):
+			if i > 0:
+				arrowtime = self.starttime + self.duration * i
+				self.slider_score_timingpoints.append(int(arrowtime))
+
+			self.slider_score_timingpoints.extend(
+				[self.starttime + time_interval * (count + x + 1) for x in range(len(self.osu_d["ticks dist"]))])
+			count += len(self.osu_d["ticks dist"])
+		sliderendtime = max(self.starttime + (self.endtime - self.starttime) / 2, self.endtime - 36)
+		self.slider_score_timingpoints.append(int(sliderendtime))
+
+	def getsliderballtransformations(self):
 		cum_length = self.osu_d["slider_c"].cum_length
 		currenttime = self.starttime
 
@@ -53,33 +70,16 @@ class Slider(HitObject):
 					p1 = self.osu_d["slider_c"].pos[j]
 					p2 = self.osu_d["slider_c"].pos[j+1]
 
-				self.sliderballtime.append(Transformation(p1, p2, currenttime, currenttime + duration))
+				self.sliderballtransformations.append(Transformation(p1, p2, int(currenttime), int(currenttime + duration)))
 
 				currenttime += duration
 				j += direction
 
 	def find(self, curtime):
-		for i in range(len(self.sliderballtime)):
-			if self.sliderballtime[i].current_time <= curtime <= self.sliderballtime[i].next_time:
+		for i in range(len(self.sliderballtransformations)):
+			if self.sliderballtransformations[i].current_time <= curtime <= self.sliderballtransformations[i].next_time:
 				return i
-		return len(self.sliderballtime)-1
-
-	def getscoretimingpoints(self):
-		time_interval = 0
-		if len(self.osu_d["ticks dist"]) > 0:
-			tick_distance = self.osu_d["ticks dist"][0]
-			time_interval = tick_distance / self.osu_d["velocity"] * 1000
-		count = 0
-		for i in range(self.osu_d["repeated"]):
-			if i > 0:
-				arrowtime = self.starttime + self.duration * i
-				self.slider_score_timingpoints.append(int(arrowtime))
-
-			self.slider_score_timingpoints.extend(
-				[self.starttime + time_interval * (count + x + 1) for x in range(len(self.osu_d["ticks dist"]))])
-			count += len(self.osu_d["ticks dist"])
-		sliderendtime = max(self.starttime + (self.endtime - self.starttime) / 2, self.endtime - 36)
-		self.slider_score_timingpoints.append(int(sliderendtime))
+		return len(self.sliderballtransformations)-1
 
 	def gethitresult(self):
 		if self.curscore == 0:
@@ -112,6 +112,7 @@ class Slider(HitObject):
 
 	def check(self, replay, osrindex):
 		osr = replay[osrindex]
+		curtime = osr[Replays.TIMES]
 
 		hitvalue = combostatus = 0
 		updatefollow = False
@@ -120,7 +121,7 @@ class Slider(HitObject):
 			hitvalue, combostatus = self.check_cursor_incurve(replay, osrindex)
 			updatefollow = self.prev_issliding != self.issliding
 
-		elif self.starttime - self.diff.score[2] < osr[Replays.TIMES] <= self.starttime:
+		elif self.starttime - self.diff.scorewindow[2] < curtime <= self.starttime:
 			pos = self.osu_d["slider_c"].at(0)
 			if self.starttime == 307397:
 				print(osr, pos)
@@ -139,28 +140,30 @@ class Slider(HitObject):
 	def check_cursor_incurve(self, replay, osrindex):
 
 		osr = replay[osrindex]
+		curtime = osr[Replays.TIMES]
+
 		allowable = False
 		mousedown = osr[Replays.KEYS_PRESSED] != 0 or Mod.Relax in self.mods
 
-		# slidertime = self.getsliderelapsedtime(osr[Replays.TIMES])
+		# slidertime = self.getsliderelapsedtime(curtime)
 		pos = [0, 0]
 		if mousedown:
 			# distance = slidertime * self.osu_d["velocity"]/1000
 			# pos = self.osu_d["slider_c"].at(distance)
-			index = self.find(osr[Replays.TIMES])
-			sb = self.sliderballtime[index]
+			index = self.find(curtime)
+			sb = self.sliderballtransformations[index]
 			if sb.current_time == sb.next_time:
-				pos = [sb.p2[0], sb.p2[1]]
+				pos = [sb.endvector[0], sb.endvector[1]]
 			else:
-				x = sb.p1[0] + (sb.p2[0] - sb.p1[0]) * (1 - (sb.next_time - osr[Replays.TIMES])/(sb.next_time - sb.current_time))
-				y = sb.p1[1] + (sb.p2[1] - sb.p1[1]) * (1 - (sb.next_time - osr[Replays.TIMES])/(sb.next_time - sb.current_time))
+				x = sb.startvector[0] + (sb.endvector[0] - sb.startvector[0]) * (1 - (sb.next_time - curtime)/(sb.next_time - sb.current_time))
+				y = sb.startvector[1] + (sb.endvector[1] - sb.startvector[1]) * (1 - (sb.next_time - curtime)/(sb.next_time - sb.current_time))
 				pos = [x, y]
 			if self.starttime == 307397:
 				print(pos, self.osu_d["slider_c"].slider_type, self.osu_d["pixel length"], self.osu_d["velocity"])
 			allowable = self.cursor_inslider(osr, pos)
 
 		pointcount = 0
-		while pointcount < len(self.slider_score_timingpoints) and self.slider_score_timingpoints[pointcount] <= osr[Replays.TIMES]:
+		while pointcount < len(self.slider_score_timingpoints) and self.slider_score_timingpoints[pointcount] <= curtime:
 			pointcount += 1
 
 		combostatus = 0
@@ -170,20 +173,18 @@ class Slider(HitObject):
 			self.maxscore += 1
 			if allowable:
 				self.ticks_hit += 1
+				self.curscore += 1
 				combostatus = 1
 
 				if pointcount == len(self.slider_score_timingpoints):
 					self.hitend = True
 					hitvalue = 30
-					self.curscore += 1
 
 				elif pointcount % (len(self.slider_score_timingpoints)/self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
-					self.curscore += 1
 					hitvalue = 30
 				else:
 					hitvalue = 10
-					self.curscore += 1
 
 			else:
 				self.ticks_miss += 1
