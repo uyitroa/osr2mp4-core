@@ -15,7 +15,7 @@ from ..EEnum.EState import States
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
-Slider = namedtuple("Slider", "followstate hitvalue tickend x y end arrowindex")
+Slider = namedtuple("Slider", "followstate hitvalue hitend x y end arrowindex")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue rpm")
 
 
@@ -174,26 +174,18 @@ class HitObjectChecker:
 				followappear = False
 				self.hitobjects[i]["head not done"] = False
 				if hitresult != 0:
-					self.check.sliders_memory[idd]["score"] += 1
-					self.check.sliders_memory[idd]["combo"] += 1
+					self.check.sliders_memory[idd].curscore += 1
+					self.check.sliders_memory[idd].combo += 1
 
 					if replay[osr_index][3] > timestamp:
-						delta_time = max(0, (replay[osr_index][3] - self.hitobjects[i]["time"]) % self.hitobjects[i][
-							"duration"])
+						delta_time = self.check.sliders_memory[idd].getsliderelapsedtime(replay[osr_index][Replays.TIMES])
 						dist = self.hitobjects[i]["pixel length"] / self.hitobjects[i]["duration"] * delta_time
-						pos = self.hitobjects[i]["slider_c"].at(dist)  # TODO: what if kick slider too fast and clicked too late
-						in_ball = math.sqrt(
-							(replay[osr_index][0] - pos[0]) ** 2 + (replay[osr_index][1] - pos[1]) ** 2) <= \
-								  self.check.sliders_memory[idd]["dist"]
-					else:
-						in_ball = True
-					if in_ball:
-						self.check.sliders_memory[idd]["dist"] = self.check.diff.slidermax_distance
-						followappear = True
-				elif hitresult == 0:
-					self.check.sliders_memory[idd]["combo"] = 0
-				circle = Circle(state, deltat, followappear, True, x, y)
+						pos = self.hitobjects[i]["slider_c"].at(dist)
+						self.check.sliders_memory[idd].issliding = followappear = self.check.sliders_memory[idd].cursor_inslider(replay[osr_index], pos)
 
+				elif hitresult == 0:
+					self.check.sliders_memory[idd].combo = 0
+				circle = Circle(state, deltat, followappear, True, x, y)
 
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,
@@ -205,11 +197,10 @@ class HitObjectChecker:
 		return notelock, sum_newclick, i
 
 	def checkslider(self, i, replay, osr_index, notelock):
-		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, tickend, updatefollow = self.check.checkslider(
+		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, hitend, updatefollow = self.check.checkslider(
 			i, replay, osr_index)
 
 		time_from_previous_frame = replay[osr_index][Replays.TIMES] - replay[max(0, osr_index-1)][Replays.TIMES] + 3
-
 
 		# slider has notelock and it depends on the hit time window, or if the slider is too short then it would be the duration of the slider
 		notelock = max(notelock, min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow))
@@ -224,8 +215,8 @@ class HitObjectChecker:
 
 		self.maxcombo = max(self.maxcombo, self.combo)
 
-		end = self.check.sliders_memory[idd]["tickend"]
-		arrowindex = self.check.sliders_memory[idd]["repeated slider"]
+		end = self.check.sliders_memory[idd].hitend
+		arrowindex = self.check.sliders_memory[idd].n_arrow
 
 		osrtime = min(replay[osr_index][3], self.hitobjects[i]["end time"] + 1)
 
@@ -257,7 +248,7 @@ class HitObjectChecker:
 
 			if combostatus > 1:
 				for x in range(combostatus, 0, -1):
-					slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
+					slider = Slider(followstate, hitvalue, hitend, x, y, end, arrowindex)
 					info = Info(osrtime, self.combo-x, 1,
 								self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
@@ -267,7 +258,7 @@ class HitObjectChecker:
 
 			self.maxcombo = max(self.maxcombo, self.combo)
 
-			slider = Slider(followstate, hitvalue, tickend, x, y, end, arrowindex)
+			slider = Slider(followstate, hitvalue, hitend, x, y, end, arrowindex)
 
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,

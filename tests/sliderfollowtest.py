@@ -19,7 +19,6 @@ class TestSliderfollow(unittest.TestCase):
 		cls.tests.append(getinfos("tool"))
 		cls.tests.append(getinfos("2tool"))
 		cls.tests.append(getinfos("2yomi"))
-		# cls.tests.append(getinfos("3yomi"))
 		cls.tests.append(getinfos("4yomi"))
 
 		cls.custom.append(getinfos("69tool"))
@@ -45,12 +44,15 @@ class TestSliderfollow(unittest.TestCase):
 		cls.custom.append(getinfos("date"))
 		cls.custom.append(getinfos("69reimei"))
 		cls.custom.append(getinfos("73kikoku"))
-		# cls.custom.append(getinfos("74kikoku"))
+		cls.custom.append(getinfos("74kikoku"))
 
 		cls.real.append(getinfos("realtool"))
 		cls.real.append(getinfos("realyomi", True))
-		# cls.real.append(getinfos("realkikoku"))
+		cls.real.append(getinfos("realkikoku"))
 		cls.real.append(getinfos("realmagnolia"))
+		cls.real.append(getinfos("realkaede"))
+		cls.real.append(getinfos("realexit"))
+		cls.real.append(getinfos("realfallen"))
 
 	def test_sliderfollow(self):
 		for i in range(len(self.tests)):
@@ -82,7 +84,6 @@ class TestSliderfollow(unittest.TestCase):
 				resultinfo = checkmain(case[0], case[1][x], self.settings, True)
 				self.assertEqual(self.custom_expect100[i], resultinfo[-1].accuracy[100], msg=f"Replay {case[2]}{name}.osr")
 				self.assertEqual(self.custom_expect50[i], resultinfo[-1].accuracy[50], msg=f"Replay {case[2]}{name}.osr")
-
 
 	def test_real(self):
 		for i in range(len(self.real)):
