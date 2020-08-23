@@ -52,6 +52,7 @@ class TestSliderfollow(unittest.TestCase):
 		cls.real.append(getinfos("realmagnolia"))
 		cls.real.append(getinfos("realkaede"))
 		cls.real.append(getinfos("realexit"))
+		cls.real.append(getinfos("realfallen"))
 
 	def test_sliderfollow(self):
 		for i in range(len(self.tests)):

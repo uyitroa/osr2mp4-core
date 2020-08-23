@@ -140,8 +140,6 @@ class Slider(HitObject):
 	def cursor_inslider(self, osr, pos):
 		radius = self.diff.slidermax_distance if self.issliding else self.diff.max_distance
 		cursor_distance = (round(osr[Replays.CURSOR_X], 2) - pos[0]) ** 2 + (round(osr[Replays.CURSOR_Y], 2) - pos[1]) ** 2
-		if self.starttime == 89620 or self.starttime == 315925:
-			print(cursor_distance, self.diff.max_distance**2, self.diff.slidermax_distance**2)
 		return cursor_distance < radius * radius
 
 	def check(self, replay, osrindex):
@@ -157,8 +155,6 @@ class Slider(HitObject):
 
 		elif self.starttime - self.diff.scorewindow[2] < curtime <= self.starttime:
 			pos = self.osu_d["slider_c"].at(0)
-			if self.starttime == 89620 or self.starttime == 315925:
-				print(osr, pos)
 			self.issliding = self.cursor_inslider(osr, pos) and osr[Replays.KEYS_PRESSED] != 0
 
 		if osr[3] > self.endtime:
@@ -179,11 +175,7 @@ class Slider(HitObject):
 		allowable = False
 		mousedown = osr[Replays.KEYS_PRESSED] != 0 or Mod.Relax in self.mods
 
-		# slidertime = self.getsliderelapsedtime(curtime)
-		pos = [0, 0]
 		if mousedown:
-			# distance = slidertime * self.osu_d["velocity"]/1000
-			# pos = self.osu_d["slider_c"].at(distance)
 			index = self.find(curtime)
 			sb = self.sliderballtransformations[index]
 			if sb.time1 == sb.time2:
@@ -192,8 +184,6 @@ class Slider(HitObject):
 				x = sb.startvector[0] + (sb.endvector[0] - sb.startvector[0]) * (1 - (sb.time2 - curtime)/(sb.time2 - sb.time1))
 				y = sb.startvector[1] + (sb.endvector[1] - sb.startvector[1]) * (1 - (sb.time2 - curtime)/(sb.time2 - sb.time1))
 				pos = [x, y]
-			if self.starttime == 292300 or self.starttime == 315925:
-				print(pos, self.osu_d["slider_c"].slider_type, self.osu_d["pixel length"], self.osu_d["velocity"])
 			allowable = self.cursor_inslider(osr, pos)
 
 		pointcount = 0
@@ -227,10 +217,6 @@ class Slider(HitObject):
 
 				if pointcount % (len(self.slider_score_timingpoints) / self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
-
-		if self.starttime == 89620 or self.starttime == 89620:
-			print(self.starttime, ": ")
-			print(mousedown, allowable, self.ticks_miss, self.ticks_hit, pointcount, self.slider_score_timingpoints, osr, self.endtime, pos, self.duration, replay[osrindex-1],"\n")
 
 		self.issliding = allowable
 
