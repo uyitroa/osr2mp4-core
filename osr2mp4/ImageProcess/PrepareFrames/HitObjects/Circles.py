@@ -74,8 +74,9 @@ def overlayapproach(circle, approach, alpha):
 
 
 def prepare_fadeout(img, settings):
-	fade_out = alpha.fadeout(img, 1, 0, 0.1 * 60/settings.fps)
-	fade_out = size.grow(fade_out, 1.1, 1.6, 0.04 * 60/settings.fps)
+	timescale = 60/settings.fps * settings.timeframe/1000
+	fade_out = alpha.fadeout(img, 1, 0, 0.07 * timescale)
+	fade_out = size.grow(fade_out, 1.1, 1.7, 0.04 * timescale)
 	return fade_out
 
 

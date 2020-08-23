@@ -22,7 +22,7 @@ class HitObjectManager:
 		self.rate = self.settings.timeframe/1000
 
 		self.objecttype = {
-			CIRCLE: [self.circle_manager, self.circle_manager.circles, -self.maxtimewindow - self.interval * 2],
+			CIRCLE: [self.circle_manager, self.circle_manager.circles, -500],
 			SLIDER: [self.slider_manager, self.slider_manager.sliders, -230],
 			SPINNER: [self.spinner_manager, self.spinner_manager.spinners, -200]}
 
@@ -50,7 +50,7 @@ class HitObjectManager:
 		self.objtime.append(idd)
 
 	def delete_circle(self, idd):
-		self.hitobjects[idd][1] = -self.maxtimewindow - self.interval * 2
+		self.hitobjects[idd][1] = -500
 
 	def fadeout_circle(self, idd):
 		self.hitobjects[idd][1] = -self.maxtimewindow - self.interval * 2 + 175

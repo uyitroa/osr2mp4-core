@@ -66,6 +66,8 @@ class Updater:
 					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate, str(self.info.id) + "s")
 				else:
 					self.component.flashlight.set_sliding(False)
+			if self.info.hitresult == 0:
+				self.component.hitobjmanager.delete_circle(idd)
 
 		elif objtype == "Slider":
 			idd = str(self.info.id) + "s"

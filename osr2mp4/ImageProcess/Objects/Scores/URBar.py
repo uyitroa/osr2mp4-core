@@ -31,17 +31,17 @@ class URBar(AScorebar):
 		self.bar_container.readonly = False
 		self.urbar, self.bar_images, self.maxtime, self.mask = frames
 
-		self.floatingerror = 0
-		self.destarrowx = 0
-		self.arrowx = 0
+		self.floatingerror = self.w/2
+		self.arrowx = self.w/2
 		self.urarrow = urarrow[0]
 		self.arrowy = self.h // 4
 
 	def add_bar(self, delta_t, hitresult):
-		pos = int(self.w/2 + delta_t/self.maxtime * self.w/2)
+		pos = self.w/2 + delta_t/self.maxtime * self.w/2
 
 		self.floatingerror = self.floatingerror * 0.8 + pos * 0.2
 
+		pos = int(pos)
 		img = self.bar_images[self.resultdict[hitresult]]
 		xstart = max(0, pos-img.shape[0]//2)
 		xend = min(self.barthin.shape[0], xstart + img.shape[0])
@@ -83,5 +83,4 @@ class URBar(AScorebar):
 			self.c = 0
 
 		self.movearrow()
-		imageproc.debug(background, self.arrowx)
 		imageproc.add(self.urarrow, background, self.x_offset + self.arrowx, self.y-self.arrowy, alpha=min(1, self.alpha*2))
