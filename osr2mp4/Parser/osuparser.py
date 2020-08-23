@@ -290,6 +290,7 @@ class Beatmap:
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance / self.timing_point[cur_offset]["Base"] * 10
 				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
+				my_dict["tickdistance"] = tickdistance
 
 				# source: https://github.com/ppy/osu/blob/73467410ab0917594eb9613df6e828e1a24c6be6/osu.Game/Rulesets/Objects/SliderEventGenerator.cs#L123
 				my_dict["ticks dist"] = []
