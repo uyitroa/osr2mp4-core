@@ -151,8 +151,8 @@ def drawpp(components, osr2mp4):
 def main():
 	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	osr2mp4.analyse_replay()
-	print(osr2mp4.resultinfo[-1].accuracy)
-	print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses, osr2mp4.replay_info.player_name)
+	print(osr2mp4.resultinfo[-1].accuracy, osr2mp4.resultinfo[-1].maxcombo)
+	print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses, osr2mp4.replay_info.player_name, osr2mp4.replay_info.max_combo)
 	# # a = prepare_rankingur(osr2mp4.settings, [12, 31, 43, 0])
 	# # a[0].save("test.png")
 	# from PIL import Image

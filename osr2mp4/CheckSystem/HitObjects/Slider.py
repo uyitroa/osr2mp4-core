@@ -86,22 +86,25 @@ class Slider(HitObject):
 
 				while scoringdistance >= tickdistance and not skiptick:
 					scoringlengthtotal += tickdistance
-					scoringdistance += tickdistance
+					scoringdistance -= tickdistance
 					distancetoend -= tickdistance
 					skiptick = distancetoend <= mintickdistancefromend
 					if skiptick:
 						break
 					scoretime = self.timeatlength(scoringlengthtotal)
 					self.slider_score_timingpoints.append(scoretime)
+
+			scoringlengthtotal += scoringdistance
+			self.slider_score_timingpoints.append(self.timeatlength(scoringlengthtotal))
+
 			if skiptick:
 				scoringdistance = 0
 			else:
 				scoringlengthtotal -= tickdistance - scoringdistance
 				scoringdistance = tickdistance - scoringdistance
 
-			self.slider_score_timingpoints.append(self.timeatlength(scoringlengthtotal))
-
-		self.slider_score_timingpoints[-1] = max(self.starttime + (self.endtime - self.starttime)/2, self.slider_score_timingpoints[-1] - 36)
+		if len(self.slider_score_timingpoints) > 0:
+			self.slider_score_timingpoints[-1] = max(self.starttime + (self.endtime - self.starttime)//2, self.slider_score_timingpoints[-1] - 36)
 
 	def timeatlength(self, length):
 		return int(self.starttime + (length/self.osu_d["velocity"]) * 1000)
@@ -137,7 +140,7 @@ class Slider(HitObject):
 	def cursor_inslider(self, osr, pos):
 		radius = self.diff.slidermax_distance if self.issliding else self.diff.max_distance
 		cursor_distance = (round(osr[Replays.CURSOR_X], 2) - pos[0]) ** 2 + (round(osr[Replays.CURSOR_Y], 2) - pos[1]) ** 2
-		if self.starttime == 190495 or self.starttime == 315925:
+		if self.starttime == 89620 or self.starttime == 315925:
 			print(cursor_distance, self.diff.max_distance**2, self.diff.slidermax_distance**2)
 		return cursor_distance < radius * radius
 
@@ -154,7 +157,7 @@ class Slider(HitObject):
 
 		elif self.starttime - self.diff.scorewindow[2] < curtime <= self.starttime:
 			pos = self.osu_d["slider_c"].at(0)
-			if self.starttime == 190495 or self.starttime == 315925:
+			if self.starttime == 89620 or self.starttime == 315925:
 				print(osr, pos)
 			self.issliding = self.cursor_inslider(osr, pos) and osr[Replays.KEYS_PRESSED] != 0
 
@@ -225,7 +228,7 @@ class Slider(HitObject):
 				if pointcount % (len(self.slider_score_timingpoints) / self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
 
-		if self.starttime == 190495 or self.starttime == 190495:
+		if self.starttime == 89620 or self.starttime == 89620:
 			print(self.starttime, ": ")
 			print(mousedown, allowable, self.ticks_miss, self.ticks_hit, pointcount, self.slider_score_timingpoints, osr, self.endtime, pos, self.duration, replay[osrindex-1],"\n")
 
