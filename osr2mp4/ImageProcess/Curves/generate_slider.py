@@ -2,6 +2,7 @@ import cv2
 from PIL import Image
 import numpy as np
 from osr2mp4.ImageProcess.Curves.curves import getclass
+from osr2mp4.ImageProcess import imageproc
 from itertools import chain
 
 
@@ -11,7 +12,7 @@ def convertlist(longlist):
 
 
 class GenerateSlider:
-	def __init__(self, sliderborder, slideroverride, radius, scale):
+	def __init__(self, settings, sliderborder, slideroverride, radius, scale):
 		"""
 		:param sliderborder: list, color of the slider's border
 		:param slideroverride: list, color of the slider's body
@@ -25,7 +26,8 @@ class GenerateSlider:
 		self.npslideroverride = np.array(self.slideroverride)
 
 		self.radius = radius
-		self.scale = scale
+		self.coef = settings.settings["Slider quality"]
+		self.scale = scale * self.coef
 		self.extended = self.radius * self.scale + 2
 
 		self.img = np.zeros((int(768 * self.scale), int(1376 * self.scale), 4), dtype=np.uint8)
@@ -77,11 +79,13 @@ class GenerateSlider:
 		right_x_corner = min(self.img.shape[1], int(max_x + self.extended))
 
 		img = self.pbuffer.crop((left_x_corner, up_y_corner, right_x_corner, down_y_corner))
+		if self.coef != 1:
+			img = imageproc.change_size(img, 1/self.coef, 1/self.coef)
 
 		self.img[up_y_corner:down_y_corner, left_x_corner:right_x_corner] = 0  # reset
 
-		x_offset = int((curve_pos[0][0] - left_x_corner))
-		y_offset = int((curve_pos[0][1] - up_y_corner))
+		x_offset = int((curve_pos[0][0] - left_x_corner)/self.coef)
+		y_offset = int((curve_pos[0][1] - up_y_corner)/self.coef)
 
 		return img, x_offset, y_offset
 

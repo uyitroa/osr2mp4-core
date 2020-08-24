@@ -27,7 +27,8 @@ defaultsettings = {
 	"Use FFmpeg video writer": False,
 	"FFmpeg codec": "libx264",
 	"FFmpeg custom commands": "-preset ultrafast -crf 23",
-	"Audio bitrate": 500
+	"Audio bitrate": 500,
+	"Slider quality": 2
 }
 
 defaultppconfig = {

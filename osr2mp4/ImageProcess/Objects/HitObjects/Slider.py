@@ -32,7 +32,7 @@ class SliderManager:
 		self.sliderborder = self.settings.skin_ini.colours["SliderBorder"]
 		self.slideroverride = self.settings.skin_ini.colours["SliderTrackOverride"]
 		self.flip = self.settings.skin_ini.general["SliderBallFlip"]
-		self.gs = GenerateSlider(self.sliderborder, self.slideroverride, self.cs, self.settings.playfieldscale)
+		self.gs = GenerateSlider(settings, self.sliderborder, self.slideroverride, self.cs, self.settings.playfieldscale)
 
 		self.ar = diff["ApproachRate"]
 		self.slidermutiplier = diff["SliderMultiplier"]
