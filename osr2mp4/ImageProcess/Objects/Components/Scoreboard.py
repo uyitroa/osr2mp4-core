@@ -342,7 +342,7 @@ class Scoreboard(FrameObject):
 		if number == "0":
 			return
 		number = number
-		imageproc.draw_number(background, number, frames, x_offset, y_offset + self.height * 0.8, alpha, "left", gap=0)
+		imageproc.draw_number(background, number, frames, x_offset, y_offset + self.height * 0.8, alpha, "left", gap=1 * self.settings.scale)
 
 	def drawscore(self, background, y_offset, number, alpha):
 		self.drawnumber(background, 5 * self.settings.scale, y_offset, number, self.score, alpha)

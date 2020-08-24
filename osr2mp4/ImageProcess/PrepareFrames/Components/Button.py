@@ -24,11 +24,7 @@ def prepare_scoreentry(scale, color, settings):
 	numbers_animation = []
 	for x in range(10):
 		number = YImage(scoreentry + str(x), settings, scale)
-		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open(os.path.join(settings.path, "res", scoreentry + str(x) + "@2x.png"))
-			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
-		else:
-			img = number.img
+		img = number.img
 		tmp = imageproc.add_color(img, color)
 		numbers_animation.append(shrink(tmp, 0.9, 0.3, 0.05 * 60/settings.fps))
 	return numbers_animation
