@@ -1,5 +1,4 @@
 from PIL import Image
-
 from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 

@@ -1,3 +1,6 @@
+from osr2mp4.ImageProcess import imageproc
+
+
 def prepare_rankingscorecounter(scorenumber):
 	"""
 	:param scorenumber: ScoreNumber
@@ -7,18 +10,17 @@ def prepare_rankingscorecounter(scorenumber):
 	hitresultimg = {}
 	c = 0
 	for image in scorenumber.score_images:
-		image.change_size(1.2999, 1.2999)
-		img[c] = image.img
+		imgscore = imageproc.change_size(image.img, 1.2999, 1.2999)
+		img[c] = imgscore
 
-		image.change_size(1, 1)
 		hitresultimg[c] = image.img
 		c += 1
-	scorenumber.score_dot.change_size(1, 1)
-	hitresultimg["."] = scorenumber.score_dot.img
+	imgscore = imageproc.change_size(scorenumber.score_dot.img, 1, 1)
+	hitresultimg["."] = imgscore
 
-	scorenumber.combo_x.change_size(1, 1)
-	hitresultimg["x"] = scorenumber.score_x.img
+	imgscore = imageproc.change_size(scorenumber.combo_x.img, 1, 1)
+	hitresultimg["x"] = imgscore
 
-	scorenumber.score_percent.change_size(1, 1)
-	hitresultimg["%"] = scorenumber.score_percent.img
+	imgscore = imageproc.change_size(scorenumber.score_percent.img, 1, 1)
+	hitresultimg["%"] = imgscore
 	return img, hitresultimg
