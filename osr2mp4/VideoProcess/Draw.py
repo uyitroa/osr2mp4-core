@@ -8,7 +8,7 @@ from PIL import Image
 from osr2mp4.osrparse.replay import Replay
 
 from osr2mp4.CheckSystem.Health import HealthProcessor
-
+from osr2mp4.ImageProcess import imageproc
 from osr2mp4.Utils.skip import skip
 from osr2mp4.InfoProcessor import Updater
 from osr2mp4.VideoProcess.AFrames import *
@@ -139,7 +139,9 @@ class Drawer:
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
-
+		if self.key_queue:
+			while keys and keys[0] == self.key_queue[-1]:
+				keys = keys[1:]
 		self.key_queue.extend(keys)
 		self.frame_info.osr_index += tt
 		self.cursor_event.event = copy.copy(self.replay_event[self.frame_info.osr_index])
