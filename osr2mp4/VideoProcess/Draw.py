@@ -5,21 +5,19 @@ import time
 import traceback
 
 from PIL import Image
+from osr2mp4.osrparse.replay import Replay
 
-from ..ImageProcess import imageproc
-from ..osrparse.replay import Replay
+from osr2mp4.CheckSystem.Health import HealthProcessor
 
-from ..CheckSystem.Health import HealthProcessor
-
-from ..Utils.skip import skip
-from ..InfoProcessor import Updater
-from .AFrames import *
-from ..CheckSystem.Judgement import DiffCalculator
-from ..EEnum.EReplay import Replays
-from .smoothing import smoothcursor
-from .Setup import FrameInfo, CursorEvent, get_buffer
-from .calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
-from ..CheckSystem.mathhelper import getunstablerate
+from osr2mp4.Utils.skip import skip
+from osr2mp4.InfoProcessor import Updater
+from osr2mp4.VideoProcess.AFrames import *
+from osr2mp4.CheckSystem.Judgement import DiffCalculator
+from osr2mp4.EEnum.EReplay import Replays
+from osr2mp4.VideoProcess.smoothing import smoothcursor
+from osr2mp4.VideoProcess.Setup import FrameInfo, CursorEvent, get_buffer
+from osr2mp4.VideoProcess.calc import check_break, check_key, add_followpoints, add_hitobjects, nearer
+from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 
 class Drawer:

@@ -1,4 +1,4 @@
-from .. import imageproc
+from osr2mp4.ImageProcess import imageproc
 
 
 def img_resize(img, start, end, step):

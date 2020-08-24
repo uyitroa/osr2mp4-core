@@ -1,6 +1,6 @@
 from math import ceil
-from ...Objects.Components.AScorebar import AScorebar
-from ... import imageproc
+from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
+from osr2mp4.ImageProcess import imageproc
 
 
 class ComboCounter(AScorebar):

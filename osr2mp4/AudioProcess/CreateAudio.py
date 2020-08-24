@@ -5,16 +5,16 @@ import subprocess
 import time
 from copy import deepcopy
 from multiprocessing import Process
-from ..Exceptions import AudioNotFound
-from ..osrparse.enums import Mod
+from osr2mp4.Exceptions import AudioNotFound
+from osr2mp4.osrparse.enums import Mod
 from recordclass import recordclass
 from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
 from pydub import exceptions
-from .AddAudio import HitsoundManager
-from .Hitsound import Hitsound
-from .Utils import getfilenames
+from osr2mp4.AudioProcess.AddAudio import HitsoundManager
+from osr2mp4.AudioProcess.Hitsound import Hitsound
+from osr2mp4.AudioProcess.Utils import getfilenames
 import os.path
 
 

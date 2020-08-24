@@ -2,10 +2,10 @@ from recordclass import recordclass
 
 from PIL import Image
 
-from ... import imageproc
-from ...Curves.generate_slider import GenerateSlider
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Curves.generate_slider import GenerateSlider
 import numpy as np
-from ...PrepareFrames.HitObjects.Circles import calculate_ar
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import calculate_ar
 
 Slider = recordclass("Slider", "image x y cur_duration opacity sliderf_i sliderb_i cur_repeated appear_f tick_a arrow_i prev_pos osu_d")
 

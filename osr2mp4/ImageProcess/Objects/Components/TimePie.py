@@ -2,7 +2,7 @@ import math
 
 import cv2
 
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
 
 class TimePie:

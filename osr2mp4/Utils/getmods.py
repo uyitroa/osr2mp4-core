@@ -1,6 +1,6 @@
 import re
 
-from ..osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
 
 def mod_string_to_enums(mods):

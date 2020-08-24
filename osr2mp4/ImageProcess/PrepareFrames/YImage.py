@@ -3,8 +3,8 @@ import os
 import cv2
 import numpy as np
 from PIL import Image, UnidentifiedImageError
-from ...EEnum.EImageFrom import ImageFrom
-from .. import imageproc
+from osr2mp4.EEnum.EImageFrom import ImageFrom
+from osr2mp4.ImageProcess import imageproc
 
 
 oldimg = Image.open

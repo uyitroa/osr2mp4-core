@@ -1,6 +1,6 @@
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
-from ..YImage import YImage
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 urarrow = "editor-rate-arrow"
 

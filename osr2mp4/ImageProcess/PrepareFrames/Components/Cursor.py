@@ -1,11 +1,9 @@
-import os
-
 from PIL import Image
 
-from ....EEnum.EImageFrom import ImageFrom
-from ..YImage import YImage
-from ...Animation.alpha import fadein
-from ...Animation.size import grow
+from osr2mp4.EEnum.EImageFrom import ImageFrom
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess.Animation.alpha import fadein
+from osr2mp4.ImageProcess.Animation.size import grow
 
 cursor = "cursor"
 cursormiddle = "cursormiddle"

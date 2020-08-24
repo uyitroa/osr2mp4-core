@@ -1,4 +1,4 @@
-from ..EEnum.EReplay import Replays
+from osr2mp4.EEnum.EReplay import Replays
 
 
 def nearer(cur_time, replay_info, index):

@@ -1,83 +1,83 @@
 import logging
 import os
 
-from ..ImageProcess.PrepareFrames.Scores.URArrow import prepare_urarrow
-from ..ImageProcess.Objects.Components.Flashlight import Flashlight
-from ..ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
-from ..ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
-from ..ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
-from ..osrparse.enums import Mod
+from osr2mp4.ImageProcess.PrepareFrames.Scores.URArrow import prepare_urarrow
+from osr2mp4.ImageProcess.Objects.Components.Flashlight import Flashlight
+from osr2mp4.ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
+from osr2mp4.ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
+from osr2mp4.ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
+from osr2mp4.osrparse.enums import Mod
 
-from ..ImageProcess.Objects.Scores.PPCounter import PPCounter
-from ..ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
-from ..ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
-from ..CheckSystem.Judgement import DiffCalculator
-from ..ImageProcess.Objects.RankingScreens.Menuback import Menuback
-from ..ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
-from ..ImageProcess.Objects.RankingScreens.RankingAccuracy import RankingAccuracy
-from ..ImageProcess.Objects.RankingScreens.RankingCombo import RankingCombo
-from ..ImageProcess.Objects.RankingScreens.RankingGrade import RankingGrade
-from ..ImageProcess.Objects.RankingScreens.RankingGraph import RankingGraph
-from ..ImageProcess.Objects.RankingScreens.RankingHitresults import RankingHitresults
-from ..ImageProcess.Objects.RankingScreens.RankingPanel import RankingPanel
-from ..ImageProcess.Objects.Components.Scoreboard import Scoreboard
-from ..ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
-from ..ImageProcess.Objects.Components.Background import Background
-from ..ImageProcess.Objects.Components.Scorebar import Scorebar
-from ..ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
-from ..ImageProcess.Objects.Components.Sections import Sections
-from ..ImageProcess.Objects.RankingScreens.RankingReplay import RankingReplay
-from ..ImageProcess.Objects.RankingScreens.RankingTitle import RankingTitle
-from ..ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
-from ..ImageProcess.Objects.Components.Followpoints import FollowPointsManager
-from ..ImageProcess.Objects.Components.TimePie import TimePie
-from ..ImageProcess.Objects.HitObjects.CircleNumber import Number
-from ..ImageProcess.Objects.HitObjects.Slider import SliderManager
-from ..ImageProcess.Objects.HitObjects.Spinner import SpinnerManager
-from ..ImageProcess.Objects.Scores.Accuracy import Accuracy
-from ..ImageProcess.Objects.Scores.ComboCounter import ComboCounter
-from ..ImageProcess.Objects.Scores.Hitresult import HitResult
-from ..ImageProcess.Objects.Scores.ScoreCounter import ScoreCounter
-from ..ImageProcess.Objects.HitObjects.Circles import CircleManager
-from ..ImageProcess.Objects.HitObjects.Manager import HitObjectManager
-from ..ImageProcess.Objects.Components.Button import InputOverlay, InputOverlayBG, ScoreEntry
-from ..ImageProcess.Objects.Components.Cursor import Cursor, Cursortrail
-from ..ImageProcess.Objects.Scores.SpinBonusScore import SpinBonusScore
-from ..ImageProcess.Objects.Scores.URBar import URBar
-from ..ImageProcess.PrepareFrames.Components.ArrowWarning import prepare_arrowwarning
-from ..ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, prepare_inputoverlaybg, \
+from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
+from osr2mp4.ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
+from osr2mp4.CheckSystem.Judgement import DiffCalculator
+from osr2mp4.ImageProcess.Objects.RankingScreens.Menuback import Menuback
+from osr2mp4.ImageProcess.Objects.RankingScreens.ModIcons import ModIcons
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingAccuracy import RankingAccuracy
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingCombo import RankingCombo
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingGrade import RankingGrade
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingGraph import RankingGraph
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingHitresults import RankingHitresults
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingPanel import RankingPanel
+from osr2mp4.ImageProcess.Objects.Components.Scoreboard import Scoreboard
+from osr2mp4.ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
+from osr2mp4.ImageProcess.Objects.Components.Background import Background
+from osr2mp4.ImageProcess.Objects.Components.Scorebar import Scorebar
+from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
+from osr2mp4.ImageProcess.Objects.Components.Sections import Sections
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingReplay import RankingReplay
+from osr2mp4.ImageProcess.Objects.RankingScreens.RankingTitle import RankingTitle
+from osr2mp4.ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
+from osr2mp4.ImageProcess.Objects.Components.Followpoints import FollowPointsManager
+from osr2mp4.ImageProcess.Objects.Components.TimePie import TimePie
+from osr2mp4.ImageProcess.Objects.HitObjects.CircleNumber import Number
+from osr2mp4.ImageProcess.Objects.HitObjects.Slider import SliderManager
+from osr2mp4.ImageProcess.Objects.HitObjects.Spinner import SpinnerManager
+from osr2mp4.ImageProcess.Objects.Scores.Accuracy import Accuracy
+from osr2mp4.ImageProcess.Objects.Scores.ComboCounter import ComboCounter
+from osr2mp4.ImageProcess.Objects.Scores.Hitresult import HitResult
+from osr2mp4.ImageProcess.Objects.Scores.ScoreCounter import ScoreCounter
+from osr2mp4.ImageProcess.Objects.HitObjects.Circles import CircleManager
+from osr2mp4.ImageProcess.Objects.HitObjects.Manager import HitObjectManager
+from osr2mp4.ImageProcess.Objects.Components.Button import InputOverlay, InputOverlayBG, ScoreEntry
+from osr2mp4.ImageProcess.Objects.Components.Cursor import Cursor, Cursortrail
+from osr2mp4.ImageProcess.Objects.Scores.SpinBonusScore import SpinBonusScore
+from osr2mp4.ImageProcess.Objects.Scores.URBar import URBar
+from osr2mp4.ImageProcess.PrepareFrames.Components.ArrowWarning import prepare_arrowwarning
+from osr2mp4.ImageProcess.PrepareFrames.Components.Button import prepare_scoreentry, prepare_inputoverlaybg, \
 	prepare_inputoverlay
-from ..ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail, prepare_cursormiddle
-from ..ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
-from ..ImageProcess.PrepareFrames.Components.Background import prepare_background
-from ..ImageProcess.PrepareFrames.RankingScreens.BackButton import prepare_menuback
-from ..ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingAccuracy import prepare_rankingaccuracy
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingCombo import prepare_rankingcombo
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingGrade import prepare_rankinggrade
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingGraph import prepare_rankinggraph
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingHitresults import prepare_rankinghitresults
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingPanel import prepare_rankingpanel
-from ..ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
-from ..ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
-from ..ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
-from ..ImageProcess.PrepareFrames.Components.Sections import prepare_sections
-from ..ImageProcess.PrepareFrames.Effects.ScoreboardEffect import prepare_scoreboardeffect
-from ..ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
-from ..ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
-from ..ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
-from ..ImageProcess.PrepareFrames.HitObjects.Spinner import prepare_spinner
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingReplay import prepare_rankingreplay
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingScore import prepare_rankingscorecounter
-from ..ImageProcess.PrepareFrames.RankingScreens.RankingTitle import prepare_rankingtitle
-from ..ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
-from ..ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
-from ..ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
-from ..ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
-from ..ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
-from ..ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
-from ..ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
+from osr2mp4.ImageProcess.PrepareFrames.Components.Cursor import prepare_cursor, prepare_cursortrail, prepare_cursormiddle
+from osr2mp4.ImageProcess.PrepareFrames.Components.Followpoints import prepare_fpmanager
+from osr2mp4.ImageProcess.PrepareFrames.Components.Background import prepare_background
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.BackButton import prepare_menuback
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingAccuracy import prepare_rankingaccuracy
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingCombo import prepare_rankingcombo
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingGrade import prepare_rankinggrade
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingGraph import prepare_rankinggraph
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingHitresults import prepare_rankinghitresults
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingPanel import prepare_rankingpanel
+from osr2mp4.ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
+from osr2mp4.ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
+from osr2mp4.ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
+from osr2mp4.ImageProcess.PrepareFrames.Components.Sections import prepare_sections
+from osr2mp4.ImageProcess.PrepareFrames.Effects.ScoreboardEffect import prepare_scoreboardeffect
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
+from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Spinner import prepare_spinner
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingReplay import prepare_rankingreplay
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingScore import prepare_rankingscorecounter
+from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingTitle import prepare_rankingtitle
+from osr2mp4.ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
+from osr2mp4.ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
+from osr2mp4.ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
+from osr2mp4.ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
+from osr2mp4.ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
+from osr2mp4.ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
+from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:

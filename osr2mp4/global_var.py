@@ -1,6 +1,6 @@
 import os
 
-from .osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
 
 defaultsettings = {

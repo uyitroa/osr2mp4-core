@@ -1,4 +1,4 @@
-from ...PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 scorebarbg = "scorebar-bg"
 

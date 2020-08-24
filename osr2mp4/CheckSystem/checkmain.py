@@ -1,10 +1,9 @@
 import logging
 
-from oppai import ezpp_free
-from ..osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
-from .HitObjectChecker import HitObjectChecker
-from ..EEnum.EReplay import Replays
+from osr2mp4.CheckSystem.HitObjectChecker import HitObjectChecker
+from osr2mp4.EEnum.EReplay import Replays
 
 
 def nearer(cur_time, replay, index):

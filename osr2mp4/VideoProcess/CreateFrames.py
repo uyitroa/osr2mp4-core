@@ -6,8 +6,8 @@ import cv2
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
 import logging
-from .Draw import draw_frame, Drawer
-from .FrameWriter import write_frame, getwriter
+from osr2mp4.VideoProcess.Draw import draw_frame, Drawer
+from osr2mp4.VideoProcess.FrameWriter import write_frame, getwriter
 import os
 
 
@@ -70,8 +70,8 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		return drawers, writers, shared_pipe, shared_array
 
 	else:
-		from .AFrames import PreparedFrames
-		from ..CheckSystem.mathhelper import getunstablerate
+		from osr2mp4.VideoProcess.AFrames import PreparedFrames
+		from osr2mp4.CheckSystem.mathhelper import getunstablerate
 		import numpy as np
 
 		logging.debug("process start")

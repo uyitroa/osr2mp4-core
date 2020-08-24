@@ -1,5 +1,5 @@
-from ... import imageproc
-from ...PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 rankingreplay = "pause-replay"
 

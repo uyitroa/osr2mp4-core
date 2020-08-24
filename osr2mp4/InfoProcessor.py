@@ -1,7 +1,7 @@
 import atexit
 
 from oppai import *
-from .EEnum.EState import States
+from osr2mp4.EEnum.EState import States
 
 
 class Updater:

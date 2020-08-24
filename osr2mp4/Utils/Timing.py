@@ -1,7 +1,7 @@
-from ..VideoProcess.calc import nearer
-from ..CheckSystem.Judgement import DiffCalculator
-from ..EEnum.EReplay import Replays
-from ..Utils.skip import search_time, search_osrindex
+from osr2mp4.VideoProcess.calc import nearer
+from osr2mp4.CheckSystem.Judgement import DiffCalculator
+from osr2mp4.EEnum.EReplay import Replays
+from osr2mp4.Utils.skip import search_time, search_osrindex
 
 
 def get_offset(beatmap, start_index, end_index, replay_info, endtime, fps=60):

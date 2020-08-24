@@ -1,7 +1,7 @@
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 import numpy as np
 from recordclass import recordclass
-from ...PrepareFrames.Components.Followpoints import prepare_fp
+from osr2mp4.ImageProcess.PrepareFrames.Components.Followpoints import prepare_fp
 
 followpoints = "followpoint"
 

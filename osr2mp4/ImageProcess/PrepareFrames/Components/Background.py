@@ -4,7 +4,7 @@ import os
 import numpy as np
 from PIL import Image
 
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
 
 def prepare_background(backgroundname, settings):

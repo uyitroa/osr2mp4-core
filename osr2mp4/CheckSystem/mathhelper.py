@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
 
 def getunstablerate(resultinfo):

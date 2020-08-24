@@ -1,4 +1,4 @@
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
 class ARankingScreen(FrameObject):

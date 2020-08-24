@@ -2,10 +2,10 @@ from math import sin, cos
 
 from PIL import Image
 
-from ... import imageproc
-from ....EEnum.EImageFrom import ImageFrom
-from ...Animation import size
-from ...PrepareFrames.YImage import YImages, YImage
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.EEnum.EImageFrom import ImageFrom
+from osr2mp4.ImageProcess.Animation import size
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImages, YImage
 
 hitprefix = "hit"
 particleprefix = "particle"

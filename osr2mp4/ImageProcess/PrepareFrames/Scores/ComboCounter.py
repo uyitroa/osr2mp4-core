@@ -1,4 +1,4 @@
-from ...Animation import alpha, size
+from osr2mp4.ImageProcess.Animation import alpha, size
 
 
 def prepare_combo(scorenumbers, settings):

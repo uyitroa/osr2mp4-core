@@ -1,6 +1,6 @@
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
 class Accuracy(FrameObject):

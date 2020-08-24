@@ -1,5 +1,5 @@
-from ...Animation.easing import easingout
-from .ACounter import ACounter
+from osr2mp4.ImageProcess.Animation.easing import easingout
+from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 
 
 class PPCounter(ACounter):

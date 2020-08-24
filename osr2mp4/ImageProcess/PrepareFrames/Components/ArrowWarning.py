@@ -1,8 +1,7 @@
 from PIL import Image
 
 from osr2mp4.EEnum.EImageFrom import ImageFrom
-from ...PrepareFrames.YImage import YImage
-
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 arrowwarning = "arrow-warning"
 playwarningarrow = "play-warningarrow"

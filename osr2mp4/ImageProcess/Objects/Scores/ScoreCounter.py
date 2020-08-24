@@ -1,5 +1,5 @@
-from ...Animation.easing import easingout
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess.Animation.easing import easingout
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
 class ScoreCounter(FrameObject):

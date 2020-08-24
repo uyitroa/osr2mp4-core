@@ -1,7 +1,7 @@
 import cv2
 from PIL import Image
 import numpy as np
-from .curves import getclass
+from osr2mp4.ImageProcess.Curves.curves import getclass
 from itertools import chain
 
 

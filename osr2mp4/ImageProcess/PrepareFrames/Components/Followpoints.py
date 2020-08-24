@@ -1,4 +1,4 @@
-from ...PrepareFrames.YImage import YImages
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImages
 
 followpoints = "followpoint"
 

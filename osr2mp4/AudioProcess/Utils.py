@@ -1,5 +1,5 @@
-from .Hitsound import Hitsound
-from ..EEnum.EAudio import Sound
+from osr2mp4.AudioProcess.Hitsound import Hitsound
+from osr2mp4.EEnum.EAudio import Sound
 
 
 def overlay(time, song, hitsound, volume=1.0):

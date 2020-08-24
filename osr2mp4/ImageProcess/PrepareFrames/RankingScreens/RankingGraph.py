@@ -1,4 +1,4 @@
-from ...PrepareFrames.YImage import YImage, YImages
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage, YImages
 
 rankinggraph = "ranking-graph"
 rankingperfect = "ranking-perfect"

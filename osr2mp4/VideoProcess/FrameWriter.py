@@ -4,8 +4,8 @@ import time
 import traceback
 import numpy as np
 import cv2
-from ..global_var import videoextensions
-from ..Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc, LibAvNotFound
+from osr2mp4.global_var import videoextensions
+from osr2mp4.Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc, LibAvNotFound
 
 
 def write_frame(shared, conn, filename, settings, iii):
@@ -28,7 +28,7 @@ def getwriter(filename, settings, buf):
 		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	else:
 		try:
-			from .FFmpegWriter.osr2mp4cv import PyFrameWriter
+			from osr2mp4.VideoProcess.FFmpegWriter.osr2mp4cv import PyFrameWriter
 		except ImportError as e:
 			raise LibAvNotFound
 		if settings.settings["FFmpeg codec"] == "":

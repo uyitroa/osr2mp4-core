@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
 
 def prepare_scoreboardeffect(scale):

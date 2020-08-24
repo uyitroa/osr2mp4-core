@@ -1,6 +1,6 @@
 import os
-from .maphash import osuhash
-from ..Exceptions import BeatmapNotFound
+from osr2mp4.Utils.maphash import osuhash
+from osr2mp4.Exceptions import BeatmapNotFound
 
 
 def get_osu(path, maphash):

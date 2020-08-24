@@ -1,6 +1,5 @@
-from ....CheckSystem.Health import HealthProcessor
-from ... import imageproc
-from .AScorebar import AScorebar
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
 
 
 class Scorebar(AScorebar):

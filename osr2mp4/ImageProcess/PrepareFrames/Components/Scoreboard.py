@@ -1,10 +1,5 @@
-import cv2
-import numpy
-from PIL import Image
-
-from ....global_var import Settings
-from ... import imageproc
-from ...PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 
 scoreboard = "menu-button-background"

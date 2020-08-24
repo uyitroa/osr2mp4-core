@@ -1,7 +1,7 @@
 from PIL import Image
 
-from ... import imageproc
-from .ARankingScreen import ARankingScreen
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
 
 
 class RankingPanel(ARankingScreen):

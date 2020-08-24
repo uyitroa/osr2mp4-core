@@ -1,7 +1,7 @@
 import logging
 
 from PIL import ImageFont, ImageDraw, Image
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 import os
 
 

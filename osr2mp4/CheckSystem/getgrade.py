@@ -1,4 +1,4 @@
-from ..EEnum.EGrade import Grade
+from osr2mp4.EEnum.EGrade import Grade
 
 
 def getgrade(acc):

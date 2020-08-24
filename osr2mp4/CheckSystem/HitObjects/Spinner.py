@@ -1,8 +1,8 @@
 import math
 
-from .HitObject import HitObject
-from ...osrparse.enums import Mod
-from ...EEnum.EReplay import Replays
+from osr2mp4.CheckSystem.HitObjects.HitObject import HitObject
+from osr2mp4.osrparse.enums import Mod
+from osr2mp4.EEnum.EReplay import Replays
 
 
 class Spinner(HitObject):

@@ -1,9 +1,9 @@
 from PIL import Image
 
-from ...Animation.alpha import fadein
-from ...Animation.size import grow
-from ... import imageproc
-from ...PrepareFrames.YImage import YImage, YImages
+from osr2mp4.ImageProcess.Animation.alpha import fadein
+from osr2mp4.ImageProcess.Animation.size import grow
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage, YImages
 
 sliderb = "sliderb"
 sliderfollowcircle = "sliderfollowcircle"

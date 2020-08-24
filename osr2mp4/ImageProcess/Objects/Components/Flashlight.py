@@ -1,8 +1,8 @@
 from PIL import Image
 
-from ...Animation.easing import easingout
-from ... import imageproc
-from .AScorebar import AScorebar
+from osr2mp4.ImageProcess.Animation.easing import easingout
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
 
 
 class Flashlight(AScorebar):

@@ -1,8 +1,8 @@
 from PIL import Image
 
 from osr2mp4.EEnum.EImageFrom import ImageFrom
-from ... import imageproc
-from ...PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 spinnercircle = "spinner-circle"
 spinnerbackground = "spinner-background"

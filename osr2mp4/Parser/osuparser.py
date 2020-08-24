@@ -1,8 +1,8 @@
 import logging
 import math
 
-from ..Utils.maphash import osuhash
-from ..Exceptions import GameModeNotSupported
+from osr2mp4.Utils.maphash import osuhash
+from osr2mp4.Exceptions import GameModeNotSupported
 
 
 class Beatmap:
@@ -185,8 +185,8 @@ class Beatmap:
 			break
 
 	def parse_hitobject(self):
-		from ..osrparse.enums import Mod
-		from ..ImageProcess.Curves.curves import getclass
+		from osr2mp4.osrparse.enums import Mod
+		from osr2mp4.ImageProcess.Curves.curves import getclass
 
 		hr = Mod.HardRock in self.mods
 
@@ -359,7 +359,7 @@ class Beatmap:
 		return math.sqrt((obj1["x"] - obj2["x"]) ** 2 + (obj1["y"] - obj2["y"]) ** 2)
 
 	def stack_position(self):
-		from ..CheckSystem.mathhelper import getar
+		from osr2mp4.CheckSystem.mathhelper import getar
 
 		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
 		stack_space = scale * 6.4

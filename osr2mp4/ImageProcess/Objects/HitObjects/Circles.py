@@ -1,7 +1,7 @@
 from recordclass import recordclass
 
-from ... import imageproc
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 Circle = recordclass("Circle", "x y duration frame_i color combo_n obj_type fadeout_i is_fadeout x_step max_step")
 

@@ -1,9 +1,8 @@
 import math
-from .HitObjects.HitObject import HitObject
-from .HitObjects.Slider import Slider
-from .HitObjects.Spinner import Spinner
-from ..osrparse.enums import Mod
-from ..EEnum.EReplay import Replays
+from osr2mp4.CheckSystem.HitObjects.HitObject import HitObject
+from osr2mp4.CheckSystem.HitObjects.Slider import Slider
+from osr2mp4.CheckSystem.HitObjects.Spinner import Spinner
+from osr2mp4.osrparse.enums import Mod
 
 
 class DiffCalculator:

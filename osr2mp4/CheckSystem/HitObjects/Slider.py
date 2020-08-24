@@ -2,9 +2,9 @@ import logging
 
 from recordclass import recordclass
 
-from ...osrparse.enums import Mod
-from ...EEnum.EReplay import Replays
-from .HitObject import HitObject
+from osr2mp4.osrparse.enums import Mod
+from osr2mp4.EEnum.EReplay import Replays
+from osr2mp4.CheckSystem.HitObjects.HitObject import HitObject
 
 
 Transformation = recordclass("Transformation", "startvector endvector time1 time2")

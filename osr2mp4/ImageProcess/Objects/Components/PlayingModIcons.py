@@ -1,10 +1,10 @@
 from PIL import Image
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
-from ....global_var import sortedmods
-from ....osrparse.enums import Mod
+from osr2mp4.global_var import sortedmods
+from osr2mp4.osrparse.enums import Mod
 
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
 
 class PlayingModIcons(FrameObject):

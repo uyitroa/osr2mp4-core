@@ -1,9 +1,9 @@
 from PIL import Image
-from ....osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
-from ....CheckSystem.getgrade import getgrade
-from ... import imageproc
-from .ARankingScreen import ARankingScreen
+from osr2mp4.CheckSystem.getgrade import getgrade
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
 
 
 class RankingGrade(ARankingScreen):

@@ -1,12 +1,12 @@
 from PIL import Image
 
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
-from ...Animation.alpha import fadeout
+from osr2mp4.ImageProcess.Animation.alpha import fadeout
 
-from ...Animation.size import grow
+from osr2mp4.ImageProcess.Animation.size import grow
 
-from ...PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 
 ranking = "ranking-"
 

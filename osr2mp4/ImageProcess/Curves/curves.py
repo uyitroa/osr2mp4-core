@@ -1,4 +1,4 @@
-from .libcurves.ccurves import create_curve, get_pos_at
+from osr2mp4.ImageProcess.Curves.libcurves.ccurves import create_curve, get_pos_at
 
 
 class Curve:

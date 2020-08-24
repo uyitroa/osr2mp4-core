@@ -1,7 +1,7 @@
 import _lzma
 
-from ..Exceptions import NoDataReplay
-from .enums import GameMode, Mod
+from osr2mp4.Exceptions import NoDataReplay
+from osr2mp4.osrparse.enums import GameMode, Mod
 import lzma, struct, datetime
 
 

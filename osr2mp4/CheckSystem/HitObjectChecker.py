@@ -1,16 +1,13 @@
 import logging
-import math
+from osr2mp4.osrparse.replay import Replay
+from osr2mp4.osrparse.enums import Mod
 
-from ..osrparse.replay import Replay
-
-from ..osrparse.enums import Mod
-
-from ..EEnum.EReplay import Replays
-from .Health import HealthProcessor, HealthDummy
-from .Judgement import Check
+from osr2mp4.EEnum.EReplay import Replays
+from osr2mp4.CheckSystem.Health import HealthProcessor, HealthDummy
+from osr2mp4.CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
-from ..EEnum.EState import States
+from osr2mp4.EEnum.EState import States
 
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")

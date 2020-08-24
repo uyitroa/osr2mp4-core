@@ -2,8 +2,8 @@ import logging
 
 from PIL import Image
 
-from ... import imageproc
-from ...PrepareFrames.Components.Text import prepare_text
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 class ACounter:

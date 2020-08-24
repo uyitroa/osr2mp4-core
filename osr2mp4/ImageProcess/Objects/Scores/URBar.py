@@ -1,9 +1,9 @@
 import numpy
 from PIL import Image
 
-from ...Animation.easing import easingout
-from ..Components.AScorebar import AScorebar
-from ... import imageproc
+from osr2mp4.ImageProcess.Animation.easing import easingout
+from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
+from osr2mp4.ImageProcess import imageproc
 
 
 class URBar(AScorebar):

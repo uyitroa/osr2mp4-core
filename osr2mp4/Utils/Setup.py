@@ -3,11 +3,11 @@ import os
 
 from autologging import traced, logged
 
-from ..global_var import defaultsettings
-from ..osrparse.enums import Mod
+from osr2mp4.global_var import defaultsettings
+from osr2mp4.osrparse.enums import Mod
 
-from ..Parser.skinparser import Skin
-from ..Utils.Resolution import get_screensize
+from osr2mp4.Parser.skinparser import Skin
+from osr2mp4.Utils.Resolution import get_screensize
 
 
 @logged(logging.getLogger(__name__))

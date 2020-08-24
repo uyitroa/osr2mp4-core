@@ -1,10 +1,10 @@
 from copy import copy
 
-from ... import imageproc
-from ....osrparse.enums import Mod
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.osrparse.enums import Mod
 
-from ....CheckSystem.getgrade import getgrade
-from ..FrameObject import FrameObject
+from osr2mp4.CheckSystem.getgrade import getgrade
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
 class PlayingGrade(FrameObject):

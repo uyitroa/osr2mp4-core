@@ -1,10 +1,10 @@
 from PIL import Image
 
-from ....global_var import sortedmods
-from ....osrparse.enums import Mod
+from osr2mp4.global_var import sortedmods
+from osr2mp4.osrparse.enums import Mod
 
-from ... import imageproc
-from .ARankingScreen import ARankingScreen
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
 
 
 class ModIcons(ARankingScreen):

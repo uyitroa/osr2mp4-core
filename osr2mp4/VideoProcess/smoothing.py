@@ -1,4 +1,4 @@
-from ..EEnum.EReplay import Replays
+from osr2mp4.EEnum.EReplay import Replays
 
 
 def smoothcursor(replay, osrindex, actual_time):

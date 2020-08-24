@@ -1,7 +1,7 @@
-from ....osrparse.enums import Mod
+from osr2mp4.osrparse.enums import Mod
 
-from ... import imageproc
-from ..FrameObject import FrameObject
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
 class HitResult(FrameObject):

@@ -1,6 +1,6 @@
-from ... import imageproc
+from osr2mp4.ImageProcess import imageproc
 
-from .ACounter import ACounter
+from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 
 
 class HitresultCounter(ACounter):

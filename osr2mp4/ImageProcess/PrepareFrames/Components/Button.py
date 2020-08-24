@@ -3,10 +3,10 @@ import os
 from PIL import Image
 import numpy as np
 
-from ....EEnum.EImageFrom import ImageFrom
-from ...Animation.size import shrink
-from ...PrepareFrames.YImage import YImage
-from ... import imageproc
+from osr2mp4.EEnum.EImageFrom import ImageFrom
+from osr2mp4.ImageProcess.Animation.size import shrink
+from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
+from osr2mp4.ImageProcess import imageproc
 
 scoreentry = "scoreentry-"
 inputoverlay = "inputoverlay-key"

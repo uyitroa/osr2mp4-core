@@ -1,8 +1,6 @@
-from datetime import datetime
 import math
-from ..EEnum.EReplay import Replays
-from ..osrparse.enums import Mod
-from ..osrparse.replay import Replay
+from osr2mp4.EEnum.EReplay import Replays
+from osr2mp4.osrparse.replay import Replay
 
 
 def add(replay, x, y, key, rtime):

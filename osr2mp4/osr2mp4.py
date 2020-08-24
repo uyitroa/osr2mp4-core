@@ -5,25 +5,25 @@ import sys
 import time
 import traceback
 
-from .osrparse.enums import Mod
-from .Utils.getmods import mod_string_to_enums
-from .EEnum.EReplay import Replays
+from osr2mp4.osrparse.enums import Mod
+from osr2mp4.Utils.getmods import mod_string_to_enums
+from osr2mp4.EEnum.EReplay import Replays
 
-from .Utils.Auto import get_auto
-from .osrparse import *
+from osr2mp4.Utils.Auto import get_auto
+from osr2mp4.osrparse import *
 import PIL
-from .Exceptions import ReplayNotFound, CannotCreateVideo
-from .Parser.jsonparser import read
-from .AudioProcess.CreateAudio import create_audio
-from .CheckSystem.checkmain import checkmain
-from .Parser.osrparser import setup_replay, add_useless_shits
-from .Parser.osuparser import read_file
-from .Utils.HashBeatmap import get_osu
-from .Utils.Setup import setupglobals
-from .Utils.Timing import find_time, get_offset
-from .VideoProcess.CreateFrames import create_frame
-from .VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
-from .global_var import Settings, defaultsettings, defaultppconfig
+from osr2mp4.Exceptions import ReplayNotFound, CannotCreateVideo
+from osr2mp4.Parser.jsonparser import read
+from osr2mp4.AudioProcess.CreateAudio import create_audio
+from osr2mp4.CheckSystem.checkmain import checkmain
+from osr2mp4.Parser.osrparser import setup_replay, add_useless_shits
+from osr2mp4.Parser.osuparser import read_file
+from osr2mp4.Utils.HashBeatmap import get_osu
+from osr2mp4.Utils.Setup import setupglobals
+from osr2mp4.Utils.Timing import find_time, get_offset
+from osr2mp4.VideoProcess.CreateFrames import create_frame
+from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
+from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig
 import uuid
 from autologging import traced, logged, TRACE
 import logging

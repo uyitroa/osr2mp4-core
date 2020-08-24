@@ -1,4 +1,4 @@
-from .AScorebar import AScorebar
+from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
 
 
 class ScorebarBG(AScorebar):

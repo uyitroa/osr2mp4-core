@@ -5,10 +5,10 @@ import os
 import requests
 from recordclass import recordclass
 import re
-from ... import imageproc
-from ..FrameObject import FrameObject
-from ...PrepareFrames.Components.Text import prepare_text
-from ....Parser.scoresparser import getscores
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
+from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
+from osr2mp4.Parser.scoresparser import getscores
 from itertools import compress
 from itertools import product
 

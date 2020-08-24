@@ -1,13 +1,7 @@
-# from datetime import datetime, timedelta
-import time
-
 from PIL import Image
-# from dateutil.relativedelta import relativedelta
-# from pytz import timezone
-
-from ... import imageproc
-from .ARankingScreen import ARankingScreen
-from ...PrepareFrames.Components.Text import prepare_text
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
+from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 class RankingTitle(ARankingScreen):

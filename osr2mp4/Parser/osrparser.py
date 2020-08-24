@@ -1,12 +1,12 @@
-from ..osrparse import *
+from osr2mp4.osrparse import *
 
 
 # index for replay_event
-from ..CheckSystem.Judgement import DiffCalculator
+from osr2mp4.CheckSystem.Judgement import DiffCalculator
 
 
 # noinspection PyTypeChecker
-from ..EEnum.EReplay import Replays
+from osr2mp4.EEnum.EReplay import Replays
 
 
 def add_useless_shits(replay_data, beatmap):

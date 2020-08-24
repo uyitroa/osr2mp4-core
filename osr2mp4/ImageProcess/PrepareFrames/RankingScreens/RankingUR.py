@@ -1,8 +1,8 @@
 from PIL import Image
 from PIL.ImageDraw import ImageDraw
 
-from ... import imageproc
-from ..Components.Text import prepare_text
+from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 def rounded_rectangle(self: ImageDraw, xy, corner_radius, fill=None, outline=None):
