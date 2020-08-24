@@ -29,25 +29,7 @@ class Slider(HitObject):
 		self.starttime, self.duration = int(self.osu_d["time"]), self.osu_d["duration"]
 		self.endtime = self.starttime + self.duration * self.osu_d["repeated"]
 
-		# self.getscoretimingpoints()
 		self.getsliderballtransformations()
-
-	def getscoretimingpoints(self):
-		time_interval = 0
-		if len(self.osu_d["ticks dist"]) > 0:
-			tick_distance = self.osu_d["ticks dist"][0]
-			time_interval = tick_distance / self.osu_d["velocity"] * 1000
-		count = 0
-		for i in range(self.osu_d["repeated"]):
-			if i > 0:
-				arrowtime = self.starttime + self.duration * i
-				self.slider_score_timingpoints.append(int(arrowtime))
-
-			self.slider_score_timingpoints.extend(
-				[self.starttime + time_interval * (count + x + 1) for x in range(len(self.osu_d["ticks dist"]))])
-			count += len(self.osu_d["ticks dist"])
-		sliderendtime = max(self.starttime + (self.endtime - self.starttime) / 2, self.endtime - 36)
-		self.slider_score_timingpoints.append(int(sliderendtime))
 
 	def getsliderballtransformations(self):
 		cum_length = self.osu_d["slider_c"].cum_length

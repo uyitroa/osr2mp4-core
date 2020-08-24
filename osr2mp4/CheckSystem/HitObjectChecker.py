@@ -197,13 +197,16 @@ class HitObjectChecker:
 		update, hitresult, timestamp, idd, x, y, followappear, hitvalue, combostatus, hitend, updatefollow = self.check.checkslider(
 			i, replay, osr_index)
 
+		sliderendtime = 0
+		if len(self.check.sliders_memory[idd].slider_score_timingpoints) > 0:
+			sliderendtime = self.check.sliders_memory[idd].slider_score_timingpoints[-1]
+
 		time_from_previous_frame = replay[osr_index][Replays.TIMES] - replay[max(0, osr_index-1)][Replays.TIMES] + 3
 
 		# slider has notelock and it depends on the hit time window, or if the slider is too short then it would be the duration of the slider
 		notelock = max(notelock, min(self.hitobjects[i]["end time"], timestamp + self.maxtimewindow))
 		if not self.is2b:
-			sliderendtime = min(36, (self.hitobjects[i]["duration"] * self.hitobjects[i]["repeated"]) / 2)
-			notelock = max(notelock, self.hitobjects[i]["end time"] - sliderendtime + time_from_previous_frame)
+			notelock = max(notelock, sliderendtime + time_from_previous_frame)
 
 		if combostatus > 0:
 			self.combo += combostatus
@@ -233,8 +236,7 @@ class HitObjectChecker:
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
 
-				sliderendtime = min(36, (self.hitobjects[i]["duration"] * self.hitobjects[i]["repeated"]) / 2)
-				notelock = self.hitobjects[i]["end time"] - sliderendtime + time_from_previous_frame
+				notelock = sliderendtime + time_from_previous_frame
 
 				del self.hitobjects[i]
 				del self.check.sliders_memory[idd]
