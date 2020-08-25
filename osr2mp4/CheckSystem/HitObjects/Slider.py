@@ -1,7 +1,7 @@
 import logging
 
 from recordclass import recordclass
-
+from osr2mp4.VideoProcess.smoothing import smoothcursor
 from osr2mp4.osrparse.enums import Mod
 from osr2mp4.EEnum.EReplay import Replays
 from osr2mp4.CheckSystem.HitObjects.HitObject import HitObject
@@ -141,6 +141,9 @@ class Slider(HitObject):
 
 		if osr[3] > self.endtime:
 			hitresult = self.gethitresult()
+			if self.starttime == 190495:
+				print(hitresult)
+
 			return True, hitresult, self.starttime, self.osu_d["id"], self.osu_d["end x"], self.osu_d["end y"], False, hitvalue, combostatus, self.hitend, True
 
 		if updatefollow or hitvalue != 0:
@@ -153,6 +156,26 @@ class Slider(HitObject):
 
 		osr = replay[osrindex]
 		curtime = osr[Replays.TIMES]
+
+		pointcount = 0
+		while pointcount < len(self.slider_score_timingpoints) and self.slider_score_timingpoints[pointcount] <= curtime:
+			pointcount += 1
+
+		sliderscoreindex = pointcount-1
+		if self.ticks_miss + self.ticks_hit < pointcount:
+#			if self.slider_score_timingpoints[sliderscoreindex] - replay[max(0, osrindex-1)][Replays.TIMES] <= 16:
+			osr = replay[max(0, osrindex-1)]
+			curtime = osr[Replays.TIMES]
+			cx, cy = osr[Replays.CURSOR_X], osr[Replays.CURSOR_Y]
+			osr = osr.copy()
+			if curtime > self.slider_score_timingpoints[sliderscoreindex]:
+				cx, cy = smoothcursor(replay, osrindex, self.slider_score_timingpoints[sliderscoreindex])
+			elif curtime < self.slider_score_timingpoints[sliderscoreindex]:
+				print("HI")
+				cx, cy = smoothcursor(replay, min(osrindex+1, len(replay)-1), self.slider_score_timingpoints[sliderscoreindex])
+			osr[Replays.CURSOR_X] = cx
+			osr[Replays.CURSOR_Y] = cy
+			osr[Replays.TIMES] = curtime = self.slider_score_timingpoints[sliderscoreindex]
 
 		allowable = False
 		mousedown = osr[Replays.KEYS_PRESSED] != 0 or Mod.Relax in self.mods
@@ -167,10 +190,6 @@ class Slider(HitObject):
 				y = sb.startvector[1] + (sb.endvector[1] - sb.startvector[1]) * (1 - (sb.time2 - curtime)/(sb.time2 - sb.time1))
 				pos = [x, y]
 			allowable = self.cursor_inslider(osr, pos)
-
-		pointcount = 0
-		while pointcount < len(self.slider_score_timingpoints) and self.slider_score_timingpoints[pointcount] <= curtime:
-			pointcount += 1
 
 		combostatus = 0
 		hitvalue = 0
@@ -199,6 +218,9 @@ class Slider(HitObject):
 
 				if pointcount % (len(self.slider_score_timingpoints) / self.osu_d["repeated"]) == 0:
 					self.n_arrow += 1
+
+		if self.starttime == 190495:
+			print(f"allowable {allowable} sliderscore {self.slider_score_timingpoints} sliderscoreindex {sliderscoreindex} osr {osr} replayosr {replay[osrindex]} hitend {self.hitend}")
 
 		self.issliding = allowable
 
