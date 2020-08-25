@@ -1,3 +1,5 @@
+from osr2mp4.ImageProcess.Animation.easing import easingoutcubic
+
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.ImageProcess import imageproc
@@ -39,11 +41,12 @@ class HitResult(FrameObject):
 		if scores == 0 and not self.showmiss:
 			return
 
+		ynitial = y
 		if scores == 0 and self.singleframemiss:
-			y = y - 40 * self.settings.playfieldscale
+			ynitial = y - 40 * self.settings.playfieldscale
 
 		# [score, x, y, index, alpha, time, go down]
-		self.hitresults.append([scores, x, y, 0, 40, 0, 3 * 60/self.settings.fps])
+		self.hitresults.append([scores, x, ynitial, 0, 40, 0, y])
 
 	def add_to_frame(self, background):
 		i = len(self.hitresults)
@@ -67,8 +70,11 @@ class HitResult(FrameObject):
 			imageproc.add(img, background, x, y, alpha=self.hitresults[i][4] / 100)
 
 			if score == 0 and self.singleframemiss:
-				self.hitresults[i][2] += self.hitresults[i][6] * self.playfieldscale
-				self.hitresults[i][6] = max(0.5 * 60/self.settings.fps, self.hitresults[i][6] - 0.2 * 60/self.settings.fps)
+				current = self.settings.timeframe/self.settings.fps
+				change = self.hitresults[i][6] - self.hitresults[i][2]
+				duration = 1000
+
+				self.hitresults[i][2] = easingoutcubic(current, self.hitresults[i][2], change, duration)
 
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)
 			self.hitresults[i][5] += self.interval

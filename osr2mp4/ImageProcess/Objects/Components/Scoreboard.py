@@ -3,6 +3,7 @@ import logging
 import os
 
 import requests
+from osr2mp4.ImageProcess.Animation.easing import easingoutquad
 from recordclass import recordclass
 import re
 from osr2mp4.ImageProcess import imageproc
@@ -112,7 +113,8 @@ class Scoreboard(FrameObject):
 		self.beatmaphash = replay_info.beatmap_hash
 		self.playerscore = replay_info.score
 		self.playername = replay_info.player_name
-		self.beatmapid =self.getmapid(meta, maphash)
+		self.beatmapid = self.getmapid(meta, maphash)
+		self.frame_interval = self.settings.timeframe/self.settings.fps
 
 		self.scoresid = []
 		self.getscores()
@@ -342,7 +344,7 @@ class Scoreboard(FrameObject):
 		if number == "0":
 			return
 		number = number
-		imageproc.draw_number(background, number, frames, x_offset, y_offset + self.height * 0.8, alpha, "left", gap=1.5 * self.settings.scale)
+		imageproc.draw_number(background, number, frames, x_offset, y_offset + self.height * 0.8, alpha, "left", gap=1.15 * self.settings.scale)
 
 	def drawscore(self, background, y_offset, number, alpha):
 		self.drawnumber(background, 5 * self.settings.scale, y_offset, number, self.score, alpha)
@@ -358,6 +360,13 @@ class Scoreboard(FrameObject):
 	def drawname(self, background, y_offset, text, alpha):
 		imageproc.add(self.nameimg[text], background, 0, y_offset + self.height * 0.15, alpha, topleft=True)
 
+	def animaterankchange(self, y1, y2):
+		change = y2 - y1
+		newy1 = easingoutquad(self.frame_interval, y1, change, 800)
+		if abs(y2 - newy1) < 1 * self.settings.scale:
+			return y2
+		return newy1
+
 	def add_to_frame(self, np_img, background, in_break):
 		if not self.settings.settings["Show scoreboard"]:
 			return
@@ -370,25 +379,11 @@ class Scoreboard(FrameObject):
 				if self.scoreboards[x].y >= self.origposboards[boardindex][1] and self.scoreboards[x].alpha >= 1:
 					self.scoreboards[x].y = self.origposboards[boardindex][1]
 				else:
-					coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
-					if coef >= 0:
-						step = max(1, 30 * coef)
-					elif coef < 0:
-						step = min(-1, 30 * coef)
-					else:
-						step = 0
-					self.scoreboards[x].y = min(self.origposboards[boardindex][1], self.scoreboards[x].y - step)
+					self.scoreboards[x].y = self.animaterankchange(self.scoreboards[x].y, self.origposboards[boardindex][1])
 					self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
 			if self.currank < ranktoclimb and self.currank < x < self.nboard:
-				coef = (self.scoreboards[x].y - self.origposboards[x][1]) / self.scoreboards[x].y
-				if coef > 0:
-					step = max(1, 30 * coef)
-				elif coef < 0:
-					step = min(-1, 30 * coef)
-				else:
-					step = 0
-				self.scoreboards[x].y = min(self.scoreboards[x].y - step, self.origposboards[x][1])
+				self.scoreboards[x].y = self.animaterankchange(self.scoreboards[x].y, self.origposboards[x][1])
 				self.scoreboards[x].alpha = min(1, self.scoreboards[x].alpha + 0.02)
 
 			if self.scoreboards[x].alpha <= 0 or (self.currank < ranktoclimb < x):
@@ -402,9 +397,7 @@ class Scoreboard(FrameObject):
 			if x == self.currank:
 				self.frame_index = 1
 				boardindex = min(ranktoclimb, self.currank)
-				coef = (self.scoreboards[x].y - self.origposboards[boardindex][1]) / self.scoreboards[x].y
-				step = max(1, 30 * coef)
-				self.scoreboards[x].y = max(self.scoreboards[x].y - step, self.origposboards[boardindex][1])
+				self.scoreboards[x].y = self.animaterankchange(self.scoreboards[x].y, self.origposboards[boardindex][1])
 
 				# alpha = self.scoreboards[x].alpha
 			else:
@@ -425,7 +418,8 @@ class Scoreboard(FrameObject):
 				imageproc.add(self.effectcircle, background, 0, self.effecty[i], alpha=alpha)
 
 				self.effectalpha[i] -= 0.075
-				self.effectx[i] = min(0, self.effectx[i] + 40 * self.settings.scale * (-self.effectx[i])/350)  # big brain formula
+
+				self.effectx[i] = easingoutquad(self.frame_interval, self.effectx[i], -self.effectx[i], 350)
 
 				if self.effectalpha[i] <= 0:
 					del self.effectalpha[i]
