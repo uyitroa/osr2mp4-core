@@ -28,7 +28,7 @@ def add_useless_shits(replay_data, beatmap):
 
 def setup_replay(osrfile, beatmap, reverse=False):
 	replay_info = parse_replay_file(osrfile)
-	replay_data = [None] * len(replay_info.play_data)
+	replay_data = []
 
 	start_time = beatmap.start_time
 
@@ -37,31 +37,23 @@ def setup_replay(osrfile, beatmap, reverse=False):
 
 	start_osr = start_time - 3000
 
-	for index in range(len(replay_data)):
+	for index in range(len(replay_info.play_data)):
 		times = replay_info.play_data[index].time_since_previous_action
 		total_time += times
-
-		# if total_time >= end_osr:
-		# 	break
-		# end_index += 1
 
 		if total_time < start_osr:
 			start_index += + 1  # to crop later, everything before we can ignore
 			continue
 
-		replay_data[index] = [None, None, None, None]
-		replay_data[index][Replays.CURSOR_X] = replay_info.play_data[index].x
-		replay_data[index][Replays.CURSOR_Y] = replay_info.play_data[index].y
+		z = [None, None, None, None]
+		z[Replays.CURSOR_X] = replay_info.play_data[index].x
+		z[Replays.CURSOR_Y] = replay_info.play_data[index].y
 		if reverse:
-			replay_data[index][Replays.CURSOR_Y] = 384 - replay_data[index][Replays.CURSOR_Y]
-		replay_data[index][Replays.KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
-		replay_data[index][Replays.TIMES] = total_time
-
-	replay_data = replay_data[start_index:-1]
-
-	while replay_data[0] is None:
-		replay_data = replay_data[1:]  # no idea why but some replay data are None
-
+			z[Replays.CURSOR_Y] = 384 - replay_data[index][Replays.CURSOR_Y]
+		z[Replays.KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
+		z[Replays.TIMES] = total_time
+		replay_data.append(z)
+	replay_data = replay_data[:-1]
 	replay_data.sort(key=lambda x: x[Replays.TIMES])  # sort replay data based on time
 
 	add_useless_shits(replay_data, beatmap)

@@ -154,7 +154,11 @@ class Scoreboard(FrameObject):
 			data = json.loads(r.text)
 		except json.decoder.JSONDecodeError:
 			return
-		return data[0].get("beatmap_id", -1)
+		if type(data).__name__ == "list":
+			if len(data) == 0:
+				return
+			return data[0].get("beatmap_id", -1)
+		return data.get("beatmap_id", -1)
 
 	def setuppos(self):
 		x = 0
