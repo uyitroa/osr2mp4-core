@@ -115,8 +115,11 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		if showranking:
 			for x in range(int(5 * settings.fps)):
 				drawer.draw_rankingpanel()
-				im = cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB)
-				writer.write(im)
+				cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
+				if not settings.settings["Use FFmpeg video writer"]:
+					writer.write(buf)
+				else:
+					writer.write()
 		writer.release()
 		logging.debug("\nprocess done")
 
