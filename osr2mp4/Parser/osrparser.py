@@ -49,7 +49,7 @@ def setup_replay(osrfile, beatmap, reverse=False):
 		z[Replays.CURSOR_X] = replay_info.play_data[index].x
 		z[Replays.CURSOR_Y] = replay_info.play_data[index].y
 		if reverse:
-			z[Replays.CURSOR_Y] = 384 - replay_data[index][Replays.CURSOR_Y]
+			z[Replays.CURSOR_Y] = 384 - replay_info.play_data[index].y
 		z[Replays.KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
 		z[Replays.TIMES] = total_time
 		replay_data.append(z)
