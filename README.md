@@ -51,7 +51,7 @@ osr2mp4-core$ python -m unittest discover -s tests -p '*test.py'
 ```python
 from osr2mp4.osr2mp4 import Osr2mp4
 
-config = {
+data = {
    "osu! path": "/Users/yuitora./osu!/",
    "Skin path": "/Users/yuitora./osu!/Skins/-#Whitecat#-",
    "Beatmap path": "/Users/yuitora./osu!/Songs/123456 Hachigatsu, Bou/",
@@ -86,7 +86,7 @@ settings = {
    "api key": "lol"
  }
 
-converter = Osr2mp4(config, settings)
+converter = Osr2mp4(data, settings)
 converter.startall()
 converter.joinall()
 ```
