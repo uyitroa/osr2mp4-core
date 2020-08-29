@@ -142,7 +142,7 @@ converter.joinall()
 ```
 
  ### Others shits
- All available settings are [here](https://github.com/uyitroa/osr2mp4-core/blob/master/osr2mp4/global_var.py#L6)
+ All available settings are [here](https://github.com/uyitroa/osr2mp4-core/blob/master/osr2mp4/global_var.py#L6) and explanations of settings [here](https://github.com/uyitroa/osr2mp4-app/blob/master/langs/en/tooltips.json)
  
  
  
