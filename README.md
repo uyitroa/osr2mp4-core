@@ -142,6 +142,10 @@ converter.joinall()
 ```
 
  ### Others shits
+ All available settings are [here](https://github.com/uyitroa/osr2mp4-core/blob/master/osr2mp4/global_var.py#L6)
+ 
+ 
+ 
  `Osr2mp4.startvideo()`
  
  Start video without audio.
