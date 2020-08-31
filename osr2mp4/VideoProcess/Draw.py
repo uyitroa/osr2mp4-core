@@ -161,6 +161,7 @@ class Drawer:
 
 	def draw_rankingpanel(self):
 		if not self.initialised_ranking:
+			self.settings.timeframe = 1000
 			self.initialiseranking()
 			self.initialised_ranking = True
 
