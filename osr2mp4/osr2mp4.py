@@ -67,6 +67,7 @@ class Osr2mp4:
 		else:
 			handler = logging.NullHandler()
 		logger.handlers.clear()
+		handler.setFormatter(fmt)
 		logger.addHandler(handler)
 
 		self.settings.enablelog = enablelog
