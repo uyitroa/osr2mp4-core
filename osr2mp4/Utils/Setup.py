@@ -1,8 +1,8 @@
-import logging
 import os
 
 from autologging import traced, logged
 
+from osr2mp4 import logger
 from osr2mp4.global_var import defaultsettings
 from osr2mp4.osrparse.enums import Mod
 
@@ -10,7 +10,7 @@ from osr2mp4.Parser.skinparser import Skin
 from osr2mp4.Utils.Resolution import get_screensize
 
 
-@logged(logging.getLogger(__name__))
+@logged(logger)
 @traced
 def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None):
 	skin_path = data["Skin path"]
@@ -75,5 +75,3 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 
 	if ppsettings is not None:
 		settings.ppsettings = ppsettings
-
-

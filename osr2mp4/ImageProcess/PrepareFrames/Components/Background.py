@@ -1,9 +1,9 @@
-import logging
 import os
 
 import numpy as np
 from PIL import Image
 
+from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
 
 
@@ -15,7 +15,7 @@ def prepare_background(backgroundname, settings):
 	try:
 		img = Image.open(backgroundname).convert("RGBA")
 	except Exception as e:
-		logging.error(repr(e))
+		logger.error(repr(e))
 		img = Image.open(os.path.join(settings.path, "res/bg.png")).convert("RGBA")
 
 	width = settings.width

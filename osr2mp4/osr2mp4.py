@@ -5,6 +5,7 @@ import sys
 import time
 import traceback
 
+from osr2mp4 import logger
 from osr2mp4.osrparse.enums import Mod
 from osr2mp4.Utils.getmods import mod_string_to_enums
 from osr2mp4.EEnum.EReplay import Replays
@@ -34,11 +35,11 @@ class Dummy: pass
 
 def excepthook(exc_type, exc_value, exc_tb):
 	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-	logging.exception(tb)
+	logger.exception(tb)
 	print(tb)
 
 
-@logged(logging.getLogger(__name__))
+@logged(logger)
 @traced
 class Osr2mp4:
 
@@ -56,19 +57,15 @@ class Osr2mp4:
 		if logpath == "":
 			logpath = os.path.join(self.settings.path, "logosr2mp4.log")
 
+		logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
+		fmt = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
+		logger.setLevel(TRACE)
 		if logtofile:
-			logging.basicConfig(
-				level=TRACE, stream=open(logpath, "w"),
-				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
-			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
+			handler = logging.FileHandler(logpath)
 		else:
-			logging.basicConfig(
-				level=TRACE, stream=sys.stdout,
-				format="%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
-			logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
-
-		if not enablelog:
-			logging.basicConfig(level=logging.CRITICAL, stream=os.devnull)
+			handler = logging.StreamHandler(sys.stdout if enablelog else os.devnull)
+		logger.handlers.clear()
+		logger.addHandler(handler)
 
 		self.settings.enablelog = enablelog
 
@@ -163,7 +160,7 @@ class Osr2mp4:
 
 		self.previousprogress = 0
 
-		logging.log(TRACE, "Settings vars {}".format(vars(self.settings)))
+		logger.log(TRACE, "Settings vars {}".format(vars(self.settings)))
 		gameplaysettings["api key"] = apikey  # restore api key
 
 	def startvideo(self):
@@ -211,18 +208,18 @@ class Osr2mp4:
 	def joinvideo(self):
 		if self.data["Process"] >= 1:
 			for i in range(self.data["Process"]):
-				logging.debug(self.drawers[i].is_alive())
-				logging.debug(self.writers[i].is_alive())
+				logger.debug(self.drawers[i].is_alive())
+				logger.debug(self.writers[i].is_alive())
 				self.drawers[i].join()
-				logging.debug(f"Joined drawers {i}")
+				logger.debug(f"Joined drawers {i}")
 
 				self.writers[i].join()  # temporary fixm might cause some infinite loop
-				logging.debug(f"Joined writers {i}")
+				logger.debug(f"Joined writers {i}")
 
 				conn1, conn2 = self.pipes[i]
 				conn1.close()
 				conn2.close()
-				logging.debug(f"Closed conn {i}")
+				logger.debug(f"Closed conn {i}")
 
 		self.drawers, self.writers, self.pipes = None, None, None
 
@@ -254,7 +251,7 @@ class Osr2mp4:
 			if self.audio is not None:
 				self.audio.terminate()
 		except Exception as e:
-			logging.error(repr(e))
+			logger.error(repr(e))
 		cleanup(self.settings)
 
 	def getprogress(self):

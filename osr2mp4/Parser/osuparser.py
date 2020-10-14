@@ -1,6 +1,6 @@
-import logging
 import math
 
+from osr2mp4 import logger
 from osr2mp4.Utils.maphash import osuhash
 from osr2mp4.Exceptions import GameModeNotSupported
 
@@ -138,7 +138,7 @@ class Beatmap:
 				my_dict["SampleIndex"] = my_dict.get("SampleIndex", "0")
 				my_dict["Volume"] = my_dict.get("Volume", 100)
 				self.timing_point.append(my_dict)
-				logging.error(repr(e))
+				logger.error(repr(e))
 				continue
 			# my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)

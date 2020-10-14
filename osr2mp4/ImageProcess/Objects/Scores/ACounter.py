@@ -1,7 +1,6 @@
-import logging
-
 from PIL import Image
 
+from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
@@ -39,7 +38,7 @@ class ACounter:
 			scale = self.settings.scale * self.countersettings[self.prefix + "Size"]/20
 			self.background = imageproc.change_size(self.background, scale, scale)
 		except Exception as e:
-			logging.error(repr(e))
+			logger.error(repr(e))
 			self.background = Image.new("RGBA", (1, 1))
 
 	def update(self, score):

@@ -1,4 +1,3 @@
-import logging
 import math
 import os
 import subprocess
@@ -12,6 +11,7 @@ from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
 from pydub import exceptions
+from osr2mp4 import logger
 from osr2mp4.AudioProcess.AddAudio import HitsoundManager
 from osr2mp4.AudioProcess.Hitsound import Hitsound
 from osr2mp4.AudioProcess.Utils import getfilenames
@@ -84,7 +84,7 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 			pass
 
 		except exceptions.CouldntDecodeError as e:
-			logging.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
+			logger.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			print(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
@@ -94,7 +94,7 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
 	print("file not found" + filename)
-	logging.error("file not found " + filename)
+	logger.error("file not found " + filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
 
@@ -168,7 +168,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 		error = repr(e)
 		with open("error.txt", "w") as fwrite:  # temporary fix
 			fwrite.write(repr(e))
-		logging.error("{} from audio\n\n\n".format(error))
+		logger.error("{} from audio\n\n\n".format(error))
 		raise
 
 
