@@ -62,8 +62,10 @@ class Osr2mp4:
 		logger.setLevel(TRACE)
 		if logtofile:
 			handler = logging.FileHandler(logpath)
+		elif enablelog:
+			handler = logging.StreamHandler(sys.stdout)
 		else:
-			handler = logging.StreamHandler(sys.stdout if enablelog else os.devnull)
+			handler = logging.NullHandler()
 		logger.handlers.clear()
 		logger.addHandler(handler)
 

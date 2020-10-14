@@ -308,7 +308,7 @@ class Beatmap:
 				else:
 					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"]
 
-				# logger.debug(my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
+				# logger.debug("%s %s", my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
 
 				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:

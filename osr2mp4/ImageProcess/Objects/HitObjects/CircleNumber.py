@@ -8,7 +8,7 @@ class Number(FrameObject):
 		self.nwidth = self.w()
 		scale = frames[1]
 		self.overlap = int(fonts["HitCircleOverlap"]*scale)
-		logger.debug(self.overlap, fonts["HitCircleOverlap"], scale)
+		logger.debug("%s %s %s", self.overlap, fonts["HitCircleOverlap"], scale)
 
 	def add_to_frame(self, background, x, y, alpha, number):
 		"""

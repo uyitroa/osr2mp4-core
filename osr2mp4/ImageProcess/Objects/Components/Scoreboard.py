@@ -242,7 +242,7 @@ class Scoreboard(FrameObject):
 		try:
 			scores = getscores(self.beatmaphash, os.path.join(self.settings.osu, "scores.db"))
 		except Exception as e:
-			logger.error("from scoreboard", repr(e))
+			logger.error("from scoreboard: %s", repr(e))
 			return
 
 		for i in range(len(scores["scores"])):

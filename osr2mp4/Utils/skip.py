@@ -64,7 +64,7 @@ def search_osrindex(to_time, replays):
 	while cur_index <= len(replays)-1 and replays[cur_index+1][3] < to_time:
 		cur_index += 1
 
-	logger.debug("cur_index", cur_index)
+	logger.debug("cur_index %d", cur_index)
 	return cur_index
 
 

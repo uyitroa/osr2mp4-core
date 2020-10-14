@@ -87,12 +87,12 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 			logger.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
-	logger.warning("file not found",  filename, "using default skin")
+	logger.warning("file not found %s, using default skin",  filename)
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
-	logger.error("file not found " + filename)
+	logger.error("file not found %s", filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
 
@@ -196,7 +196,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	hitsoundm = HitsoundManager(beatmap)
 
-	logger.debug("Done loading", time.time() - ccc)
+	logger.debug("Done loading: %f", time.time() - ccc)
 
 	for x in range(len(my_info)):
 

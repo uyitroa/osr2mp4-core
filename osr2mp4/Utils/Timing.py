@@ -31,7 +31,7 @@ def get_offset(beatmap, start_index, end_index, replay_info, endtime, fps=60):
 
 	offset = replay_event[osr_index][Replays.TIMES]
 	endtime += replay_event[end_index][Replays.TIMES] + 100
-	logger.debug("\n\nOFFSET:", offset)
+	logger.debug("\n\nOFFSET: %s", offset)
 	return offset, endtime
 
 

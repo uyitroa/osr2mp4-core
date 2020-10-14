@@ -142,7 +142,7 @@ class YImages:
 
 		self.load(defaultpath=False)
 		if self.unanimate and self.imgfrom == ImageFrom.BLANK:
-			logger.debug("Loading default path YImagesss", filename)
+			logger.debug("Loading default path YImagesss: %s", filename)
 			self.frames = []
 			self.load(defaultpath=True)
 
