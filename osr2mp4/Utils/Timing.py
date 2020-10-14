@@ -1,3 +1,4 @@
+from osr2mp4 import logger
 from osr2mp4.VideoProcess.calc import nearer
 from osr2mp4.CheckSystem.Judgement import DiffCalculator
 from osr2mp4.EEnum.EReplay import Replays
@@ -30,7 +31,7 @@ def get_offset(beatmap, start_index, end_index, replay_info, endtime, fps=60):
 
 	offset = replay_event[osr_index][Replays.TIMES]
 	endtime += replay_event[end_index][Replays.TIMES] + 100
-	print("\n\nOFFSET:", offset)
+	logger.debug("\n\nOFFSET:", offset)
 	return offset, endtime
 
 

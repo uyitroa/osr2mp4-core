@@ -189,14 +189,7 @@ def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settin
 		raise
 
 
-def excepthook(exc_type, exc_value, exc_tb):
-	tb = traceback.format_exc()
-	logger.exception(tb)
-	print(tb)
-
-
 def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
-	sys.excepthook = excepthook
 	asdfasdf = time.time()
 
 	logger.log(1, "CALL {}, {}".format(videotime, showranking))
@@ -210,7 +203,7 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	logger.log(1, "PROCESS {}, {}".format(videotime, drawer))
 
 	logger.debug("setup done")
-	print("Starting draw")
+	logger.debug("Starting draw")
 	timer = 0
 	timer2 = 0
 	timer3 = 0
@@ -232,7 +225,7 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 			i = conn.recv()
 
 	conn.send(10)
-	print("End draw", time.time() - asdfasdf)
+	logger.debug("End draw", time.time() - asdfasdf)
 	logger.debug("\nprocess done {}, {}".format(videotime, drawer))
 	logger.debug("Drawing time: {}".format(timer))
 	logger.debug("Total time: {}".format(time.time() - asdfasdf))

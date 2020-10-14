@@ -1,3 +1,4 @@
+from osr2mp4 import logger
 from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 
 
@@ -7,7 +8,7 @@ class Number(FrameObject):
 		self.nwidth = self.w()
 		scale = frames[1]
 		self.overlap = int(fonts["HitCircleOverlap"]*scale)
-		print(self.overlap, fonts["HitCircleOverlap"], scale)
+		logger.debug(self.overlap, fonts["HitCircleOverlap"], scale)
 
 	def add_to_frame(self, background, x, y, alpha, number):
 		"""

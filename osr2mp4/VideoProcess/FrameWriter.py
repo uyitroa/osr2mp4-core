@@ -51,7 +51,7 @@ def write(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
 	logger.debug("{}\n".format(filename))
-	print("Start write")
+	logger.debug("Start write")
 
 	if settings.codec.lower() in videoextensions:
 		raise FourccIsNotExtension()
@@ -109,10 +109,10 @@ def write(shared, conn, filename, settings, iii):
 		filewriter.write("done")
 		filewriter.close()
 
-	print("Release write")
+	logger.debug("Release write")
 	writer.release()
 
-	print("End write")
+	logger.debug("End write")
 
 	logger.debug("\nWriting done {}".format(filename))
 	logger.debug("Writing time: {}".format(timer))

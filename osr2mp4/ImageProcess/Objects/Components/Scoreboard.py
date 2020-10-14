@@ -145,7 +145,7 @@ class Scoreboard(FrameObject):
 
 		k = self.settings.settings["api key"]
 		if k is None:
-			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			logger.error("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
 			return
 
 		data = {'k': k, 'h': maphash}
@@ -196,7 +196,7 @@ class Scoreboard(FrameObject):
 	def getglobalscores(self, mods):
 		k = self.settings.settings["api key"]
 		if k is None:
-			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			logger.error("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
 			self.getlocalscores(mods)
 			return
 
@@ -213,7 +213,7 @@ class Scoreboard(FrameObject):
 			return
 
 		if "error" in data:
-			print("\n\n {} \n\n".format(data["error"]))
+			logger.error("\n\n {} \n\n".format(data["error"]))
 			self.getlocalscores(mods)
 			return
 

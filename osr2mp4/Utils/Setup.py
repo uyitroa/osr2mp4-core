@@ -38,7 +38,7 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 		time_frame *= 1.5
 	if Mod.HalfTime in mod_combination:
 		time_frame *= 0.75
-	print(time_frame)
+	logger.debug(time_frame)
 
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings.width, settings.height, settings.scale = width, height, scale

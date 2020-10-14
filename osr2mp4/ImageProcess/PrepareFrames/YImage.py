@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 from PIL import Image, UnidentifiedImageError
+from osr2mp4 import logger
 from osr2mp4.EEnum.EImageFrom import ImageFrom
 from osr2mp4.ImageProcess import imageproc
 
@@ -41,7 +42,7 @@ class YImage:
 			scaley = scale
 
 		if self.x2:
-			# print(self.filename)
+			# logger.debug(self.filename)
 			scale /= 2
 			scaley /= 2
 
@@ -54,7 +55,7 @@ class YImage:
 			self.orig_rows = self.img.size[1]
 			self.orig_cols = self.img.size[0]
 
-		# print(filename)
+		# logger.debug(filename)
 
 	def loadx2(self, path, pre, filename=None):
 		if filename is None:
@@ -141,7 +142,7 @@ class YImages:
 
 		self.load(defaultpath=False)
 		if self.unanimate and self.imgfrom == ImageFrom.BLANK:
-			print("Loading default path YImagesss", filename)
+			logger.debug("Loading default path YImagesss", filename)
 			self.frames = []
 			self.load(defaultpath=True)
 
@@ -165,4 +166,3 @@ class YImages:
 			self.frames.append(a.img)
 
 		self.n_frame = len(self.frames)
-

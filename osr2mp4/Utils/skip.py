@@ -1,3 +1,6 @@
+from osr2mp4 import logger
+
+
 def search_time(to_time, hitobjects):
 	cur_index = 0
 	while cur_index <= len(hitobjects)-2 and hitobjects[cur_index]["end time"] + 1000 < to_time:
@@ -41,7 +44,7 @@ def search_updateindex(idd, resultinfo, component, to_time):
 				component.urbar.movearrow()
 		urindex += 1
 
-	print("done")
+	logger.debug("done")
 	return cur_index
 
 
@@ -61,7 +64,7 @@ def search_osrindex(to_time, replays):
 	while cur_index <= len(replays)-1 and replays[cur_index+1][3] < to_time:
 		cur_index += 1
 
-	print("cur_index", cur_index)
+	logger.debug("cur_index", cur_index)
 	return cur_index
 
 
@@ -104,5 +107,3 @@ def skip(to_time, resultinfo, replayinfo, beatmap, timepreempt, component):
 	fp_index, obj_endtime, x_end, y_end = search_fpindex(starttime, beatmap.hitobjects)
 	break_index = search_break(starttime, beatmap.breakperiods)
 	return starttime, hitobjectindex, info_index, osr_index, fp_index, obj_endtime, x_end, y_end, break_index
-
-

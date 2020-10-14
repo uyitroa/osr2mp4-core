@@ -70,7 +70,7 @@ def pydubtonumpy(audiosegment):
 		h = max(2, audiosegment.sample_width) * 8
 		maxvalue = max(np.amax(y), 2 ** h)
 	except ValueError as e:
-		print(repr(e))
+		logger.error(repr(e))
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
@@ -85,15 +85,13 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 
 		except exceptions.CouldntDecodeError as e:
 			logger.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
-			print(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
-	print("file not found",  filename, "using default skin")
+	logger.warning("file not found",  filename, "using default skin")
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
-	print("file not found" + filename)
 	logger.error("file not found " + filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
@@ -198,7 +196,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	hitsoundm = HitsoundManager(beatmap)
 
-	print("Done loading", time.time() - ccc)
+	logger.debug("Done loading", time.time() - ccc)
 
 	for x in range(len(my_info)):
 

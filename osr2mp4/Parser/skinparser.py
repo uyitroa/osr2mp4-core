@@ -98,9 +98,9 @@ class Skin:
 		self.parse_colors()
 		self.parse_fonts()
 
-		# print(self.general)
-		# print(self.colours)
-		# print(self.fonts)
+		# logger.debug(self.general)
+		# logger.debug(self.colours)
+		# logger.debug(self.fonts)
 
 	def filter(self, string):
 		start = "["
