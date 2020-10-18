@@ -1,4 +1,3 @@
-import logging
 import math
 import os
 import subprocess
@@ -12,6 +11,7 @@ from scipy.io.wavfile import write
 import numpy as np
 from pydub import AudioSegment
 from pydub import exceptions
+from osr2mp4 import logger
 from osr2mp4.AudioProcess.AddAudio import HitsoundManager
 from osr2mp4.AudioProcess.Hitsound import Hitsound
 from osr2mp4.AudioProcess.Utils import getfilenames
@@ -70,7 +70,7 @@ def pydubtonumpy(audiosegment):
 		h = max(2, audiosegment.sample_width) * 8
 		maxvalue = max(np.amax(y), 2 ** h)
 	except ValueError as e:
-		print(repr(e))
+		logger.error(repr(e))
 		maxvalue = 1
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
@@ -84,17 +84,15 @@ def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.
 			pass
 
 		except exceptions.CouldntDecodeError as e:
-			logging.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
-			print(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
+			logger.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
-	print("file not found",  filename, "using default skin")
+	logger.warning("file not found %s, using default skin",  filename)
 
 	if defaultpath is not None:
 		return getaudiofromfile(filename, defaultpath, None, settings, volume=volume, speed=speed)
 
-	print("file not found" + filename)
-	logging.error("file not found " + filename)
+	logger.error("file not found %s", filename)
 	return 1, np.zeros((0, 2), dtype=np.float32)
 
 
@@ -168,7 +166,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 		error = repr(e)
 		with open("error.txt", "w") as fwrite:  # temporary fix
 			fwrite.write(repr(e))
-		logging.error("{} from audio\n\n\n".format(error))
+		logger.error("{} from audio\n\n\n".format(error))
 		raise
 
 
@@ -198,7 +196,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	hitsoundm = HitsoundManager(beatmap)
 
-	print("Done loading", time.time() - ccc)
+	logger.debug("Done loading: %f", time.time() - ccc)
 
 	for x in range(len(my_info)):
 

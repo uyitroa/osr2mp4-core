@@ -2,6 +2,7 @@
 # Circle
 from PIL import Image
 
+from osr2mp4 import logger
 from osr2mp4.EEnum.EImageFrom import ImageFrom
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Animation import alpha, size
@@ -188,6 +189,6 @@ def prepare_circle(diff, scale, settings, hd):
 				alphas.append(alpha)
 				alpha = max(0, min(100, alpha + ii))
 
-	print("done")
+	logger.debug("done")
 
 	return slidercircle_frames, circle_frames, fadeout, alphas

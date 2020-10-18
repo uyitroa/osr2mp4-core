@@ -1,6 +1,6 @@
-import logging
 import os
 
+from osr2mp4 import logger
 from osr2mp4.ImageProcess.PrepareFrames.Scores.URArrow import prepare_urarrow
 from osr2mp4.ImageProcess.Objects.Components.Flashlight import Flashlight
 from osr2mp4.ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
@@ -95,24 +95,24 @@ class PreparedFrames:
 		if bg is None:
 			bg = [0, 0, ""]
 
-		logging.debug('start preparing cursor')
+		logger.debug('start preparing cursor')
 		self.cursor, default = prepare_cursor(settings.scale * settings.settings["Cursor size"], settings)
-		logging.debug('start preparing cursormiddle')
+		logger.debug('start preparing cursormiddle')
 		self.cursormiddle, self.continuous = prepare_cursormiddle(settings.scale * settings.settings["Cursor size"], settings, default)
-		logging.debug('start preparing cursortrail')
+		logger.debug('start preparing cursortrail')
 		self.cursor_trail = prepare_cursortrail(settings.scale * settings.settings["Cursor size"], self.continuous, settings)
 
-		logging.debug('start preparing scorenetry')
+		logger.debug('start preparing scoreentry')
 		self.scoreentry = prepare_scoreentry(settings.scale, skin.colours["InputOverlayText"], settings)
 		self.inputoverlayBG = prepare_inputoverlaybg(settings.scale, settings)
 		self.key = prepare_inputoverlay(settings.scale, [255, 220, 20], 2, settings)
 		self.mouse = prepare_inputoverlay(settings.scale, [220, 0, 220], 1, settings)
 
-		logging.debug('start preparing scorenumber')
+		logger.debug('start preparing scorenumber')
 		self.scorenumbers = ScoreNumbers(settings.scale, settings)
 		self.hitcirclenumber = prepare_hitcirclenumber(diff, settings.playfieldscale, settings)
 
-		logging.debug('start preparing accuracy')
+		logger.debug('start preparing accuracy')
 		self.accuracy = prepare_accuracy(self.scorenumbers)
 		self.combocounter = prepare_combo(self.scorenumbers, settings)
 		self.hitresult = prepare_hitresults(settings.scale, diff, settings)
@@ -125,21 +125,21 @@ class PreparedFrames:
 
 		self.fpmanager = prepare_fpmanager(settings.playfieldscale, settings)
 
-		logging.debug('start preparing circle')
+		logger.debug('start preparing circle')
 		self.circle = prepare_circle(diff, settings.playfieldscale, settings, hd)
 		self.slider = prepare_slider(diff, settings.playfieldscale, settings)
 		self.spinner = prepare_spinner(settings.playfieldscale, settings)
 
-		logging.debug('start preparing background')
+		logger.debug('start preparing background')
 		self.bg = prepare_background(os.path.join(settings.beatmap, bg[2]), settings)
 
-		logging.debug('start preparing sections')
+		logger.debug('start preparing sections')
 		self.sections = prepare_sections(settings.scale, settings)
 		self.scorebarbg = prepare_scorebarbg(settings.scale, self.bg, settings)
 		self.scorebar = prepare_scorebar(settings.scale, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
-		logging.debug('start preparing scoreboard')
+		logger.debug('start preparing scoreboard')
 		self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
 		self.scoreboard = prepare_scoreboard(settings.scale, settings)
 		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
@@ -156,13 +156,13 @@ class PreparedFrames:
 			self.menuback = prepare_menuback(settings.scale, settings)
 			self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
 			self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
-			logging.debug("start preparing ur ranking")
+			logger.debug("start preparing ur ranking")
 			self.rankingur = prepare_rankingur(settings, ur)
 			self.rankinggraph.extend(self.rankingur)
 
 		self.flashlight = prepare_flashlight(settings, fl)
 		self.urarrow = prepare_urarrow(settings)
-		logging.debug('start preparing done')
+		logger.debug('start preparing done')
 
 
 class FrameObjects:

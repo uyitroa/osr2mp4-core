@@ -2,10 +2,11 @@
 
 
 # return pos of the first char of the  comment or -1 if there is no comment
-import logging
 import os
 from collections import OrderedDict
 from configparser import ConfigParser
+
+from osr2mp4 import logger
 
 
 def detect_comments(line):
@@ -97,9 +98,9 @@ class Skin:
 		self.parse_colors()
 		self.parse_fonts()
 
-		# print(self.general)
-		# print(self.colours)
-		# print(self.fonts)
+		# logger.debug(self.general)
+		# logger.debug(self.colours)
+		# logger.debug(self.fonts)
 
 	def filter(self, string):
 		start = "["
@@ -133,9 +134,9 @@ class Skin:
 		self.colours = getsection(config, "Colours")
 		self.fonts = getsection(config, "Fonts")
 
-		logging.log(1, self.general)
-		logging.log(1, self.colours)
-		logging.log(1, self.fonts)
+		logger.log(1, self.general)
+		logger.log(1, self.colours)
+		logger.log(1, self.fonts)
 
 	def parse_general(self):
 		self.general['CursorRotate'] = iint(self.general.get('CursorRotate', 0))

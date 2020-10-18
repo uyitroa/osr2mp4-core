@@ -1,9 +1,9 @@
-import logging
 import os
 import time
 import traceback
 import numpy as np
 import cv2
+from osr2mp4 import logger
 from osr2mp4.global_var import videoextensions
 from osr2mp4.Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc, LibAvNotFound
 
@@ -15,7 +15,7 @@ def write_frame(shared, conn, filename, settings, iii):
 		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
 			fwrite.write(repr(e))
-		logging.error("{} from {}\n{}\n\n\n".format(tb, filename, repr(e)))
+		logger.error("{} from {}\n{}\n\n\n".format(tb, filename, repr(e)))
 		raise
 
 
@@ -50,8 +50,8 @@ def getwriter(filename, settings, buf):
 def write(shared, conn, filename, settings, iii):
 	asdfasdf = time.time()
 
-	logging.log(logging.DEBUG, "{}\n".format(filename))
-	print("Start write")
+	logger.debug("{}\n".format(filename))
+	logger.debug("Start write")
 
 	if settings.codec.lower() in videoextensions:
 		raise FourccIsNotExtension()
@@ -69,7 +69,7 @@ def write(shared, conn, filename, settings, iii):
 	timer3 = 0
 	a = 0
 	framecount = 1
-	logging.log(logging.DEBUG, "start writing: %f", time.time() - asdfasdf)
+	logger.debug("start writing: %f", time.time() - asdfasdf)
 
 	startwringtime = time.time()
 
@@ -101,7 +101,7 @@ def write(shared, conn, filename, settings, iii):
 			if iii and framecount % 200:
 				deltatime = max(1, timer)
 				filewriter.seek(0)
-				# logging.log(1, "Writing progress {}, {}, {}, {}".format(framecount, deltatime, filename, startwringtime))
+				# logger.log(1, "Writing progress {}, {}, {}, {}".format(framecount, deltatime, filename, startwringtime))
 				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, filename, startwringtime))
 				filewriter.truncate()
 
@@ -109,13 +109,13 @@ def write(shared, conn, filename, settings, iii):
 		filewriter.write("done")
 		filewriter.close()
 
-	print("Release write")
+	logger.debug("Release write")
 	writer.release()
 
-	print("End write")
+	logger.debug("End write")
 
-	logging.debug("\nWriting done {}".format(filename))
-	logging.debug("Writing time: {}".format(timer))
-	logging.debug("Total time: {}".format(time.time() - asdfasdf))
-	logging.debug("Waiting time: {}".format(timer2))
-	logging.debug("Changing value time: {}".format(timer3))
+	logger.debug("\nWriting done {}".format(filename))
+	logger.debug("Writing time: {}".format(timer))
+	logger.debug("Total time: {}".format(time.time() - asdfasdf))
+	logger.debug("Waiting time: {}".format(timer2))
+	logger.debug("Changing value time: {}".format(timer3))

@@ -5,7 +5,7 @@ import cv2
 
 from multiprocessing import Process, Pipe
 from multiprocessing.sharedctypes import RawArray
-import logging
+from osr2mp4 import logger
 from osr2mp4.VideoProcess.Draw import draw_frame, Drawer
 from osr2mp4.VideoProcess.FrameWriter import write_frame, getwriter
 import os
@@ -16,7 +16,7 @@ def update_progress(framecount, deltatime, videotime):
 
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
-	logging.debug('entering preparedframes')
+	logger.debug('entering preparedframes')
 
 	if settings.process >= 1:
 		shared_array = []
@@ -57,12 +57,12 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			writers.append(writer)
 
 			my_file.write("file '{}'\n".format(f))
-			logging.debug("Starting process")
+			logger.debug("Starting process")
 
 			drawer.start()
-			logging.debug("Start drawer {}".format(i))
+			logger.debug("Start drawer {}".format(i))
 			writer.start()
-			logging.debug("Start writer {}".format(i))
+			logger.debug("Start writer {}".format(i))
 
 			start += osr_interval
 		my_file.close()
@@ -74,7 +74,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		from osr2mp4.CheckSystem.mathhelper import getunstablerate
 		import numpy as np
 
-		logging.debug("process start")
+		logger.debug("process start")
 
 		ur = getunstablerate(resultinfo)
 		frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
@@ -89,7 +89,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 		writer = getwriter(f, settings, buf)
 		buf = buf.reshape((settings.height, settings.width, 3))
 
-		logging.debug("setup done")
+		logger.debug("setup done")
 		framecount = 0
 		startwritetime = time.time()
 		while drawer.frame_info.osr_index < videotime[1]:
@@ -121,6 +121,6 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 				else:
 					writer.write()
 		writer.release()
-		logging.debug("\nprocess done")
+		logger.debug("\nprocess done")
 
 		return None, None, None, None

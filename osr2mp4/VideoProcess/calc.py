@@ -1,3 +1,4 @@
+from osr2mp4 import logger
 from osr2mp4.EEnum.EReplay import Replays
 
 
@@ -71,7 +72,7 @@ def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):
 	# check if it's time to draw circles
 	if frame_info.cur_time + time_preempt >= osu_d["time"] and frame_info.index_hitobj + 1 < len(beatmap.hitobjects):
 
-		# logging.log(1, "Adding osu object {}\n{}".format(osu_d, frame_info))
+		# logger.log(1, "Adding osu object {}\n{}".format(osu_d, frame_info))
 
 		if "spinner" in osu_d["type"]:
 

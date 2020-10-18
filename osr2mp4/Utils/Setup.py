@@ -1,8 +1,8 @@
-import logging
 import os
 
 from autologging import traced, logged
 
+from osr2mp4 import logger
 from osr2mp4.global_var import defaultsettings
 from osr2mp4.osrparse.enums import Mod
 
@@ -10,7 +10,7 @@ from osr2mp4.Parser.skinparser import Skin
 from osr2mp4.Utils.Resolution import get_screensize
 
 
-@logged(logging.getLogger(__name__))
+@logged(logger)
 @traced
 def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None):
 	skin_path = data["Skin path"]
@@ -38,7 +38,7 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 		time_frame *= 1.5
 	if Mod.HalfTime in mod_combination:
 		time_frame *= 0.75
-	print(time_frame)
+	logger.debug(time_frame)
 
 	playfield_scale, playfield_width, playfield_height, scale, move_right, move_down = get_screensize(width, height)
 	settings.width, settings.height, settings.scale = width, height, scale
@@ -75,5 +75,3 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 
 	if ppsettings is not None:
 		settings.ppsettings = ppsettings
-
-

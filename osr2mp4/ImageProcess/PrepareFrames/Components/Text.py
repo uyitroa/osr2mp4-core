@@ -1,6 +1,5 @@
-import logging
-
 from PIL import ImageFont, ImageDraw, Image
+from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
 import os
 
@@ -13,7 +12,7 @@ def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
 		font = ImageFont.truetype(fontpath, size=size)
 	except Exception as e:
 		font = ImageFont.truetype(os.path.join(settings.path, "res/Aller_Rg.ttf"), size=size)
-		logging.error(repr(e))
+		logger.error(repr(e))
 
 	img = Image.new("RGBA", (settings.width, settings.height))
 	imgdraw = ImageDraw.Draw(img)
@@ -25,4 +24,3 @@ def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
 		imgs[text] = imageproc.newalpha(img.crop((0, 0, s[0], s[1])), alpha)
 
 	return imgs
-
