@@ -4,7 +4,6 @@ import time
 import cv2
 
 from multiprocessing import Process, Pipe
-from multiprocessing.sharedctypes import RawArray
 from osr2mp4 import logger
 from osr2mp4.VideoProcess.Draw import draw_frame, Drawer
 from osr2mp4.VideoProcess.FrameWriter import write_frame, getwriter
@@ -17,110 +16,58 @@ def update_progress(framecount, deltatime, videotime):
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
 	logger.debug('entering preparedframes')
+	
+	from osr2mp4.VideoProcess.AFrames import PreparedFrames
+	from osr2mp4.CheckSystem.mathhelper import getunstablerate
+	import numpy as np
 
-	if settings.process >= 1:
-		shared_array = []
-		shared_pipe = []
-		drawers = []
-		writers = []
+	logger.debug("process start")
 
-		start_index, end_index = videotime
+	ur = getunstablerate(resultinfo)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
-		osr_interval = int((end_index - start_index) / settings.process)
-		start = start_index
+	shared = np.zeros((settings.height * settings.width * 4), dtype=np.uint8)
+	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
-		my_file = open(os.path.join(settings.temp, "listvideo.txt"), "w")
-		for i in range(settings.process):
+	_, file_extension = os.path.splitext(settings.output)
+	f = os.path.join(settings.temp, "outputf" + file_extension)
 
-			if i == settings.process - 1:
-				end = end_index
+	buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
+	writer = getwriter(f, settings, buf)
+	buf = buf.reshape((settings.height, settings.width, 3))
+
+	logger.debug("setup done")
+	framecount = 0
+	startwritetime = time.time()
+	while drawer.frame_info.osr_index < videotime[1]:
+		status = drawer.render_draw()
+
+		if status:
+			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
+
+			if not settings.settings["Use FFmpeg video writer"]:
+				writer.write(buf)
 			else:
-				end = start + osr_interval
+				writer.write()
 
-			shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
-			conn1, conn2 = Pipe()
+			framecount += 1
+			if framecount % 100 == 0:
+				filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
+				deltatime = time.time() - startwritetime
+				filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
+				filewriter.close()
 
-			# extract container
-			_, file_extension = os.path.splitext(settings.output)
-			f = "output" + str(i) + file_extension
+				update_progress(framecount, deltatime, videotime)
 
-			vid = (start, end)
+	if showranking:
+		for x in range(int(5 * settings.fps)):
+			drawer.draw_rankingpanel()
+			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
+			if not settings.settings["Use FFmpeg video writer"]:
+				writer.write(buf)
+			else:
+				writer.write()
+	writer.release()
+	logger.debug("\nprocess done")
 
-			drawer = Process(target=draw_frame, args=(
-				shared, conn1, beatmap, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
-
-			writer = Process(target=write_frame, args=(shared, conn2, settings.temp + f, settings, i == settings.process-1))
-
-			shared_array.append(shared)
-			shared_pipe.append((conn1, conn2))
-			drawers.append(drawer)
-			writers.append(writer)
-
-			my_file.write("file '{}'\n".format(f))
-			logger.debug("Starting process")
-
-			drawer.start()
-			logger.debug("Start drawer {}".format(i))
-			writer.start()
-			logger.debug("Start writer {}".format(i))
-
-			start += osr_interval
-		my_file.close()
-
-		return drawers, writers, shared_pipe, shared_array
-
-	else:
-		from osr2mp4.VideoProcess.AFrames import PreparedFrames
-		from osr2mp4.CheckSystem.mathhelper import getunstablerate
-		import numpy as np
-
-		logger.debug("process start")
-
-		ur = getunstablerate(resultinfo)
-		frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
-
-		shared = RawArray(ctypes.c_uint8, settings.height * settings.width * 4)
-		drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
-
-		_, file_extension = os.path.splitext(settings.output)
-		f = os.path.join(settings.temp, "outputf" + file_extension)
-
-		buf = np.zeros((settings.height * settings.width * 3), dtype=np.uint8)
-		writer = getwriter(f, settings, buf)
-		buf = buf.reshape((settings.height, settings.width, 3))
-
-		logger.debug("setup done")
-		framecount = 0
-		startwritetime = time.time()
-		while drawer.frame_info.osr_index < videotime[1]:
-			status = drawer.render_draw()
-
-			if status:
-				cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
-
-				if not settings.settings["Use FFmpeg video writer"]:
-					writer.write(buf)
-				else:
-					writer.write()
-
-				framecount += 1
-				if framecount % 100 == 0:
-					filewriter = open(os.path.join(settings.temp, "speed.txt"), "w")
-					deltatime = time.time() - startwritetime
-					filewriter.write("{}\n{}\n{}\n{}".format(framecount, deltatime, f, startwritetime))
-					filewriter.close()
-
-					update_progress(framecount, deltatime, videotime)
-
-		if showranking:
-			for x in range(int(5 * settings.fps)):
-				drawer.draw_rankingpanel()
-				cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
-				if not settings.settings["Use FFmpeg video writer"]:
-					writer.write(buf)
-				else:
-					writer.write()
-		writer.release()
-		logger.debug("\nprocess done")
-
-		return None, None, None, None
+	return None, None, None, None

@@ -61,9 +61,9 @@ from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingHitresults import 
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingPanel import prepare_rankingpanel
 from osr2mp4.ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
 from osr2mp4.ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
-from osr2mp4.ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
+#from osr2mp4.ImageProcess.PrepareFrames.Components.Scoreboard import prepare_scoreboard
 from osr2mp4.ImageProcess.PrepareFrames.Components.Sections import prepare_sections
-from osr2mp4.ImageProcess.PrepareFrames.Effects.ScoreboardEffect import prepare_scoreboardeffect
+#from osr2mp4.ImageProcess.PrepareFrames.Effects.ScoreboardEffect import prepare_scoreboardeffect
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
@@ -75,7 +75,7 @@ from osr2mp4.ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
 from osr2mp4.ImageProcess.PrepareFrames.Scores.ComboCounter import prepare_combo
 from osr2mp4.ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresults
 from osr2mp4.ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
-from osr2mp4.ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
+#from osr2mp4.ImageProcess.PrepareFrames.Scores.Scoreentry import prepare_scoreboardscore
 from osr2mp4.ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
@@ -139,10 +139,10 @@ class PreparedFrames:
 		self.scorebar = prepare_scorebar(settings.scale, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
-		logger.debug('start preparing scoreboard')
-		self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
-		self.scoreboard = prepare_scoreboard(settings.scale, settings)
-		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
+		#logger.debug('start preparing scoreboard')
+		#self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
+		#self.scoreboard = prepare_scoreboard(settings.scale, settings)
+		#self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
 
 		self.modicons = prepare_modicons(settings.scale, settings)
 		if loadranking:
@@ -212,7 +212,7 @@ class FrameObjects:
 		self.scorebar = Scorebar(frames.scorebar, settings)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
-		self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, meta, maphash, settings)
+		#self.scoreboard = Scoreboard(frames.scoreboard, frames.scoreboardscore, frames.scoreboardeffect, replay_info, meta, maphash, settings)
 
 		if frames.loadranking:
 			self.rankingpanel = RankingPanel(frames.rankingpanel, settings)

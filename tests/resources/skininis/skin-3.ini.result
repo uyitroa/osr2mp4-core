@@ -1,2 +1,0 @@
-{'Combo1': [255, 255, 255], 'Combo2': [255, 255, 255], 'SliderBorder': [241, 70, 70], 'SliderTrackOverride': [0, 0, 0], 'SpinnerApproachCircle': [255, 255, 255], 'StarBreakAdditive': [246, 255, 0], 'MenuGlow': [197, 197, 197], 'SongSelectActiveText': [255, 255, 255], 'SongSelectInactiveText': [255, 255, 255], 'InputOverlayText': [255, 255, 255], 'SliderBall': (2, 170, 255), 'SpinnerBackground': (100, 100, 100), 'ComboNumber': 2}
-{'HitCirclePrefix': 'default', 'HitCircleOverlap': 159, 'ScorePrefix': 'score', 'ScoreOverlap': 0, 'ComboOverlap': 0, 'ComboPrefix': 'score'}
