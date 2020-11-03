@@ -41,11 +41,11 @@ def prepare_scoreboardscore(scale, settings):
 			x = "dot"
 		number = YImage(scoreentry + str(x), settings, scale)
 
-		if number.imgfrom == ImageFrom.BLANK:
-			img = Image.open(os.path.join(settings.path, "res", scoreentry + str(x) + "@2x.png"))
-			img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
-		else:
-			img = number.img
+		#if number.imgfrom == ImageFrom.BLANK:
+		#	img = Image.open(os.path.join(settings.path, "res", scoreentry + str(x) + "@2x.png"))
+		#	img = imageproc.change_size(img, scale * 0.5, scale * 0.5)
+		#else:
+		img = number.img
 
 		numbers_animation.append(img)
 	combo_number = imageproc.change_sizes(numbers_animation, 0.9, 0.9)

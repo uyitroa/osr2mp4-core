@@ -1,1 +1,0 @@
-[['drum-hitnormal10', 'drum-hitfinish10', 'drum-hitnormal11', 'drum-hitfinish11', 'normal-slidertick', 'drum-slidernormal10'], []]

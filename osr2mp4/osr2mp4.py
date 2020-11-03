@@ -72,7 +72,7 @@ class Osr2mp4:
 
 		self.settings.enablelog = enablelog
 
-		self.settings.temp = os.path.join(self.settings.path, str(uuid.uuid1()) + "temp/")
+		self.settings.temp = os.path.join('/tmp/', str(uuid.uuid1()) + "temp/")
 
 		self.__log.info("test")
 

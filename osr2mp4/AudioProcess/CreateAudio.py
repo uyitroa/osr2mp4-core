@@ -7,7 +7,7 @@ from multiprocessing import Process
 from osr2mp4.Exceptions import AudioNotFound
 from osr2mp4.osrparse.enums import Mod
 from recordclass import recordclass
-from scipy.io.wavfile import write
+from .wavfile import write
 import numpy as np
 from pydub import AudioSegment
 from pydub import exceptions
@@ -164,8 +164,6 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 		audioprc(my_info, beatmap, offset, endtime, mods, settings)
 	except Exception as e:
 		error = repr(e)
-		with open("error.txt", "w") as fwrite:  # temporary fix
-			fwrite.write(repr(e))
 		logger.error("{} from audio\n\n\n".format(error))
 		raise
 
@@ -178,12 +176,13 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	default_skinpath = settings.default_path
 	beatmap_path = settings.beatmap
 	audio_name = beatmap.general["AudioFilename"]
-
 	ccc = time.time()
 
 	try:
-		song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
-	except FileNotFoundError:
+		audiomp3path = os.path.join(beatmap_path, audio_name)
+		song = Audio2p(*read(audiomp3path, settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
+	except FileNotFoundError as e:
+		logger.error(e)
 		raise AudioNotFound()
 	song.rate /= settings.timeframe/1000
 	song.audio = apply_offset(song, settings.settings["Song delay"])
