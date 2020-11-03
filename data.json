@@ -1,0 +1,16 @@
+{
+	"osu! path": "/",
+	"Skin path": "test/skin/",
+	"Beatmap path": "test/beatmap/",
+	".osr path": "test/replay.osr",
+	"Default skin path": "test/skin/",
+	"Output path": "/tmp/vid.mp4",
+	"Width": 1280,
+	"Height": 720,
+	"FPS": 60,
+	"Start time": 0,
+	"End time": -1,
+	"Video codec": "mp4v",
+	"Process": 0,
+	"ffmpeg path": "/tmp/ffmpeg"
+}
