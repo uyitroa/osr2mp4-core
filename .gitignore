@@ -2,9 +2,9 @@
 *.mkv
 *.pyc
 *.xml
+*.mp3
 .idea/
 src/*.png
-src/*.mp3
 src/*.swp
 venv/
 .DS_Store
@@ -21,3 +21,4 @@ ccurves.cpython-37m-darwin.so
 cmake-build-debug/
 osr2mp4/ImageProcess/Curves/libcurves/CMakeLists.txt
 osr2mp4/ImageProcess/Curves/libcurves/test.py
+local/*
