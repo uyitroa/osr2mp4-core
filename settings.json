@@ -1,0 +1,14 @@
+{
+	"Global leaderboard": false,
+	"Show scoreboard": false,
+	"Show score meter": true,
+	"Always show key overlay": true,
+	"Song volume": 100,
+	"Effect volume": 75,
+	"Enable PP counter": true,
+	"Use FFmpeg video writer": false,
+	"FFmpeg codec": "libx264",
+	"FFmpeg custom commands": "-preset ultrafast -crf 23",
+	"Audio bitrate": 150,
+	"api key": "lol"
+}
