@@ -6,7 +6,6 @@ from osr2mp4.ImageProcess.Objects.Components.Flashlight import Flashlight
 from osr2mp4.ImageProcess.PrepareFrames.Components.Flashlight import prepare_flashlight
 from osr2mp4.ImageProcess.Objects.Components.PlayingModIcons import PlayingModIcons
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingUR import prepare_rankingur
-from osr2mp4.ImageProcess.Objects.Scores.HitresultCounter import HitresultCounter
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
@@ -227,5 +226,4 @@ class FrameObjects:
 			self.rankinggraph = RankingGraph(frames.rankinggraph, replay_info, settings)
 
 		self.ppcounter = PPCounter(settings)
-		self.hitresultcounter = HitresultCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)

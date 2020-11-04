@@ -42,19 +42,7 @@ defaultppconfig = {
 	],
 	"Alpha": 1,
 	"Font": "arial.ttf",
-	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
-	"Hitresult x": 50,
-	"Hitresult y": 150,
-	"Hitresult Size": 16,
-	"Hitresult Rgb": [
-		255,
-		255,
-		255
-	],
-	"Hitresult Alpha": 1,
-	"Hitresult Font": "arial.ttf",
-	"Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
-	"Hitresult Gap": 3
+	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png")
 }
 
 

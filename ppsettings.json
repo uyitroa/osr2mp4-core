@@ -9,17 +9,5 @@
     ],
     "Alpha": 1,
     "Font": "/opt/python/res/Arial.ttf",
-    "Background": "/opt/python/res/pptemplate.png",
-    "Hitresult x": 50,
-    "Hitresult y": 150,
-    "Hitresult Size": 16,
-    "Hitresult Rgb": [
-        255,
-        255,
-        255
-    ],
-    "Hitresult Alpha": 1,
-    "Hitresult Font": "/opt/python/res/Arial.ttf",
-    "Hitresult Background": "/opt/python/res/hitresulttemplate.png",
-    "Hitresult Gap": 3
+    "Background": "/opt/python/res/pptemplate.png"
 }

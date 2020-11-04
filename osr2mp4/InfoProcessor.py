@@ -115,7 +115,6 @@ class Updater:
 				self.component.scorecounter.update_score(self.info.score)
 
 		#self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
-		self.component.hitresultcounter.update(self.info.accuracy)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
