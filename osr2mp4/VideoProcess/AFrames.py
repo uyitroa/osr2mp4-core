@@ -134,11 +134,6 @@ class PreparedFrames:
 		self.scorebar = prepare_scorebar(settings.scale, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
-		#logger.debug('start preparing scoreboard')
-		#self.scoreboardscore = prepare_scoreboardscore(settings.scale, settings)
-		#self.scoreboard = prepare_scoreboard(settings.scale, settings)
-		#self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
-
 		self.modicons = prepare_modicons(settings.scale, settings)
 		if loadranking:
 			self.rankingpanel = prepare_rankingpanel(settings.scale, self.bg, settings)
