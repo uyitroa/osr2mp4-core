@@ -6,7 +6,6 @@ from osr2mp4.osrparse.enums import Mod
 defaultsettings = {
 	"Cursor size": 1,
 	"In-game interface": True,
-	"Show scoreboard": True,
 	"Background dim": 100,
 	"Rotate sliderball": False,
 	"Always show key overlay": True,
