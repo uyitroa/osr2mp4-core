@@ -34,7 +34,7 @@ def from_notwav(filename, settings):
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		with open(os.path.join(settings.path, "speedup.log"), "a") as cc:
+		with open(os.path.join(settings.temp, "speedup.log"), "a") as cc:
 			subprocess.call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=cc, stderr=cc)
 
 		f = os.path.join(settings.temp, "spedup.mp3")

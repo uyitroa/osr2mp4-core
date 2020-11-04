@@ -1,0 +1,11 @@
+version: "3"
+services:
+  lambda:
+    user: root
+    image: lambci/lambda:python3.8
+    volumes:
+      - "./local/bin:/opt/bin:ro,delegated"
+      - "./local/lib:/opt/lib:ro,delegated"
+      - "./local/python:/opt/python:ro,delegated"
+      - "./:/var/task:ro,delegated"
+      - "./local/tmp:/tmp:z"
