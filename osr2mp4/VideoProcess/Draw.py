@@ -8,7 +8,6 @@ from PIL import Image
 from osr2mp4.osrparse.replay import Replay
 
 from osr2mp4 import logger
-from osr2mp4.CheckSystem.Health import HealthProcessor
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.Utils.skip import skip
 from osr2mp4.InfoProcessor import Updater
@@ -42,7 +41,6 @@ class Drawer:
 		self.img = None
 		self.time_preempt = None
 		self.np_img, self.pbuffer = None, None
-		self.initialised_ranking = False
 		self.key_queue = []
 
 		self.setup_draw()
@@ -55,12 +53,10 @@ class Drawer:
 		diffcalculator = DiffCalculator(self.beatmap.diff)
 		self.time_preempt = diffcalculator.ar()
 
-		healthproc = HealthProcessor(self.beatmap, self.beatmap.health_processor.drain_rate)
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
 		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
-		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 		self.component.flashlight.set_pos(old_cursor_x, old_cursor_y)
@@ -116,7 +112,6 @@ class Drawer:
 
 		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
 		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
-		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
 		self.component.urbar.add_to_frame_bar(self.img)
@@ -132,10 +127,7 @@ class Drawer:
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
-		self.component.sections.add_to_frame(self.img)
-		#self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
 		self.component.ppcounter.add_to_frame(self.img)
-		self.component.hitresultcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
@@ -148,39 +140,10 @@ class Drawer:
 		self.cursor_event.event = copy.copy(self.replay_event[self.frame_info.osr_index])
 		return self.img.size[0] != 1
 
-	def initialiseranking(self):
-		self.component.rankingpanel.start_show()
-		self.component.rankinghitresults.start_show()
-		self.component.rankingtitle.start_show()
-		self.component.rankingcombo.start_show()
-		self.component.rankingaccuracy.start_show()
-		self.component.rankinggrade.start_show()
-		self.component.menuback.start_show()
-		self.component.modicons.start_show()
-		self.component.rankingreplay.start_show()
-		self.component.rankinggraph.start_show()
 
-	def draw_rankingpanel(self):
-		if not self.initialised_ranking:
-			self.settings.timeframe = 1000
-			self.initialiseranking()
-			self.initialised_ranking = True
-
-		self.component.rankingpanel.add_to_frame(self.pbuffer)
-		self.component.rankinghitresults.add_to_frame(self.pbuffer)
-		self.component.rankingtitle.add_to_frame(self.pbuffer, self.np_img)
-		self.component.rankingcombo.add_to_frame(self.pbuffer)
-		self.component.rankingaccuracy.add_to_frame(self.pbuffer)
-		self.component.rankinggrade.add_to_frame(self.pbuffer)
-		self.component.menuback.add_to_frame(self.pbuffer)
-		self.component.modicons.add_to_frame(self.pbuffer)
-		self.component.rankingreplay.add_to_frame(self.pbuffer)
-		self.component.rankinggraph.add_to_frame(self.pbuffer)
-
-
-def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
+def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settings):
 	try:
-		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking)
+		draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings)
 	except Exception as e:
 		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
@@ -189,14 +152,14 @@ def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settin
 		raise
 
 
-def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
+def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings):
 	asdfasdf = time.time()
 
-	logger.log(1, "CALL {}, {}".format(videotime, showranking))
+	logger.log(1, "CALL {}, {}".format(videotime))
 	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
@@ -217,12 +180,6 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 			asdf = time.time()
 			i = conn.recv()
 			timer2 += time.time() - asdf
-
-	if showranking:
-		for x in range(int(5 * settings.fps)):
-			drawer.draw_rankingpanel()
-			conn.send(1)
-			i = conn.recv()
 
 	conn.send(10)
 	logger.debug("End draw: %f", time.time() - asdfasdf)

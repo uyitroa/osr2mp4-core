@@ -176,7 +176,7 @@ class Osr2mp4:
 
 		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap,
 		                                                                        self.replay_info, self.resultinfo,
-		                                                                        videotime, self.endtime == -1)
+		                                                                        videotime)
 
 	def analyse_replay(self):
 

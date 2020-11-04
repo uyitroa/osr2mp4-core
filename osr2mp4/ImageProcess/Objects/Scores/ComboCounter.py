@@ -10,7 +10,7 @@ class ComboCounter(AScorebar):
 		AScorebar.__init__(self, frames[0], settings=settings)
 		self.settings = settings
 
-		self.score_frames, self.score_fadeout = frames
+		self.score_frames = frames
 		self.height = self.settings.height
 		self.width = self.settings.width
 
@@ -58,29 +58,15 @@ class ComboCounter(AScorebar):
 		self.combo = max(0, combo-1)
 
 	def draw_combo(self, combo, background, index, combotype):
-		if combotype == self.NORMAL:
-			x = 13 * self.settings.scale
-			frames = self.score_frames[int(index)]
-		else:
-			x = 17 * self.settings.scale
-			frames = self.score_fadeout[int(index)]
-		# for digit in str(combo):
-		# 	digit = int(digit)
-		# 	img = frames[digit][int(index)]
-		# 	y = self.height - img.size[1]
-		# 	x, x_offset, y_offset = self.next_pos(x, y, img)
-		# 	imageproc.add(img, background, x_offset - self.h, y_offset, alpha=self.alpha)
-		#
-		# img = frames[10][int(index)]
-		# y = self.height - img.size[1]
-		# x, x_offset, y_offset = self.next_pos(x, y, img)
-		# imageproc.add(img, background, x_offset - self.h, y_offset, alpha=self.alpha)
+		x = 13 * self.settings.scale
+		frames = self.score_frames[int(index)]
+
 		imageproc.draw_number(background, str(combo) + "x", frames, x, self.height - frames[0].size[1]/2, alpha=self.alpha, origin="left", gap=self.gap)
 
 	def add_to_frame(self, background, inbreak):
 		AScorebar.animate(self)
 
-		if int(self.fadeout_index) == len(self.score_fadeout) - 1:
+		if int(self.fadeout_index) == len(self.score_frames) - 1:
 			self.combo = self.combofadeout
 			self.score_index = 0
 			self.index_step = 1

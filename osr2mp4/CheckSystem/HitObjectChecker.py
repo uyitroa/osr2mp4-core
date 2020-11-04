@@ -3,14 +3,13 @@ from osr2mp4.osrparse.replay import Replay
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.EEnum.EReplay import Replays
-from osr2mp4.CheckSystem.Health import HealthProcessor, HealthDummy
 from osr2mp4.CheckSystem.Judgement import Check
 from collections import namedtuple
 import copy
 from osr2mp4.EEnum.EState import States
 
 
-Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
+Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id maxcombo more")
 Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
 Slider = namedtuple("Slider", "followstate hitvalue hitend x y end arrowindex")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue rpm")
@@ -80,13 +79,6 @@ class HitObjectChecker:
 
 		self.info = []
 		self.starthitobjects = 0
-		if not tests:
-			self.health_processor = HealthProcessor(beatmap)
-		else:
-			self.health_processor = HealthDummy(beatmap)
-		beatmap.health_processor = self.health_processor
-		self.drainrate = self.health_processor.drain_rate
-		self.health_value = 1
 
 	def difficulty_multiplier(self):
 		return difficulty_multiplier(self.diff)
@@ -108,8 +100,6 @@ class HitObjectChecker:
 
 		if self.scorecounter >= self.maxscore:
 			self.scorecounter = self.maxscore
-
-		self.health_processor.updatehp(hitresult, objtype)
 
 	def getacc(self, acc):
 		total = (acc[300] + acc[100] + acc[50] + acc[0]) * 300
@@ -136,7 +126,7 @@ class HitObjectChecker:
 					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
 					info = Info(replay[osr_index][3], self.combo, 0, self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), None,
-								timestamp, idd, self.health_processor.health_value, self.maxcombo, circle)
+								timestamp, idd, self.maxcombo, circle)
 					self.info.append(info)
 					return notelock, sum_newclick, i
 
@@ -187,7 +177,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,
 						copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-						self.health_processor.health_value, self.maxcombo, circle)
+						self.maxcombo, circle)
 			self.info.append(info)
 		else:
 			notelock = self.hitobjects[i]["time"] + self.maxtimewindow + time_from_previous_frame
@@ -231,7 +221,7 @@ class HitObjectChecker:
 					info = Info(replay[osr_index][3], 0, -1,
 								self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), 0, timestamp, idd,
-								self.health_processor.health_value, self.maxcombo, circle)
+								self.maxcombo, circle)
 					self.info.append(info)
 
 				self.update_score(hitresult, self.hitobjects[i]["type"], combo=self.combo-1)
@@ -251,7 +241,7 @@ class HitObjectChecker:
 					info = Info(osrtime, self.combo-x, 1,
 								self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-								self.health_processor.health_value, self.maxcombo, slider)
+								self.maxcombo, slider)
 					self.info.append(info)
 				combostatus = 1
 
@@ -262,7 +252,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,
 						copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-						self.health_processor.health_value, self.maxcombo, slider)
+						self.maxcombo, slider)
 			self.info.append(info)
 
 		return notelock, i
@@ -300,7 +290,7 @@ class HitObjectChecker:
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,
 						copy.copy(self.results), copy.copy(self.clicks), hitresult, timestamp, idd,
-						self.health_processor.health_value, self.maxcombo, spinner)
+						self.maxcombo, spinner)
 			self.info.append(info)
 		return i
 
@@ -314,9 +304,6 @@ class HitObjectChecker:
 
 		i = 0
 		inrange = True
-
-		if replay[osr_index-1][3] > prevbreakperiod["End"]:
-			self.health_processor.drainhp(replay[osr_index][3], replay[osr_index - 1][3], in_break)
 
 		while inrange and i < len(self.hitobjects) - 1:
 			if "circle" in self.hitobjects[i]["type"]:

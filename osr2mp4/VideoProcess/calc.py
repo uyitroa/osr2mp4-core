@@ -113,13 +113,10 @@ def check_break(beatmap, component, frame_info, updater, settings):
 	in_break = int(frame_info.cur_time) in range(breakperiod["Start"], breakperiod["End"])
 
 	half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
-	if frame_info.cur_time > half and breakperiod["End"] - breakperiod["Start"] > 2000 and in_break:
-		component.sections.startbreak(1, breakperiod["Start"], updater.resultinfo[updater.info_index].hp)
 
 	if in_break:
 		duration = (breakperiod["End"] - frame_info.cur_time) / settings.timeframe * 1000
 		component.scorebarbg.startbreak(breakperiod, duration)
-		component.scorebar.startbreak(breakperiod, duration)
 		component.background.startbreak(breakperiod, duration)
 		component.combocounter.startbreak(breakperiod, duration)
 		component.urbar.startbreak(breakperiod, duration)
