@@ -1,5 +1,6 @@
 import os
 from osr2mp4.osr2mp4 import Osr2mp4
+from PIL import ImageFont
 
 def lambda_handler(event, context):
 	os.system('cp /opt/bin/ffmpeg /tmp/ffmpeg')

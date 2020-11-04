@@ -1,6 +1,6 @@
 {
-    "x": 50,
-    "y": 300,
+    "x": 100,
+    "y": 100,
     "Size": 25,
     "Rgb": [
         255,
@@ -8,7 +8,7 @@
         255
     ],
     "Alpha": 1,
-    "Font": "",
+    "Font": "/opt/python/res/Arial.ttf",
     "Background": "/opt/python/res/pptemplate.png",
     "Hitresult x": 50,
     "Hitresult y": 150,
@@ -19,7 +19,7 @@
         255
     ],
     "Hitresult Alpha": 1,
-    "Hitresult Font": "",
+    "Hitresult Font": "/opt/python/res/Arial.ttf",
     "Hitresult Background": "/opt/python/res/hitresulttemplate.png",
     "Hitresult Gap": 3
 }
