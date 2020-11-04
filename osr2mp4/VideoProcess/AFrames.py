@@ -14,7 +14,6 @@ from osr2mp4.CheckSystem.Judgement import DiffCalculator
 from osr2mp4.ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from osr2mp4.ImageProcess.Objects.Components.Background import Background
 from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
-from osr2mp4.ImageProcess.Objects.Components.Sections import Sections
 from osr2mp4.ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
 from osr2mp4.ImageProcess.Objects.Components.Followpoints import FollowPointsManager
 from osr2mp4.ImageProcess.Objects.Components.TimePie import TimePie
@@ -39,7 +38,6 @@ from osr2mp4.ImageProcess.PrepareFrames.Components.Followpoints import prepare_f
 from osr2mp4.ImageProcess.PrepareFrames.Components.Background import prepare_background
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.ModIcons import prepare_modicons
 from osr2mp4.ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
-from osr2mp4.ImageProcess.PrepareFrames.Components.Sections import prepare_sections
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Circles import prepare_circle, calculate_ar
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.Slider import prepare_slider
@@ -105,7 +103,6 @@ class PreparedFrames:
 		self.bg = prepare_background(os.path.join(settings.beatmap, bg[2]), settings)
 
 		logger.debug('start preparing sections')
-		self.sections = prepare_sections(settings.scale, settings)
 		self.scorebarbg = prepare_scorebarbg(settings.scale, self.bg, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
@@ -157,7 +154,6 @@ class FrameObjects:
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
-		self.sections = Sections(frames.sections, settings)
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 

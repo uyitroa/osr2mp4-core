@@ -127,7 +127,6 @@ class Drawer:
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
-		self.component.sections.add_to_frame(self.img)
 		self.component.ppcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
