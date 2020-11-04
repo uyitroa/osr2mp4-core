@@ -41,7 +41,6 @@ class Drawer:
 		self.img = None
 		self.time_preempt = None
 		self.np_img, self.pbuffer = None, None
-		self.initialised_ranking = False
 		self.key_queue = []
 
 		self.setup_draw()
