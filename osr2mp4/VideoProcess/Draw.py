@@ -8,7 +8,6 @@ from PIL import Image
 from osr2mp4.osrparse.replay import Replay
 
 from osr2mp4 import logger
-from osr2mp4.CheckSystem.Health import HealthProcessor
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.Utils.skip import skip
 from osr2mp4.InfoProcessor import Updater
@@ -55,12 +54,10 @@ class Drawer:
 		diffcalculator = DiffCalculator(self.beatmap.diff)
 		self.time_preempt = diffcalculator.ar()
 
-		healthproc = HealthProcessor(self.beatmap, self.beatmap.health_processor.drain_rate)
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
 		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
-		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
 		self.component.flashlight.set_pos(old_cursor_x, old_cursor_y)
@@ -116,7 +113,6 @@ class Drawer:
 
 		self.component.timepie.add_to_frame(self.np_img, self.img, self.frame_info.cur_time,self.component.scorebarbg.h,self.component.scorebarbg.alpha, in_break)
 		self.component.playinggrade.add_to_frame(self.img, self.updater.info.accuracy, self.frame_info.cur_time)
-		self.component.scorebar.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 		self.component.arrowwarning.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.inputoverlayBG.add_to_frame(self.img, self.settings.width - self.component.inputoverlayBG.w() // 2, int(320 * self.settings.scale))
 		self.component.urbar.add_to_frame_bar(self.img)

@@ -22,7 +22,6 @@ from osr2mp4.ImageProcess.Objects.RankingScreens.RankingHitresults import Rankin
 from osr2mp4.ImageProcess.Objects.RankingScreens.RankingPanel import RankingPanel
 from osr2mp4.ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from osr2mp4.ImageProcess.Objects.Components.Background import Background
-from osr2mp4.ImageProcess.Objects.Components.Scorebar import Scorebar
 from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
 from osr2mp4.ImageProcess.Objects.Components.Sections import Sections
 from osr2mp4.ImageProcess.Objects.RankingScreens.RankingReplay import RankingReplay
@@ -57,7 +56,6 @@ from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingGrade import prepa
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingGraph import prepare_rankinggraph
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingHitresults import prepare_rankinghitresults
 from osr2mp4.ImageProcess.PrepareFrames.RankingScreens.RankingPanel import prepare_rankingpanel
-from osr2mp4.ImageProcess.PrepareFrames.Components.Scorebar import prepare_scorebar
 from osr2mp4.ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
 from osr2mp4.ImageProcess.PrepareFrames.Components.Sections import prepare_sections
 from osr2mp4.ImageProcess.PrepareFrames.HitObjects.CircleNumber import prepare_hitcirclenumber
@@ -131,7 +129,6 @@ class PreparedFrames:
 		logger.debug('start preparing sections')
 		self.sections = prepare_sections(settings.scale, settings)
 		self.scorebarbg = prepare_scorebarbg(settings.scale, self.bg, settings)
-		self.scorebar = prepare_scorebar(settings.scale, settings)
 		self.arrowwarning = prepare_arrowwarning(settings.scale, settings)
 
 		self.modicons = prepare_modicons(settings.scale, settings)
@@ -167,7 +164,6 @@ class FrameObjects:
 		self.cursormiddle = Cursor(frames.cursormiddle)
 		self.cursor = Cursor(frames.cursor)
 		self.cursor_trail = Cursortrail(frames.cursor_trail, frames.continuous, settings)
-		# self.lifegraph = LifeGraph(skin_path + "scorebarbg-colour")
 
 		self.scoreentry = ScoreEntry(frames.scoreentry, settings)
 
@@ -199,7 +195,6 @@ class FrameObjects:
 		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
 		self.sections = Sections(frames.sections, settings)
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
-		self.scorebar = Scorebar(frames.scorebar, settings)
 		self.arrowwarning = ArrowWarning(frames.arrowwarning, settings)
 
 		if frames.loadranking:

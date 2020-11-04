@@ -119,7 +119,6 @@ def check_break(beatmap, component, frame_info, updater, settings):
 	if in_break:
 		duration = (breakperiod["End"] - frame_info.cur_time) / settings.timeframe * 1000
 		component.scorebarbg.startbreak(breakperiod, duration)
-		component.scorebar.startbreak(breakperiod, duration)
 		component.background.startbreak(breakperiod, duration)
 		component.combocounter.startbreak(breakperiod, duration)
 		component.urbar.startbreak(breakperiod, duration)
