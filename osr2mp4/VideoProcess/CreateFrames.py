@@ -14,7 +14,7 @@ def update_progress(framecount, deltatime, videotime):
 	pass
 
 
-def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
+def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	logger.debug('entering preparedframes')
 	
 	from osr2mp4.VideoProcess.AFrames import PreparedFrames
@@ -24,7 +24,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg)
 
 	shared = np.zeros((settings.height * settings.width * 4), dtype=np.uint8)
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
@@ -59,14 +59,6 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 
 				update_progress(framecount, deltatime, videotime)
 
-	if showranking:
-		for x in range(int(5 * settings.fps)):
-			drawer.draw_rankingpanel()
-			cv2.cvtColor(drawer.np_img, cv2.COLOR_BGRA2RGB, dst=buf)
-			if not settings.settings["Use FFmpeg video writer"]:
-				writer.write(buf)
-			else:
-				writer.write()
 	writer.release()
 	logger.debug("\nprocess done")
 
