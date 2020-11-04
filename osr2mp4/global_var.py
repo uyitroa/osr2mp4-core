@@ -19,8 +19,6 @@ defaultsettings = {
 	"Ignore beatmap hitsounds": False,
 	"Use skin's sound samples": False,
 	"Song delay": 0,
-	"Global leaderboard": False,
-	"Mods leaderboard": "*",
 	"Custom mods": "",
 	"api key": "lol",
 	"Use FFmpeg video writer": False,
