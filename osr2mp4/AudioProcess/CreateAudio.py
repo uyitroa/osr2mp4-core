@@ -124,8 +124,6 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
 	for x in range(100, 150, 5):
 		speed = x/100

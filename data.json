@@ -1,8 +1,8 @@
 {
 	"osu! path": "/",
 	"Skin path": "test/skin/",
-	"Beatmap path": "test/hidden/beatmap/",
-	".osr path": "test/hidden/replay.osr",
+	"Beatmap path": "test/nomod/beatmap/",
+	".osr path": "test/nomod/replay.osr",
 	"Default skin path": "test/skin/",
 	"Output path": "/tmp/vid.mp4",
 	"Width": 1280,
