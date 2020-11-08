@@ -90,7 +90,7 @@ def prepare_particles(scale, settings):
 				pos[1] += y * scale
 				pos[2] -= max(1, (abs(x) + abs(y)) * 1.25)
 				imageproc.add(yimg.img, background, pos[0], pos[1], alpha=max(0.0, min(1.0, pos[2]/100)), channel=4)
-				imageproc.add(yimg2.img, background, 30, 30)
+				imageproc.add(yimg2.img, background, 60, 60)
 			if z > 3:
 				fr.append(background)
 				# background.save(f"test{z}.png")
