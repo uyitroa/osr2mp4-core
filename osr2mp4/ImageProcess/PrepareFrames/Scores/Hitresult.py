@@ -74,6 +74,7 @@ def prepare_particles(scale, settings):
 	frames = {}
 	for hit in [50, 100]:
 		yimg = YImage(particleprefix + str(hit), settings, scale)
+		yimg2 = YImage(hitprefix + str(hit), settings, scale)
 		if yimg.imgfrom == ImageFrom.DEFAULT_X or yimg.imgfrom == ImageFrom.DEFAULT_X2 or yimg.imgfrom == ImageFrom.BLANK:
 			continue
 
@@ -89,10 +90,12 @@ def prepare_particles(scale, settings):
 				pos[1] += y * scale
 				pos[2] -= max(1, (abs(x) + abs(y)) * 1.25)
 				imageproc.add(yimg.img, background, pos[0], pos[1], alpha=max(0.0, min(1.0, pos[2]/100)), channel=4)
+				imageproc.add(yimg2.img, background, 30, 30)
 			if z > 3:
 				fr.append(background)
 				# background.save(f"test{z}.png")
 
 		frames[hit] = fr
+
 
 	return frames
