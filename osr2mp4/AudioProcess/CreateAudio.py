@@ -34,7 +34,7 @@ def from_notwav(filename, settings):
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		with open(os.path.join(settings.path, "speedup.log"), "a") as cc:
+		with open(os.path.join(settings.temp, "speedup.log"), "a") as cc:
 			subprocess.call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=cc, stderr=cc)
 
 		f = os.path.join(settings.temp, "spedup.mp3")
@@ -124,8 +124,6 @@ def setuphitsound(filenames, beatmappath, skinpath, defaultpath, settings=None):
 
 	Hitsound.spinnerbonus = Audio2p(*getaudiofromfile("spinnerbonus", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 	Hitsound.miss = Audio2p(*getaudiofromfile("combobreak", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.sectionfail = Audio2p(*getaudiofromfile("sectionfail", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
-	Hitsound.sectionpass = Audio2p(*getaudiofromfile("sectionpass", skinpath, defaultpath, settings, volume=settings.settings["Effect volume"]/100))
 
 	for x in range(100, 150, 5):
 		speed = x/100
