@@ -49,11 +49,6 @@ class HitsoundManager:
 		self.sectionadded = True
 		half = breakperiod["Start"] + (breakperiod["End"] - breakperiod["Start"]) / 2
 		if breakperiod["End"] - breakperiod["Start"] > 2000:
-			if my_info[index].hp < 0.5:
-				sound = Hitsound.sectionfail
-			else:
-				sound = Hitsound.sectionpass
-			overlay(half, song, sound)
 			self.sectionadded = True
 
 	def addcombobreak(self, my_info, index, song):
