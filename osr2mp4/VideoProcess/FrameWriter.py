@@ -6,6 +6,7 @@ import cv2
 from osr2mp4 import logger
 from osr2mp4.global_var import videoextensions
 from osr2mp4.Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc, LibAvNotFound
+from osr2mp4 import log_stream
 
 
 def write_frame(shared, conn, filename, settings, iii):
@@ -27,23 +28,15 @@ def getwriter(filename, settings, buf):
 
 		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	else:
-		try:
-			from osr2mp4.VideoProcess.FFmpegWriter.osr2mp4cv import PyFrameWriter
-		except ImportError as e:
-			raise LibAvNotFound
+		from osr2mp4.VideoProcess.FFMpegWriter import FFMpegWriter
 		if settings.settings["FFmpeg codec"] == "":
 			settings.settings["FFmpeg codec"] = "libx264"
-		ffmpegcodec = str.encode(settings.settings["FFmpeg codec"])
-		ffmpegargs = str.encode(settings.settings["FFmpeg custom commands"])
-		writer = PyFrameWriter(str.encode(filename), ffmpegcodec, settings.fps, settings.width, settings.height, ffmpegargs, buf)
+		ffmpegcodec = settings.settings["FFmpeg codec"]
+		ffmpegargs = settings.settings["FFmpeg custom commands"]
+		writer = FFMpegWriter(settings.ffmpeg, settings.output, (settings.width, settings.height), settings.fps, ffmpegcodec, 
+			settings.temp + 'audio.mp3', settings.audiocodec, "ultrafast", str(settings.settings["Audio bitrate"]) + "k", 
+			logfile = log_stream(), threads = 4,  pixel_format = "bgr24")
 
-		try:
-			videoerror = writer.geterror().decode()
-		except UnicodeDecodeError:
-			pass
-
-	if not writer.isOpened():
-		raise CannotCreateVideo(msg=videoerror)
 	return writer
 
 
@@ -93,7 +86,7 @@ def write(shared, conn, filename, settings, iii):
 			if not settings.settings["Use FFmpeg video writer"]:
 				writer.write(buf)
 			else:
-				writer.write()
+				writer.write_frame(buf)
 
 			timer += time.time() - asdf
 
