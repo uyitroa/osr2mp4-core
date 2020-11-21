@@ -16,7 +16,7 @@ def prepare_background(backgroundname, settings):
 		img = Image.open(backgroundname).convert("RGBA")
 	except Exception as e:
 		logger.error(repr(e))
-		img = Image.open(os.path.join(settings.path, "res/bg.png")).convert("RGBA")
+		img = Image.new("RGBA", (settings.width, settings.height), (0, 0, 0, 255))
 
 	width = settings.width
 	height = settings.height
