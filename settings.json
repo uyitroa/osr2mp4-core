@@ -8,5 +8,6 @@
 	"FFmpeg codec": "libx264",
 	"FFmpeg custom commands": "-preset ultrafast -crf 23",
 	"Audio bitrate": 150,
-	"api key": "lol"
+	"api key": "lol",
+	"Use FFmpeg video writer": true
 }

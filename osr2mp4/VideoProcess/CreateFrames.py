@@ -48,7 +48,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 			if not settings.settings["Use FFmpeg video writer"]:
 				writer.write(buf)
 			else:
-				writer.write()
+				writer.write_frame(buf)
 
 			framecount += 1
 			if framecount % 100 == 0:
