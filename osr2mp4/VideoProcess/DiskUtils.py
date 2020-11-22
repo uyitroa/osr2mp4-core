@@ -37,6 +37,11 @@ def mix_video_audio(settings):
 def convert_tomp4(settings, output="output.mp4"):
 	os.system('"{}" -i "{}" -codec copy {} -y'.format(settings.ffmpeg, settings.output, output))
 
+def reduce_mp3(filename, new_filename, settings):
+	if not os.path.isfile(filename):
+		raise FileNotFoundError
+	subprocess.call([settings.ffmpeg, '-y', '-i', filename, '-map', '0:a:0', '-b:a', str(settings.settings["Audio bitrate"]) + "k", new_filename], stdout=log_stream(), stderr=log_stream())
+	return True
 
 def setup_dir(settings):
 	if not os.path.isdir(settings.temp):

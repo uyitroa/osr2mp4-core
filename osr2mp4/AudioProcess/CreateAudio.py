@@ -15,6 +15,7 @@ from osr2mp4 import logger
 from osr2mp4.AudioProcess.AddAudio import HitsoundManager
 from osr2mp4.AudioProcess.Hitsound import Hitsound
 from osr2mp4.AudioProcess.Utils import getfilenames
+from osr2mp4.VideoProcess.DiskUtils import reduce_mp3
 import os.path
 
 
@@ -207,6 +208,9 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	out = getoffset(offset, endtime, song)
 
 	write(settings.temp + 'audio.mp3', round(song.rate * settings.timeframe/1000), out)
+	reduce_mp3(settings.temp + 'audio.mp3', settings.temp + 'reduced.mp3', settings)
+	os.remove(settings.temp + 'audio.mp3')
+	os.rename(settings.temp + 'reduced.mp3', settings.temp + 'audio.mp3')
 
 
 def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):
