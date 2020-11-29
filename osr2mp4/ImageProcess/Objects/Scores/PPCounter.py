@@ -28,7 +28,11 @@ class PPCounter(ACounter):
 		current = self.timeframe
 		change = self.realscore - score
 		duration = 500
-
 		score = max(0, easingout(current, score, change, duration))
-
+		
 		self.score = "{:.2f}".format(score)
+		tmp = self.score
+		self.score = "{:.0f}".format(float(self.score))
+		super().add_to_frame(background)
+		self.score = tmp
+		
