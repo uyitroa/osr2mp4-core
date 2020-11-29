@@ -1,5 +1,8 @@
+
 # Circle
 from PIL import Image
+import numpy as np
+
 from osr2mp4 import logger
 from osr2mp4.EEnum.EImageFrom import ImageFrom
 from osr2mp4.ImageProcess import imageproc
@@ -27,13 +30,13 @@ def prepare_approach(scale, time_preempt, settings):
 	img = YImage(approachcircle, settings).img
 	approach_frames = []
 	interval = settings.timeframe / settings.fps
+	time_preempt = time_preempt
 	s = 3.5
-	time_left = time_preempt
-	while time_left >= 0:
+
+	for time_left in np.arange(time_preempt, 0, -interval):
 		s -= 2.5 * interval / time_preempt
 		p = imageproc.change_size(img, s * scale, s * scale)
 		approach_frames.append(p)
-		time_left -= interval
 	return approach_frames
 
 
@@ -173,8 +176,9 @@ def prepare_circle(diff, scale, settings, hd):
 			fade_out = time_preempt * 0.3
 			fade_out_interval = 100 * interval/fade_out
 
-			time_left = time_preempt
-			while time_left >= 0:
+			time_preempt = time_preempt
+			#interval = 1 if not interval else interval
+			for i in np.arange(time_preempt, 0, -interval):
 				if alpha != 0:
 					circle_frames[-1].append(newalpha(orig_circle, alpha/100))
 					slidercircle_frames[-1].append(newalpha(orig_slider, alpha/100))
@@ -188,8 +192,6 @@ def prepare_circle(diff, scale, settings, hd):
 				alphas.append(alpha)
 				alpha = max(0, min(100, alpha + ii))
 
-				time_left -= interval
-
-	logger.debug("done")
+		logger.debug("done")
 
 	return slidercircle_frames, circle_frames, fadeout, alphas
