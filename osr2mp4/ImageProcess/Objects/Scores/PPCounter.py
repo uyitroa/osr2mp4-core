@@ -31,8 +31,3 @@ class PPCounter(ACounter):
 		score = max(0, easingout(current, score, change, duration))
 		
 		self.score = "{:.2f}".format(score)
-		tmp = self.score
-		self.score = "{:.0f}".format(float(self.score))
-		super().add_to_frame(background)
-		self.score = tmp
-		
