@@ -168,7 +168,7 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 
 def get_actual_audio_filename(audio_filename, beatmap_path):
 	files_in_dir = os.listdir(beatmap_path)
-	for ind, file in enumerate(files_in_dir):
+	for file in files_in_dir:
 		if(audio_filename.lower() == file.lower()):
 			return file
 	raise FileNotFoundError
