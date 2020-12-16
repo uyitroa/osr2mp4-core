@@ -32,7 +32,7 @@ class Cursortrail(FrameObject):
 	def __init__(self, trail_frames, continuous, settings):
 		super().__init__(trail_frames, settings=settings)
 		self.continuous = continuous
-		self.radius = self.settings.scale * 3
+		self.radius = self.settings.scale
 		self.alphas = []  # for continuous trail
 		self.updatetime = 1000/60
 		self.updatecooldown = 0

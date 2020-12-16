@@ -1,11 +1,11 @@
 import json
-import logging
 import os
 
 import requests
 from osr2mp4.ImageProcess.Animation.easing import easingoutquad
 from recordclass import recordclass
 import re
+from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
@@ -145,7 +145,7 @@ class Scoreboard(FrameObject):
 
 		k = self.settings.settings["api key"]
 		if k is None:
-			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			logger.error("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
 			return
 
 		data = {'k': k, 'h': maphash}
@@ -196,7 +196,7 @@ class Scoreboard(FrameObject):
 	def getglobalscores(self, mods):
 		k = self.settings.settings["api key"]
 		if k is None:
-			print("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
+			logger.error("\n\n YOU DID NOT ENTERED THE API KEY. GET THE API HERE https://osu.ppy.sh/p/api/\n\n")
 			self.getlocalscores(mods)
 			return
 
@@ -213,7 +213,7 @@ class Scoreboard(FrameObject):
 			return
 
 		if "error" in data:
-			print("\n\n {} \n\n".format(data["error"]))
+			logger.error("\n\n {} \n\n".format(data["error"]))
 			self.getlocalscores(mods)
 			return
 
@@ -242,7 +242,7 @@ class Scoreboard(FrameObject):
 		try:
 			scores = getscores(self.beatmaphash, os.path.join(self.settings.osu, "scores.db"))
 		except Exception as e:
-			logging.error("from scoreboard", repr(e))
+			logger.error("from scoreboard: %s", repr(e))
 			return
 
 		for i in range(len(scores["scores"])):
@@ -441,4 +441,3 @@ class Scoreboard(FrameObject):
 		except ValueError:
 			self.scoresid.append(userid)
 			return True
-

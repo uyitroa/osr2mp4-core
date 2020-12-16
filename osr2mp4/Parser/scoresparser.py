@@ -1,4 +1,5 @@
 from struct import unpack_from
+from osr2mp4 import logger
 
 
 def parseNum(db, offset, length):
@@ -52,7 +53,7 @@ def parseString(db, offset):
 		try:
 			unic = str(string, 'utf-8')
 		except UnicodeDecodeError:
-			print("Could not parse UTF-8 string, returning empty string.")
+			logger.error("Could not parse UTF-8 string, returning empty string.")
 
 		return (unic, offset)
 

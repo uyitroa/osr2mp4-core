@@ -1,6 +1,6 @@
-import logging
 import math
 
+from osr2mp4 import logger
 from osr2mp4.Utils.maphash import osuhash
 from osr2mp4.Exceptions import GameModeNotSupported
 
@@ -138,7 +138,7 @@ class Beatmap:
 				my_dict["SampleIndex"] = my_dict.get("SampleIndex", "0")
 				my_dict["Volume"] = my_dict.get("Volume", 100)
 				self.timing_point.append(my_dict)
-				logging.error(repr(e))
+				logger.error(repr(e))
 				continue
 			# my_dict["Kiai"] = int(items[7])
 			self.timing_point.append(my_dict)
@@ -308,7 +308,7 @@ class Beatmap:
 				else:
 					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"]
 
-				# print(my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
+				# logger.debug("%s %s", my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
 
 				my_dict["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:
@@ -513,7 +513,7 @@ def split(delimiters, string):
 
 def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
 	if hr or dt:
-		print("hr args is depecrated")
+		logger.warning("hr args is depecrated")
 
 	fiel = open(filename, "r", encoding="utf-8")
 	content = fiel.read()

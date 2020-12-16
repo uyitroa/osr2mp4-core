@@ -1,5 +1,4 @@
-import logging
-
+from osr2mp4 import logger
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.CheckSystem.HitObjectChecker import HitObjectChecker
@@ -60,7 +59,7 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 	breakperiod = beatmap.breakperiods[break_index]
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	logging.debug("Start check")
+	logger.debug("Start check")
 	while osr_index < len(replay_event) - 3:
 		k1, k2, m1, m2 = keys(replay_event[osr_index][Replays.KEYS_PRESSED])
 		if not in_break:
@@ -83,6 +82,6 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 			breakperiod = beatmap.breakperiods[break_index]
 		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
-	logging.debug("check done")
-	logging.log(1, "RETURN %r", hitobjectchecker.info[-1])
+	logger.debug("check done")
+	logger.log(1, "RETURN %r", hitobjectchecker.info[-1])
 	return hitobjectchecker.info

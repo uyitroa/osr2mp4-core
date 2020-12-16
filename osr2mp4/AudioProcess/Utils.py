@@ -54,7 +54,7 @@ def getfilename(timing, soundinfo, sampleset, hitsound, hitsoundset, objtype):
 	else:
 		samplekey = timing["SampleSet"]
 
-	# samplekey = str(int(samplekey) % len(sampleset))  # in case out of range
+	samplekey = str(int(samplekey) % len(sampleset))  # in case out of range
 	sample_name = sampleset[samplekey]
 
 	additional_name = sampleset[soundinfo[Sound.additionalset]]

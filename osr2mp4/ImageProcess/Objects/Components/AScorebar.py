@@ -48,4 +48,3 @@ class AScorebar(FrameObject):
 		if not self.scrolling and self.interval == 0:
 			self.alpha = 1
 			self.h = 0
-

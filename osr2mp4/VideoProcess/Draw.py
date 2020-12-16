@@ -7,6 +7,7 @@ import traceback
 from PIL import Image
 from osr2mp4.osrparse.replay import Replay
 
+from osr2mp4 import logger
 from osr2mp4.CheckSystem.Health import HealthProcessor
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.Utils.skip import skip
@@ -184,32 +185,25 @@ def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settin
 		tb = traceback.format_exc()
 		with open("error.txt", "w") as fwrite:  # temporary fix
 			fwrite.write(repr(e))
-		logging.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
+		logger.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
 		raise
 
 
-def excepthook(exc_type, exc_value, exc_tb):
-	tb = traceback.format_exc()
-	logging.exception(tb)
-	print(tb)
-
-
 def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
-	sys.excepthook = excepthook
 	asdfasdf = time.time()
 
-	logging.log(1, "CALL {}, {}".format(videotime, showranking))
-	logging.log(logging.DEBUG, "process start")
+	logger.log(1, "CALL {}, {}".format(videotime, showranking))
+	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
 	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 
-	logging.log(1, "PROCESS {}, {}".format(videotime, drawer))
+	logger.log(1, "PROCESS {}, {}".format(videotime, drawer))
 
-	logging.log(logging.DEBUG, "setup done")
-	print("Starting draw")
+	logger.debug("setup done")
+	logger.debug("Starting draw")
 	timer = 0
 	timer2 = 0
 	timer3 = 0
@@ -231,9 +225,9 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 			i = conn.recv()
 
 	conn.send(10)
-	print("End draw", time.time() - asdfasdf)
-	logging.debug("\nprocess done {}, {}".format(videotime, drawer))
-	logging.debug("Drawing time: {}".format(timer))
-	logging.debug("Total time: {}".format(time.time() - asdfasdf))
-	logging.debug("Waiting time: {}".format(timer2))
-	logging.debug("Changing value time: {}".format(timer3))
+	logger.debug("End draw: %f", time.time() - asdfasdf)
+	logger.debug("\nprocess done {}, {}".format(videotime, drawer))
+	logger.debug("Drawing time: {}".format(timer))
+	logger.debug("Total time: {}".format(time.time() - asdfasdf))
+	logger.debug("Waiting time: {}".format(timer2))
+	logger.debug("Changing value time: {}".format(timer3))
