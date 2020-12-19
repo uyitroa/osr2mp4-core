@@ -266,14 +266,15 @@ class Osr2mp4:
 		try:
 			info = fileopen.read().split("\n")
 			framecount = int(info[0])
-			deltatime = float(info[1])
-			filename = info[2]
-			starttime = float(info[3])
+			#deltatime = float(info[1])
+			#filename = info[2]
+			#starttime = float(info[3])
 
-			curdeltatime = time.time() - starttime
-			estimated_curframe = curdeltatime / deltatime * framecount
+			#curdeltatime = time.time() - starttime
+			#estimated_curframe = curdeltatime / deltatime * framecount
 
-			estimated_progress = estimated_curframe / (self.end_index - self.start_index)
+			estimated_curframe = framecount / ((self.end_index * self.settings.fps) / self.settings.process)
+			estimated_progress = estimated_curframe * 100 #estimated_curframe / (self.end_index - self.start_index)
 		except ValueError:
 			if "done" in info:
 				estimated_progress = 100
