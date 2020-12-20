@@ -273,7 +273,9 @@ class Osr2mp4:
 			#curdeltatime = time.time() - starttime
 			#estimated_curframe = curdeltatime / deltatime * framecount
 
-			estimated_curframe = framecount / ((self.end_index * self.settings.fps) / self.settings.process)
+			frametime = (self.end_index - self.start_index) * self.settings.fps
+			curframetime = frametime / self.settings.process
+			estimated_curframe = framecount / curframetime
 			estimated_progress = estimated_curframe * 100 #estimated_curframe / (self.end_index - self.start_index)
 		except ValueError:
 			if "done" in info:
