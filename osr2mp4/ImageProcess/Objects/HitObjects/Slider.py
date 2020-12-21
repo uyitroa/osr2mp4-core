@@ -22,7 +22,7 @@ class SliderManager:
 		self.settings = settings
 		
 		self.reversearrow, self.sliderfollow, self.sliderfollow_fadeout, self.slidertick, self.sliderb_frames = frames
-		self.slidermax_index = len(self.sliderfollow_fadeout) - 1 * settings.fps/60
+		self.slidermax_index = len(self.sliderfollow) - 1
 
 		self.arrows = {}
 		self.sliders = {}
@@ -120,10 +120,10 @@ class SliderManager:
 			ball = ball.rotate(angle)
 		elif slider.cur_repeated % 2 == 1 and self.flip:
 			ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
-
+		#print(index, len(self.sliderfollow))
 		self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)
-		slider.sliderf_i = max(0, min(self.slidermax_index, slider.sliderf_i + slider.appear_f))
+		slider.sliderf_i = max(0, min(len(self.sliderfollow) - 1, slider.sliderf_i + slider.appear_f))
 
 		slider.prev_pos = cur_pos
 
@@ -172,7 +172,7 @@ class SliderManager:
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
-				slider.sliderf_i = max(0, min(self.slidermax_index, slider.sliderf_i + slider.appear_f))
+				slider.sliderf_i = max(0, min(len(self.sliderfollow) - 1, slider.sliderf_i + slider.appear_f))
 
 				slider.opacity = max(-self.opacity_interval, slider.opacity - 4 * self.opacity_interval)
 
