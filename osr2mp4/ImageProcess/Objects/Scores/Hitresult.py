@@ -14,7 +14,7 @@ class HitResult(FrameObject):
 		self.divide_by_255 = 1 / 255.0
 		self.hitresults = []
 		self.interval = self.settings.timeframe / self.settings.fps
-		self.time = 1500
+		self.time = 2000
 		self.misscount = 0
 		self.multiplieranimation = {0: 2, 50: 1, 100: 1, 300: 1}
 		self.playfieldscale = self.settings.playfieldscale
@@ -79,8 +79,8 @@ class HitResult(FrameObject):
 			self.hitresults[i][3] = min(len(self.frames[score]) - 1, self.hitresults[i][3] + 1 * 60/self.settings.fps)
 			self.hitresults[i][5] += self.interval
 
-			if self.hitresults[i][5] >= self.time - 500:
-				self.hitresults[i][4] = max(0, (self.time - self.hitresults[i][5])/500 * 100)
+			if self.hitresults[i][5] >= self.time - 1200:
+				self.hitresults[i][4] = max(0, self.hitresults[i][4] - 1.5 * 60/self.settings.fps)
 			else:
 				self.hitresults[i][4] = min(100, self.hitresults[i][4] + 20 * 60/self.settings.fps)
 
