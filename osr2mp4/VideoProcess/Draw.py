@@ -149,6 +149,7 @@ class Drawer:
 		return self.img.size[0] != 1
 
 	def initialiseranking(self):
+		self.endframe = self.pbuffer.copy()
 		self.component.rankingpanel.start_show()
 		self.component.rankinghitresults.start_show()
 		self.component.rankingtitle.start_show()
@@ -165,6 +166,11 @@ class Drawer:
 			self.settings.timeframe = 1000
 			self.initialiseranking()
 			self.initialised_ranking = True
+		
+		if self.component.rankingpanel.fade == self.component.rankingpanel.FADEOUT:
+			self.pbuffer.paste(self.endframe, (0, 0))
+		else:
+			self.pbuffer.paste(self.component.background.frames[1], (0, 0))
 
 		self.component.rankingpanel.add_to_frame(self.pbuffer)
 		self.component.rankinghitresults.add_to_frame(self.pbuffer)
