@@ -19,7 +19,7 @@ class TestSliderfollow(unittest.TestCase):
 
 		cls.sliderlocktests = []
 		cls.sliderlocktests.append(getinfos("ascension", True))
-		cls.sliderlocktests.append(getinfos("sanae"))
+		#cls.sliderlocktests.append(getinfos("sanae"))
 		cls.sliderlocktests.append(getinfos("trackedday", True))
 
 	def test_notelock(self):

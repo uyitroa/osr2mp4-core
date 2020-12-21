@@ -69,11 +69,14 @@ def htar(value):
 		return round((1200 - hitwindow)/150 + 5, 2)
 
 
-def getar(mods, ar):
+def getar(mods, ar, forstack=False):
 	if Mod.HardRock in mods:
 		ar = min(ar * 1.4, 10)
 	if Mod.Easy in mods:
 		ar = ar * 0.5
+	if forstack:
+		return ar
+
 	if Mod.DoubleTime in mods:
 		ar = dtar(ar)
 	if Mod.HalfTime in mods:
@@ -81,3 +84,9 @@ def getar(mods, ar):
 	return ar
 
 
+def getcs(mods, cs):
+	if Mod.HardRock in mods:
+		cs = min(cs * 1.3, 10)
+	if Mod.Easy in mods:
+		cs = cs * 0.5
+	return cs
