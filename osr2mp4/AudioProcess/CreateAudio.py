@@ -27,7 +27,7 @@ def from_notwav(filename, settings):
 		raise FileNotFoundError
 
 	stream = log_stream()
-	subprocess.check_call([settings.ffmpeg, '-i', filename, settings.temp + 'converted.wav', '-y'], stdout=stream, stderr=stream)
+	subprocess.check_call([settings.ffmpeg, '-i', filename, '-ar', '44100', os.path.join(settings.temp, 'converted.wav'), '-y'], stdout=stream, stderr=stream)
 
 	a = AudioSegment.from_file(settings.temp + 'converted.wav')
 	return a
@@ -36,7 +36,7 @@ def from_notwav(filename, settings):
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
 		stream = log_stream()
-		subprocess.check_call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=stream, stderr=stream)
+		subprocess.check_call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), os.path.join(settings.temp, 'spedup.mp3'), '-y'], stdout=stream, stderr=stream)
 
 		f = os.path.join(settings.temp, "spedup.mp3")
 
