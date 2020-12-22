@@ -23,6 +23,7 @@ def mod_string_to_enums(mods):
 		"NF": Mod.NoFail,
 		"EZ": Mod.Easy,
 		"NM": Mod.NoMod,
+		"HS": Mod.HardSoft
 }
 
 	mod_enums = []

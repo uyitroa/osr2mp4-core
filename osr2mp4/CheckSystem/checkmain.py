@@ -35,7 +35,7 @@ def keys(n):
 
 def diffmod(replay_info, diff):
 	mods = replay_info.mod_combination
-	if Mod.HardRock in mods:
+	if Mod.HardRock in mods or Mod.HardSoft in mods:
 		diff["ApproachRate"] = min(diff["ApproachRate"] * 1.4, 10)
 		diff["CircleSize"] = min(diff["CircleSize"] * 1.3, 10)
 		diff["HPDrainRate"] = min(diff["HPDrainRate"] * 1.4, 10)
