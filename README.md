@@ -1,12 +1,3 @@
-# This is my version of uyitroa's osr2mp4-core, with some lazy fixes and other test stuffs
-Don't expect anything well coded here, I dont even know what I'm doing
-
-
-# Using this on osr2mp4 app
-You can download `osr2mp4` folder and replace it on `osr2mp4\libs\pythonlib\Lib\site-packages` directory of your osr2mp4 app
-
-# Uyitroa's stuff below
-
 # Installing
 ```
 cd osr2mp4/
