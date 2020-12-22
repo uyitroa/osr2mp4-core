@@ -123,8 +123,8 @@ class SliderManager:
 		#print(index, len(self.sliderfollow))
 		self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)
-		slider.sliderf_i = max(0, min(len(self.sliderfollow) - 1, slider.sliderf_i + slider.appear_f))
-
+		slider.sliderf_i = max(0, min(self.slidermax_index, slider.sliderf_i + slider.appear_f))
+		imageproc.debug(background, slider.sliderf_i, slider.appear_f, self.slidermax_index)
 		slider.prev_pos = cur_pos
 
 	def draw_arrow(self, slider, background, going_forward, i):
@@ -167,12 +167,12 @@ class SliderManager:
 
 			else:
 				cur_pos = slider_c.at(int(going_forward) * slider.osu_d["pixel length"])  # if going_foward is true then t = 1 otherwise it's 0
-				index = int(slider.sliderf_i)
+				index = min(len(self.sliderfollow_fadeout)-1, int(slider.sliderf_i))
 				self.to_frame(self.sliderfollow_fadeout[index], background, cur_pos, slider)
 
 				# frame to make the sliderfollowcircle smaller, but it's smalling too fast so instead of increase index
 				# by 1, we increase it by 0.65 then convert it to integer. So some frames would appear twice.
-				slider.sliderf_i = max(0, min(len(self.sliderfollow) - 1, slider.sliderf_i + slider.appear_f))
+				slider.sliderf_i = max(0, min(len(self.sliderfollow_fadeout) - 1, slider.sliderf_i + slider.appear_f))
 
 				slider.opacity = max(-self.opacity_interval, slider.opacity - 4 * self.opacity_interval)
 

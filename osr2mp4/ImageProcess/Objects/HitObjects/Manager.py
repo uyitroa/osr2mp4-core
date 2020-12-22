@@ -23,7 +23,7 @@ class HitObjectManager:
 
 		self.objecttype = {
 			CIRCLE: [self.circle_manager, self.circle_manager.circles, -500],
-			SLIDER: [self.slider_manager, self.slider_manager.sliders, -230],
+			SLIDER: [self.slider_manager, self.slider_manager.sliders, -300],
 			SPINNER: [self.spinner_manager, self.spinner_manager.spinners, -200]}
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):

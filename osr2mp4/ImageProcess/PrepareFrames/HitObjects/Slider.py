@@ -71,7 +71,7 @@ def prepare_slider(diff, scale, settings):
 	sframes = grow(sframes, startsize, endsize, scale_interval)
 	sframes = sframes[::-1]
 
-	startsize, endsize = endsize, endsize * 0.75
+	startsize, endsize = endsize * 0.95, endsize * 0.75
 	scale_interval = (endsize - startsize) * interval/follow_fadein
 
 	startalpha, endalpha = 1, 0
