@@ -40,5 +40,5 @@ class Mod(IntEnum):
     Key1           = 67108864
     Key3           = 134217728
     Key2           = 268435456
-    ScoreV2 = 536870912
-
+    ScoreV2        = 536870912
+    HardSoft       = -128
