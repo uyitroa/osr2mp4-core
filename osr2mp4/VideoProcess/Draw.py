@@ -182,7 +182,8 @@ class Drawer:
 		self.component.modicons.add_to_frame(self.pbuffer)
 		self.component.rankingreplay.add_to_frame(self.pbuffer)
 		self.component.rankinggraph.add_to_frame(self.pbuffer)
-
+		#self.component.ppcounter.add_to_frame(self.pbuffer)
+		#self.component.hitresultcounter.add_to_frame(self.pbuffer)
 
 def draw_frame(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, showranking):
 	try:

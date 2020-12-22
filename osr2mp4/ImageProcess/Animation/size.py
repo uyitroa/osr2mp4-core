@@ -1,9 +1,12 @@
 from osr2mp4.ImageProcess import imageproc
+import numpy as np
 
 
 def img_resize(img, start, end, step):
 	outputs = []
-	for x in range(start, end, step):
+	if not step:
+		step = 1
+	for x in np.arange(start, end, step):
 		im = imageproc.change_size(img, x/1000, x/1000)
 		outputs.append(im)
 	return outputs
