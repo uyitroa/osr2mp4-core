@@ -375,7 +375,6 @@ class Beatmap:
 			preempt = 1200 - 750 * (ar - 5) / 5
 		stackThreshold = preempt * self.general["StackLeniency"]
 		stack_distance = 3
-		print(ar, preempt, self.general["StackLeniency"])
 		endIndex = len(self.hitobjects) - 1
 		extendedEndIndex = endIndex
 
