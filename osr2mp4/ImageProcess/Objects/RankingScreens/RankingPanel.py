@@ -19,4 +19,6 @@ class RankingPanel(ARankingScreen):
 
 		if self.fade == self.FADEOUT:
 			imageproc.add(self.backgroundimg, background, 0, 0, alpha=self.alpha, topleft=True)
+		if self.alpha < 0 and self.fade == self.FADEIN:
+			imageproc.add(self.backgroundimg, background, 0, 0, alpha=1, topleft=True)
 		super().add_to_frame(background)
