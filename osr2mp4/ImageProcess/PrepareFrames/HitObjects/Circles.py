@@ -31,7 +31,7 @@ def prepare_approach(scale, time_preempt, settings):
 	approach_frames = []
 
 	s = 3.5
-
+	interval = settings.timeframe / settings.fps
 	for time_left in np.arange(time_preempt, 0, -interval):
 		s -= 2.5 * interval / time_preempt
 		p = imageproc.change_size(img, s * scale, s * scale)

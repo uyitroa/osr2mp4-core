@@ -120,11 +120,9 @@ class SliderManager:
 			ball = ball.rotate(angle)
 		elif slider.cur_repeated % 2 == 1 and self.flip:
 			ball = ball.transpose(Image.FLIP_LEFT_RIGHT)
-		#print(index, len(self.sliderfollow))
 		self.to_frame(self.sliderfollow[index], background, cur_pos, slider)
 		self.to_frame(ball, background, cur_pos, slider)
 		slider.sliderf_i = max(0, min(self.slidermax_index, slider.sliderf_i + slider.appear_f))
-		imageproc.debug(background, slider.sliderf_i, slider.appear_f, self.slidermax_index)
 		slider.prev_pos = cur_pos
 
 	def draw_arrow(self, slider, background, going_forward, i):
