@@ -21,14 +21,14 @@ class ARankingScreen(FrameObject):
 			return
 
 		if self.fade == self.FADEOUT:
-			self.alpha += self.settings.timeframe / self.settings.fps * 0.001
+			self.alpha += self.settings.timeframe / self.settings.fps * 0.002
 			self.alpha = min(1, max(self.alpha, 0))
 
 		if self.alpha >= 1 and self.fade == self.FADEOUT:
 			self.fade = self.FADEIN
-			self.alpha = 0
+			self.alpha = -1  # keep black screen for a few frame
 
 		if self.fade == self.FADEIN:
-			self.alpha += self.settings.timeframe / self.settings.fps * 0.001
-			self.alpha = min(1, max(self.alpha, 0))
+			self.alpha += self.settings.timeframe / self.settings.fps * 0.002
+			self.alpha = min(1, self.alpha)
 			super().add_to_frame(background, self.rankx, self.ranky, alpha=self.alpha, topleft=True)

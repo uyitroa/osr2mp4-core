@@ -45,7 +45,7 @@ def prepare_slider(diff, scale, settings):
 	radius_scale = cs * 2 / default_size
 
 	interval = settings.timeframe / settings.fps
-	follow_fadein = 150  # need 150ms to fadein
+	follow_fadein = 160  # need 160ms to fadein
 
 	arrow_frames, sliderb_frames, sliderfollow_frames, slider_tick = load(radius_scale, settings)
 
@@ -61,10 +61,10 @@ def prepare_slider(diff, scale, settings):
 				color_sb = sliderb_frames[x].copy()
 			bframes[-1].append(color_sb)
 
-	startsize, endsize = 0.5, 1
+	startsize, endsize = 0.7, 1
 	scale_interval = (endsize - startsize) * interval/follow_fadein
 
-	startalpha, endalpha = 0.5, 1
+	startalpha, endalpha = 0.4, 1
 	alpha_interval = (endalpha - startalpha) * interval / follow_fadein
 
 	sframes = fadein(sliderfollow_frames[0], startalpha, endalpha, alpha_interval)

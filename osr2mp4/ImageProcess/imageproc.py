@@ -80,6 +80,7 @@ def add(img, background, x_offset, y_offset, alpha=1, channel=3, topleft=False):
 		x_offset = x_offset - img.size[0]/2
 
 	x_offset, y_offset = round(x_offset), round(y_offset)
+	alpha = max(0, min(alpha, 1))
 
 	if channel == 3:
 

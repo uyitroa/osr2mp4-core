@@ -11,8 +11,8 @@ def nearer(cur_time, replay_info, index):
 		if replay[x-1][Replays.KEYS_PRESSED] != replay[x][Replays.KEYS_PRESSED]:
 			keys.append(replay[x][Replays.KEYS_PRESSED])
 
-	if not keys and replay[max(0, x-1)][Replays.KEYS_PRESSED] != 0:
-		keys.append(replay[max(0, x-1)][Replays.KEYS_PRESSED])
+	if not keys and replay[max(index, x-1)][Replays.KEYS_PRESSED] != 0:
+		keys.append(replay[max(index, x-1)][Replays.KEYS_PRESSED])
 
 	return x - index, keys
 

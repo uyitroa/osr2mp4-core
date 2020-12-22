@@ -169,6 +169,12 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 		logger.error("{} from audio\n\n\n".format(error))
 		raise
 
+def get_actual_audio_filename(audio_filename, beatmap_path):
+	files_in_dir = os.listdir(beatmap_path)
+	for file in files_in_dir:
+		if(audio_filename.lower() == file.lower()):
+			return file
+	raise FileNotFoundError
 
 def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	nc = Mod.Nightcore in mods
@@ -182,6 +188,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	ccc = time.time()
 
 	try:
+		audio_name = get_actual_audio_filename(audio_name, beatmap_path)
 		song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	except FileNotFoundError:
 		raise AudioNotFound()

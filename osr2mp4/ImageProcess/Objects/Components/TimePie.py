@@ -11,10 +11,10 @@ class TimePie:
 		self.settings = settings
 		self.scale = self.settings.scale
 		self.y = int(accuracy.y + accuracy.frames[0].size[1]//2)
-		self.radius = int(15 * self.settings.scale)
+		self.radius = int(16 * self.settings.scale)
 		# frames[10[ is percent
-		accsize = imageproc.get_number_size("100.00", accuracy.frames, accuracy.gap, constantgap=False)
-		self.x = int(accuracy.startx - accuracy.frames["%"].size[0] - accsize - self.radius)
+		accsize = imageproc.get_number_size("100.00", accuracy.frames, accuracy.gap, constantgap=True)
+		self.x = int(accuracy.startx - accuracy.frames["%"].size[0] - accsize - self.radius + accuracy.gap * 2)
 
 		self.starttime = starttime
 		self.endtime = endtime

@@ -29,8 +29,7 @@ def prepare_approach(scale, time_preempt, settings):
 	"""
 	img = YImage(approachcircle, settings).img
 	approach_frames = []
-	interval = settings.timeframe / settings.fps
-	time_preempt = time_preempt
+
 	s = 3.5
 
 	for time_left in np.arange(time_preempt, 0, -interval):
@@ -79,7 +78,7 @@ def overlayapproach(circle, approach, alpha):
 def prepare_fadeout(img, settings):
 	timescale = 60/settings.fps * settings.timeframe/1000
 	fade_out = alpha.fadeout(img, 1, 0, 0.07 * timescale)
-	fade_out = size.grow(fade_out, 1.1, 1.7, 0.04 * timescale)
+	fade_out = size.grow(fade_out, 1.1, 1.7, 0.05 * timescale)
 	return fade_out
 
 
@@ -176,7 +175,6 @@ def prepare_circle(diff, scale, settings, hd):
 			fade_out = time_preempt * 0.3
 			fade_out_interval = 100 * interval/fade_out
 
-			time_preempt = time_preempt
 			#interval = 1 if not interval else interval
 			for i in np.arange(time_preempt, 0, -interval):
 				if alpha != 0:
