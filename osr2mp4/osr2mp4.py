@@ -32,7 +32,6 @@ import logging
 
 class Dummy: pass
 
-
 def excepthook(exc_type, exc_value, exc_tb):
 	tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
 	logger.exception(tb)
@@ -266,14 +265,17 @@ class Osr2mp4:
 		try:
 			info = fileopen.read().split("\n")
 			framecount = int(info[0])
-			deltatime = float(info[1])
-			filename = info[2]
-			starttime = float(info[3])
+			#deltatime = float(info[1])
+			#filename = info[2]
+			#starttime = float(info[3])
 
-			curdeltatime = time.time() - starttime
-			estimated_curframe = curdeltatime / deltatime * framecount
+			#curdeltatime = time.time() - starttime
+			#estimated_curframe = curdeltatime / deltatime * framecount
 
-			estimated_progress = estimated_curframe / (self.end_index - self.start_index)
+			frametime = (self.end_index - self.start_index) * self.settings.fps
+			curframetime = frametime / self.settings.process
+			estimated_curframe = framecount / curframetime
+			estimated_progress = estimated_curframe * 100 #estimated_curframe / (self.end_index - self.start_index)
 		except ValueError:
 			if "done" in info:
 				estimated_progress = 100

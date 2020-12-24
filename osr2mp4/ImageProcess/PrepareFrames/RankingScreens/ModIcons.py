@@ -18,6 +18,7 @@ def prepare_modicons(scale, settings):
 		Mod.DoubleTime: "doubletime",
 		Mod.SuddenDeath: "suddendeath",
 		Mod.HardRock: "hardrock",
+		Mod.HardSoft: "hardrock",
 		Mod.HalfTime: "halftime",
 		Mod.NoFail: "nofail",
 		Mod.Easy: "easy",

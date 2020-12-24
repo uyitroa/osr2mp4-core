@@ -14,6 +14,11 @@ class TestSliderfollow(unittest.TestCase):
 		cls.tests.append(getinfos("milkcrown", hr=True))
 		cls.tests.append(getinfos("future", hr=True, dt=True))
 		cls.tests.append(getinfos("bubble", hr=True))
+		cls.tests.append(getinfos("badeustack", hr=True, dt=True))
+		cls.tests.append(getinfos("heyroniistack", dt=True))
+		cls.tests.append(getinfos("woeystack", dt=True))
+		cls.tests.append(getinfos("willstack", hr=True))
+		cls.tests.append(getinfos("vaxeistack", hr=True))
 
 	def test_sliderfollow(self):
 		for i in range(len(self.tests)):

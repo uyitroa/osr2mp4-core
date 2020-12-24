@@ -64,6 +64,7 @@ sortedmods = [
 	Mod.Easy,
 	Mod.Hidden,
 	Mod.HardRock,
+	Mod.HardSoft, # dont ask
 	Mod.Relax,
 	Mod.SuddenDeath,
 	Mod.HalfTime,

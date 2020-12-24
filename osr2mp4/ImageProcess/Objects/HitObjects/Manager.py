@@ -23,7 +23,7 @@ class HitObjectManager:
 
 		self.objecttype = {
 			CIRCLE: [self.circle_manager, self.circle_manager.circles, -500],
-			SLIDER: [self.slider_manager, self.slider_manager.sliders, -230],
+			SLIDER: [self.slider_manager, self.slider_manager.sliders, -300],
 			SPINNER: [self.spinner_manager, self.spinner_manager.spinners, -200]}
 
 	def add_slider(self, osu_d, x_pos, y_pos, cur_time):
@@ -66,7 +66,7 @@ class HitObjectManager:
 
 		if followappear:
 			index_interval = -1.4
-			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index - 3 * self.settings.fps/60
+			self.slider_manager.sliders[idd].sliderf_i = self.slider_manager.slidermax_index
 
 		self.slider_manager.sliders[idd].appear_f = index_interval
 

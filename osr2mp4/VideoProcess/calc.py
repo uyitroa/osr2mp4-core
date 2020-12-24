@@ -77,6 +77,11 @@ def add_hitobjects(beatmap, component, frame_info, time_preempt, settings):
 		if "spinner" in osu_d["type"]:
 
 			if frame_info.cur_time + 400 > osu_d["time"]:
+				# hide ur bar during spinner
+				breakperiod = {"Start": osu_d["time"], "End": osu_d["end time"]}
+				duration = (breakperiod["End"] - frame_info.cur_time) / settings.timeframe * 1000
+				component.urbar.startbreak(breakperiod, duration)
+
 				component.hitobjmanager.add_spinner(osu_d, frame_info.cur_time)
 				frame_info.index_hitobj += 1
 

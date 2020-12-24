@@ -148,21 +148,53 @@ def drawpp(components, osr2mp4):
 	background.save("test.png")
 
 
+def drawacc(components, osr2mp4, skin, n=0):
+	from osr2mp4.ImageProcess.Objects.Scores.Accuracy import Accuracy
+	from osr2mp4.ImageProcess.Objects.Components.TimePie import TimePie
+	from osr2mp4.ImageProcess.PrepareFrames.Scores.Accuracy import prepare_accuracy
+	from osr2mp4.ImageProcess.Objects.Scores.ScoreNumbers import ScoreNumbers
+	from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
+	from osr2mp4.ImageProcess.PrepareFrames.Components.ScorebarBG import prepare_scorebarbg
+	from PIL import Image
+	from osr2mp4.VideoProcess.Setup import get_buffer
+	from multiprocessing import Process, Pipe
+	from multiprocessing.sharedctypes import RawArray
+	import ctypes
+
+	shared = RawArray(ctypes.c_uint8, osr2mp4.settings.height * osr2mp4.settings.width * 4)
+	np_img, background = get_buffer(shared, osr2mp4.settings)
+	scorenumbers = ScoreNumbers(osr2mp4.settings.scale, osr2mp4.settings)
+	frames = prepare_accuracy(scorenumbers) 
+	components.accuracy = Accuracy(frames, skin.fonts["ScoreOverlap"], osr2mp4.settings)
+	scorebarbg = prepare_scorebarbg(osr2mp4.settings.scale, ["", background], osr2mp4.settings)
+
+	components.timepie = TimePie(components.accuracy, 0, 100, scorebarbg, osr2mp4.settings)
+	components.scorebarbg = ScorebarBG(scorebarbg, 100,  osr2mp4.settings, False)
+
+	components.scorebarbg.add_to_frame(background, 100, False)
+	components.timepie.add_to_frame(np_img, background, 30, components.scorebarbg.h, 100, False)
+	components.accuracy.add_to_frame(background, False)
+	background.save(f"test{n}.png")
+
 def main():
-	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
+	#for x in range(10):
+	x=""
+	osr2mp4 = Osr2mp4(filedata=f"osr2mp4/config{x}.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	osr2mp4.analyse_replay()
+	#	components = DummyFrameObjects()
+	#	drawacc(components, osr2mp4, osr2mp4.settings.skin_ini, x)
 	print(osr2mp4.resultinfo[-1].accuracy, osr2mp4.resultinfo[-1].maxcombo)
 	print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses, osr2mp4.replay_info.player_name, osr2mp4.replay_info.max_combo)
 	# # a = prepare_rankingur(osr2mp4.settings, [12, 31, 43, 0])
 	# # a[0].save("test.png")
 	# from PIL import Image
-	# from osr2mp4.Parser.skinparser import Skin
+	#from osr2mp4.Parser.skinparser import Skin
 
-	osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
+
+	#osr2mp4 = Osr2mp4(filedata="osr2mp4/config.json", filesettings="osr2mp4/settings.json", filepp="osr2mp4/ppsettings.json", logtofile=True)
 	# osr2mp4.analyse_replay()
 	# print(osr2mp4.resultinfo[-1].accuracy)
 	# print(osr2mp4.replay_info.number_300s, osr2mp4.replay_info.number_100s, osr2mp4.replay_info.number_50s, osr2mp4.replay_info.misses)
-	# components = DummyFrameObjects()
 	# background = Image.open("../osr2mp4-app/osr2mp4app/res/pppp.png")
 	# #
 	# # drawpp(components, osr2mp4)
@@ -170,7 +202,8 @@ def main():
 	# f = PlayingModIcons(a, osr2mp4.replay_info, osr2mp4.settings)
 	# f.add_to_frame(background)
 	# background.save("test.png")
-	a = prepare_particles(osr2mp4.settings.scale, osr2mp4.settings)
+	# a = prepare_particles(osr2mp4.settings.scale, osr2mp4.settings)
+
 
 if __name__ == '__main__':
 	main()

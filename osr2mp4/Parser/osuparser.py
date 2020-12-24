@@ -8,7 +8,7 @@ from osr2mp4.Exceptions import GameModeNotSupported
 class Beatmap:
 	def __init__(self, info, scale=1, colors=None, mods=None, lazy=True):
 		self.info = info
-		self.general = {"StackLeniency": 7, "Mode": 0}
+		self.general = {"StackLeniency": 0.7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
 		self.bg = [0, 0, "."]
@@ -359,12 +359,13 @@ class Beatmap:
 		return math.sqrt((obj1["x"] - obj2["x"]) ** 2 + (obj1["y"] - obj2["y"]) ** 2)
 
 	def stack_position(self):
-		from osr2mp4.CheckSystem.mathhelper import getar
+		from osr2mp4.CheckSystem.mathhelper import getar, getcs
 
-		scale = (1.0 - 0.7 * (self.diff["CircleSize"] - 5) / 5) / 2
+		cs = getcs(self.mods, self.diff["CircleSize"])
+		scale = (1.0 - 0.7 * (cs - 5) / 5) / 2
 		stack_space = scale * 6.4
 
-		ar = getar(self.mods, self.diff["ApproachRate"])  # for stacks
+		ar = getar(self.mods, self.diff["ApproachRate"], forstack=True)  # for stacks
 
 		if ar < 5:
 			preempt = 1200 + 600 * (5 - ar) / 5
@@ -372,10 +373,8 @@ class Beatmap:
 			preempt = 1200
 		else:
 			preempt = 1200 - 750 * (ar - 5) / 5
-
 		stackThreshold = preempt * self.general["StackLeniency"]
 		stack_distance = 3
-
 		endIndex = len(self.hitobjects) - 1
 		extendedEndIndex = endIndex
 
@@ -417,7 +416,6 @@ class Beatmap:
 						break
 
 					endTime = objectN["end time"]
-
 					if objectI["time"] - endTime > stackThreshold:
 						# We are no longer within stacking range of the previous object.
 						break
@@ -450,7 +448,8 @@ class Beatmap:
 					if self.distance(objectN, objectI) < stack_distance:
 						# Keep processing as if there are no sliders.  If we come across a slider, this gets cancelled out.
 						# NOTE: Sliders with start positions stacking are a special case that is also handled here.
-
+						if objectN["time"] == 35878:
+							print(objectN, objectI, stackThreshold)
 						objectN["stacking"] = objectI["stacking"] + 1
 						objectI = objectN
 
@@ -480,7 +479,6 @@ class Beatmap:
 		for osuobj in self.hitobjects:
 			if "spinner" in osuobj["type"]:
 				continue
-
 			space = -stack_space * osuobj["stacking"]
 			osuobj["x"] += space
 			osuobj["y"] += space

@@ -16,6 +16,7 @@ from osr2mp4.AudioProcess.AddAudio import HitsoundManager
 from osr2mp4.AudioProcess.Hitsound import Hitsound
 from osr2mp4.AudioProcess.Utils import getfilenames
 import os.path
+from osr2mp4 import log_stream
 
 
 Audio2p = recordclass("Audio2p", "rate audio")
@@ -25,8 +26,8 @@ def from_notwav(filename, settings):
 	if not os.path.isfile(filename):
 		raise FileNotFoundError
 
-	with open(os.path.join(settings.temp, "convert.log"), "a") as cc:
-		subprocess.call([settings.ffmpeg, '-i', filename, settings.temp + 'converted.wav', '-y'], stdout=cc, stderr=cc)
+	stream = log_stream()
+	subprocess.check_call([settings.ffmpeg, '-i', filename, '-ar', '44100', os.path.join(settings.temp, 'converted.wav'), '-y'], stdout=stream, stderr=stream)
 
 	a = AudioSegment.from_file(settings.temp + 'converted.wav')
 	return a
@@ -34,8 +35,8 @@ def from_notwav(filename, settings):
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
-		with open(os.path.join(settings.path, "speedup.log"), "a") as cc:
-			subprocess.call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), settings.temp + 'spedup.mp3', '-y'], stdout=cc, stderr=cc)
+		stream = log_stream()
+		subprocess.check_call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), os.path.join(settings.temp, 'spedup.mp3'), '-y'], stdout=stream, stderr=stream)
 
 		f = os.path.join(settings.temp, "spedup.mp3")
 
@@ -169,6 +170,12 @@ def processaudio(my_info, beatmap, offset, endtime, mods, settings):
 		logger.error("{} from audio\n\n\n".format(error))
 		raise
 
+def get_actual_audio_filename(audio_filename, beatmap_path):
+	files_in_dir = os.listdir(beatmap_path)
+	for file in files_in_dir:
+		if(audio_filename.lower() == file.lower()):
+			return file
+	raise FileNotFoundError
 
 def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	nc = Mod.Nightcore in mods
@@ -182,6 +189,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 	ccc = time.time()
 
 	try:
+		audio_name = get_actual_audio_filename(audio_name, beatmap_path)
 		song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	except FileNotFoundError:
 		raise AudioNotFound()
