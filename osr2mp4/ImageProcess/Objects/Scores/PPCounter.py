@@ -1,5 +1,6 @@
 from osr2mp4.ImageProcess.Animation.easing import easingout
 from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
+from osr2mp4.ImageProcess import imageproc
 
 
 class PPCounter(ACounter):
@@ -18,6 +19,11 @@ class PPCounter(ACounter):
 
 	def set(self, pp):
 		self.score = "{:.2f}".format(pp)
+
+	def draw_number(self, background):
+		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
+		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
+		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin="right", gap=0)
 
 	def add_to_frame(self, background):
 
