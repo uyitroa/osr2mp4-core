@@ -20,10 +20,11 @@ class HitresultCounter(ACounter):
 	def draw_number(self, background):
 		counter = 0
 		gap = self.countersettings["Hitresult Gap"] * self.countersettings["Hitresult Size"]
+		origin = 'center' if self.countersettings["Center Text"] else 'right'
 		for n in self.score:
 			if n == 300:
 				continue
 			x = (self.countersettings[self.prefix + "x"] + gap * counter) * self.settings.scale - self.frames[0].size[0]/2
 			y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
-			imageproc.draw_number(background, self.score[n], self.frames, x, y, self.countersettings["Hitresult Alpha"], origin="right", gap=0)
+			imageproc.draw_number(background, self.score[n], self.frames, x, y, self.countersettings["Hitresult Alpha"], origin=origin, gap=0)
 			counter += 1
