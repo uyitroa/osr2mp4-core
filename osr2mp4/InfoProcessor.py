@@ -3,6 +3,8 @@ import atexit
 from oppai import *
 from osr2mp4.EEnum.EState import States
 
+from osr2mp4.Utils.cubic_interp1d import cubic_interp1d
+from numpy import arange, maximum
 import matplotlib.pyplot as plt
 
 class Updater:
@@ -23,11 +25,12 @@ class Updater:
 			self.ezpp_setmods(mods)
 			atexit.register(self.freeezpp)
 
-			# strains TODO: SEPARATE
-			self.strains = self.ezpp_calculate_strain(5)
+			# strains TODO: SEPARATE + CUSTOMIZE
+			self.strains = self.ezpp_calculate_strain(2)
+			strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], 4) # use total strain for now
 			plt.axis('off')
 			plt.margins(0,0)
-			plt.fill_between(list(range(len(self.strains))), [s[2] for s in self.strains], color='#ecf0f1')
+			plt.fill_between(strain_x, smoothed_strains, color='#ecf0f1')
 			plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
 
 	def ezpp_calculate_strain(self, time_interval_in_s):
@@ -47,6 +50,11 @@ class Updater:
 		            total += aim_strain + speed_strain
 		    t.append([aim_strain, speed_strain, total])
 		return t
+
+	def smooth_strain(self, series, smooth_factor):
+		old_t = list(range(0,len(series)))
+		new_t = arange(0, len(series)-1, 1.0/smooth_factor)
+		return (new_t, maximum(0,cubic_interp1d(new_t, old_t, series)))
 
 	def ezpp_setmods(self, playermods):
 		playermodezpp = MODS_NOMOD

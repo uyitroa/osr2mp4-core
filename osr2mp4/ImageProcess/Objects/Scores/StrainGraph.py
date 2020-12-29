@@ -6,8 +6,8 @@ from PIL import Image
 class StrainGraph(FrameObject):
 	def __init__(self, settings):
 		self.settings = settings
-		self.x = 110 * self.settings.scale
-		self.y = 50 * self.settings.scale  
+		self.x = 100 * self.settings.scale
+		self.y = 100 * self.settings.scale  
 		self.alpha = 0.9
 		self.scale = self.settings.scale * 0.25 # TODO: ALLOW CUSTOMIZATION
 
