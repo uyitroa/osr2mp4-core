@@ -159,4 +159,4 @@ class FrameObjects:
 
 		self.ppcounter = PPCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)
-		self.strain_graph = StrainGraph(settings)
+		self.strain_graph = StrainGraph(settings, map_time[0], map_time[1])

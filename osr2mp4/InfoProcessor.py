@@ -26,7 +26,7 @@ class Updater:
 			atexit.register(self.freeezpp)
 
 			# strains TODO: SEPARATE + CUSTOMIZE
-			self.strains = self.ezpp_calculate_strain(2)
+			self.strains = self.ezpp_calculate_strain(3)
 			strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], 4) # use total strain for now
 			plt.axis('off')
 			plt.margins(0,0)
