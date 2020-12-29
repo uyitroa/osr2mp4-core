@@ -156,7 +156,7 @@ class Osr2mp4:
 			self.replay_event = self.replay_info.play_data
 
 		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.settings)
-		self.starttimne, self.endtime = starttime, endtime
+		self.starttime, self.endtime = starttime, endtime
 
 		self.resultinfo = None
 
