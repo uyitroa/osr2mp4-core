@@ -3,6 +3,7 @@ import atexit
 from oppai import *
 from osr2mp4.EEnum.EState import States
 
+import matplotlib.pyplot as plt
 
 class Updater:
 	counter = 0
@@ -21,6 +22,31 @@ class Updater:
 			ezpp_dup(self.ez, osufile)
 			self.ezpp_setmods(mods)
 			atexit.register(self.freeezpp)
+
+			# strains TODO: SEPARATE
+			self.strains = self.ezpp_calculate_strain(5)
+			plt.axis('off')
+			plt.margins(0,0)
+			plt.fill_between(list(range(len(self.strains))), [s[2] for s in self.strains], color='#ecf0f1')
+			plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
+
+	def ezpp_calculate_strain(self, time_interval_in_s):
+		time_interval_in_ms = int(time_interval_in_s*1000)
+		nobjects = ezpp_nobjects(self.ez)
+		total_time = int(ezpp_time_at(self.ez, nobjects-1))
+		t = []
+		for x in range(0, total_time, time_interval_in_ms):
+		    aim_strain = 0
+		    speed_strain = 0
+		    total = 0
+		    for o in range(nobjects):
+		        time = int(ezpp_time_at(self.ez, o))
+		        if((time >= x) and (time < x + time_interval_in_ms)):
+		            aim_strain += ezpp_strain_at(self.ez, o, 0)
+		            speed_strain += ezpp_strain_at(self.ez, o, 1)
+		            total += aim_strain + speed_strain
+		    t.append([aim_strain, speed_strain, total])
+		return t
 
 	def ezpp_setmods(self, playermods):
 		playermodezpp = MODS_NOMOD

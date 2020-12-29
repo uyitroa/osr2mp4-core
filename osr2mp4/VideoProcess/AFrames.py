@@ -8,6 +8,7 @@ from osr2mp4.ImageProcess.Objects.Components.PlayingModIcons import PlayingModIc
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+from osr2mp4.ImageProcess.Objects.Scores.StrainGraph import StrainGraph
 from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from osr2mp4.ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from osr2mp4.CheckSystem.Judgement import DiffCalculator
@@ -48,7 +49,6 @@ from osr2mp4.ImageProcess.PrepareFrames.Scores.Hitresult import prepare_hitresul
 from osr2mp4.ImageProcess.PrepareFrames.Scores.ScoreCounter import prepare_scorecounter
 from osr2mp4.ImageProcess.PrepareFrames.Scores.SpinBonusScore import prepare_spinbonus
 from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
-
 
 class PreparedFrames:
 	def __init__(self, settings, diff, mod_combination, ur=None, bg=None):
@@ -159,3 +159,4 @@ class FrameObjects:
 
 		self.ppcounter = PPCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)
+		self.strain_graph = StrainGraph(settings)
