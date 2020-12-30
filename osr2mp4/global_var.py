@@ -12,6 +12,7 @@ defaultsettings = {
 	"Automatic cursor size": False,
 	"Show mods icon": True,
 	"Enable PP counter": False,
+	"Enable Strain Graph": False,
 	"Score meter size": 1,
 	"Show score meter": True,
 	"Song volume": 50,
@@ -40,6 +41,18 @@ defaultppconfig = {
 	"Alpha": 1,
 	"Font": "arial.ttf",
 	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png")
+}
+
+defaultstrainconfig = {
+	"x": 100,
+	"y": 150,
+	"Size": 8,
+	"AspectRatio": [8,4],
+	"Rgb": [255,255,255],
+	"Alpha": 1,
+	"Smoothing": 5,
+	"ProgressAlpha": 200,
+	"TimeWindowInSeconds": 1
 }
 
 
@@ -96,6 +109,8 @@ class Settings:
 		self.settings = defaultsettings
 
 		self.ppsettings = defaultppconfig
+
+		self.strainsettings = defaultstrainconfig
 
 		self.codec = None
 		self.audiocodec = None

@@ -4,6 +4,7 @@
 	"Song volume": 100,
 	"Effect volume": 75,
 	"Enable PP counter": true,
+	"Enable Strain Graph": true,
 	"Use FFmpeg video writer": false,
 	"FFmpeg codec": "libx265",
 	"FFmpeg custom commands": "-preset ultrafast -crf 23",

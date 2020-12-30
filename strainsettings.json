@@ -1,0 +1,11 @@
+{
+    "x": 200,
+    "y": 375,
+    "Size": 8,
+    "AspectRatio": [8,4],
+    "Rgb": [255,255,255],
+    "Alpha": 1,
+    "Smoothing": 5,
+    "ProgressAlpha": 200,
+    "TimeWindowInSeconds": 1
+}

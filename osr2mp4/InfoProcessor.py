@@ -18,20 +18,22 @@ class Updater:
 		self.idd = self.counter
 		self.counter += 1
 		self.settings = settings
-		if settings.settings["Enable PP counter"]:
+		if settings.settings["Enable PP counter"] or settings.settings["Enable Strain Graph"]:
 			self.ez = ezpp_new()
 			ezpp_set_autocalc(self.ez, 1)
 			ezpp_dup(self.ez, osufile)
 			self.ezpp_setmods(mods)
 			atexit.register(self.freeezpp)
 
-			# strains TODO: SEPARATE + CUSTOMIZE
-			self.strains = self.ezpp_calculate_strain(3)
-			strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], 4) # use total strain for now
-			plt.axis('off')
-			plt.margins(0,0)
-			plt.fill_between(strain_x, smoothed_strains, color='w')
-			plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
+			if(settings.settings["Enable Strain Graph"]):
+				self.strains = self.ezpp_calculate_strain(settings.strainsettings["TimeWindowInSeconds"])
+				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.strainsettings["Smoothing"]) # use total strain for now
+				fig = plt.figure(figsize=tuple(settings.strainsettings["AspectRatio"]))
+				plt.axis('off')
+				plt.margins(0,0)
+				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)
+				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
+				plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
 
 	def ezpp_calculate_strain(self, time_interval_in_s):
 		time_interval_in_ms = int(time_interval_in_s*1000)
