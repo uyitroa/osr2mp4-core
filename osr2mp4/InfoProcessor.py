@@ -28,7 +28,7 @@ class Updater:
 			if(settings.settings["Enable Strain Graph"]):
 				self.strains = self.ezpp_calculate_strain(settings.strainsettings["TimeWindowInSeconds"])
 				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.strainsettings["Smoothing"]) # use total strain for now
-				fig = plt.figure(figsize=tuple(settings.strainsettings["AspectRatio"]))
+				fig = plt.figure(figsize=tuple(settings.strainsettings["AspectRatio"]), dpi=60)
 				plt.axis('off')
 				plt.margins(0,0)
 				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)

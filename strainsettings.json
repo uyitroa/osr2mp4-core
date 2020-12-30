@@ -1,10 +1,10 @@
 {
-    "x": 200,
-    "y": 375,
-    "Size": 8,
+    "x": 350,
+    "y": 400,
+    "Size": 6,
     "AspectRatio": [8,4],
-    "Rgb": [255,255,255],
-    "Alpha": 1,
+    "Rgb": [72,219,255],
+    "Alpha": 0.85,
     "Smoothing": 5,
     "ProgressAlpha": 200,
     "TimeWindowInSeconds": 1

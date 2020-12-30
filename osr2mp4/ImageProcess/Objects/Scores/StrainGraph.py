@@ -17,7 +17,7 @@ class StrainGraph(FrameObject):
 			self.end_time = beatmap_end_time
 			self.last_position = 0
 			self.width, self.height = (0,0)
-			self.progress_offset_ms = settings.strainsettings["TimeWindowInSeconds"]*1000
+			self.progress_offset_ms = (settings.strainsettings["TimeWindowInSeconds"]/2.0)*1000
 
 	def set_strain_graph(self, filename):
 		if(self.settings.settings["Enable Strain Graph"]):
