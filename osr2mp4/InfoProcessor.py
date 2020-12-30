@@ -30,7 +30,7 @@ class Updater:
 			strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], 4) # use total strain for now
 			plt.axis('off')
 			plt.margins(0,0)
-			plt.fill_between(strain_x, smoothed_strains, color='#ecf0f1')
+			plt.fill_between(strain_x, smoothed_strains, color='w')
 			plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
 
 	def ezpp_calculate_strain(self, time_interval_in_s):

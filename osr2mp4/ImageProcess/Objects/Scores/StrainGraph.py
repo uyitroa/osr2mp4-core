@@ -16,6 +16,7 @@ class StrainGraph(FrameObject):
 		self.end_time = beatmap_end_time
 		self.last_position = 0
 		self.width, self.height = (0,0)
+		self.progress_offset_ms = 1.5*1000
 
 	def set_strain_graph(self, filename):
 		strain_graph = Image.open(filename).convert("RGBA")
@@ -25,10 +26,10 @@ class StrainGraph(FrameObject):
 		return True
 
 	def update_progress(self, cur_time):
-		ratio = (cur_time-self.start_time)/max(self.end_time-self.start_time, 1)
+		ratio = (self.progress_offset_ms+cur_time-self.start_time)/max(self.end_time-self.start_time, 1)
 		progress = min(self.width, int(ratio*self.graph.size[0]))
 		if( (progress >= 0) & (progress > self.last_position) ):
-			self.set_graph_progress_opacity(self.last_position, progress, 96) # TODO: ALLOW CUSTOM COLOR
+			self.set_graph_progress_opacity(self.last_position, progress, 200) # TODO: ALLOW CUSTOM COLOR
 			self.last_position = progress
 
 	def set_graph_progress_opacity(self, x0, x1, opacity):
