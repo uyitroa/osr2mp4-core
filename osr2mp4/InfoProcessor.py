@@ -40,7 +40,7 @@ class Updater:
 		nobjects = ezpp_nobjects(self.ez)
 		total_time = int(ezpp_time_at(self.ez, nobjects-1))
 		t = []
-		for x in range(0, total_time, time_interval_in_ms):
+		for x in range(0, total_time+time_interval_in_ms, time_interval_in_ms):
 		    aim_strain = 0
 		    speed_strain = 0
 		    total = 0
@@ -51,6 +51,7 @@ class Updater:
 		            speed_strain += ezpp_strain_at(self.ez, o, 1)
 		            total += aim_strain + speed_strain
 		    t.append([aim_strain, speed_strain, total])
+		t.append([0.0,0.0,0.0]) # last strain value to finish the curve
 		return t
 
 	def smooth_strain(self, series, smooth_factor):

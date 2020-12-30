@@ -130,9 +130,9 @@ class Drawer:
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
-		self.component.ppcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
 		self.component.strain_graph.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.ppcounter.add_to_frame(self.img)
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)
