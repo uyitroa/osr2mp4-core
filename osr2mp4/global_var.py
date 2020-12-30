@@ -51,8 +51,8 @@ defaultstrainconfig = {
 	"Rgb": [255,255,255],
 	"Alpha": 1,
 	"Smoothing": 5,
-	"ProgressAlpha": 200,
-	"TimeWindowInSeconds": 1
+	"ProgressAlpha": 0.75,
+	"GraphDensity": 30,
 }
 
 

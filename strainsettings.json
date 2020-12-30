@@ -6,6 +6,6 @@
     "Rgb": [247,215,159],
     "Alpha": 0.85,
     "Smoothing": 5,
-    "ProgressAlpha": 200,
-    "TimeWindowInSeconds": 1
+    "ProgressAlpha": 0.75,
+    "GraphDensity": 25
 }

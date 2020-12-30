@@ -17,7 +17,6 @@ class StrainGraph(FrameObject):
 			self.end_time = beatmap_end_time
 			self.last_position = 0
 			self.width, self.height = (0,0)
-			self.progress_offset_ms = (settings.strainsettings["TimeWindowInSeconds"]/2.0)*1000
 
 	def set_strain_graph(self, filename):
 		if(self.settings.settings["Enable Strain Graph"]):
@@ -28,18 +27,18 @@ class StrainGraph(FrameObject):
 			return True
 
 	def update_progress(self, cur_time):
-		ratio = (self.progress_offset_ms+cur_time-self.start_time)/max(self.end_time-self.start_time, 1)
+		ratio = (cur_time-self.start_time)/max(self.end_time-self.start_time, 1)
 		progress = min(self.width, int(ratio*self.graph.size[0]))
 		if( (progress >= 0) & (progress > self.last_position) ):
 			self.set_graph_progress_opacity(self.last_position, progress, self.settings.strainsettings["ProgressAlpha"])
 			self.last_position = progress
 
-	def set_graph_progress_opacity(self, x0, x1, opacity):
+	def set_graph_progress_opacity(self, x0, x1, opacity_ratio):
 		for y in range(self.height):
 			for x in range(x0,x1):
 				if self.graph_pixel_access[x, y][-1] > 0:
 					pix = self.graph_pixel_access[x, y]
-					self.graph_pixel_access[x, y] = (pix[0], pix[1], pix[2], opacity)
+					self.graph_pixel_access[x, y] = (pix[0], pix[1], pix[2], int(pix[3]*opacity_ratio))
 
 	def add_to_frame(self, background, cur_time):
 		if(self.settings.settings["Enable Strain Graph"]):

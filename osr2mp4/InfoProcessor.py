@@ -26,21 +26,26 @@ class Updater:
 			atexit.register(self.freeezpp)
 
 			if(settings.settings["Enable Strain Graph"]):
-				self.strains = self.ezpp_calculate_strain(settings.strainsettings["TimeWindowInSeconds"])
+				# get time info
+				nobjects = ezpp_nobjects(self.ez)
+				total_time = int(ezpp_time_at(self.ez, nobjects-1))
+				# auto calculate time window
+				settings.strainsettings["TimeWindowInSeconds"] = total_time / float(settings.strainsettings["GraphDensity"])
+				# calculate strain
+				self.strains = self.ezpp_calculate_strain(nobjects, total_time, settings.strainsettings["TimeWindowInSeconds"])
+				# smooth strain
 				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.strainsettings["Smoothing"]) # use total strain for now
+				# create a plot and save it
 				fig = plt.figure(figsize=tuple(settings.strainsettings["AspectRatio"]), dpi=60)
 				plt.axis('off')
 				plt.margins(0,0)
 				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)
 				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
-				plt.savefig(settings.temp + 'strain.png',bbox_inches='tight',transparent="True",pad_inches=0)
+				plt.savefig(settings.temp + 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
 
-	def ezpp_calculate_strain(self, time_interval_in_s):
-		time_interval_in_ms = int(time_interval_in_s*1000)
-		nobjects = ezpp_nobjects(self.ez)
-		total_time = int(ezpp_time_at(self.ez, nobjects-1))
+	def ezpp_calculate_strain(self, nobjects, total_time, time_interval_in_ms):
 		t = []
-		for x in range(0, total_time+time_interval_in_ms, time_interval_in_ms):
+		for x in arange(0, total_time+time_interval_in_ms, time_interval_in_ms):
 		    aim_strain = 0
 		    speed_strain = 0
 		    total = 0
