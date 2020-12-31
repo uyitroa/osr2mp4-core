@@ -2,7 +2,6 @@ from osr2mp4.ImageProcess.Objects.FrameObject import FrameObject
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage
 from PIL import Image
-import numpy as np 
 
 class StrainGraph(FrameObject):
 	def __init__(self, settings, start_time, end_time):
@@ -13,8 +12,7 @@ class StrainGraph(FrameObject):
 			self.y = settings.strainsettings["y"] * self.scale
 			self.alpha = settings.strainsettings["Alpha"]
 			self.graph = None
-			self.graph_np = None
-			self.graph_mask = None
+			self.graph_pixel_access = None
 			self.last_position = 0
 			self.width, self.height = (0,0)
 			self.start_time = start_time
@@ -29,8 +27,7 @@ class StrainGraph(FrameObject):
 		if(self.settings.settings["Enable Strain Graph"]):
 			strain_graph = Image.open(filename).convert("RGBA")
 			self.graph = imageproc.change_size(strain_graph, self.scale, self.scale)
-			self.graph_np = np.array(self.graph)
-			self.graph_mask = self.graph_np[:,:,-1] > 0
+			self.graph_pixel_access = self.graph.load()
 			self.width, self.height = self.graph.size
 			return True
 
@@ -48,11 +45,14 @@ class StrainGraph(FrameObject):
 		progress = min(self.width, int(ratio*self.graph.size[0]))
 		if( (progress >= 0) & (progress > self.last_position) ):
 			self.set_graph_progress_opacity(self.last_position, progress, self.settings.strainsettings["ProgressAlpha"])
-			self.graph = Image.fromarray(self.graph_np)
 			self.last_position = progress
 
 	def set_graph_progress_opacity(self, x0, x1, opacity_ratio):
-		self.graph_np[:,x0:x1,-1] = self.graph_np[:,x0:x1,-1]*(self.graph_mask[:,x0:x1]*opacity_ratio)
+		for y in range(self.height):
+			for x in range(x0,x1):
+				if self.graph_pixel_access[x, y][-1] > 0:
+					pix = self.graph_pixel_access[x, y]
+					self.graph_pixel_access[x, y] = (pix[0], pix[1], pix[2], int(pix[3]*opacity_ratio))
 
 	def add_to_frame(self, background, cur_time):
 		if(self.settings.settings["Enable Strain Graph"]):
