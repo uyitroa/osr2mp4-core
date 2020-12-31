@@ -142,7 +142,7 @@ strainsettings.json:
     "AspectRatio": [9,5], // adjusts width/height of the strain graph
     "Rgb": [247,215,159], // area graph color
     "Alpha": 0.85, // opacity of the graph on the video 0.0 - 1.0
-    "Smoothing": 5, // cubic smoothing between strain points. should be between 1 and 10
+    "Smoothing": 5, // cubic smoothing between strain points. Higher = smoother. Should be between 1 and 10
     "ProgressAlpha": 0.75, // opacity to set the chart to show progress over time 0.0 - 1.0
     "GraphDensity": 25 // How many data points in the strain graph.  It is scaled to the beatmap time.  Higher = more granular strains, lower = smoother curves. Should be between 5 and 100.
  }
