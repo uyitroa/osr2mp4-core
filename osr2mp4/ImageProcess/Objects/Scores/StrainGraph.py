@@ -24,7 +24,6 @@ class StrainGraph(FrameObject):
 
 	def set_beatmap(self, beatmap):
 		self.beatmap = beatmap
-		print(self.beatmap)
 
 	def set_strain_graph(self, filename):
 		if(self.settings.settings["Enable Strain Graph"]):
