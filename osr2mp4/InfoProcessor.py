@@ -56,7 +56,6 @@ class Updater:
 		            speed_strain += ezpp_strain_at(self.ez, o, 1)
 		            total += aim_strain + speed_strain
 		    t.append([aim_strain, speed_strain, total])
-		t.append([0.0,0.0,0.0]) # last strain value to finish the curve
 		return t
 
 	def smooth_strain(self, series, smooth_factor):
