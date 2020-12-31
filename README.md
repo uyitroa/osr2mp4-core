@@ -132,6 +132,21 @@ converter.joinall()
    "api key": "lol"
  }
 ```
+
+strainsettings.json:
+```json
+ {
+    "x": 205,
+    "y": 145,
+    "Size": 7.9, // size out of 20
+    "AspectRatio": [9,5], // adjusts width/height of the strain graph
+    "Rgb": [247,215,159], // area graph color
+    "Alpha": 0.85, // opacity of the graph on the video 0.0 - 1.0
+    "Smoothing": 5, // cubic smoothing between strain points. should be between 1 and 10
+    "ProgressAlpha": 0.75, // opacity to set the chart to show progress over time 0.0 - 1.0
+    "GraphDensity": 25 // How many data points in the strain graph.  It is scaled to the beatmap time.  Higher = more granular strains, lower = smoother curves. Should be between 5 and 100.
+ }
+```
  
  And to load it in code
 ```python
