@@ -69,6 +69,8 @@ class Drawer:
 
 		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
 
+		self.component.strain_graph.set_strain_graph(self.settings.temp + "strain.png")
+
 		to_time = replay_event[self.start_index][Replays.TIMES]
 		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))
 
@@ -134,6 +136,7 @@ class Drawer:
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.sections.add_to_frame(self.img)
 		self.component.scoreboard.add_to_frame(self.np_img, self.img, in_break)
+		self.component.strain_graph.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.ppcounter.add_to_frame(self.img)
 		self.component.hitresultcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
