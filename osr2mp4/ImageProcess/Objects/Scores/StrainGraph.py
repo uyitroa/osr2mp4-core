@@ -38,7 +38,7 @@ class StrainGraph(FrameObject):
 		while self.object_index < len(self.beatmap) and self.beatmap[self.object_index].time < cur_time:
 			result = self.beatmap[self.object_index].time
 			self.object_index += 1
-			return result
+		return result
 
 	def update_progress(self, cur_time):
 		time = self.get_closest_object_time(cur_time)
