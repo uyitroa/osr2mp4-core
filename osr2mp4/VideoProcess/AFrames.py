@@ -10,6 +10,7 @@ from osr2mp4.ImageProcess.Objects.Scores.HitresultCounter import HitresultCounte
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+from osr2mp4.ImageProcess.Objects.Scores.StrainGraph import StrainGraph
 from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from osr2mp4.ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
 from osr2mp4.CheckSystem.Judgement import DiffCalculator
@@ -229,3 +230,4 @@ class FrameObjects:
 		self.ppcounter = PPCounter(settings)
 		self.hitresultcounter = HitresultCounter(settings)
 		self.flashlight = Flashlight(frames.flashlight, settings, hasfl)
+		self.strain_graph = StrainGraph(settings, map_time[0], map_time[1])

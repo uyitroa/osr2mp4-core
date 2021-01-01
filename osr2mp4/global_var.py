@@ -13,6 +13,7 @@ defaultsettings = {
 	"Automatic cursor size": False,
 	"Show mods icon": True,
 	"Enable PP counter": False,
+	"Enable Strain Graph": False,
 	"Score meter size": 1,
 	"Show score meter": True,
 	"Song volume": 50,
@@ -55,6 +56,18 @@ defaultppconfig = {
 	"Hitresult Font": "arial.ttf",
 	"Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
 	"Hitresult Gap": 3
+}
+
+defaultstrainconfig = {
+	"x": 100,
+	"y": 150,
+	"Size": 8,
+	"AspectRatio": [8,4],
+	"Rgb": [255,255,255],
+	"Alpha": 1,
+	"Smoothing": 5,
+	"ProgressAlpha": 0.75,
+	"GraphDensity": 30,
 }
 
 
@@ -108,6 +121,8 @@ class Settings:
 		self.movedown = None
 		self.moveright = None
 		self.timeframe = None
+
+		self.strainsettings = defaultstrainconfig
 
 		self.settings = defaultsettings
 
