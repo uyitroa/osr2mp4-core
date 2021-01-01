@@ -30,6 +30,8 @@ class StrainGraph(FrameObject):
 			strain_graph = Image.open(filename).convert("RGBA")
 			self.graph = imageproc.change_size(strain_graph, self.scale, self.scale)
 			self.graph_np = np.array(self.graph)
+			self.graph = Image.frombuffer("RGBA", self.graph.size, self.graph_np, "raw", "RGBA", 0, 1)
+			self.graph.readonly = False
 			self.graph_mask = self.graph_np[:,:,-1] > 0
 			self.width, self.height = self.graph.size
 			return True
@@ -48,7 +50,6 @@ class StrainGraph(FrameObject):
 		progress = min(self.width, int(ratio*self.graph.size[0]))
 		if( (progress >= 0) & (progress > self.last_position) ):
 			self.set_graph_progress_opacity(self.last_position, progress, self.settings.strainsettings["ProgressAlpha"])
-			self.graph = Image.fromarray(self.graph_np)
 			self.last_position = progress
 
 	def set_graph_progress_opacity(self, x0, x1, opacity_ratio):
