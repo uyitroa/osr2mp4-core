@@ -1,0 +1,11 @@
+{
+    "x": 205,
+    "y": 145,
+    "Size": 7.9,
+    "AspectRatio": [9,5],
+    "Rgb": [247,215,159],
+    "Alpha": 0.85,
+    "Smoothing": 5,
+    "ProgressAlpha": 0.75,
+    "GraphDensity": 25
+} 

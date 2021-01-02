@@ -56,6 +56,7 @@ class Drawer:
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
+
 		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
@@ -64,6 +65,9 @@ class Drawer:
 		self.preempt_followpoint = 800
 
 		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
+
+		self.component.strain_graph.set_strain_graph(self.settings.temp + "strain.png")
+		self.component.strain_graph.set_beatmap(self.resultinfo)
 
 		to_time = replay_event[self.start_index][Replays.TIMES]
 		self.frame_info = FrameInfo(*skip(to_time, self.resultinfo, replay_event, self.beatmap, self.time_preempt, self.component))
@@ -127,8 +131,9 @@ class Drawer:
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
-		self.component.ppcounter.add_to_frame(self.img)
 		self.component.playingmodicons.add_to_frame(self.img)
+		self.component.strain_graph.add_to_frame(self.img, self.frame_info.cur_time)
+		self.component.ppcounter.add_to_frame(self.img)
 		self.frame_info.cur_time += self.settings.timeframe / self.settings.fps
 
 		tt, keys = nearer(self.frame_info.cur_time, self.replay_info, self.frame_info.osr_index)

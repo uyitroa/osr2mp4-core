@@ -1,13 +1,13 @@
 {
-    "x": 110,
-    "y": 20,
-    "Size": 25,
+    "x": 100,
+    "y": 120,
+    "Size": 22,
     "Rgb": [
         255,
         255,
         255
     ],
-    "Alpha": 1,
-    "Font": "/opt/python/res/Arial.ttf",
+    "Alpha": 0.9,
+    "Font": "/opt/python/res/font.otf",
     "Background": "/opt/python/res/pptemplate.png"
 }
