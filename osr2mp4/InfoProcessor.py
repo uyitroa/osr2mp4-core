@@ -2,6 +2,7 @@ import atexit
 
 from oppai import *
 from osr2mp4.EEnum.EState import States
+
 from osr2mp4.Utils.cubic_interp1d import cubic_interp1d
 from numpy import arange, maximum
 import matplotlib.pyplot as plt
@@ -23,15 +24,16 @@ class Updater:
 			ezpp_dup(self.ez, osufile)
 			self.ezpp_setmods(mods)
 			atexit.register(self.freeezpp)
-			
+
 			if(settings.settings["Enable Strain Graph"]):
 				# get time info
 				nobjects = ezpp_nobjects(self.ez)
-				total_time = int(ezpp_time_at(self.ez, nobjects-1))
+				start_time = ezpp_time_at(self.ez, 0)
+				total_time = ezpp_time_at(self.ez, nobjects-1)
 				# auto calculate time window
 				settings.strainsettings["TimeWindowInSeconds"] = total_time / float(settings.strainsettings["GraphDensity"])
 				# calculate strain
-				self.strains = self.ezpp_calculate_strain(nobjects, total_time, settings.strainsettings["TimeWindowInSeconds"])
+				self.strains = self.ezpp_calculate_strain(nobjects, start_time, total_time, settings.strainsettings["TimeWindowInSeconds"])
 				# smooth strain
 				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.strainsettings["Smoothing"]) # use total strain for now
 				# create a plot and save it
@@ -42,19 +44,21 @@ class Updater:
 				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
 				plt.savefig(settings.temp + 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
 
-	def ezpp_calculate_strain(self, nobjects, total_time, time_interval_in_ms):
+	def ezpp_calculate_strain(self, nobjects, start_time, total_time, time_interval_in_ms):
 		t = []
-		for x in arange(0, total_time+time_interval_in_ms, time_interval_in_ms):
-			aim_strain = 0
-			speed_strain = 0
-			total = 0
-			for o in range(nobjects):
-				time = int(ezpp_time_at(self.ez, o))
-				if((time >= x) and (time < x + time_interval_in_ms)):
-					aim_strain += ezpp_strain_at(self.ez, o, 0)
-					speed_strain += ezpp_strain_at(self.ez, o, 1)
-					total += aim_strain + speed_strain
-			t.append([aim_strain, speed_strain, total])
+		obj_ind = 0
+		for x in arange(start_time, total_time+time_interval_in_ms, time_interval_in_ms):
+		    aim_strain = 0
+		    speed_strain = 0
+		    total = 0
+		    for o in range(obj_ind, nobjects):
+		        time = ezpp_time_at(self.ez, o)
+		        if((time >= x) and (time < x + time_interval_in_ms)):
+		            aim_strain += ezpp_strain_at(self.ez, o, 0)
+		            speed_strain += ezpp_strain_at(self.ez, o, 1)
+		            total += aim_strain + speed_strain
+		            obj_ind += 1
+		    t.append([aim_strain, speed_strain, total])
 		return t
 
 	def smooth_strain(self, series, smooth_factor):
@@ -123,9 +127,6 @@ class Updater:
 			if self.info.more.hitvalue == 10:
 				self.component.hitobjmanager.slidertouchtick(idd)
 
-			if self.info.more.hitvalue != 0:
-				self.component.scorebar.to_hp(self.info.hp)
-
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
@@ -137,25 +138,18 @@ class Updater:
 			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress, self.info.more.rpm)
 
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
-			if self.info.more.hitvalue != 0:
-				self.component.scorebar.to_hp(self.info.hp)
 
 			if self.info.more.bonusscore >= 1:
 				if int(self.component.spinbonus.spinbonuses[0])/1000 != self.info.more.bonusscore:
 					self.component.scorecounter.bonus_score(1000)
-					self.component.scorebar.to_hp(self.info.hp)
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
 
 		if self.info.hitresult is not None:
-			self.component.scorebar.to_hp(self.info.hp)
 			if not (objtype == "Circle" and self.info.more.sliderhead):
 				self.component.hitresult.add_result(self.info.hitresult, x, y)
 				self.component.accuracy.update_acc(self.info.hitresult)
 			if objtype != "Slider" or self.info.more.hitend:
 				self.component.scorecounter.update_score(self.info.score)
-
-		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
-		self.component.hitresultcounter.update(self.info.accuracy)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
