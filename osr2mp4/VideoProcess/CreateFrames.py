@@ -32,6 +32,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 
 	logger.debug("setup done")
 	startwritetime = time.time()
+
 	while drawer.frame_info.osr_index < videotime[1]:
 		status = drawer.render_draw()
 		if status:

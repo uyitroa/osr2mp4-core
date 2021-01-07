@@ -64,7 +64,7 @@ class FFMpegWriter:
         #    cmd.extend(["-pix_fmt", "yuv420p"])
         cmd.extend([filename])
 
-        popen_params = {"stdout": sp.DEVNULL, "stderr": logfile, "stdin": sp.PIPE}
+        popen_params = {"stdout": sp.DEVNULL, "stderr": logfile, "stdin": sp.PIPE, "bufsize": 40960}
 
         # This was added so that no extra unwanted window opens on windows
         # when the child process is created
