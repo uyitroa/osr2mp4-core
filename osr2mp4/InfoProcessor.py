@@ -127,6 +127,9 @@ class Updater:
 			if self.info.more.hitvalue == 10:
 				self.component.hitobjmanager.slidertouchtick(idd)
 
+			if self.info.more.hitvalue != 0:
+				self.component.scorebar.to_hp(self.info.hp)
+
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
 
 		else:
@@ -138,18 +141,25 @@ class Updater:
 			self.component.spinner.update_spinner(idd, self.info.more.rotate, self.info.more.progress, self.info.more.rpm)
 
 			self.component.scorecounter.bonus_score(self.info.more.hitvalue)
+			if self.info.more.hitvalue != 0:
+				self.component.scorebar.to_hp(self.info.hp)
 
 			if self.info.more.bonusscore >= 1:
 				if int(self.component.spinbonus.spinbonuses[0])/1000 != self.info.more.bonusscore:
 					self.component.scorecounter.bonus_score(1000)
+					self.component.scorebar.to_hp(self.info.hp)
 				self.component.spinbonus.set_bonusscore(self.info.more.bonusscore)
 
 		if self.info.hitresult is not None:
+			self.component.scorebar.to_hp(self.info.hp)
 			if not (objtype == "Circle" and self.info.more.sliderhead):
 				self.component.hitresult.add_result(self.info.hitresult, x, y)
 				self.component.accuracy.update_acc(self.info.hitresult)
 			if objtype != "Slider" or self.info.more.hitend:
 				self.component.scorecounter.update_score(self.info.score)
+
+		self.component.scoreboard.setscore(self.info.score, self.info.maxcombo)
+		self.component.hitresultcounter.update(self.info.accuracy)
 
 	def update(self, cur_time):
 		if self.info_index >= len(self.resultinfo) or self.resultinfo[self.info_index].time > cur_time:
