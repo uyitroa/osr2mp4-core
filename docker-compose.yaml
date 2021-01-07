@@ -3,6 +3,8 @@ services:
   lambda:
     user: root
     image: lambci/lambda:python3.8
+    environment:
+      - AWS_LAMBDA_FUNCTION_TIMEOUT=900
     volumes:
       - "./local/bin:/opt/bin:ro,delegated"
       - "./local/lib:/opt/lib:ro,delegated"
