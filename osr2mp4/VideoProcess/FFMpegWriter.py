@@ -53,7 +53,7 @@ class FFMpegWriter:
         ]
         if audiofile is not None:
             cmd.extend(["-i", audiofile, "-acodec", audiocodec])
-        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "23"])
+        cmd.extend(["-vcodec", codec, "-preset", preset, "-crf", "28"])
         if ffmpeg_params is not None:
             cmd.extend(ffmpeg_params)
         if bitrate is not None:
