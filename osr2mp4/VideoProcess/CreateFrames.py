@@ -1,4 +1,3 @@
-import time
 import cv2
 from multiprocessing import Process, Pipe
 from osr2mp4 import logger

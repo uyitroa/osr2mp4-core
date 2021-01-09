@@ -178,9 +178,7 @@ class Osr2mp4:
 		if not os.path.isdir(os.path.dirname(os.path.abspath(self.settings.output))):
 			raise CannotCreateVideo()
 
-		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame_dual(self.settings, self.beatmap,
-		                                                                        self.replay_info, self.resultinfo,
-		                                                                        videotime)
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame_dual(self.settings, self.beatmap, self.replay_info, self.resultinfo, videotime)
 
 	def analyse_replay(self):
 
