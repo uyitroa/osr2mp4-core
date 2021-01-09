@@ -22,7 +22,7 @@ from osr2mp4.Parser.osuparser import read_file
 from osr2mp4.Utils.HashBeatmap import get_osu
 from osr2mp4.Utils.Setup import setupglobals
 from osr2mp4.Utils.Timing import find_time, get_offset
-from osr2mp4.VideoProcess.CreateFrames import create_frame
+from osr2mp4.VideoProcess.CreateFrames import create_frame, create_frame_dual
 from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
 from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
 import uuid
@@ -178,7 +178,7 @@ class Osr2mp4:
 		if not os.path.isdir(os.path.dirname(os.path.abspath(self.settings.output))):
 			raise CannotCreateVideo()
 
-		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame(self.settings, self.beatmap,
+		self.drawers, self.writers, self.pipes, self.sharedarray = create_frame_dual(self.settings, self.beatmap,
 		                                                                        self.replay_info, self.resultinfo,
 		                                                                        videotime)
 

@@ -35,6 +35,8 @@ class FFMpegWriter:
             "-y",
             "-loglevel",
             "error" if logfile == sp.PIPE else "info",
+            "-thread_queue_size",
+            "4096",
             "-f",
             "rawvideo",
             "-vcodec",
@@ -76,7 +78,7 @@ class FFMpegWriter:
     def write_frame(self, img_array):
         """ Writes one frame in the file."""
         try:
-            self.proc.stdin.write(img_array.tobytes())
+            self.proc.stdin.write(img_array)
         except IOError as err:
             _, ffmpeg_error = self.proc.communicate()
             if ffmpeg_error is not None:
