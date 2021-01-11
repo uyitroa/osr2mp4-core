@@ -9,4 +9,3 @@ def lambda_handler(event, context):
 	osr2mp4 = Osr2mp4(filedata="data.json", filesettings="settings.json", filepp="ppsettings.json", filestrain="strainsettings.json", logtofile=False)
 	osr2mp4.startaudio()
 	osr2mp4.startvideo()
-	#osr2mp4.joinall()
