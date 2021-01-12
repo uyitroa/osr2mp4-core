@@ -20,7 +20,7 @@ def get_auto(beatmap):
 
 	width, height = 512, 384
 
-	cur_key = 10
+	cur_key = 1
 	minbpm = 150
 	mintime_stream = 1000/(minbpm * 4/60)
 
@@ -30,9 +30,9 @@ def get_auto(beatmap):
 		cur_obj = beatmap.hitobjects[i]
 
 		if i > 0 and cur_obj["time"] - beatmap.hitobjects[i-1]["end time"] < mintime_stream:
-			cur_key = 5 if cur_key == 10 else 10
+			cur_key = 2 if cur_key == 1 else 1
 		else:
-			cur_key = 10
+			cur_key = 1
 
 		if "circle" in cur_obj["type"]:
 			add(replay_event, cur_obj["x"], cur_obj["y"], 0, cur_obj["time"]-2)
