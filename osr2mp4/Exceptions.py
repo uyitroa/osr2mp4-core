@@ -2,6 +2,9 @@ class BeatmapNotFound(Exception):
 	def __repr__(self):
 		return "Make sure you chose the right mapset folder and the .osu file is in the mapset folder. If you stored your Songs folder in a different location, click Select Mapset and choose the right mapset folder."
 
+class NotAnBeatmap(Exception):
+	def __repr__(self):
+		return "Please pick .osu file manually."
 
 class ReplayNotFound(Exception):
 	pass

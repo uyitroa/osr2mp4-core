@@ -1,8 +1,8 @@
-import math
+import math, os
 
 from osr2mp4 import logger
 from osr2mp4.Utils.maphash import osuhash
-from osr2mp4.Exceptions import GameModeNotSupported
+from osr2mp4.Exceptions import GameModeNotSupported, NotAnBeatmap
 
 
 class Beatmap:
@@ -512,6 +512,10 @@ def split(delimiters, string):
 def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
 	if hr or dt:
 		logger.warning("hr args is depecrated")
+
+	# checks if filename is a path
+	if os.path.isdir(filename):
+		raise NotAnBeatmap()
 
 	fiel = open(filename, "r", encoding="utf-8")
 	content = fiel.read()
