@@ -4,7 +4,7 @@ class BeatmapNotFound(Exception):
 
 class NotAnBeatmap(Exception):
 	def __repr__(self):
-		return "Please pick .osu file manually."
+		return ".osu File Not Found! Please select the .osu file manually when using Auto Replay."
 
 class ReplayNotFound(Exception):
 	pass
