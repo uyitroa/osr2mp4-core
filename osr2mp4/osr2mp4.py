@@ -24,7 +24,7 @@ from osr2mp4.Utils.Setup import setupglobals
 from osr2mp4.Utils.Timing import find_time, get_offset
 from osr2mp4.VideoProcess.CreateFrames import create_frame
 from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
-from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig
+from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
 import uuid
 from autologging import traced, logged, TRACE
 import logging
@@ -42,8 +42,8 @@ def excepthook(exc_type, exc_value, exc_tb):
 @traced
 class Osr2mp4:
 
-	def __init__(self, data=None, gameplaysettings=None, ppsettings=None,
-	             filedata=None, filesettings=None, filepp=None,
+	def __init__(self, data=None, gameplaysettings=None, ppsettings=None, strainsettings=None,
+	             filedata=None, filesettings=None, filepp=None, filestrain=None,
 	             logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
 		sys.excepthook = excepthook
@@ -83,6 +83,8 @@ class Osr2mp4:
 			gameplaysettings = defaultsettings
 		if ppsettings is None:
 			ppsettings = defaultppconfig
+		if strainsettings is None:
+			strainsettings = defaultstrainconfig
 
 		if filedata is not None:
 			data = read(filedata)
@@ -90,6 +92,8 @@ class Osr2mp4:
 			gameplaysettings = read(filesettings)
 		if filepp is not None:
 			ppsettings = read(filepp)
+		if filestrain is not None:
+			strainsettings = read(filestrain)
 
 		if os.path.isdir(data["Output path"]):
 			data["Output path"] = os.path.join(data["Output path"], "output.avi")
@@ -132,7 +136,7 @@ class Osr2mp4:
 				if Mod.HardRock not in self.replay_info.mod_combination and Mod.HardRock in original:
 					reverse_replay = True
 
-			setupglobals(self.data, gameplaysettings, self.replay_info.mod_combination, self.settings, ppsettings=ppsettings)
+			setupglobals(self.data, gameplaysettings, self.replay_info.mod_combination, self.settings, ppsettings=ppsettings, strainsettings=strainsettings)
 
 			self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
 
@@ -144,7 +148,7 @@ class Osr2mp4:
 		else:
 			gameplaysettings["Custom mods"] = gameplaysettings.get("Custom mods", "")
 			mod_combination = mod_string_to_enums(gameplaysettings["Custom mods"])
-			setupglobals(self.data, gameplaysettings, mod_combination, self.settings, ppsettings=ppsettings)
+			setupglobals(self.data, gameplaysettings, mod_combination, self.settings, ppsettings=ppsettings, strainsettings=strainsettings)
 
 			self.beatmap_file = self.settings.beatmap
 			self.settings.beatmap = os.path.dirname(self.settings.beatmap)
@@ -156,7 +160,7 @@ class Osr2mp4:
 			self.replay_event = self.replay_info.play_data
 
 		self.start_index, self.end_index = find_time(starttime, endtime, self.replay_event, self.settings)
-		self.starttimne, self.endtime = starttime, endtime
+		self.starttime, self.endtime = starttime, endtime
 
 		self.resultinfo = None
 

@@ -12,7 +12,7 @@ from osr2mp4.Utils.Resolution import get_screensize
 
 @logged(logger)
 @traced
-def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None):
+def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None, strainsettings=None):
 	skin_path = data["Skin path"]
 	beatmap_path = data["Beatmap path"]
 	output_path = data.get("Output path", "output.avi")
@@ -75,3 +75,5 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None)
 
 	if ppsettings is not None:
 		settings.ppsettings = ppsettings
+	if strainsettings is not None:
+		settings.strainsettings = strainsettings

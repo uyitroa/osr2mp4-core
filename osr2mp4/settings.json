@@ -7,6 +7,7 @@
   "Automatic cursor size": false,
   "Rotate sliderball": false,
   "Enable PP counter": true,
+  "Enable Strain Graph": true,
   "Score meter size": 1.25,
   "Song volume": 50,
   "Effect volume": 100,
