@@ -7,6 +7,7 @@ from osr2mp4.VideoProcess.AFrames import PreparedFrames
 from osr2mp4.CheckSystem.mathhelper import getunstablerate
 import numpy as np
 import os
+import traceback
 
 def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	logger.debug('entering preparedframes')
@@ -26,7 +27,6 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime):
 	buf = np.zeros((settings.height + int(settings.height/2.0), settings.width), dtype=np.uint8)
 
 	logger.debug("setup done")
-	startwritetime = time.time()
 
 	while drawer.frame_info.osr_index < videotime[1]:
 		status = drawer.render_draw()
@@ -64,6 +64,7 @@ def draw_frame(conn, beatmap, replay_info, resultinfo, videotime, settings):
 	except Exception as e:
 		tb = traceback.format_exc()
 		logger.error("{} from {}\n{}\n\n\n".format(tb, videotime, repr(e)))
+		conn.send(OS.EX_OSERR)
 		raise
 
 def draw(conn, beatmap, replay_info, resultinfo, videotime, settings):
@@ -99,7 +100,9 @@ def write(conn, filename, settings):
 	frame = -1
 	while frame != os.EX_OK:
 		frame = conn.recv()
-		if frame != os.EX_OK:
+		if frame == os.EX_OSERR:
+			raise Exception("Drawer terminated - terminating")
+		elif frame != os.EX_OK:
 			writer.write_frame(frame)
 		else:
 			break

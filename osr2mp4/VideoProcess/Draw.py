@@ -90,7 +90,7 @@ class Drawer:
 		if self.key_queue:
 			cur_key = self.key_queue.pop(0)
 			check_key(self.component, cur_key, self.frame_info.cur_time, in_break)
-		add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
+		#add_followpoints(self.beatmap, self.component, self.frame_info, self.preempt_followpoint)
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
 
 		self.updater.update(self.frame_info.cur_time)
@@ -105,9 +105,8 @@ class Drawer:
 			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 
 		self.component.hitresult.add_to_frame(self.img)
-		self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
+		#self.component.followpoints.add_to_frame(self.img, self.frame_info.cur_time)
 		self.component.hitobjmanager.add_to_frame(self.img, self.frame_info.cur_time)
-		self.component.hitresult.add_to_frame(self.img)
 		self.component.flashlight.add_to_frame(self.img, in_break, cursor_x, cursor_y)
 
 		# we don't want the flashlight black screen to overlay the scorebarbg
