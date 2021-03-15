@@ -89,7 +89,7 @@ class PreparedFrames:
 		hd = Mod.Hidden in mod_combination
 		fl = Mod.Flashlight in mod_combination
 		if settings.settings["Automatic cursor size"]:
-			circlescale = 4/diff["CircleSize"]
+			circlescale = 1-0.7*(1 + diff["CircleSize"] -5)/5
 			settings.settings["Cursor size"] *= circlescale
 		if ur is None:
 			ur = [0, 0, 0]
