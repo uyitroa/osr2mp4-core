@@ -15,6 +15,7 @@ class TestScore(unittest.TestCase):
 	def testskin(self):
 		for i in range(len(self.tests)):
 			s = Skin("", "", inipath=self.tests[i])
+			print('Testing skin:', s.general['Name'])
 			result = str(s.colours) + "\n" + str(s.fonts)
 
 			if self.update:  # ignore this if
