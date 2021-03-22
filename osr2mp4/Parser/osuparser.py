@@ -495,10 +495,9 @@ class Beatmap:
 def split(delimiters: list, string: str):
 	lines = string.split('\n')
 	info = {'dummy': ''}
-	
+	curheader = 'dummy'
 	for line in lines:
 		newheader = False
-		curheader = 'dummy'
 		line = line.strip()
 
 		if not line:
@@ -521,7 +520,8 @@ def split(delimiters: list, string: str):
 
 
 
-def read_file(filename: str, scale: float = 1, colors: dict = None, mods=None, lazy=True, **kwargs: dict)
+
+def read_file(filename: str, scale: float = 1, colors: dict = {}, mods: int = None, lazy: bool = True, **kwargs: dict):
 	if 'hr' in kwargs or 'dt' in kwargs:
 		logger.warning("HR/DT args is deprecated.")
 
@@ -535,7 +535,6 @@ def read_file(filename: str, scale: float = 1, colors: dict = None, mods=None, l
 
 	with open(filename , 'r', encoding='utf-8') as file:
 		info = split(delimiters, file.read())
-
 
 	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
