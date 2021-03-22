@@ -148,16 +148,16 @@ class Skin:
 		if cur_combo == 0:
 			# use the default value
 			cur_combo = 4
-			colours["Combo1"] = (255, 192, 0)
-			colours["Combo2"] = (0, 202, 0)
-			colours["Combo3"] = (18, 124, 255)
-			colours["Combo4"] = (242, 24, 57)
+			colours["Combo1"] = [255, 192, 0]
+			colours["Combo2"] = [0, 202, 0]
+			colours["Combo3"] = [18, 124, 255]
+			colours["Combo4"] = [242, 24, 57]
 
-		colours['InputOverlayText'] = colours.get('InputOverlayText', (0, 0, 0))
-		colours["SliderBall"] = colours.get("SliderBall", (2, 170, 255))
-		colours["SliderBorder"] = colours.get("SliderBorder", (255, 255, 255))
-		colours["SliderTrackOverride"] = colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
-		colours["SpinnerBackground"] = colours.get("SpinnerBackground", (100, 100, 100))
+		colours['InputOverlayText'] = colours.get('InputOverlayText', [0, 0, 0])
+		colours["SliderBall"] = colours.get("SliderBall", [2, 170, 255])
+		colours["SliderBorder"] = colours.get("SliderBorder", [255, 255, 255])
+		colours["SliderTrackOverride"] = colours.get("SliderTrackOverride", [0, 0, 0])  # TODO: use current combo color
+		colours["SpinnerBackground"] = colours.get("SpinnerBackground", [100, 100, 100])
 		colours['ComboNumber'] = cur_combo
 
 		self.colours = colours
