@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from collections import OrderedDict
 from pathlib import Path
 from osr2mp4 import logger
 
@@ -29,6 +30,13 @@ def raw(text):
 	"""
 	return text
 
+class MultiOrderedDict(OrderedDict): # added back cuz the parser overwrite shit so yea
+	def __setitem__(self, key, value):
+		if isinstance(value, list) and key in self:
+			return
+
+		super().__setitem__(key, value)
+
 class Skin:
 	skin_path: Path = ''
 	default_path: Path = ''
@@ -37,7 +45,9 @@ class Skin:
 	colours: dict = {}
 	fonts: dict = {}
 
-	sections: dict = {}
+	# internal, mostly for debugging
+	# sections: dict = {} # no longer used
+	# config: ConfigParser = None
 
 
 	def __init__(self, skin_path: str, default_path: str, inipath: str = None): # i want to change the inipath to ini_path but considering 
@@ -64,13 +74,14 @@ class Skin:
 
 			# 1st line is basic checking
 			# 2st checks for comments or some weird bullshit (from cpol skin mostly)
-			if (not line or line[0] != '[' and ':' not in line) \
-				or '//' in line or line[0] == '#':
+			# ok so i need to change the way it filters cuz in tests skin-3.ini is some weird shit and it fucks with the parser
+			if not line or (':' not in line and '[' not in line)\
+				or line[0] == '/' or line[0] == '#':
 				line = ''
 
 			res += line + '\n'
 
-		return res
+		return res.replace("//", " //").replace('\x00', '')
 
 	@staticmethod
 	def int(text: str):
@@ -86,7 +97,7 @@ class Skin:
 
 
 	def read(self):
-		parser = ConfigParser(strict=False)
+		parser = ConfigParser(strict=False, comment_prefixes=["//", "\\"], inline_comment_prefixes="//", dict_type=MultiOrderedDict)
 		parser.optionxform = str # need to do this else the keys will be in lowercase
 
 
@@ -102,13 +113,15 @@ class Skin:
 
 		for section in ['General', 'Colours', 'Fonts']:
 			if parser.has_section(section):
-				self.sections[section] = dict(parser[section])
+				setattr(self, section.lower(), dict(parser[section])) # epic hax
 			else:
-				self.sections[section] = {}
+				setattr(self, section.lower(), {}) # epic hax
+
+		# self.config = lines
 
 
 	def parse_general(self):
-		general = self.sections['General']
+		general = self.general
 		general['CursorRotate'] = self.int(general.get('CursorRotate', 0))
 		general['CursorExpand'] = self.int(general.get('CursorExpand', 0))
 		general['CursorCentre'] = self.int(general.get('CursorCentre', 0))
@@ -122,18 +135,17 @@ class Skin:
 		if general['Version'] != 'latest':
 			general['Version'] = self.int(general['Version'])
 
-		self.general = general
 
 
 	def parse_colours(self):
-		for key, val in self.sections['Colours'].items():
+		for key, val in self.colours.items():
 			val = val.split(',')
 			for n, c in enumerate(val):
 				val[n] = int(c)
 
-			self.sections['Colours'][key] = val
+			self.colours[key] = val
 
-		colours = self.sections['Colours']
+		colours = self.colours
 
 		cur_combo = 1
 		while True:
@@ -148,22 +160,24 @@ class Skin:
 		if cur_combo == 0:
 			# use the default value
 			cur_combo = 4
-			colours["Combo1"] = [255, 192, 0]
-			colours["Combo2"] = [0, 202, 0]
-			colours["Combo3"] = [18, 124, 255]
-			colours["Combo4"] = [242, 24, 57]
+			colours["Combo1"] = (255, 192, 0)
+			colours["Combo2"] = (0, 202, 0)
+			colours["Combo3"] = (18, 124, 255)
+			colours["Combo4"] = (242, 24, 57)
 
-		colours['InputOverlayText'] = colours.get('InputOverlayText', [0, 0, 0])
-		colours["SliderBall"] = colours.get("SliderBall", [2, 170, 255])
-		colours["SliderBorder"] = colours.get("SliderBorder", [255, 255, 255])
-		colours["SliderTrackOverride"] = colours.get("SliderTrackOverride", [0, 0, 0])  # TODO: use current combo color
-		colours["SpinnerBackground"] = colours.get("SpinnerBackground", [100, 100, 100])
+		colours['InputOverlayText'] = colours.get('InputOverlayText', (0, 0, 0))
+		colours["SliderBall"] = colours.get("SliderBall", (2, 170, 255))
+		colours["SliderBorder"] = colours.get("SliderBorder", (255, 255, 255))
+		colours["SliderTrackOverride"] = colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
+		colours["SpinnerBackground"] = colours.get("SpinnerBackground", (100, 100, 100))
 		colours['ComboNumber'] = cur_combo
 
-		self.colours = colours
+		
+
+		
 
 	def parse_fonts(self):
-		fonts = self.sections['Fonts']
+		fonts = self.fonts
 		fonts['HitCircleOverlap'] = self.int(fonts.get('HitCircleOverlap', -2))
 		fonts['ScoreOverlap'] = self.int(fonts.get('ScoreOverlap', -2))
 		fonts['ComboOverlap'] = self.int(fonts.get('ScoreOverlap', -2))
@@ -179,7 +193,6 @@ class Skin:
 		fonts['HitCirclePrefix'] = fonts.get('HitCirclePrefix', 'default').strip()
 		fonts['HitCirclePrefix'] = raw(fonts['HitCirclePrefix'])
 
-		self.fonts = fonts
 
 
 if __name__ == "__main__":
