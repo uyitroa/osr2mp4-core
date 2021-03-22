@@ -20,7 +20,7 @@ class Replay(object):
 	__LONG = 8
 
 	#Order of field initilization matters.
-	def __init__(self, replay_data=None):
+	def __init__(self, replay_data: bytes = None):
 		if replay_data is not None:
 			self.offset = 0
 			self.game_mode = None
@@ -41,6 +41,8 @@ class Replay(object):
 			self.life_bar_graph = None
 			self.timestamp = None
 			self.play_data = None
+			#self.view = memoryview(replay_data).tolist() # stupid pyhton cant pickle memoryview
+			self.view = replay_data
 			self.parse_replay_and_initialize_fields(replay_data)
 		else:
 			self.game_mode = 0
@@ -63,24 +65,37 @@ class Replay(object):
 			self.life_bar_graph = ""
 			self.timestamp = datetime.datetime.now()
 
-	def parse_replay_and_initialize_fields(self, replay_data):
-		self.parse_game_mode_and_version(replay_data)
-		self.parse_beatmap_hash(replay_data)
-		self.parse_player_name(replay_data)
-		self.parse_replay_hash(replay_data)
-		self.parse_score_stats(replay_data)
-		self.parse_life_bar_graph(replay_data)
-		self.parse_timestamp_and_replay_length(replay_data)
+	@classmethod
+	def from_path(cls, path: str):
+		with open(path, 'rb') as file:
+			try:
+				return cls(replay_data=file.read())
+			except _lzma.LZMAError:
+				raise NoDataReplay()
+			except Exception as err:
+				raise err
+
+
+	def parse_replay_and_initialize_fields(self, replay_data: bytes):
+		self.game_mode = self.read_byte()
+		self.game_version = self.read_int()
+		self.beatmap_hash = self.read_string()
+		self.player_name = self.read_string()
+		self.replay_hash = self.read_string()
+		self.number_300s = self.read_short()
+		self.number_100s = self.read_short()
+		self.number_50s = self.read_short()
+		self.gekis = self.read_short()
+		self.katus = self.read_short()
+		self.misses = self.read_short()
+		self.score = self.read_int()
+		self.max_combo = self.read_short()
+		self.is_perfect_combo = self.read_byte()
+		self.mods = self.read_int()
+		self.parse_mod_combination()
+		self.life_bar_graph = self.read_string()
+		self.timestamp = datetime.datetime.min + datetime.timedelta(microseconds=self.read_long()/10)
 		self.parse_play_data(replay_data)
-
-	def parse_game_mode_and_version(self, replay_data):
-		format_specifier = "<bi"
-		data = struct.unpack_from(format_specifier, replay_data, self.offset)
-		self.offset += struct.calcsize(format_specifier)
-		self.game_mode, self.game_version = (GameMode(data[0]), data[1])
-
-	def unpack_game_stats(self, game_stats):
-		self.number_300s, self.number_100s, self.number_50s, self.gekis, self.katus, self.misses, self.score, self.max_combo, self.is_perfect_combo, self.mod_combination = game_stats
 
 	def parse_mod_combination(self):
 		# Generator yielding value of each bit in an integer if it's set + value
@@ -96,88 +111,87 @@ class Replay(object):
 		bit_values_gen = bits(self.mod_combination)
 		self.mod_combination = frozenset(Mod(mod_val) for mod_val in bit_values_gen)
 
-	def parse_score_stats(self, replay_data):
-		format_specifier = "<hhhhhhih?i"
-		data = struct.unpack_from(format_specifier, replay_data, self.offset)
-		self.unpack_game_stats(data)
-		self.parse_mod_combination()
-		self.offset += struct.calcsize(format_specifier)
+	def parse_play_data(self, replay_data: bytes):
+		frames = []
+		lzma_len = self.read_int() # aka self.__replay_length
+		lzma_raw = lzma.decompress(self.read_byte(lzma_len)).decode('ascii')[:-1]
+		events = [event_raw.split('|') for event_raw in lzma_raw.split(',')]
 
-	@staticmethod
-	def __parse_as_int(bytestring):
-		return int.from_bytes(bytestring, byteorder='little')
+		self.play_data = [
+						ReplayEvent(
+							int(event[0]),
+							float(event[1]),
+							float(event[2]),
+							int(event[3])
+							)
+						for event in events
+						]
 
-	def __decode(self, binarystream):
-		result = 0
-		shift = 0
+
+	### NEW
+	def read_byte(self, length: int = 1):
+		val = self.view[:length]
+		self.view = self.view[length:]
+		return val
+
+	def read_short(self):
+		val = int.from_bytes(self.view[:2], 'little')
+		self.view = self.view[2:]
+		return val
+
+	def read_int(self):
+		val = int.from_bytes(self.view[:4], 'little')
+		self.view = self.view[4:]
+		return val
+
+	def read_float(self):
+		return self.read_int()
+
+	def read_long(self):
+		val = int.from_bytes(self.view[:8], 'little')
+		self.view = self.view[8:]
+		return val
+
+	def read_double(self):
+		return self.read_long()
+
+	def read_uleb128(self):
+		val = shift = 0
+
 		while True:
-			byte = binarystream[self.offset]
-			self.offset += 1
-			result = result |((byte & 0b01111111) << shift)
-			if (byte & 0b10000000) == 0x00:
+			b = int.from_bytes(self.read_byte(), 'little')
+
+
+			val |= ((b & 0b01111111) << shift)
+			if (b & 0b10000000) == 0x00:
 				break
+
 			shift += 7
-		return result
 
-	def parse_player_name(self, replay_data):
-		self.player_name = self.parse_string(replay_data)
+		return val
 
-	def parse_string(self, replay_data):
-		if replay_data[self.offset] == 0x00:
-			self.offset += Replay.__BYTE
-		elif replay_data[self.offset] == 0x0b:
-			self.offset += Replay.__BYTE
-			string_length = self.__decode(replay_data)
-			offset_end = self.offset + string_length
-			string = replay_data[self.offset:offset_end].decode("utf-8")
-			self.offset = offset_end
-			return string
-		else:
-			#TODO: Replace with custom exception
-			raise Exception("Invalid replay")
+	def read_string(self):
+		if self.read_byte() == 0x00:
+			return ''
 
-	def parse_beatmap_hash(self, replay_data):
-		self.beatmap_hash = self.parse_string(replay_data)
+		raw = self.read_uleb128()
+		return self.read_byte(raw).decode()
 
-	def parse_replay_hash(self, replay_data):
-		self.replay_hash = self.parse_string(replay_data)
 
-	def parse_life_bar_graph(self, replay_data):
-		self.life_bar_graph = self.parse_string(replay_data)
 
-	def parse_timestamp_and_replay_length(self, replay_data):
-		format_specifier = "<qi"
-		(t, self.__replay_length) = struct.unpack_from(format_specifier, replay_data, self.offset)
-		self.timestamp = datetime.datetime.min + datetime.timedelta(microseconds=t/10)
-		self.offset += struct.calcsize(format_specifier)
-
-	def parse_play_data(self, replay_data):
-		offset_end = self.offset+self.__replay_length
-		if self.game_mode != GameMode.Standard:
-			self.play_data = None
-		else:
-			datastring = lzma.decompress(replay_data[self.offset:offset_end], format=lzma.FORMAT_AUTO).decode('ascii')[:-1]
-			events = [eventstring.split('|') for eventstring in datastring.split(',')]
-			self.play_data = [ReplayEvent(int(event[0]), float(event[1]), float(event[2]), int(event[3])) for event in events]
-		self.offset = offset_end
 
 	def get(self):
 		d = self.__dict__
 		self_dict = {k: d[k] for k in d if k != 'play_data'}
 		return self_dict
 
-	def set(self, state):
+	def set(self, state: dict):
 		self.__dict__ = state
 
 
-def parse_replay(replay_data):
-	return Replay(replay_data)
 
 
 def parse_replay_file(replay_path):
-	try:
-		with open(replay_path, 'rb') as f:
-			data = f.read()
-		return parse_replay(data)
-	except _lzma.LZMAError as e:
-		raise NoDataReplay()
+	return Replay.from_path(replay_path)
+
+parse_replay = parse_replay_file

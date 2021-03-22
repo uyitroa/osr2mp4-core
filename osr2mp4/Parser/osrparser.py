@@ -1,15 +1,13 @@
 from osr2mp4.osrparse import *
-
+from osr2mp4.Parser import osuparser
 
 # index for replay_event
 from osr2mp4.CheckSystem.Judgement import DiffCalculator
-
-
 # noinspection PyTypeChecker
 from osr2mp4.EEnum.EReplay import Replays
 
 
-def add_useless_shits(replay_data, beatmap):
+def add_useless_shits(replay_data: list, beatmap: osuparser.Beatmap):
 	for x in range(10):
 		replay_data.append([replay_data[-1][Replays.CURSOR_X], replay_data[-1][Replays.CURSOR_Y], 0, max(replay_data[-1][Replays.TIMES], int(beatmap.end_time + 1000) + 17 * x)])
 
@@ -26,7 +24,7 @@ def add_useless_shits(replay_data, beatmap):
 	beatmap.breakperiods.append({"Start": int(beatmap.end_time + 200), "End": replay_data[-1][Replays.TIMES] + 100, "Arrow": False})
 
 
-def setup_replay(osrfile, beatmap, reverse=False):
+def setup_replay(osrfile: str, beatmap: osuparser.Beatmap, reverse: bool = False):
 	replay_info = parse_replay_file(osrfile)
 	replay_data = []
 
@@ -37,8 +35,8 @@ def setup_replay(osrfile, beatmap, reverse=False):
 
 	start_osr = start_time - 3000
 
-	for index in range(len(replay_info.play_data)):
-		times = replay_info.play_data[index].time_since_previous_action
+	for data in replay_info.play_data:
+		times = data.time_since_previous_action
 		total_time += times
 
 		if total_time < start_osr:
@@ -46,12 +44,14 @@ def setup_replay(osrfile, beatmap, reverse=False):
 			continue
 
 		z = [None, None, None, None]
-		z[Replays.CURSOR_X] = replay_info.play_data[index].x
-		z[Replays.CURSOR_Y] = replay_info.play_data[index].y
-		if reverse:
-			z[Replays.CURSOR_Y] = 384 - replay_info.play_data[index].y
-		z[Replays.KEYS_PRESSED] = replay_info.play_data[index].keys_pressed
+		z[Replays.CURSOR_X] = data.x
+		z[Replays.CURSOR_Y] = data.y
+		z[Replays.KEYS_PRESSED] = data.keys_pressed
 		z[Replays.TIMES] = total_time
+
+		if reverse:
+			z[Replays.CURSOR_Y] = 384 - data.y
+		
 		replay_data.append(z)
 	replay_data = replay_data[:-1]
 	replay_data.sort(key=lambda x: x[Replays.TIMES])  # sort replay data based on time
