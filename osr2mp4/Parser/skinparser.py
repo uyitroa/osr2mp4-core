@@ -117,7 +117,7 @@ class Skin:
 		general['AllowSliderBallTint'] = self.int(general.get('AllowSliderBallTint', 0))
 		general['SliderBallFlip'] = self.int(general.get('SliderBallFlip', 0))
 		general['AnimationFramerate'] = self.int(general.get('AnimationFramerate', 60))
-		general['Version'] = self.int(general.get('Version', 1.0))
+		general['Version'] = general.get('Version', 1.0)
 
 		if general['Version'] != 'latest':
 			general['Version'] = self.int(general['Version'])
