@@ -486,43 +486,51 @@ class Beatmap:
 			osuobj["end y"] += space
 
 
-def split(delimiters, string):
-	lines = string.split("\n")
-	curheader = "dummy"
-	info = {curheader: ""}
-	newheader = False
+def split(delimiters: list, string: str):
+	lines = string.split('\n')
+	info = {'dummy': ''}
+	
 	for line in lines:
+		newheader = False
+		curheader = 'dummy'
 		line = line.strip()
-		if line == "":
+
+		if not line:
 			continue
 
 		for header in delimiters:
 			if header == line:
-				header = header[1:-1]
+				header = header[1: -1]
 				info[header] = ""
 				newheader = True
 				curheader = header
 
 		if not newheader:
-			info[curheader] += line + "\n"
-		newheader = False
+			info[curheader] += line + '\n'
+
+	
+
 	return info
+
+
 
 
 def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
 	if hr or dt:
-		logger.warning("hr args is depecrated")
+		logger.warning("HR args is deprecated.")
 
 	# checks if filename is a path
 	if os.path.isdir(filename):
 		raise NotAnBeatmap()
 
-	fiel = open(filename, "r", encoding="utf-8")
-	content = fiel.read()
-	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
-	              "[HitObjects]"]
-	info = split(delimiters, content)
-	fiel.close()
+
+	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", 
+				  "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
+
+	with open(filename , 'r', encoding='utf-8') as file:
+		info = split(delimiters, file.read())
+
+
 	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
 	bmap.hash = osuhash(filename)
