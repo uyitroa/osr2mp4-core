@@ -6,7 +6,7 @@ from osr2mp4.Exceptions import GameModeNotSupported, NotAnBeatmap
 
 
 class Beatmap:
-	def __init__(self, info, scale=1, colors=None, mods=None, lazy=True):
+	def __init__(self, info: dict, scale: float = 1, colors: dict = None, mods: 'mods' = None, lazy: bool = True):
 		self.info = info
 		self.general = {"StackLeniency": 0.7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
@@ -45,6 +45,7 @@ class Beatmap:
 
 		self.parse_event()
 		self.parse_timingpoints()
+
 		if not lazy:
 			self.parse_hitobject()
 			self.stack_position()
@@ -62,35 +63,33 @@ class Beatmap:
 		self.health_processor = None
 
 	def parse_general(self):
-		general = self.info["General"]
-		general = general.split("\n")
+		general = self.info["General"].split("\n")
 		for item in general:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.general[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+				name, value = item.split(":")
+				value = value.strip()
+				self.general[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_meta(self):
-		general = self.info["Metadata"]
-		general = general.split("\n")
-		for item in general:
+		meta = self.info["Metadata"].split("\n")
+		for item in meta:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.meta[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+				name, value = item.split(":")
+				value = value.strip()
+				self.meta[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_diff(self):
-		general = self.info["Difficulty"]
-		general = general.split("\n")
-		for item in general:
+		diff = self.info["Difficulty"].split("\n")
+		for item in diff:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
-				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
+				name, value = item.split(":")
+				value = value.strip()
+				self.diff[name] = float(value) if value.replace('.', '', 1).isdigit() else value
+				self.diff["Base" + name] = self.diff[name]
+
 		self.diff["ApproachRate"] = self.diff.get("ApproachRate", self.diff["OverallDifficulty"])
 		self.diff["BaseApproachRate"] = self.diff["ApproachRate"]
 
@@ -486,6 +485,7 @@ class Beatmap:
 			osuobj["end y"] += space
 
 
+
 def split(delimiters: list, string: str):
 	lines = string.split('\n')
 	info = {'dummy': ''}
@@ -515,9 +515,9 @@ def split(delimiters: list, string: str):
 
 
 
-def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
-	if hr or dt:
-		logger.warning("HR args is deprecated.")
+def read_file(filename: str, scale: float = 1, colors: dict = None, , mods=None, lazy=True, **kwargs: dict)
+	if 'hr' in kwargs or 'dt' in kwargs:
+		logger.warning("HR/DT args is deprecated.")
 
 	# checks if filename is a path
 	if os.path.isdir(filename):
