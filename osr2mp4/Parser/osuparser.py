@@ -147,7 +147,7 @@ class Beatmap:
 			self.timing_point.append(timing)
 
 		self.timing_point.append({"Offset": float('inf')})
-		self.timing_point.append({"Offset": float('inf')}) # FireRedz: wtf???
+		self.timing_point.append({"Offset": float('inf')}) # FireRedz: mega sus
 
 	def istacked(self, curobj: dict, prevobj: dict, t_min: float, end: str = ""):
 		x1, y1 = curobj["x"], curobj["y"]
