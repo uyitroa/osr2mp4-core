@@ -14,55 +14,49 @@ class ReplayEvent(object):
 
 
 class Replay(object):
-	__BYTE = 1
-	__SHORT = 2
-	__INT = 4
-	__LONG = 8
+	"""
+		R.A.P.E
+
+		R - redz
+		A - amazing
+		P - parser for replay
+		E - epic
+	"""
+
+	game_mode: int = 0
+	game_version: int = 0
+	beatmap_hash: str = ''
+	player_name: str = ''
+	replay_hash: str = ''
+	number_300s: int = 0
+	number_100s: int = 0
+	number_50s: int = 0
+	gekis: int = 0
+	katus: int = 0
+	misses: int = 0
+	score: int = 0
+	max_combo: int = 0
+	is_perfect_combo: int = 0
+	mod_combination: [Mod] = []
+	life_bar_graph: str = ''
+	timestamp: datetime.datetime = None
+	play_data: [ReplayEvent] = []
+
+	# internal
+	view: [memoryview, bytes] = None # memoryview or bytes
+
 
 	#Order of field initilization matters.
 	def __init__(self, replay_data: bytes = None):
 		if replay_data is not None:
-			self.offset = 0
-			self.game_mode = None
-			self.game_version = None
-			self.beatmap_hash = None
-			self.player_name = None
-			self.replay_hash = None
-			self.number_300s = None
-			self.number_100s = None
-			self.number_50s = None
-			self.gekis = None
-			self.katus = None
-			self.misses = None
-			self.score = None
-			self.max_combo = None
-			self.is_perfect_combo = None
-			self.mod_combination = None
-			self.life_bar_graph = None
-			self.timestamp = None
-			self.play_data = None
 			#self.view = memoryview(replay_data) # FireRedz: stupid python cant pickle memoryview
 			self.view = replay_data
 			self.parse_replay_and_initialize_fields(replay_data)
 		else:
-			self.game_mode = 0
-			self.game_version = ""
-			self.beatmap_hash = ""
 			self.player_name = "osu!"
-			self.replay_hash = ""
-			self.number_300s = 0
-			self.number_100s = 0
-			self.number_50s = 0
-			self.gekis = 0
-			self.katus = 0
-			self.misses = 0
 			self.score = float("inf")
-			self.max_combo = 0
 			self.is_perfect_combo = 1
-
 			self.mod_combination = []
-
-			self.life_bar_graph = ""
 			self.timestamp = datetime.datetime.now()
 
 	@classmethod
