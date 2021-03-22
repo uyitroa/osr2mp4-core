@@ -515,7 +515,7 @@ def split(delimiters: list, string: str):
 
 
 
-def read_file(filename: str, scale: float = 1, colors: dict = None, , mods=None, lazy=True, **kwargs: dict)
+def read_file(filename: str, scale: float = 1, colors: dict = None, mods=None, lazy=True, **kwargs: dict)
 	if 'hr' in kwargs or 'dt' in kwargs:
 		logger.warning("HR/DT args is deprecated.")
 
