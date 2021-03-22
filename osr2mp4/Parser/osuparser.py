@@ -26,7 +26,7 @@ class Beatmap:
 		self.start_time = 0
 		self.end_time = 0
 
-		if colors is None:
+		if not colors:
 			colors = {"ComboNumber": 1}
 		self.ncombo = colors["ComboNumber"]
 
@@ -76,8 +76,8 @@ class Beatmap:
 		for item in meta:
 			item = item.strip()
 			if item != "":
-				name, value = item.split(":")
-				value = value.strip()
+				name, *value = item.split(":")
+				value = ' '.join(value).strip()
 				self.meta[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_diff(self):
@@ -164,7 +164,7 @@ class Beatmap:
 			osuobject = item.split(",")
 			self.start_time = int(osuobject[2]) # FireRedz: wtf is this on reverse or something
 			break
-		for item in hitobject[::-1]:
+		for item in hitobjects[::-1]:
 			if not item:
 				continue
 
