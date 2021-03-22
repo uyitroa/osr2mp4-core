@@ -32,7 +32,13 @@ def raw(text):
 class Skin:
 	skin_path: Path = ''
 	default_path: Path = ''
+	# sections
+	general: dict = {}
+	colours: dict = {}
+	fonts: dict = {}
+
 	sections: dict = {}
+
 
 	def __init__(self, skin_path: str, default_path: str, inipath: str = None): # i want to change the inipath to ini_path but considering 
 		self.skin_path = Path(skin_path) / 'skin.ini'                     # that it might break something i dont
