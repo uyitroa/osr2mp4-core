@@ -30,15 +30,16 @@ def raw(text):
 	return text
 
 class Skin:
+	skin_path: Path = ''
+	default_path: Path = ''
+	sections: dict = {}
+
 	def __init__(self, skin_path: str, default_path: str, inipath: str = None): # i want to change the inipath to ini_path but considering 
-		self.skin_path: Path = Path(skin_path) / 'skin.ini'                     # that it might break something i dont
-		self.default_path: Path = Path(default_path) / 'skin.ini'
-		self.config: ConfigParser = None
-		self.sections: dict = {}
+		self.skin_path = Path(skin_path) / 'skin.ini'                     # that it might break something i dont
+		self.default_path = Path(default_path) / 'skin.ini'
 
 		if inipath:
 			self.default_path = self.skin_path = Path(inipath)
-
 
 		self.read()
 		self.parse_general()
