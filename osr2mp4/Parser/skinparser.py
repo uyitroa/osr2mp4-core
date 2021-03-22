@@ -1,30 +1,8 @@
-# done by Kysan the gay pp farmer thanks
-
-
-# return pos of the first char of the  comment or -1 if there is no comment
-import os
-from collections import OrderedDict
 from configparser import ConfigParser
-
+from pathlib import Path
 from osr2mp4 import logger
 
-
-def detect_comments(line):
-	ancient_char = ''
-	for k in range(len(line)):
-		if line[k] == '/' and ancient_char == '/':
-			return k
-		ancient_char = line[k]
-	return -1
-
-
-def del_comment(line):
-	i = detect_comments(line)
-	if i != -1:
-		line = line[: i - 1]
-	return line.strip()
-
-
+"""
 escape_dict = {'\a': '/a',
 			   '\b': '/b',
 			   '\c': '/c',
@@ -38,165 +16,175 @@ escape_dict = {'\a': '/a',
 			   '\\': '/',
 			   ' ': '',
 			   '\ufeff': ''}
+"""
 
 
 def raw(text):
-	"""Returns a raw string representation of text"""
-	new_string = ''
-	for char in text:
-		try:
-			new_string += escape_dict[char]
-		except KeyError:
-			new_string += char
-	return new_string
+	"""
+	Returns a raw string representation of text
+	
 
+	^^ wdym bro... ill just return the text for now and fix it when it broke
 
-def iint(text):
-	new_string = ''
-	for char in str(text):
-		if char.isdigit() or char == '-':
-			new_string += char
-		else:
-			break
-	return int(new_string)
-
-
-def getsection(config: ConfigParser, section):
-	if config.has_section(section):
-		return dict(config[section])
-	return {}
-
-
-# settings = {}  # why not put all sections into it at the end ?
-
-
-class MultiOrderedDict(OrderedDict):
-	def __setitem__(self, key, value):
-		if isinstance(value, list) and key in self:
-			return
-
-		super().__setitem__(key, value)
-
+	"""
+	return text
 
 class Skin:
-	def __init__(self, skin_path, default_path, inipath=None):
-		# sections
-		self.general = {}
-		self.colours = {}
-		self.fonts = {}
-		self.catchTheBeat = {}
-		self.mania = {}
-		self.skin_path = os.path.join(skin_path, "skin.ini")
-		self.default_path = os.path.join(default_path, "skin.ini")
+	def __init__(self, skin_path: str, default_path: str, inipath: str = None): # i want to change the inipath to ini_path but considering 
+		self.skin_path: Path = Path(skin_path) / 'skin.ini'                     # that it might break something i dont
+		self.default_path: Path = Path(default_path) / 'skin.ini'
+		self.config: ConfigParser = None
+		self.sections: dict = {}
 
-		if inipath is not None:
-			self.skin_path = self.default_path = inipath
+		if inipath:
+			self.default_path = self.skin_path = Path(inipath)
 
 
 		self.read()
 		self.parse_general()
-		self.parse_colors()
+		self.parse_colours()
 		self.parse_fonts()
 
-		# logger.debug(self.general)
-		# logger.debug(self.colours)
-		# logger.debug(self.fonts)
+	@staticmethod
+	def filter(lines: str):
+		""" Remove bullshit """
+		while lines[0] != '[':
+			lines = lines[1:]
 
-	def filter(self, string):
-		start = "["
-		while string[0] != start:
-			string = string[1:]
+		res = ''
+		for line in lines.split('\n'):
+			line = line.strip()
 
-		newstring = ""
-		for line in string.split("\n"):
-			l = line.strip()
-			if ":" not in line and "[" not in line:
-				l = ""
-			newstring += l + "\n"
+			# 1st line is basic checking
+			# 2st checks for comments or some weird bullshit (from cpol skin mostly)
+			if (not line or line[0] != '[' and ':' not in line) \
+				or '//' in line or line[0] == '#':
+				line = ''
 
-		newstring = newstring.replace("//", " //")
-		return newstring.replace('\x00', '')
+			res += line + '\n'
+
+		return res
+
+	@staticmethod
+	def int(text: str):
+		""" Convert string into integer but safe """
+		res = ''
+		for char in str(text):
+			if char.isdigit() or char == '-':
+				res += char
+			else:
+				break
+
+		return int(res)
+
 
 	def read(self):
-		config = ConfigParser(strict=False, comment_prefixes=["//", "\\"], inline_comment_prefixes="//", dict_type=MultiOrderedDict)
-		config.optionxform = str
+		parser = ConfigParser(strict=False)
+		parser.optionxform = str # need to do this else the keys will be in lowercase
 
-		try:
-			with open(self.skin_path, encoding='utf-8', errors='ignore') as file:
-				lines = file.read()
-		except FileNotFoundError:
-			with open(self.default_path, encoding='utf-8', errors='ignore') as file:
-				lines = file.read()
-		lines = self.filter(lines)
-		config.read_string(lines)
 
-		self.general = getsection(config, "General")
-		self.colours = getsection(config, "Colours")
-		self.fonts = getsection(config, "Fonts")
 
-		logger.log(1, self.general)
-		logger.log(1, self.colours)
-		logger.log(1, self.fonts)
+		if self.skin_path.exists():
+			lines = self.skin_path.read_text(encoding='utf-8', errors='ignore')
+		elif self.default_path.exists():
+			lines = self.default_path.read_text(encoding='utf-8', errors='ignore')
+		else:
+			raise Exception('Failed to get skin.ini files.')
+
+		parser.read_string(self.filter(lines))
+
+		for section in ['General', 'Colours', 'Fonts']:
+			if parser.has_section(section):
+				self.sections[section] = dict(parser[section])
+			else:
+				self.sections[section] = {}
+
 
 	def parse_general(self):
-		self.general['CursorRotate'] = iint(self.general.get('CursorRotate', 0))
-		self.general['CursorExpand'] = iint(self.general.get('CursorExpand', 0))
-		self.general['CursorCentre'] = iint(self.general.get('CursorCentre', 0))
-		self.general['HitCircleOverlayAboveNumer'] = iint(self.general.get('HitCircleOverlayAboveNumer', 0))
-		self.general['SliderStyle'] = iint(self.general.get('SliderStyle', 0))
-		self.general['AllowSliderBallTint'] = iint(self.general.get('AllowSliderBallTint', 0))
-		self.general['SliderBallFlip'] = iint(self.general.get('SliderBallFlip', 0))
-		self.general['AnimationFramerate'] = iint(self.general.get('AnimationFramerate', 60))
-		self.general['Version'] = self.general.get('Version', 1.0)
-		if self.general['Version'] != "latest":
-			self.general['Version'] = iint(self.general['Version'])
+		general = self.sections['General']
+		general['CursorRotate'] = self.int(general.get('CursorRotate', 0))
+		general['CursorExpand'] = self.int(general.get('CursorExpand', 0))
+		general['CursorCentre'] = self.int(general.get('CursorCentre', 0))
+		general['HitCircleOverlayAboveNumber'] = self.int(general.get('HitCircleOverlayAboveNumber', 0))
+		general['SliderStyle'] = self.int(general.get('SliderStyle', 0))
+		general['AllowSliderBallTint'] = self.int(general.get('AllowSliderBallTint', 0))
+		general['SliderBallFlip'] = self.int(general.get('SliderBallFlip', 0))
+		general['AnimationFramerate'] = self.int(general.get('AnimationFramerate', 60))
+		general['Version'] = self.int(general.get('Version', 1.0))
 
-	def parse_colors(self):
-		for key, value in self.colours.items():
-			value = value.split(",")
-			for x in range(len(value)):
-				value[x] = int(value[x])
-			self.colours[key] = value
+		if general['Version'] != 'latest':
+			general['Version'] = self.int(general['Version'])
+
+		self.general = general
+
+
+	def parse_colours(self):
+		for key, val in self.sections['Colours'].items():
+			val = val.split(',')
+			for n, c in enumerate(val):
+				val[n] = int(c)
+
+			self.sections['Colours'][key] = val
+
+		colours = self.sections['Colours']
 
 		cur_combo = 1
 		while True:
-			n = "Combo" + str(cur_combo)
-			if n in self.colours:
+			combo = f'Combo{cur_combo}'
+			if combo in colours:
 				cur_combo += 1
 			else:
 				break
 		cur_combo -= 1
 
+
 		if cur_combo == 0:
-			self.colours["Combo1"] = self.colours.get("Combo1", (255, 192, 0))
-			self.colours["Combo2"] = self.colours.get("Combo2", (0, 202, 0))
-			self.colours["Combo3"] = self.colours.get("Combo3", (18, 124, 255))
-			self.colours["Combo4"] = self.colours.get("Combo4", (242, 24, 57))
+			# use the default value
 			cur_combo = 4
-		self.colours["InputOverlayText"] = self.colours.get("InputOverlayText", (0, 0, 0))
-		self.colours["SliderBall"] = self.colours.get("SliderBall", (2, 170, 255))
-		self.colours["SliderBorder"] = self.colours.get("SliderBorder", (255, 255, 255))
-		self.colours["SliderTrackOverride"] = self.colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
-		self.colours["SpinnerBackground"] = self.colours.get("SpinnerBackground", (100, 100, 100))
-		self.colours["ComboNumber"] = cur_combo
+			colours["Combo1"] = (255, 192, 0)
+			colours["Combo2"] = (0, 202, 0)
+			colours["Combo3"] = (18, 124, 255)
+			colours["Combo4"] = (242, 24, 57)
+
+		colours['InputOverlayText'] = colours.get('InputOverlayText', (0, 0, 0))
+		colours["SliderBall"] = colours.get("SliderBall", (2, 170, 255))
+		colours["SliderBorder"] = colours.get("SliderBorder", (255, 255, 255))
+		colours["SliderTrackOverride"] = colours.get("SliderTrackOverride", (0, 0, 0))  # TODO: use current combo color
+		colours["SpinnerBackground"] = colours.get("SpinnerBackground", (100, 100, 100))
+		colours['ComboNumber'] = cur_combo
+
+		self.colours = colours
 
 	def parse_fonts(self):
-		self.fonts['HitCircleOverlap'] = iint(self.fonts.get('HitCircleOverlap', -2))
-		self.fonts['ScoreOverlap'] = iint(self.fonts.get('ScoreOverlap', -2))
-		self.fonts['ComboOverlap'] = iint(self.fonts.get('ScoreOverlap', -2))
+		fonts = self.sections['Fonts']
+		fonts['HitCircleOverlap'] = self.int(fonts.get('HitCircleOverlap', -2))
+		fonts['ScoreOverlap'] = self.int(fonts.get('ScoreOverlap', -2))
+		fonts['ComboOverlap'] = self.int(fonts.get('ScoreOverlap', -2))
 
-		self.fonts['ComboPrefix'] = self.fonts.get('ComboPrefix', 'score')
-		self.fonts['ComboPrefix'] = self.fonts['ComboPrefix'].replace(" ", "")
-		self.fonts['ComboPrefix'] = raw(self.fonts['ComboPrefix'])
 
-		self.fonts['ScorePrefix'] = self.fonts.get('ScorePrefix', 'score')
-		self.fonts['ScorePrefix'] = self.fonts['ScorePrefix'].replace(" ", "")
-		self.fonts['ScorePrefix'] = raw(self.fonts['ScorePrefix'])
+		#### tbh idk what the raw is for but we'll see...
+		fonts['ComboPrefix'] = fonts.get('ComboPrefix', 'score').strip()
+		fonts['ComboPrefix'] = raw(fonts['ComboPrefix'])
 
-		self.fonts['HitCirclePrefix'] = self.fonts.get('HitCirclePrefix', 'default')
-		self.fonts['HitCirclePrefix'] = self.fonts['HitCirclePrefix'].replace(" ", "")
-		self.fonts['HitCirclePrefix'] = raw(self.fonts['HitCirclePrefix'])
+		fonts['ScorePrefix'] = fonts.get('ScorePrefix', 'score').strip()
+		fonts['ScorePrefix'] = raw(fonts['ScorePrefix'])
+
+		fonts['HitCirclePrefix'] = fonts.get('HitCirclePrefix', 'default').strip()
+		fonts['HitCirclePrefix'] = raw(fonts['HitCirclePrefix'])
+
+		self.fonts = fonts
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
-	skin = Skin("../../res/skin1/", "../../res/skin1/")
+	skin = Skin("../../res/skin1/", "../res/default/")
+	#skin = SkinParser("../../res/skin1/", "../res/default/")
