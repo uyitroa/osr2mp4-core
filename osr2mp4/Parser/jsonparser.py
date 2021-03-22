@@ -1,12 +1,7 @@
 import json
 
-
 def read(filename):
-	fileopen = open(filename, "r", encoding="utf-8")
-	text = fileopen.read()
-	# text = text.replace("\\", "/")
-	data = json.loads(text)
-
-	fileopen.close()
+	with open(filename, 'r', encoding='utf-8') as file:
+		data = json.loads(file.read())
 
 	return data
