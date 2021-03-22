@@ -176,16 +176,6 @@ class Skin:
 		self.fonts = fonts
 
 
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
-	skin = Skin("../../res/skin1/", "../res/default/")
+	skin = Skin("../res/default/", "../res/default/")
 	#skin = SkinParser("../../res/skin1/", "../res/default/")
