@@ -41,7 +41,7 @@ class Replay(object):
 			self.life_bar_graph = None
 			self.timestamp = None
 			self.play_data = None
-			#self.view = memoryview(replay_data).tolist() # stupid pyhton cant pickle memoryview
+			#self.view = memoryview(replay_data).tolist() # FireRedz: stupid python cant pickle memoryview
 			self.view = replay_data
 			self.parse_replay_and_initialize_fields(replay_data)
 		else:
