@@ -86,9 +86,9 @@ class Replay(object):
 		self.max_combo = self.read_short()
 		self.is_perfect_combo = self.read_byte()
 		self.mods = self.read_int()
-		self.parse_mod_combination()
 		self.life_bar_graph = self.read_string()
 		self.timestamp = datetime.datetime.min + datetime.timedelta(microseconds=self.read_long()/10)
+		self.parse_mod_combination()
 		self.parse_play_data(replay_data)
 
 	def parse_mod_combination(self):
