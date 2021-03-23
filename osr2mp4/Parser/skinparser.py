@@ -3,7 +3,7 @@ from collections import OrderedDict
 from pathlib import Path
 from osr2mp4 import logger
 
-"""
+
 escape_dict = {'\a': '/a',
 			   '\b': '/b',
 			   '\c': '/c',
@@ -17,18 +17,24 @@ escape_dict = {'\a': '/a',
 			   '\\': '/',
 			   ' ': '',
 			   '\ufeff': ''}
-"""
 
 
-def raw(text):
+
+def raw(text: str):
 	"""
 	Returns a raw string representation of text
 	
 
-	^^ wdym bro... ill just return the text for now and fix it when it broke
-
+	^^ wdym bro
 	"""
-	return text
+	res = ''
+	for char in text:
+		if char in escape_dict:
+			res += escape_dict[char]
+		else:
+			res += char
+			
+	return res
 
 class MultiOrderedDict(OrderedDict): # added back cuz the parser overwrite shit so yea
 	def __setitem__(self, key, value):
