@@ -65,7 +65,7 @@ def list_resize_(imgs: [Image], start: float, end: float, duration: float, easin
 	
 	for img in imgs:
 		size_val = easing(cur_time, start, end, duration)
-		res += [imageproc.change_size(img, size_val, size_val)]
+		res.append(imageproc.change_size(img, size_val, size_val))
 		cur_time += delta
 		
 	return res
