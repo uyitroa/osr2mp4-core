@@ -29,7 +29,7 @@ def prepare_approach(scale, time_preempt, settings):
 	:return: [PIL.Image]
 	"""
 	img = YImage(approachcircle, settings).img
-	approach_frames = []
+	approach_frames = [] # 27 frames on 60 fps
 
 	s = 3.5
 	interval = settings.timeframe / settings.fps
@@ -37,6 +37,7 @@ def prepare_approach(scale, time_preempt, settings):
 		s -= 2.5 * interval / time_preempt
 		p = imageproc.change_size(img, s * scale, s * scale)
 		approach_frames.append(p)
+	
 	return approach_frames
 
 
@@ -77,6 +78,7 @@ def overlayapproach(circle, approach, alpha):
 
 
 def prepare_fadeout(img, settings):
+	# 240ms cuz https://github.com/Wieku/danser-go/blob/23a5137c5c4069bd1f39a9e920065fce4614a6aa/app/beatmap/difficulty/difficulty.go#L7
 	fade_out = alpha.fade(img, 1, 0, 240, settings, easings.easeOutQuad)
 	fade_out = size.resize(fade_out, 1, 1.4, 240, settings, easings.easeOutQuad)
 	return fade_out
