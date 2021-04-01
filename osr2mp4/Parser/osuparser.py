@@ -76,8 +76,7 @@ class Beatmap:
 		for item in meta:
 			item = item.strip()
 			if item != "":
-				name, *value = item.split(":")
-				value = ' '.join(value).strip()
+				name, value = item.strip().split(":", maxsplit=1)
 				self.meta[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_diff(self):
