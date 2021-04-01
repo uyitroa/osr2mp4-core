@@ -50,9 +50,9 @@ class Osr2mp4:
 	             filedata=None, filesettings=None, filepp=None, filestrain=None,
 	             logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
+		self.settings.path = Path(__file__).parent
+		self.settings.path = os.path.relpath(self.settings.path) # ?????? why
 		sys.excepthook = excepthook
-		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
-		self.settings.path = os.path.relpath(self.settings.path)
 
 		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
 			self.settings.path += "/"
