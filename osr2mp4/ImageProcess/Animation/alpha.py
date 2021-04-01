@@ -63,7 +63,7 @@ def list_fade_(imgs: [Image], start: float, end: float, duration: float, easing:
 	
 	for img in imgs:
 		fade_val = easing(cur_time, start, end, duration)
-		res += [imageproc.newalpha(img, fade_val)]
+		res.append(imageproc.newalpha(img, fade_val))
 		cur_time += delta
 		
 	return res
@@ -78,4 +78,3 @@ def fade(imgs: Image, start: float, end: float, duration: float, settings: 'sett
 		return img_fade_(imgs, start, end, delta, duration, easing)
 		
 		
-
