@@ -293,3 +293,17 @@ class Osr2mp4:
 		self.previousprogress = estimated_progress
 		fileopen.close()
 		return min(99, estimated_progress * 100)
+		
+	@staticmethod
+	def settings_json():
+		settings = {'config.json': None, 'ppsettings.json': None, 'settings.json': None, 'strainsettings.json': None}
+		real_dir = Path(__file__).parent
+		
+		
+		for setting in settings.keys():
+			json_file = real_dir / setting
+			if json_file.exists():
+				settings[setting] = json.loads(json_file.read_text(encoding='utf-8'))
+				
+		return settings
+
