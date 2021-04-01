@@ -9,6 +9,7 @@ from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Animation import alpha, size
 from osr2mp4.ImageProcess.PrepareFrames.YImage import YImage, YImages
 from osr2mp4.ImageProcess.imageproc import newalpha
+from osr2mp4.ImageProcess.Animation import easings
 
 hitcircle = "hitcircle"
 hitcircleoverlay = "hitcircleoverlay"
@@ -77,8 +78,8 @@ def overlayapproach(circle, approach, alpha):
 
 def prepare_fadeout(img, settings):
 	timescale = 60/settings.fps * settings.timeframe/1000
-	fade_out = alpha.fadeout(img, 1, 0, 0.07 * timescale)
-	fade_out = size.grow(fade_out, 1.1, 1.7, 0.05 * timescale)
+	fade_out = alpha.fade(img, 1, 0, 240, settings, easings.easeOutQuad)
+	fade_out = size.resize(fade_out, 1, 1.4, 240, settings, easings.easeOutQuad)
 	return fade_out
 
 
