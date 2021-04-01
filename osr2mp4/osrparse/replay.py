@@ -166,7 +166,7 @@ class Replay(object):
 
 	def read_string(self):
 		if self.read_byte() == 0x00:
-			return ''
+			return ""
 
 		raw = self.read_uleb128()
 		return self.read_byte(raw).decode()
