@@ -85,7 +85,7 @@ class Replay(object):
 		self.score = self.read_int()
 		self.max_combo = self.read_short()
 		self.is_perfect_combo = self.read_byte()
-		self.mods = self.read_int()
+		self.mod_combination = self.read_int()
 		self.life_bar_graph = self.read_string()
 		self.timestamp = datetime.datetime.min + datetime.timedelta(microseconds=self.read_long()/10)
 		self.parse_mod_combination()
@@ -101,9 +101,10 @@ class Replay(object):
 				b = n & (~n+1)
 				yield b
 				n ^= b
-
+	
 		bit_values_gen = bits(self.mod_combination)
 		self.mod_combination = frozenset(Mod(mod_val) for mod_val in bit_values_gen)
+
 
 	def parse_play_data(self, replay_data: bytes):
 		frames = []
