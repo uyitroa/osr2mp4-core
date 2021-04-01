@@ -54,7 +54,7 @@ def img_resize_(img: Image, start: float, end: float, delta: float, duration: fl
 	
 	for time in np.arange(0, duration, delta):
 		size_val = easing(time, start, end, duration)
-		res += [imageproc.change_size(img, size_val, size_val)]
+		res.append(imageproc.change_size(img, size_val, size_val))
 		
 	return res
 	
