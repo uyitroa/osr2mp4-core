@@ -4,6 +4,12 @@ import os
 import sys
 import time
 import traceback
+import PIL
+import uuid
+import logging
+import json
+from pathlib import Path
+from autologging import traced, logged, TRACE
 
 from osr2mp4 import logger
 from osr2mp4.osrparse.enums import Mod
@@ -12,7 +18,7 @@ from osr2mp4.EEnum.EReplay import Replays
 
 from osr2mp4.Utils.Auto import get_auto
 from osr2mp4.osrparse import *
-import PIL
+
 from osr2mp4.Exceptions import ReplayNotFound, CannotCreateVideo
 from osr2mp4.Parser.jsonparser import read
 from osr2mp4.AudioProcess.CreateAudio import create_audio
@@ -25,9 +31,7 @@ from osr2mp4.Utils.Timing import find_time, get_offset
 from osr2mp4.VideoProcess.CreateFrames import create_frame
 from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
 from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
-import uuid
-from autologging import traced, logged, TRACE
-import logging
+
 
 
 class Dummy: pass
@@ -46,9 +50,9 @@ class Osr2mp4:
 	             filedata=None, filesettings=None, filepp=None, filestrain=None,
 	             logtofile=False, enablelog=True, logpath=""):
 		self.settings = Settings()
+		self.settings.path = Path(__file__).parent
+		self.settings.path = os.path.relpath(self.settings.path) # ?????? why
 		sys.excepthook = excepthook
-		self.settings.path = os.path.dirname(os.path.abspath(inspect.getsourcefile(Dummy)))
-		self.settings.path = os.path.relpath(self.settings.path)
 
 		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
 			self.settings.path += "/"
@@ -289,3 +293,17 @@ class Osr2mp4:
 		self.previousprogress = estimated_progress
 		fileopen.close()
 		return min(99, estimated_progress * 100)
+		
+	@staticmethod
+	def settings_json():
+		settings = {'config.json': None, 'ppsettings.json': None, 'settings.json': None, 'strainsettings.json': None}
+		real_dir = Path(__file__).parent
+		
+		
+		for setting in settings.keys():
+			json_file = real_dir / setting
+			if json_file.exists():
+				settings[setting] = json.loads(json_file.read_text(encoding='utf-8'))
+				
+		return settings
+

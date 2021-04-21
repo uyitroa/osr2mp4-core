@@ -6,7 +6,7 @@ from osr2mp4.Exceptions import GameModeNotSupported, NotAnBeatmap
 
 
 class Beatmap:
-	def __init__(self, info, scale=1, colors=None, mods=None, lazy=True):
+	def __init__(self, info: dict, scale: float = 1, colors: dict = None, mods: 'mods' = None, lazy: bool = True):
 		self.info = info
 		self.general = {"StackLeniency": 0.7, "Mode": 0}
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
@@ -26,7 +26,7 @@ class Beatmap:
 		self.start_time = 0
 		self.end_time = 0
 
-		if colors is None:
+		if not colors:
 			colors = {"ComboNumber": 1}
 		self.ncombo = colors["ComboNumber"]
 
@@ -45,6 +45,7 @@ class Beatmap:
 
 		self.parse_event()
 		self.parse_timingpoints()
+
 		if not lazy:
 			self.parse_hitobject()
 			self.stack_position()
@@ -62,107 +63,110 @@ class Beatmap:
 		self.health_processor = None
 
 	def parse_general(self):
-		general = self.info["General"]
-		general = general.split("\n")
+		general = self.info["General"].split("\n")
 		for item in general:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.general[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+				name, value = item.split(":")
+				value = value.strip()
+				self.general[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_meta(self):
-		general = self.info["Metadata"]
-		general = general.split("\n")
-		for item in general:
+		meta = self.info["Metadata"].split("\n")
+		for item in meta:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.meta[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
+				name, value = item.strip().split(":", maxsplit=1)
+				self.meta[name] = float(value) if (value.replace('.', '', 1)).isdigit() else value
 
 	def parse_diff(self):
-		general = self.info["Difficulty"]
-		general = general.split("\n")
-		for item in general:
+		diff = self.info["Difficulty"].split("\n")
+		for item in diff:
 			item = item.strip()
 			if item != "":
-				my_list = item.split(":")
-				my_list[1] = my_list[1].strip()
-				self.diff[my_list[0]] = float(my_list[1]) if my_list[1].replace('.', '', 1).isdigit() else my_list[1]
-				self.diff["Base" + my_list[0]] = self.diff[my_list[0]]
+				name, value = item.split(":")
+				value = value.strip()
+				self.diff[name] = float(value) if value.replace('.', '', 1).isdigit() else value
+				self.diff["Base" + name] = self.diff[name]
+
 		self.diff["ApproachRate"] = self.diff.get("ApproachRate", self.diff["OverallDifficulty"])
 		self.diff["BaseApproachRate"] = self.diff["ApproachRate"]
 
 	def parse_event(self):
-		event = self.info["Events"].split("\n")
+		events = self.info["Events"].split("\n")
 
-		for line in event:
+		for line in events:
 			line = line.strip()
 			if line.startswith("0"):
 				self.bg = line.split(",")
 				self.bg[2] = self.bg[2].replace('"', '')
 			if line.startswith("2"):
-				my_dict = {}
+				event = {}
 				items = line.split(",")
-				my_dict["Start"] = int(items[1])
-				my_dict["End"] = int(items[2])
-				my_dict["Arrow"] = True
-				self.breakperiods.append(my_dict)
+				event["Start"] = int(items[1])
+				event["End"] = int(items[2])
+				event["Arrow"] = True
+				self.breakperiods.append(event)
 
 	def parse_timingpoints(self):
-		timing = self.info["TimingPoints"]
-		timing = timing.split("\n")
+		timings = self.info["TimingPoints"].split("\n")
 		inherited = 0
-		for line in timing:
-			my_dict = {}
+		for line in timings:
+			timing = {}
 			try:
 				line = line.strip()
-				if line == '':
+				if not line:
 					continue
+
 				items = line.split(",")
-				my_dict["Offset"] = float(items[0])
+				timing["Offset"] = float(items[0])
+
 				if len(items) < 7 or int(items[6]) == 1:
-					my_dict["BeatDuration"] = float(items[1])
-					inherited = my_dict["BeatDuration"]
+					timing["BeatDuration"] = float(items[1])
+					inherited = timing["BeatDuration"]
 				else:
-					my_dict["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
-				my_dict["Base"] = inherited
-				my_dict["Meter"] = int(items[2])
-				my_dict["SampleSet"] = items[3]
-				my_dict["SampleIndex"] = items[4]
-				my_dict["Volume"] = float(items[5])
+					timing["BeatDuration"] = max(10.0, min(1000.0, -float(items[1]))) * inherited / 100
+
+				timing["Base"] = inherited
+				timing["Meter"] = int(items[2])
+				timing["SampleSet"] = items[3]
+				timing["SampleIndex"] = items[4]
+				timing["Volume"] = float(items[5])
+
 			except Exception as e:
-				my_dict["Meter"] = my_dict.get("Meter", 0)
-				my_dict["SampleSet"] = my_dict.get("SampleSet", "0")
-				my_dict["SampleIndex"] = my_dict.get("SampleIndex", "0")
-				my_dict["Volume"] = my_dict.get("Volume", 100)
-				self.timing_point.append(my_dict)
+				timing["Meter"] = timing.get("Meter", 0)
+				timing["SampleSet"] = timing.get("SampleSet", "0")
+				timing["SampleIndex"] = timing.get("SampleIndex", "0")
+				timing["Volume"] = timing.get("Volume", 100)
+				self.timing_point.append(timing)
 				logger.error(repr(e))
 				continue
-			# my_dict["Kiai"] = int(items[7])
-			self.timing_point.append(my_dict)
-		self.timing_point.append({"Offset": float('inf')})
-		self.timing_point.append({"Offset": float('inf')})
 
-	def istacked(self, curobj, prevobj, t_min, end=""):
+			# my_dict["Kiai"] = int(items[7])
+			self.timing_point.append(timing)
+
+		self.timing_point.append({"Offset": float('inf')})
+		self.timing_point.append({"Offset": float('inf')}) # FireRedz: mega sus
+
+	def istacked(self, curobj: dict, prevobj: dict, t_min: float, end: str = ""):
 		x1, y1 = curobj["x"], curobj["y"]
 		x2, y2 = prevobj[end + "x"], prevobj[end + "y"]
 		t1, t2 = curobj["time"], prevobj[end + "time"]
 		return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) < 3 and t1 - t2 < t_min
 
 	def parse_hitobjecttime(self):
-		hitobject = self.info["HitObjects"]
-		hitobject = hitobject.split("\n")
-		for item in hitobject:
-			if item == '':
+		hitobjects = self.info["HitObjects"].split("\n")
+		for item in hitobjects:
+			if not item:
 				continue
+
 			osuobject = item.split(",")
-			self.start_time = int(osuobject[2])
+			self.start_time = int(osuobject[2]) # FireRedz: wtf is this on reverse or something
 			break
-		for item in hitobject[::-1]:
-			if item == '':
+		for item in hitobjects[::-1]:
+			if not item:
 				continue
+
 			osuobject = item.split(",")
 			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
 			bin_info = bin_info[::-1]  # reverse the binary
@@ -190,8 +194,7 @@ class Beatmap:
 
 		hr = Mod.HardRock in self.mods
 
-		hitobject = self.info["HitObjects"]
-		hitobject = hitobject.split("\n")
+		hitobjects = self.info["HitObjects"].split("\n")
 		cur_combo_number = 1
 		cur_combo_color = 1
 
@@ -199,40 +202,41 @@ class Beatmap:
 
 		cur_offset = 0
 
-		for item in hitobject:
-			if item == '':
+		for item in hitobjects:
+			if not item:
 				continue
-			my_dict = {}
+
+			hitobject = {}
 			osuobject = item.split(",")
 
 			if hr:
 				osuobject[1] = 384 - int(osuobject[1])
 
-			my_dict["x"] = int(osuobject[0])
-			my_dict["y"] = int(osuobject[1])
-			my_dict["time"] = int(osuobject[2])
-			my_dict["id"] = index
+			hitobject["x"] = int(osuobject[0])
+			hitobject["y"] = int(osuobject[1])
+			hitobject["time"] = int(osuobject[2])
+			hitobject["id"] = index
 
-			while my_dict["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
+			while hitobject["time"] >= self.timing_point[cur_offset + 1]["Offset"]:
 				cur_offset += 1
-			my_dict["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
-			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits
+			hitobject["BeatDuration"] = self.timing_point[cur_offset]["BeatDuration"]
+			bin_info = "{0:{fill}8b}".format(int(osuobject[3]), fill='0')  # convert int to binary, make it 8-bits # FireRedz: why
 			bin_info = bin_info[::-1]  # reverse the binary
 			object_type = []
 			skip = 0
 
-			my_dict["stacking"] = 0
+			hitobject["stacking"] = 0
 
 			if int(bin_info[0]):
 				object_type.append("circle")
-				my_dict["end time"] = my_dict["time"]
-				my_dict["end x"] = my_dict["x"]
-				my_dict["end y"] = my_dict["y"]
-				my_dict["hitSound"] = osuobject[4]
+				hitobject["end time"] = hitobject["time"]
+				hitobject["end x"] = hitobject["x"]
+				hitobject["end y"] = hitobject["y"]
+				hitobject["hitSound"] = osuobject[4]
 				if len(osuobject) > 5:
-					my_dict["hitSample"] = osuobject[5]
+					hitobject["hitSample"] = osuobject[5]
 				else:
-					my_dict["hitSample"] = "0:0:0:0:"
+					hitobject["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[2]):
 				object_type.append("new combo")
@@ -254,9 +258,9 @@ class Beatmap:
 				else:
 					self.slider_combo[cur_combo_number] = {cur_combo_color}
 
-				my_dict["head not done"] = True  # for judgement
+				hitobject["head not done"] = True  # for judgement
 
-				ps = [[my_dict["x"], my_dict["y"]]]
+				ps = [[hitobject["x"], hitobject["y"]]]
 				slider_path = osuobject[5]
 				slider_path = slider_path.split("|")
 				slider_type = slider_path[0]
@@ -266,86 +270,86 @@ class Beatmap:
 					if hr:
 						pos[1] = 384 - int(pos[1])
 					ps.append([int(pos[0]), int(pos[1])])
-				my_dict["ps"] = ps
-				my_dict["slider type"] = slider_type
-				my_dict["pixel length"] = float(osuobject[7])
-				slider_c = getclass(slider_type, ps, my_dict["pixel length"])
-				my_dict["slider_c"] = slider_c
+				hitobject["ps"] = ps
+				hitobject["slider type"] = slider_type
+				hitobject["pixel length"] = float(osuobject[7])
+				slider_c = getclass(slider_type, ps, hitobject["pixel length"])
+				hitobject["slider_c"] = slider_c
 
-				my_dict["repeated"] = int(osuobject[6])
-				my_dict["duration"] = my_dict["BeatDuration"] * my_dict["pixel length"] / (
+				hitobject["repeated"] = int(osuobject[6])
+				hitobject["duration"] = hitobject["BeatDuration"] * hitobject["pixel length"] / (
 						100 * self.diff["SliderMultiplier"])
-				my_dict["end time"] = my_dict["duration"] * my_dict["repeated"] + my_dict["time"]
-				my_dict["pixel length"] = slider_c.cum_length[-1]
+				hitobject["end time"] = hitobject["duration"] * hitobject["repeated"] + hitobject["time"]
+				hitobject["pixel length"] = slider_c.cum_length[-1]
 
-				end_goingforward = my_dict["repeated"] % 2 == 1
-				endpos = slider_c.at(int(end_goingforward) * my_dict["pixel length"])
-				my_dict["end x"] = int(endpos[0])
-				my_dict["end y"] = int(endpos[1])
+				end_goingforward = hitobject["repeated"] % 2 == 1
+				endpos = slider_c.at(int(end_goingforward) * hitobject["pixel length"])
+				hitobject["end x"] = int(endpos[0])
+				hitobject["end y"] = int(endpos[1])
 
-				my_dict["slider ticks"] = []
-				my_dict["ticks pos"] = []
-				my_dict["arrow pos"] = slider_c.at(my_dict["pixel length"])
-				speedmultiplier = self.timing_point[cur_offset]["Base"] / my_dict["BeatDuration"]
+				hitobject["slider ticks"] = []
+				hitobject["ticks pos"] = []
+				hitobject["arrow pos"] = slider_c.at(hitobject["pixel length"])
+				speedmultiplier = self.timing_point[cur_offset]["Base"] / hitobject["BeatDuration"]
 				scoring_distance = 100 * self.diff["SliderMultiplier"] * speedmultiplier
 				mindist_fromend = scoring_distance / self.timing_point[cur_offset]["Base"] * 10
-				tickdistance = min(my_dict["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
-				my_dict["tickdistance"] = tickdistance
+				tickdistance = min(hitobject["pixel length"], max(0, scoring_distance / self.diff["SliderTickRate"]))
+				hitobject["tickdistance"] = tickdistance
 
 				# source: https://github.com/ppy/osu/blob/73467410ab0917594eb9613df6e828e1a24c6be6/osu.Game/Rulesets/Objects/SliderEventGenerator.cs#L123
-				my_dict["ticks dist"] = []
+				hitobject["ticks dist"] = []
 				d = tickdistance
-				while d < my_dict["pixel length"] - mindist_fromend:
+				while d < hitobject["pixel length"] - mindist_fromend:
 					pos = slider_c.at(d)
-					my_dict["slider ticks"].append(d/my_dict["pixel length"])
-					my_dict["ticks pos"].append(pos)
-					my_dict["ticks dist"].append(d)
+					hitobject["slider ticks"].append(d/hitobject["pixel length"])
+					hitobject["ticks pos"].append(pos)
+					hitobject["ticks dist"].append(d)
 					d += tickdistance
 
 				sliderscoringdistance = (100 * self.diff["SliderMultiplier"])/self.diff["SliderTickRate"]
-				if my_dict["BeatDuration"] > 0:
-					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"] * (1000/my_dict["BeatDuration"])
+				if hitobject["BeatDuration"] > 0:
+					hitobject["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"] * (1000/hitobject["BeatDuration"])
 				else:
-					my_dict["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"]
+					hitobject["velocity"] = sliderscoringdistance * self.diff["SliderTickRate"]
 
 				# logger.debug("%s %s", my_dict["velocity"], my_dict["pixel length"] / (my_dict["end time"] - my_dict["time"]) * 1000)
 
-				my_dict["hitSound"] = osuobject[4]
+				hitobject["hitSound"] = osuobject[4]
 				if len(osuobject) > 9:
-					my_dict["edgeSounds"] = osuobject[8]
-					my_dict["edgeSets"] = osuobject[9]
+					hitobject["edgeSounds"] = osuobject[8]
+					hitobject["edgeSets"] = osuobject[9]
 					if len(osuobject) > 10:
-						my_dict["hitSample"] = osuobject[10]
+						hitobject["hitSample"] = osuobject[10]
 					else:
-						my_dict["hitSample"] = "0:0:0:0:"
+						hitobject["hitSample"] = "0:0:0:0:"
 				else:
-					my_dict["edgeSounds"] = osuobject[4]
-					my_dict["edgeSets"] = "0:0"
-					for i in range(my_dict["repeated"]):
-						my_dict["edgeSounds"] += "|{}".format(osuobject[4])
-						my_dict["edgeSets"] += "|0:0"
-					my_dict["hitSample"] = "0:0:0:0:"
+					hitobject["edgeSounds"] = osuobject[4]
+					hitobject["edgeSets"] = "0:0"
+					for i in range(hitobject["repeated"]):
+						hitobject["edgeSounds"] += "|{}".format(osuobject[4])
+						hitobject["edgeSets"] += "|0:0"
+					hitobject["hitSample"] = "0:0:0:0:"
 
 			if int(bin_info[3]):
 				object_type.append("spinner")
 				endtime = osuobject[5].split(":")[0]
-				my_dict["end time"] = int(endtime)
-				my_dict["end x"] = -1
-				my_dict["end y"] = -1
+				hitobject["end time"] = int(endtime)
+				hitobject["end x"] = -1
+				hitobject["end y"] = -1
 				if len(osuobject) > 6:
-					my_dict["hitSample"] = osuobject[6]
+					hitobject["hitSample"] = osuobject[6]
 				else:
-					my_dict["hitSample"] = "0:0:0:0:"
+					hitobject["hitSample"] = "0:0:0:0:"
 
-			my_dict["combo_color"] = cur_combo_color
-			my_dict["combo_number"] = cur_combo_number
-			my_dict["type"] = object_type
-			my_dict["skip"] = skip
-			my_dict["sound"] = int(osuobject[4])
+			hitobject["combo_color"] = cur_combo_color
+			hitobject["combo_number"] = cur_combo_number
+			hitobject["type"] = object_type
+			hitobject["skip"] = skip
+			hitobject["sound"] = int(osuobject[4])
 
-			if len(self.hitobjects) > 0 and self.hitobjects[-1]["end time"] >= my_dict["time"]:
+			if len(self.hitobjects) > 0 and self.hitobjects[-1]["end time"] >= hitobject["time"]:
 				self.is2b = True
-			self.hitobjects.append(my_dict)
+			self.hitobjects.append(hitobject)
 			cur_combo_number += 1
 			index += 1
 
@@ -486,43 +490,51 @@ class Beatmap:
 			osuobj["end y"] += space
 
 
-def split(delimiters, string):
-	lines = string.split("\n")
-	curheader = "dummy"
-	info = {curheader: ""}
-	newheader = False
+
+def split(delimiters: list, string: str):
+	lines = string.split('\n')
+	info = {'dummy': ''}
+	curheader = 'dummy'
 	for line in lines:
+		newheader = False
 		line = line.strip()
-		if line == "":
+
+		if not line:
 			continue
 
 		for header in delimiters:
 			if header == line:
-				header = header[1:-1]
+				header = header[1: -1]
 				info[header] = ""
 				newheader = True
 				curheader = header
 
 		if not newheader:
-			info[curheader] += line + "\n"
-		newheader = False
+			info[curheader] += line + '\n'
+
+	
+
 	return info
 
 
-def read_file(filename, scale=1, colors=None, hr=False, dt=False, mods=None, lazy=True):
-	if hr or dt:
-		logger.warning("hr args is depecrated")
+
+
+
+def read_file(filename: str, scale: float = 1, colors: dict = {}, mods: int = None, lazy: bool = True, **kwargs: dict):
+	if 'hr' in kwargs or 'dt' in kwargs:
+		logger.warning("HR/DT args is deprecated.")
 
 	# checks if filename is a path
 	if os.path.isdir(filename):
 		raise NotAnBeatmap()
 
-	fiel = open(filename, "r", encoding="utf-8")
-	content = fiel.read()
-	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", "[Events]", "[TimingPoints]", "[Colours]",
-	              "[HitObjects]"]
-	info = split(delimiters, content)
-	fiel.close()
+
+	delimiters = ["[General]", "[Editor]", "[Metadata]", "[Difficulty]", 
+				  "[Events]", "[TimingPoints]", "[Colours]", "[HitObjects]"]
+
+	with open(filename , 'r', encoding='utf-8') as file:
+		info = split(delimiters, file.read())
+
 	bmap = Beatmap(info, scale, colors, mods=mods, lazy=lazy)
 	bmap.path = filename
 	bmap.hash = osuhash(filename)
