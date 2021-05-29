@@ -11,3 +11,4 @@ autologging
 configparser
 cython
 matplotlib
+python-dateutil

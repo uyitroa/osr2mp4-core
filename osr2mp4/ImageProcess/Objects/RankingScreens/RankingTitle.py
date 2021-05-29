@@ -2,7 +2,8 @@ from PIL import Image
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Objects.RankingScreens.ARankingScreen import ARankingScreen
 from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
-
+from datetime import datetime, timezone, timedelta
+from dateutil.relativedelta import relativedelta
 
 class RankingTitle(ARankingScreen):
 	def __init__(self, frames, replayinfo, meta, settings):
@@ -28,15 +29,14 @@ class RankingTitle(ARankingScreen):
 		self.textimgs = {**titleimg, **creatorimg, **playerimg}
 
 	def set_timezone(self, replayinfo):
-		return replayinfo.timestamp
-		# timestamp = replayinfo.timestamp
-		# utcnow = timezone('utc').localize(datetime.utcnow())
-		# mm = time.tzname[0]
-		# here = utcnow.astimezone(timezone(mm)).replace(tzinfo=None)
-		# there = utcnow.astimezone(timezone('utc')).replace(tzinfo=None)
-		# offset = relativedelta(here, there).hours
-		# timestamp += timedelta(hours=offset)
-		# return timestamp
+		#return replayinfo.timestamp
+		timestamp = replayinfo.timestamp
+		now = datetime.now()
+		here = now
+		there = now.astimezone(timezone.utc).replace(tzinfo=None)
+		offset = relativedelta(here, there).hours
+		timestamp += timedelta(hours=offset)
+		return timestamp
 
 	def drawname(self, background, x_offset, y_offset, text, alpha, size):
 		imageproc.add(self.textimgs[text], background, x_offset, y_offset, alpha=alpha, topleft=True)
