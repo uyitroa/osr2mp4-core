@@ -19,8 +19,8 @@ class URCounter:
 
         # customizable things
         self.position: list = [
-            settings.ppsettings.get('URCounter x'),
-            settings.ppsettings.get('URCounter y')
+            settings.ppsettings.get('URCounter x', 675),
+            settings.ppsettings.get('URCounter y', 720)
         ]
         self.origin: str = settings.ppsettings.get('URCounter Origin', 'center')
 
