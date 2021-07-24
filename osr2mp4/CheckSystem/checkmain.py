@@ -60,6 +60,7 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 	in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
 	logger.debug("Start check")
+
 	while osr_index < len(replay_event) - 3:
 		k1, k2, m1, m2 = keys(replay_event[osr_index][Replays.KEYS_PRESSED])
 		if not in_break:
@@ -77,9 +78,11 @@ def checkmain(beatmap, replay_info, settings, tests=False):
 
 		breakperiod = beatmap.breakperiods[break_index]
 		next_break = replay_event[osr_index][Replays.TIMES] > breakperiod["End"]
+
 		if next_break:
 			break_index = min(break_index + 1, len(beatmap.breakperiods) - 1)
 			breakperiod = beatmap.breakperiods[break_index]
+			
 		in_break = int(replay_event[osr_index][Replays.TIMES]) in range(breakperiod["Start"], breakperiod["End"])
 
 	logger.debug("check done")
