@@ -25,11 +25,11 @@ class URCounter(ACounter):
             self.divide_by = 0.75
 
     def draw_number(self, background):
-        x = self.countersettings['URCounter x'] * self.settings.scale
-        y = self.countersettings['URCounter y'] * self.settings.scale
+        x = self.countersettings.get('URCounter x', 675) * self.settings.scale
+        y = self.countersettings.get('URCounter y', 710) * self.settings.scale
         origin = self.countersettings.get('URCounter Origin', 'right')
 
-        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings[self.prefix + 'Alpha'], origin=origin, gap=0)
+        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('URCounter Alpha', 1), origin=origin, gap=0)
 
     def add_to_frame(self, background: Image, result_info: object, time: int = 0):
         self.real_ur = getunstablerate(result_info, time)[2] / self.divide_by
