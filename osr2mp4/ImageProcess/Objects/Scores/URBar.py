@@ -84,3 +84,6 @@ class URBar(AScorebar):
 
 		self.movearrow()
 		imageproc.add(self.urarrow, background, self.x_offset + self.arrowx, self.y-self.arrowy, alpha=min(1, self.alpha*2))
+
+
+	
