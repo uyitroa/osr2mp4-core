@@ -18,7 +18,7 @@ class ACounter:
 		self.loadimg()
 
 	def loadsettings(self, countersettings):
-		countersettings[self.prefix + "Rgb"] = tuple(countersettings[self.prefix + "Rgb"])
+		countersettings[self.prefix + "Rgb"] = countersettings[self.prefix + "Rgb"]
 		self.countersettings = countersettings
 
 	def loadimg(self):
@@ -50,7 +50,7 @@ class ACounter:
 	def draw_number(self, background):
 		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
 		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
-		origin = self.countersettings.get('Origin', 'right')
+		origin = self.countersettings.get(self.prefix + 'Origin', 'right')
 
 		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin=origin, gap=0)
 
