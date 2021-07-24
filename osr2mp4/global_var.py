@@ -8,6 +8,7 @@ defaultsettings = {
 	"In-game interface": True,
 	"Show scoreboard": True,
 	"Background dim": 100,
+	"Background blur": 0,
 	"Rotate sliderball": False,
 	"Always show key overlay": True,
 	"Automatic cursor size": False,
@@ -58,7 +59,7 @@ defaultppconfig = {
 	"Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
 	"Hitresult Gap": 3,
 	"URCounter x": 675,
-    "URCounter y": 720,
+    "URCounter y": 710,
     "URCounter Size": 25,
     "URCounter Rgb": [
         255,
@@ -67,7 +68,8 @@ defaultppconfig = {
     ],
     "URCounter Origin": "center",
     "URCounter Alpha": 1,
-    "URCounter Font": "arial.ttf"
+    "URCounter Font": "arial.ttf",
+    "URCounter Background": ""
 }
 
 defaultstrainconfig = {
