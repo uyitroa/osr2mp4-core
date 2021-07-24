@@ -59,9 +59,15 @@ defaultppconfig = {
 	"Hitresult Gap": 3,
 	"URCounter x": 675,
     "URCounter y": 720,
-	"URCounter Origin": "center",
-	"URCounter Alpha": 1,
-	"URCounter Font": "arial.ttf"
+    "URCounter Size": 25,
+    "URCounter Rgb": [
+        255,
+        255,
+        255
+    ],
+    "URCounter Origin": "center",
+    "URCounter Alpha": 1,
+    "URCounter Font": "arial.ttf"
 }
 
 defaultstrainconfig = {

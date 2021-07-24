@@ -41,8 +41,8 @@ class URCounter:
         
         frames = prepare_text(
             numbers, 
-            25 * self.settings.scale,
-            (255, 255, 255),
+            self.settings.ppsettings.get('URCounter Size', 25) * self.settings.scale,
+            self.settings.ppsettings.get('URCounter Rgb', [255, 255, 255]),
             self.settings,
             alpha = self.settings.ppsettings.get('URCounter Alpha', 1),
             fontpath = self.settings.ppsettings.get('URCounter Font', 'arial.ttf')
