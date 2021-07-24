@@ -1,4 +1,5 @@
 from osr2mp4.CheckSystem.mathhelper import getunstablerate
+from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Animation.easing import easingout
 from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 from osr2mp4.osrparse.enums import Mod
@@ -14,12 +15,6 @@ class URCounter(ACounter):
         self.timeframe = settings.timeframe / settings.fps
         self.divide_by: float = 1.0
 
-        # customizable things
-        self.position: list = [
-            settings.ppsettings.get('URCounter x', 675),
-            settings.ppsettings.get('URCounter y', 720)
-        ]
-
         self.get_divide()
 
     def get_divide(self):
@@ -29,20 +24,21 @@ class URCounter(ACounter):
         if Mod.HalfTime in self.mods:
             self.divide_by = 0.75
 
+    def draw_number(self, background):
+        x = self.countersettings['URCounter x'] * self.settings.scale
+        y = self.countersettings['URCounter y'] * self.settings.scale
+        origin = self.countersettings.get('URCounter Origin', 'right')
+
+        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings[self.prefix + 'Alpha'], origin=origin, gap=0)
+
     def add_to_frame(self, background: Image, result_info: object, time: int = 0):
         self.real_ur = getunstablerate(result_info, time)[2] / self.divide_by
+
         ur = float(self.ur)
-        
         change = self.real_ur - ur
-        ur = easingout(
-            self.timeframe,
-            ur,
-            change,
-            500
-        )
+        ur = easingout(self.timeframe, ur, change, 500)
 
         self.ur = '{:.2f}'.format(ur)
-        self.score = self.ur
         super().add_to_frame(background)
         
 
