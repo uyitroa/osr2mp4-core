@@ -199,8 +199,9 @@ class FrameObjects:
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
 		self.scorecounter = ScoreCounter(frames.scorecounter, diff, skin.fonts["ScoreOverlap"], settings)
 
-		self.urbar = URBar(frames.urbar, frames.urarrow, settings)
+		
 		self.ur_counter = URCounter(settings, replay_info.mod_combination)
+		self.urbar = URBar(frames.urbar, frames.urarrow, settings, self.ur_counter)
 
 		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 

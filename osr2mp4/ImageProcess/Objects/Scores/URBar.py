@@ -3,14 +3,17 @@ from PIL import Image
 
 from osr2mp4.ImageProcess.Animation.easing import easingout
 from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
+from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 from osr2mp4.ImageProcess import imageproc
 
 
+
 class URBar(AScorebar):
-	def __init__(self, frames, urarrow, settings):
+	def __init__(self, frames: list, urarrow: Image.Image, settings: object, urcounter: ACounter):
 		AScorebar.__init__(self, frames[0], settings=settings)
 		self.scale = settings.scale
 		self.settings = settings
+		self.urcounter = urcounter
 		self.w, self.h = int(frames[0].size[0]), int(frames[0].size[1])
 		self.y = settings.height - self.h//2
 		self.x = settings.width//2
@@ -56,6 +59,9 @@ class URBar(AScorebar):
 			return
 		img = self.urbar
 		imageproc.add(img, background, self.x, self.y, alpha=min(1, self.alpha*2))
+
+	def add_to_frame_counter(self, background: Image, result_info: object, time: int = 0):
+		self.urcounter.add_to_frame(background, result_info, time, min(1,self.alpha*2))
 
 	def movearrow(self, current=None):
 		current = self.settings.timeframe/self.settings.fps
