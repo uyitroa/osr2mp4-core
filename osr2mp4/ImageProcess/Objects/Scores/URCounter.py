@@ -13,9 +13,16 @@ class URCounter:
         self.ur: int = 0
         self.real_ur: int = 0
         self.numbers: dict = {}
-        self.timeframe = self.settings.timeframe / self.settings.fps
+        self.timeframe = settings.timeframe / settings.fps
         self.mods = mods
         self.divide_by: float = 1.0
+
+        # customizable things
+        self.position: list = [
+            settings.ppsettings.get('URCounter x'),
+            settings.ppsettings.get('URCounter y')
+        ]
+        self.origin: str = settings.ppsettings.get('URCounter Origin', 'center')
 
         self.get_divide()
         self.load_number()
@@ -36,7 +43,9 @@ class URCounter:
             numbers, 
             25 * self.settings.scale,
             (255, 255, 255),
-            self.settings
+            self.settings,
+            alpha = self.settings.ppsettings.get('URCounter Alpha', 1),
+            fontpath = self.settings.ppsettings.get('URCounter Font', 'arial.ttf')
         )
 
         for index in frames:
@@ -63,11 +72,11 @@ class URCounter:
             background,
             self.ur,
             self.numbers, 
-            self.settings.width / 2,
-            self.settings.height - (50 * self.settings.scale),
+            self.position[0] * self.settings.scale,
+            self.position[1] * self.settings.scale,
             1,
-            origin='center', 
-            gap=0
+            self.origin,
+            0
         )
 
         
