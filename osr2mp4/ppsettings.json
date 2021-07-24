@@ -9,7 +9,7 @@
     ],
     "Alpha": 1,
     "Font": "arial.ttf",
-    "Center Text": false,
+    "Origin": "left",
     "Background": "osr2mp4/res/pptemplate.png",
     "Hitresult x": 50,
     "Hitresult y": 150,

@@ -44,7 +44,7 @@ defaultppconfig = {
 	"Alpha": 1,
 	"Font": "arial.ttf",
 	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
-	"Center Text": False,
+	"Origin": "left",
 	"Hitresult x": 50,
 	"Hitresult y": 150,
 	"Hitresult Size": 16,
