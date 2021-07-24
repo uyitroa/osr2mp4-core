@@ -9,7 +9,7 @@ from osr2mp4.ImageProcess import imageproc
 
 
 class URBar(AScorebar):
-	def __init__(self, frames: list, urarrow: Image.Image, settings: object, urcounter: ACounter):
+	def __init__(self, frames: list, urarrow: Image, settings: object, urcounter: ACounter):
 		AScorebar.__init__(self, frames[0], settings=settings)
 		self.scale = settings.scale
 		self.settings = settings
@@ -39,7 +39,7 @@ class URBar(AScorebar):
 		self.urarrow = urarrow[0]
 		self.arrowy = self.h // 4
 
-	def add_bar(self, delta_t, hitresult):
+	def add_bar(self, delta_t: int, hitresult: str):
 		pos = self.w/2 + delta_t/self.maxtime * self.w/2
 
 		self.floatingerror = self.floatingerror * 0.8 + pos * 0.2
@@ -54,7 +54,7 @@ class URBar(AScorebar):
 		a = self.barthin[xstart:xend, :] + img[:imgwidth, :]
 		self.barthin[xstart:xend, :] = a.clip(0, 255)
 
-	def add_to_frame_bar(self, background):
+	def add_to_frame_bar(self, background: Image):
 		if not self.settings.settings["Show score meter"]:
 			return
 		img = self.urbar
@@ -63,13 +63,13 @@ class URBar(AScorebar):
 	def add_to_frame_counter(self, background: Image, result_info: object, time: int = 0):
 		self.urcounter.add_to_frame(background, result_info, time, min(1,self.alpha*2))
 
-	def movearrow(self, current=None):
+	def movearrow(self, current: bool = None):
 		current = self.settings.timeframe/self.settings.fps
 		change = self.floatingerror - self.arrowx
 		duration = 800
 		self.arrowx = easingout(current, self.arrowx, change, duration)
 
-	def add_to_frame(self, background):
+	def add_to_frame(self, background: Image):
 		if not self.settings.settings["Show score meter"]:
 			return
 		AScorebar.animate(self)
