@@ -11,6 +11,7 @@ defaultsettings = {
 	"Background blur": 0,
 	"Rotate sliderball": False,
 	"Always show key overlay": True,
+	"Dont change dim levels during breaks": False,
 	"Automatic cursor size": False,
 	"Show mods icon": True,
 	"Enable PP counter": False,
