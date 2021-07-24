@@ -20,7 +20,8 @@ class HitresultCounter(ACounter):
 	def draw_number(self, background):
 		counter = 0
 		gap = self.countersettings["Hitresult Gap"] * self.countersettings["Hitresult Size"]
-		origin = 'center' if self.countersettings["Center Text"] else 'right'
+		origin = self.countersettings.get('Origin', 'left')
+
 		for n in self.score:
 			if n == 300:
 				continue

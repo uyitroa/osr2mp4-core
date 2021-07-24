@@ -50,7 +50,7 @@ class ACounter:
 	def draw_number(self, background):
 		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
 		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
-		origin = 'center' if self.countersettings["Center Text"] else 'right'
+		origin = self.countersettings.get('Origin', 'left')
 
 		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin=origin, gap=0)
 
