@@ -69,7 +69,7 @@ class Drawer:
 
 		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
 
-		self.component.strain_graph.set_strain_graph(self.settings.temp + "strain.png")
+		self.component.strain_graph.set_strain_graph(self.settings.temp / "strain.png")
 		self.component.strain_graph.set_beatmap(self.resultinfo)
 
 		to_time = replay_event[self.start_index][Replays.TIMES]

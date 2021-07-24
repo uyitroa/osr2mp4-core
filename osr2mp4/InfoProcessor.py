@@ -42,7 +42,7 @@ class Updater:
 				plt.margins(0,0)
 				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)
 				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
-				plt.savefig(settings.temp + 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
+				plt.savefig(settings.temp / 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
 
 	def ezpp_calculate_strain(self, nobjects, start_time, total_time, time_interval_in_ms):
 		t = []

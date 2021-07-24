@@ -3,12 +3,13 @@ import time
 import traceback
 import numpy as np
 import cv2
+from pathlib import Path
 from osr2mp4 import logger
 from osr2mp4.global_var import videoextensions
 from osr2mp4.Exceptions import CannotCreateVideo, FourccIsNotExtension, WrongFourcc, LibAvNotFound
 
 
-def write_frame(shared, conn, filename, settings, iii):
+def write_frame(shared: object, conn: object, filename: Path, settings: dict, iii: bool):
 	try:
 		write(shared, conn, filename, settings, iii)
 	except Exception as e:
@@ -19,13 +20,13 @@ def write_frame(shared, conn, filename, settings, iii):
 		raise
 
 
-def getwriter(filename, settings, buf):
+def getwriter(filename: Path, settings: dict, buf: object):
 	videoerror = None
 	if not settings.settings["Use FFmpeg video writer"]:
 		if len(settings.codec) != 4:
 			raise WrongFourcc()
 
-		writer = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
+		writer = cv2.VideoWriter(str(filename), cv2.VideoWriter_fourcc(*settings.codec), settings.fps, (settings.width, settings.height))
 	else:
 		try:
 			from osr2mp4.VideoProcess.FFmpegWriter.osr2mp4cv import PyFrameWriter
@@ -47,7 +48,7 @@ def getwriter(filename, settings, buf):
 	return writer
 
 
-def write(shared, conn, filename, settings, iii):
+def write(shared: object, conn: object, filename: Path, settings: dict, iii: bool):
 	asdfasdf = time.time()
 
 	logger.debug("{}\n".format(filename))
