@@ -3,13 +3,17 @@ import numpy as np
 from osr2mp4.osrparse.enums import Mod
 
 
-def getunstablerate(resultinfo):
+def getunstablerate(resultinfo, time: int = None):
 	error_time = []
 	total = 0
 	_total = 0
 	count = 0
 	_count = 0
+
 	for i in resultinfo:
+		if time and type(i.more).__name__ == 'Circle' and i.more.time > time:
+			break
+
 		if type(i.more).__name__ == "Circle" and i.hitresult is not None and i.hitresult != 0:
 			error_time.append(i.more.deltat)
 
@@ -20,9 +24,14 @@ def getunstablerate(resultinfo):
 				_total += i.more.deltat
 				_count += 1
 
+	if len(error_time) == 0:
+		ur = 0
+	else:
+		ur = np.std(error_time) * 10
+
 	return 0 if _count == 0 else _total / _count, \
 			0 if count == 0 else total / count, \
-			np.std(error_time) * 10
+			ur
 
 
 def dtar(value):
