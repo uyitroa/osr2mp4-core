@@ -7,7 +7,9 @@ import os
 def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
 	if fontpath == "":
 		fontpath = os.path.join(settings.path, "res/Aller_Rg.ttf")
+
 	size = int(size)
+	
 	try:
 		font = ImageFont.truetype(fontpath, size=size)
 	except Exception as e:
