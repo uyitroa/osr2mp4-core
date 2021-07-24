@@ -160,7 +160,7 @@ class PreparedFrames:
 			self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
 			self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
 			logger.debug("start preparing ur ranking")
-			self.rankingur = prepare_rankingur(settings, ur)
+			self.rankingur = prepare_rankingur(settings, ur, mod_combination)
 			self.rankinggraph.extend(self.rankingur)
 
 		self.flashlight = prepare_flashlight(settings, fl)
