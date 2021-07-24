@@ -96,7 +96,6 @@ videoextensions = ["mp4", "avi", "mkv", "mov"]
 
 
 class Settings:
-
 	def __init__(self):
 		self.skin_path = None
 		self.default_path = None
@@ -124,9 +123,7 @@ class Settings:
 		self.timeframe = None
 
 		self.strainsettings = defaultstrainconfig
-
 		self.settings = defaultsettings
-
 		self.ppsettings = defaultppconfig
 
 		self.codec = None
