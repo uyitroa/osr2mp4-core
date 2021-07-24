@@ -97,7 +97,6 @@ class Drawer:
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
 
 		self.updater.update(self.frame_info.cur_time)
-
 		cx, cy = smoothcursor(self.replay_event, self.frame_info.osr_index, self.frame_info.cur_time)
 
 		cursor_x = int(cx * self.settings.playfieldscale) + self.settings.moveright
@@ -132,6 +131,7 @@ class Drawer:
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
 		self.component.accuracy.add_to_frame(self.img, in_break)
 		self.component.urbar.add_to_frame(self.img)
+		self.component.ur_counter.add_to_frame(self.img, self.resultinfo, self.frame_info.cur_time)
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
 		self.component.cursormiddle.add_to_frame(self.img, cursor_x, cursor_y)
