@@ -16,6 +16,9 @@ class ACounter:
 
 		self.loadimg()
 
+	def loadsettings(self, settings: dict):
+		self.countersettings = settings[self.prefix]
+
 	def loadimg(self):
 		char = [str(x) for x in range(10)]
 		char.append(".")
