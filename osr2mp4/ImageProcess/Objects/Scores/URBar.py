@@ -61,7 +61,8 @@ class URBar(AScorebar):
 		imageproc.add(img, background, self.x, self.y, alpha=min(1, self.alpha*2))
 
 	def add_to_frame_counter(self, background: Image, result_info: object, time: int = 0):
-		self.urcounter.add_to_frame(background, result_info, time, min(1,self.alpha*2))
+		self.urcounter.update_ur(result_info, time)
+		self.urcounter.add_to_frame(background, min(1,self.alpha*2))
 
 	def movearrow(self, current: bool = None):
 		current = self.settings.timeframe/self.settings.fps

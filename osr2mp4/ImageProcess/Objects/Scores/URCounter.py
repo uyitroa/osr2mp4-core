@@ -7,7 +7,7 @@ from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 class URCounter(ACounter):
-    def __init__(self, settings: object, mods: object):
+    def __init__(self, settings: object, mods: Mod = [Mod.NoMod]):
         super().__init__(settings, settings.ppsettings, prefix='URCounter')
         self.ur: int = 0
         self.real_ur: int = 0
@@ -31,15 +31,14 @@ class URCounter(ACounter):
 
         imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('Alpha', 1), origin=origin, gap=0)
 
-    def add_to_frame(self, background: Image, result_info: object, time: int, alpha: int):
+    def update_ur(self, result_info: object, time: int):
         self.real_ur = getunstablerate(result_info, time)[2] / self.divide_by
-
         ur = float(self.ur)
         change = self.real_ur - ur
         ur = easingout(self.timeframe, ur, change, 500)
-
         self.ur = '{:.2f}'.format(ur)
 
+    def add_to_frame(self, background: Image, alpha: int = 1):
         # change alpha; abit of a hack but eh /shrug
         self.countersettings['Alpha'] = alpha
         super().add_to_frame(background)
