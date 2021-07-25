@@ -8,7 +8,7 @@ from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 class URCounter(ACounter):
     def __init__(self, settings: object, mods: object):
-        super().__init__(settings, settings.ppsettings, prefix='URCounter ')
+        super().__init__(settings, settings.ppsettings, prefix='URCounter')
         self.ur: int = 0
         self.real_ur: int = 0
         self.mods = mods
@@ -24,12 +24,12 @@ class URCounter(ACounter):
         if Mod.HalfTime in self.mods:
             self.divide_by = 0.75
 
-    def draw_number(self, background):
-        x = self.countersettings.get('URCounter x', 675) * self.settings.scale
-        y = self.countersettings.get('URCounter y', 710) * self.settings.scale
-        origin = self.countersettings.get('URCounter Origin', 'right')
+    def draw_number(self, background: Image):
+        x = self.countersettings.get('x', 675) * self.settings.scale
+        y = self.countersettings.get('y', 710) * self.settings.scale
+        origin = self.countersettings.get('Origin', 'right')
 
-        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('URCounter Alpha', 1), origin=origin, gap=0)
+        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('Alpha', 1), origin=origin, gap=0)
 
     def add_to_frame(self, background: Image, result_info: object, time: int, alpha: int):
         self.real_ur = getunstablerate(result_info, time)[2] / self.divide_by
@@ -41,7 +41,7 @@ class URCounter(ACounter):
         self.ur = '{:.2f}'.format(ur)
 
         # change alpha; abit of a hack but eh /shrug
-        self.countersettings['URCounter Alpha'] = alpha
+        self.countersettings['Alpha'] = alpha
         super().add_to_frame(background)
         
 
