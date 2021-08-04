@@ -34,7 +34,7 @@ class URCounter(ACounter):
     def update_ur(self, error_time: list):
         if len(error_time) == 0: return
 
-        self.real_ur = np.std(error_time) / self.divide_by
+        self.real_ur = (np.std(error_time) * 10) / self.divide_by
         ur = float(self.ur)
         change = self.real_ur - ur
         ur = easingout(self.timeframe, ur, change, 100)
