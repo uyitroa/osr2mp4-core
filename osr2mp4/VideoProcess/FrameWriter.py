@@ -24,7 +24,7 @@ def gauss(n: int):
     return val
 
 def blending(imgs: list):
-	weight = gauss(len(imgs))
+	weight = equal(len(imgs))
 	p = np.einsum("ijkl,i->jkl", imgs, weight)
 	return p.astype(np.uint8)
 
