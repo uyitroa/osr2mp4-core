@@ -103,13 +103,16 @@ class Updater:
 			x, y = self.info.more.x, self.info.more.y
 			if self.info.more.state == States.NOTELOCK and self.info.more.sliderhead is False:
 				self.component.hitobjmanager.notelock_circle(idd)
+				
 			elif self.info.more.state == States.FADEOUT:
 				self.component.hitobjmanager.fadeout_circle(idd)
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
+
 				if self.info.more.sliderhead:
 					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate, str(self.info.id) + "s")
 				else:
 					self.component.flashlight.set_sliding(False)
+
 			if self.info.hitresult == 0:
 				self.component.hitobjmanager.delete_circle(idd)
 

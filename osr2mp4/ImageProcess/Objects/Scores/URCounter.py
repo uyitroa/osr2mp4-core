@@ -1,10 +1,10 @@
 from PIL import Image
+import numpy as np
 
 from osr2mp4.osrparse.enums import Mod
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.Animation.easing import easingout
 from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
-from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 class URCounter(ACounter):
     def __init__(self, settings: object, mods: Mod = [Mod.NoMod]):
@@ -31,11 +31,13 @@ class URCounter(ACounter):
 
         imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('Alpha', 1), origin=origin, gap=0)
 
-    def update_ur(self, result_info: object, time: int):
-        self.real_ur = getunstablerate(result_info, time)[2] / self.divide_by
+    def update_ur(self, error_time: list):
+        if len(error_time) == 0: return
+
+        self.real_ur = np.std(error_time) / self.divide_by
         ur = float(self.ur)
         change = self.real_ur - ur
-        ur = easingout(self.timeframe, ur, change, 500)
+        ur = easingout(self.timeframe, ur, change, 100)
         self.ur = '{:.2f}'.format(ur)
 
     def add_to_frame(self, background: Image, alpha: int = 1):
