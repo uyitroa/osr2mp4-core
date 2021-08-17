@@ -72,7 +72,7 @@ class Osr2mp4:
 		logger.addHandler(handler)
 
 		self.settings.enablelog = enablelog
-		self.settings.temp = self.settings.path / (str(uuid.uuid1()) + "temp/")
+		self.settings.temp = self.settings.path / (str(uuid.uuid1()) + "temp")
 
 		self.__log.info("test")
 
