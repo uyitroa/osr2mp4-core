@@ -103,6 +103,7 @@ def write(shared: object, conn: object, filename: Path, settings: dict, iii: boo
 	frames: list = []
 	on_first_frame: bool = True
 	start, end = 0, 0
+	samples: int = 2
 	
 	while a != 10:
 
@@ -116,7 +117,7 @@ def write(shared: object, conn: object, filename: Path, settings: dict, iii: boo
 			asdf = time.time()
 
 			if settings.resample:
-				start_offset, end_offset = [(3-1, 3), (0, 3)][on_first_frame]
+				start_offset, end_offset = [(samples-1, samples), (0, samples)][on_first_frame]
 				# SOME FUCKERY HERE
 				# im not familiar with resampling stuff so the code is really fucky wucky someone pls fix lol
 				if end == 0:
@@ -132,17 +133,6 @@ def write(shared: object, conn: object, filename: Path, settings: dict, iii: boo
 
 					end = 0
 					on_first_frame = False
-
-				if len(frames) >= fps_ratio:
-					final = blending(frames)
-					del frames[:fps_ratio]
-					cv2.cvtColor(final, cv2.COLOR_BGRA2RGB, dst=buf)
-					writer.write(buf)
-
-					end = 0
-					on_first_frame = False
-				
-
 			else:
 				cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB, dst=buf)
 
