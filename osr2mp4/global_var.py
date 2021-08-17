@@ -137,6 +137,7 @@ class Settings:
 		self.width = None
 		self.height = None
 		self.fps = None
+		self.resample = None
 		self.scale = None
 		self.playfieldscale = None
 		self.playfieldwidth = None
@@ -153,3 +154,7 @@ class Settings:
 		self.audiocodec = None
 		self.process = None
 		self.enablelog = False
+
+	@property
+	def video_fps(self):
+		return [self.fps, 60][self.resample]

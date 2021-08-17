@@ -39,6 +39,8 @@ class URBar(AScorebar):
 		self.urarrow = urarrow[0]
 		self.arrowy = self.h // 4
 
+		self.error_time: list = []
+
 	def add_bar(self, delta_t: int, hitresult: str):
 		pos = self.w/2 + delta_t/self.maxtime * self.w/2
 
@@ -53,18 +55,20 @@ class URBar(AScorebar):
 
 		a = self.barthin[xstart:xend, :] + img[:imgwidth, :]
 		self.barthin[xstart:xend, :] = a.clip(0, 255)
+		self.error_time += [delta_t]
 
 	def add_to_frame_bar(self, background: Image):
 		if not self.settings.settings["Show score meter"]:
 			return
+
 		img = self.urbar
 		imageproc.add(img, background, self.x, self.y, alpha=min(1, self.alpha*2))
 
-	def add_to_frame_counter(self, background: Image, result_info: object, time: int = 0):
-		self.urcounter.update_ur(result_info, time)
+	def add_to_frame_counter(self, background: Image):
+		self.urcounter.update_ur(self.error_time)
 		self.urcounter.add_to_frame(background, min(1,self.alpha*2))
 
-	def movearrow(self, current: bool = None):
+	def movearrow(self, current: int = None):
 		current = self.settings.timeframe/self.settings.fps
 		change = self.floatingerror - self.arrowx
 		duration = 800

@@ -1,6 +1,7 @@
 import os
 
 from autologging import traced, logged
+from pathlib import Path
 
 from osr2mp4 import logger
 from osr2mp4.global_var import defaultsettings
@@ -19,6 +20,7 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None,
 	ffmpeg = data.get("ffmpeg path", "ffmpeg")
 	default_path = os.path.join(settings.path, "res/default/")
 	fps = data.get("FPS", 60)
+	resample = data.get('Resample', False)
 	width = data.get("Width", 1920)
 	height = data.get("Height", 1080)
 	osupath = data.get("osu! path", None)
@@ -44,9 +46,10 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None,
 	settings.width, settings.height, settings.scale = width, height, scale
 	settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight = playfield_scale, playfield_width, playfield_height
 	settings.fps, settings.timeframe = fps, time_frame
+	settings.resample = resample
 	settings.moveright, settings.movedown = move_right, move_down
 
-	settings.output = output_path
+	settings.output = Path(output_path)
 	settings.ffmpeg = ffmpeg
 	settings.beatmap = beatmap_path
 	settings.osu = osupath

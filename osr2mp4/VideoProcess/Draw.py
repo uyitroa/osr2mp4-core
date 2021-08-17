@@ -130,7 +130,7 @@ class Drawer:
 		self.component.combocounter.add_to_frame(self.img, in_break)
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
 		self.component.accuracy.add_to_frame(self.img, in_break)
-		self.component.urbar.add_to_frame_counter(self.img, self.resultinfo, self.frame_info.cur_time)
+		self.component.urbar.add_to_frame_counter(self.img)
 		self.component.urbar.add_to_frame(self.img)
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
@@ -210,7 +210,6 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
-
 	logger.log(1, "PROCESS {}, {}".format(videotime, drawer))
 
 	logger.debug("setup done")
@@ -218,9 +217,11 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	timer = 0
 	timer2 = 0
 	timer3 = 0
+
 	while drawer.frame_info.osr_index < videotime[1]:
 		status = drawer.render_draw()
 		asdf = time.time()
+
 		if status:
 			conn.send(1)
 			timer3 += time.time() - asdf

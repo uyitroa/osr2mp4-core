@@ -51,7 +51,7 @@ class Osr2mp4:
 		sys.excepthook = excepthook				 
 		self.settings = Settings()
 		self.settings.path = Path(__file__).parent
-		self.settings.path = Path(os.path.relpath(self.settings.path)) # abit fucky wucky yea
+		self.settings.path = self.settings.path # abit fucky wucky yea
 		
 		if logpath == "":
 			logpath = self.settings.path / "logosr2mp4.log"
@@ -72,7 +72,7 @@ class Osr2mp4:
 		logger.addHandler(handler)
 
 		self.settings.enablelog = enablelog
-		self.settings.temp = self.settings.path / (str(uuid.uuid1()) + "temp/")
+		self.settings.temp = self.settings.path / (str(uuid.uuid1()) + "temp")
 
 		self.__log.info("test")
 
