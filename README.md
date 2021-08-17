@@ -1,5 +1,5 @@
 ## Disclaimer for someone thats using this branch
-this wont work with osr2mp4-app because of `ppsettings.json` structure changes, i did 
+this wont work with yuitora's osr2mp4-app because of `ppsettings.json` structure changes, i did 
 try to make it work with it (you can check my fork for that) but im not 100% sure if its 
 stable so yea.
 
