@@ -131,17 +131,6 @@ def write(shared: object, conn: object, filename: Path, settings: dict, iii: boo
 
 					end = 0
 					on_first_frame = False
-
-				if len(frames) >= fps_ratio:
-					final = blending(frames)
-					del frames[:fps_ratio]
-					cv2.cvtColor(final, cv2.COLOR_BGRA2RGB, dst=buf)
-					writer.write(buf)
-
-					end = 0
-					on_first_frame = False
-				
-
 			else:
 				cv2.cvtColor(np_img, cv2.COLOR_BGRA2RGB, dst=buf)
 
