@@ -42,7 +42,7 @@ class Updater:
 				plt.margins(0,0)
 				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)
 				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
-				plt.savefig(settings.temp + 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
+				plt.savefig(settings.temp / 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
 
 	def ezpp_calculate_strain(self, nobjects, start_time, total_time, time_interval_in_ms):
 		t = []
@@ -103,13 +103,16 @@ class Updater:
 			x, y = self.info.more.x, self.info.more.y
 			if self.info.more.state == States.NOTELOCK and self.info.more.sliderhead is False:
 				self.component.hitobjmanager.notelock_circle(idd)
+				
 			elif self.info.more.state == States.FADEOUT:
 				self.component.hitobjmanager.fadeout_circle(idd)
 				self.component.urbar.add_bar(self.info.more.deltat, self.info.hitresult)
+
 				if self.info.more.sliderhead:
 					self.component.hitobjmanager.sliderchangestate(self.info.more.followstate, str(self.info.id) + "s")
 				else:
 					self.component.flashlight.set_sliding(False)
+
 			if self.info.hitresult == 0:
 				self.component.hitobjmanager.delete_circle(idd)
 

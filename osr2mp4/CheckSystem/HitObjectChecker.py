@@ -11,7 +11,7 @@ from osr2mp4.EEnum.EState import States
 
 
 Info = namedtuple("Info", "time combo combostatus showscore score accuracy clicks hitresult timestamp id hp maxcombo more")
-Circle = namedtuple("Circle", "state deltat followstate sliderhead x y")
+Circle = namedtuple("Circle", "state deltat followstate sliderhead x y time")
 Slider = namedtuple("Slider", "followstate hitvalue hitend x y end arrowindex")
 Spinner = namedtuple("Spinner", "rotate progress bonusscore hitvalue rpm")
 
@@ -50,6 +50,7 @@ class HitObjectChecker:
 		self.settings = settings
 		self.hitobjects = copy.deepcopy(beatmap.hitobjects)
 		self.diff_multiplier = self.difficulty_multiplier()
+
 		if self.diff["ApproachRate"] < 5:
 			self.time_preempt = 1200 + 600 * (5 - self.diff["ApproachRate"]) / 5
 			self.fade_in = 800 + 400 * (5 - self.diff["ApproachRate"]) / 5
@@ -133,7 +134,7 @@ class HitObjectChecker:
 			if replay[osr_index][Replays.TIMES] < notelock:
 				state = States.NOTELOCK
 				if hitresult != 0 or deltat < 0:  # if it's not because clicked too early
-					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y)
+					circle = Circle(state, 0, False, "slider" in self.hitobjects[i]["type"], x, y, self.hitobjects[i]['time'])
 					info = Info(replay[osr_index][3], self.combo, 0, self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), None,
 								timestamp, idd, self.health_processor.health_value, self.maxcombo, circle)
@@ -164,7 +165,7 @@ class HitObjectChecker:
 			osrtime = min(replay[osr_index][3], self.hitobjects[i]["time"] + self.maxtimewindow + 1)
 
 			if "circle" in self.hitobjects[i]["type"]:
-				circle = Circle(state, deltat, False, False, x, y)
+				circle = Circle(state, deltat, False, False, x, y, self.hitobjects[i]["time"])
 				del self.hitobjects[i]
 				i -= 1
 			else:
@@ -182,7 +183,7 @@ class HitObjectChecker:
 
 				elif hitresult == 0:
 					self.check.sliders_memory[idd].combo = 0
-				circle = Circle(state, deltat, followappear, True, x, y)
+				circle = Circle(state, deltat, followappear, True, x, y, self.hitobjects[i]["time"])
 
 			info = Info(osrtime, self.combo, combostatus,
 						self.scorecounter, self.scorecounter,

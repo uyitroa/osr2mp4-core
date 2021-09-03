@@ -27,18 +27,18 @@ def from_notwav(filename, settings):
 		raise FileNotFoundError
 
 	stream = log_stream()
-	subprocess.check_call([settings.ffmpeg, '-i', filename, '-ar', '44100', os.path.join(settings.temp, 'converted.wav'), '-y'], stdout=stream, stderr=stream)
+	subprocess.check_call([settings.ffmpeg, '-i', filename, '-ar', '44100', str(settings.temp / 'converted.wav'), '-y'], stdout=stream, stderr=stream)
 
-	a = AudioSegment.from_file(settings.temp + 'converted.wav')
+	a = AudioSegment.from_file(settings.temp / 'converted.wav')
 	return a
 
 
 def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 	if speed != 1.0 and not changepitch:
 		stream = log_stream()
-		subprocess.check_call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), os.path.join(settings.temp, 'spedup.mp3'), '-y'], stdout=stream, stderr=stream)
+		subprocess.check_call([settings.ffmpeg, '-i', f, '-codec:a', 'libmp3lame', '-filter:a', 'atempo={}'.format(speed), str(settings.temp / 'spedup.mp3'), '-y'], stdout=stream, stderr=stream)
 
-		f = os.path.join(settings.temp, "spedup.mp3")
+		f = str(settings.temp / "spedup.mp3")
 
 	if f[-4:] != ".wav":
 		a = from_notwav(f, settings)
@@ -55,37 +55,45 @@ def read(f, settings, volume=1.0, speed=1.0, changepitch=True):
 		if changepitch:
 			faster_senpai = a._spawn(a.raw_data, overrides={'frame_rate': int(a.frame_rate * speed)})
 			a = faster_senpai.set_frame_rate(a.frame_rate)
+
 	return pydubtonumpy(a)
 
 
 def pydubtonumpy(audiosegment):
 	y = np.array(audiosegment.get_array_of_samples())
+
 	if audiosegment.channels == 2:
 		y = y.reshape((-1, 2))
+
 	if audiosegment.channels == 1:
 		y1 = np.zeros((len(y), 2), dtype=y.dtype)
 		y1[:, 0] = y * 0.5
 		y1[:, 1] = y * 0.5
 		y = y1
+
 	try:
 		h = max(2, audiosegment.sample_width) * 8
 		maxvalue = max(np.amax(y), 2 ** h)
 	except ValueError as e:
 		logger.error(repr(e))
 		maxvalue = 1
+
 	return audiosegment.frame_rate, np.float64(y) / maxvalue
 
 
 def getaudiofromfile(filename, path, defaultpath, settings, volume=1.0, speed=1.0):
 	fmts = ["wav", "mp3", "ogg"]
+
 	for fmt in fmts:
+		file_path = os.path.join(path, filename + "." + fmt)
+		
 		try:
-			return read(os.path.join(path, filename + "." + fmt), settings, volume=volume, speed=speed)
+			return read(file_path, settings, volume=volume, speed=speed)
 		except FileNotFoundError:
 			pass
 
 		except exceptions.CouldntDecodeError as e:
-			logger.error(repr(e) + " filename " + os.path.join(path, filename + "." + fmt))
+			logger.error(repr(e) + " filename " + file_path)
 			return 1, np.zeros((0, 2), dtype=np.float32)
 
 	logger.warning("file not found %s, using default skin",  filename)
@@ -193,6 +201,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 		song = Audio2p(*read(os.path.join(beatmap_path, audio_name), settings, volume=settings.settings["Song volume"]/100, speed=settings.timeframe/1000, changepitch=nc))
 	except FileNotFoundError:
 		raise AudioNotFound()
+
 	song.rate /= settings.timeframe/1000
 	song.audio = apply_offset(song, settings.settings["Song delay"])
 
@@ -217,7 +226,7 @@ def audioprc(my_info, beatmap, offset, endtime, mods, settings):
 
 	out = getoffset(offset, endtime, song)
 
-	write(settings.temp + 'audio.mp3', round(song.rate * settings.timeframe/1000), out)
+	write(settings.temp / 'audio.mp3', round(song.rate * settings.timeframe/1000), out)
 
 
 def create_audio(my_info, beatmap_info, offset, endtime, settings, mods):

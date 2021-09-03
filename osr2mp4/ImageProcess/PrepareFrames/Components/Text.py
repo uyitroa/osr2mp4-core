@@ -4,10 +4,13 @@ from osr2mp4.ImageProcess import imageproc
 import os
 
 
-def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
+def prepare_text(texts: list, size: int, color: list, settings: object, alpha: int = 1, fontpath: str = ""):
 	if fontpath == "":
 		fontpath = os.path.join(settings.path, "res/Aller_Rg.ttf")
+
 	size = int(size)
+	color = tuple(color)
+	
 	try:
 		font = ImageFont.truetype(fontpath, size=size)
 	except Exception as e:
@@ -17,6 +20,7 @@ def prepare_text(texts, size, color, settings, alpha=1, fontpath=""):
 	img = Image.new("RGBA", (settings.width, settings.height))
 	imgdraw = ImageDraw.Draw(img)
 	imgs = {}
+	
 	for text in texts:
 		img.paste((0, 0, 0, 0), (0, 0, img.size[0], img.size[1]))
 		s = imgdraw.textsize(text, font=font)

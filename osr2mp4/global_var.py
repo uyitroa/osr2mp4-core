@@ -8,8 +8,10 @@ defaultsettings = {
 	"In-game interface": True,
 	"Show scoreboard": True,
 	"Background dim": 100,
+	"Background blur": 0,
 	"Rotate sliderball": False,
 	"Always show key overlay": True,
+	"Dont change dim levels during breaks": False,
 	"Automatic cursor size": False,
 	"Show mods icon": True,
 	"Enable PP counter": False,
@@ -33,30 +35,51 @@ defaultsettings = {
 }
 
 defaultppconfig = {
-	"x": 1320,
-	"y": 725,
-	"Size": 25,
-	"Rgb": [
-		255,
-		255,
-		255
-	],
-	"Alpha": 1,
-	"Font": "arial.ttf",
-	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
-	"Center Text": False,
-	"Hitresult x": 50,
-	"Hitresult y": 150,
-	"Hitresult Size": 16,
-	"Hitresult Rgb": [
-		255,
-		255,
-		255
-	],
-	"Hitresult Alpha": 1,
-	"Hitresult Font": "arial.ttf",
-	"Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
-	"Hitresult Gap": 3,
+	"PPCounter": {
+		"x": 1240,
+		"y": 725,
+		"Size": 25,
+		"Rgb": [
+			255,
+			255,
+			255
+		],
+		"Alpha": 1,
+		"Font": "arial.ttf",
+		"Origin": "right",
+		"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
+	},
+
+	"Hitresult": {
+		"x": 50,
+		"y": 150,
+		"Size": 16,
+		"Rgb": [
+			255,
+			255,
+			255
+		],
+		"Origin": "right",
+		"Alpha": 1,
+		"Font": "arial.ttf",
+		"Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
+		"Gap": 3
+	},
+
+	"URCounter": {
+		"x": 675,
+		"y": 720,
+		"Size": 25,
+		"Rgb": [
+			255,
+			255,
+			255
+		],
+		"Origin": "center",
+		"Alpha": 1,
+		"Font": "arial.ttf",
+		"Background": ""
+	}
 }
 
 defaultstrainconfig = {
@@ -96,7 +119,6 @@ videoextensions = ["mp4", "avi", "mkv", "mov"]
 
 
 class Settings:
-
 	def __init__(self):
 		self.skin_path = None
 		self.default_path = None
@@ -115,6 +137,7 @@ class Settings:
 		self.width = None
 		self.height = None
 		self.fps = None
+		self.resample = None
 		self.scale = None
 		self.playfieldscale = None
 		self.playfieldwidth = None
@@ -124,12 +147,14 @@ class Settings:
 		self.timeframe = None
 
 		self.strainsettings = defaultstrainconfig
-
 		self.settings = defaultsettings
-
 		self.ppsettings = defaultppconfig
 
 		self.codec = None
 		self.audiocodec = None
 		self.process = None
 		self.enablelog = False
+
+	@property
+	def video_fps(self):
+		return [self.fps, 60][self.resample]
