@@ -19,8 +19,10 @@ class Background(AScorebar):
 		if not self.hasfl:
 			notanimating = int(self.frame_index) == 0 and self.h == 0
 			
+			"""
 			if self.settings.settings['Dont change dim levels during breaks']:
 				return np.fill(0)
+			"""
 
 			if notanimating:
 				if inbreak or not self.settings.settings["In-game interface"]:
