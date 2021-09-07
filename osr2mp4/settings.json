@@ -2,7 +2,6 @@
   "Cursor size": 1,
   "In-game interface": true,
   "Show scoreboard": true,
-  "Show background video": true,
   "Background dim": 100,
   "Background blur": 0,
   "Always show key overlay": true,
@@ -20,5 +19,8 @@
   "Global leaderboard": false,
   "Mods leaderboard": "",
   "Custom mods": "",
-  "api key": "lol"
+  "api key": "lol",
+  "Show background video": true,
+  "Resample": false,
+  "Blend frames": 3
 }
