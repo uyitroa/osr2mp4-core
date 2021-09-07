@@ -20,16 +20,20 @@ class Video:
 
         self.video.start(self.start_time)
 
-    def add_to_frame(self, bg: Image.Image, np: np.array, time: int):
+    # TODO: pass actual background alpha to here
+    def add_to_frame(self, bg: Image.Image, np: np.array, time: int, alpha: int = .5):
         if not self.settings.settings['Show background video']:
             return
 
         while self.last_time < time:
             self.last_time += self.delta
             self.video.update()
+            imageproc.changealpha(self.video.img_ptr, alpha)
         
-        # np.fill(0)
+        
         bg.paste(self.video.img_ptr, (
             int((self.resolution[0] - self.video.end_resolution[0]) / 2),
             int((self.resolution[1] - self.video.end_resolution[1]) / 2)        
-        ))
+        ),
+        mask=self.video.img_ptr
+        )
