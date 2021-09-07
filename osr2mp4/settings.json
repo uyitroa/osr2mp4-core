@@ -6,7 +6,7 @@
   "Background dim": 100,
   "Background blur": 0,
   "Always show key overlay": true,
-  "Dont change dim levels during breaks": true,
+  "Dont change dim levels during breaks": false,
   "Automatic cursor size": false,
   "Rotate sliderball": false,
   "Enable PP counter": true,
