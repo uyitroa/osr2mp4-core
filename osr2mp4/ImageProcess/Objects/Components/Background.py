@@ -28,9 +28,8 @@ class Background(AScorebar):
 				if inbreak or not self.settings.settings["In-game interface"]:
 					if self.settings.settings["Background dim"] == 100:
 						np.fill(0)
-					else:
-						# imageproc.add(self.frames[1], background, self.settings.width//2, self.settings.height//2)
-						background.paste(self.frames[1], (0, 0))
+				else:						
+					background.paste(self.frames[1], (0, 0))
 				return
 
 			self.frame_index = round(self.frame_index)
