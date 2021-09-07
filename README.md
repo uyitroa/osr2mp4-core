@@ -1,8 +1,16 @@
 ## Disclaimer for someone thats using this branch
-this wont work with yuitora's osr2mp4-app because of `ppsettings.json` structure changes, i did 
-try to make it work with it (you can check my fork for that) but im not 100% sure if its 
-stable so yea.
+this may or may not work with yuitora's current osr2mp4-app, so use my fork k thx.
+i will push it to master someday in the future :trollhd:.
 
+# Added
+```
+  * Background video
+  * Background blur (not for video)
+  * URCounter
+  * Added 10% (prolly) typing stuff
+  * Resampling (im not 100% sure if the code is actually right but it seems to do the resamplin shit right so /shrug)
+  * i dont fucking remember its 3:35am rn maybe ill update this later by e
+```
 
 
 # Installing
