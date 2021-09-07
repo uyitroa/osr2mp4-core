@@ -1,0 +1,47 @@
+{
+    "PPCounter": {
+        "x": 1240,
+        "y": 725,
+        "Size": 25,
+        "Rgb": [
+            255,
+            255,
+            255
+        ],
+        "Alpha": 1,
+        "Font": "arial.ttf",
+        "Origin": "right",
+        "Background": "osr2mp4/res/pptemplate.png"
+    },
+
+    "Hitresult": {
+        "x": 50,
+        "y": 150,
+        "Size": 16,
+        "Rgb": [
+            255,
+            255,
+            255
+        ],
+        "Origin": "right",
+        "Alpha": 1,
+        "Font": "arial.ttf",
+        "Background": "osr2mp4/res/hitresulttemplate.png",
+        "Gap": 3
+    },
+
+    "URCounter": {
+        "x": 675,
+        "y": 720,
+        "Size": 25,
+        "Rgb": [
+            255,
+            255,
+            255
+        ],
+        "Origin": "center",
+        "Alpha": 1,
+        "Font": "arial.ttf",
+        "Background": ""
+    }
+}
