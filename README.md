@@ -1,6 +1,9 @@
 ## Disclaimer for someone thats using this branch
+`
 this may or may not work with yuitora's current osr2mp4-app, so use my fork k thx.
-i will push it to master someday in the future :trollhd:.
+i will push it to master someday in the future :trollhd:. 
+also use python 3.7 minimum, im using python 3.9.5.
+`
 
 # Added
 ```
