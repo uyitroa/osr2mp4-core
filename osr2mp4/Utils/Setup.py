@@ -20,7 +20,8 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None,
 	ffmpeg = data.get("ffmpeg path", "ffmpeg")
 	default_path = os.path.join(settings.path, "res/default/")
 	fps = data.get("FPS", 60)
-	resample = data.get('Resample', False)
+	resample = gameplaydata.get('Resample', False)
+	resample_frame = gameplaydata.get('Blend frames', 1)
 	width = data.get("Width", 1920)
 	height = data.get("Height", 1080)
 	osupath = data.get("osu! path", None)
@@ -47,6 +48,7 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None,
 	settings.playfieldscale, settings.playfieldwidth, settings.playfieldheight = playfield_scale, playfield_width, playfield_height
 	settings.fps, settings.timeframe = fps, time_frame
 	settings.resample = resample
+	settings.resample_frame = resample_frame
 	settings.moveright, settings.movedown = move_right, move_down
 
 	settings.output = Path(output_path)
@@ -80,3 +82,4 @@ def setupglobals(data, gameplaydata, mod_combination, settings, ppsettings=None,
 		settings.ppsettings = ppsettings
 	if strainsettings is not None:
 		settings.strainsettings = strainsettings
+
