@@ -25,11 +25,11 @@ class URCounter(ACounter):
             self.divide_by = 0.75
 
     def draw_number(self, background: Image):
-        x = self.countersettings.get('x', 675) * self.settings.scale
-        y = self.countersettings.get('y', 710) * self.settings.scale
-        origin = self.countersettings.get('Origin', 'right')
+        x = self.countersettings.get(self.prefix + 'x', 675) * self.settings.scale
+        y = self.countersettings.get(self.prefix + 'y', 710) * self.settings.scale
+        origin = self.countersettings.get(self.prefix + 'Origin', 'right')
 
-        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get('Alpha', 1), origin=origin, gap=0)
+        imageproc.draw_number(background, self.ur, self.frames, x, y, self.countersettings.get(self.prefix + 'Alpha', 1), origin=origin, gap=0)
 
     def update_ur(self, error_time: list):
         if len(error_time) == 0: return
@@ -42,7 +42,7 @@ class URCounter(ACounter):
 
     def add_to_frame(self, background: Image, alpha: int = 1):
         # change alpha; abit of a hack but eh /shrug
-        self.countersettings['Alpha'] = alpha
+        self.countersettings[self.prefix + 'Alpha'] = alpha
         super().add_to_frame(background)
         
 
