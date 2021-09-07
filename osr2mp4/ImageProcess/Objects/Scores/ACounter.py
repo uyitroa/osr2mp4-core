@@ -6,11 +6,11 @@ from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 class ACounter:
-	def __init__(self, settings: object, countersettings: dict, prefix: str = "PPCounter"):
+	def __init__(self, settings: object, countersettings: dict, prefix: str = ""):
 		self.settings = settings
 		self.frames = {}
 		self.countersettings = countersettings
-		self.prefix = prefix + ' ' # trolling
+		self.prefix = prefix + ' ' if prefix else ''
 		self.background = None
 		self.score = ""
 
@@ -27,7 +27,7 @@ class ACounter:
 		frames = prepare_text(
 			char, 
 			self.countersettings[self.prefix + "Size"] * self.settings.scale,
-			self.countersettings[self.prefix + "Rgb"], 
+			self.countersettings[self.prefix + "Rgb"],
 			self.settings,
 			alpha=self.countersettings[self.prefix + "Alpha"],
 			fontpath=self.countersettings[self.prefix + "Font"]
