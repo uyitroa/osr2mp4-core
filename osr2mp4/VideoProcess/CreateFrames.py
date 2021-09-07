@@ -15,7 +15,7 @@ def update_progress(framecount, deltatime, videotime):
 	pass
 
 
-def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
+def create_frame(settings: object, beatmap: object, replay_info: object, resultinfo: list, videotime: list, showranking: bool):
 	logger.debug('entering preparedframes')
 
 	if settings.process >= 1:

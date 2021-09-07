@@ -41,8 +41,7 @@ def prepare_approach(scale, time_preempt, settings):
 	return approach_frames
 
 
-def overlayhitcircle(overlay, circle, color, scale):
-
+def overlayhitcircle(overlay, circle, color, scale):	
 	color_circle = imageproc.add_color(circle, color)
 
 	maxwidth = max(color_circle.size[0], overlay.size[0])
