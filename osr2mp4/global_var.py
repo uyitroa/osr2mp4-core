@@ -7,6 +7,7 @@ defaultsettings = {
 	"Cursor size": 1,
 	"In-game interface": True,
 	"Show scoreboard": True,
+	"Show background video": True,
 	"Background dim": 100,
 	"Background blur": 0,
 	"Rotate sliderball": False,

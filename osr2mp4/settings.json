@@ -2,6 +2,7 @@
   "Cursor size": 1,
   "In-game interface": true,
   "Show scoreboard": true,
+  "Show background video": false,
   "Background dim": 100,
   "Background blur": 0,
   "Always show key overlay": true,
