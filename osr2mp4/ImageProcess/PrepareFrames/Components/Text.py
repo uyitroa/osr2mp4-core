@@ -1,3 +1,4 @@
+import json
 from PIL import ImageFont, ImageDraw, Image
 from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
@@ -8,8 +9,13 @@ def prepare_text(texts: list, size: int, color: list, settings: object, alpha: i
 	if fontpath == "":
 		fontpath = os.path.join(settings.path, "res/Aller_Rg.ttf")
 
+	# weird bug where osr2mp4-app gives color a stringified list for some fucking reason
+	if isinstance(color, str):
+		color = json.loads(color) # i couldve just do eval(color) but someone could just put some bullshit code in that and fuck the user somehow
+	
 	size = int(size)
 	color = tuple(color)
+	
 	
 	try:
 		font = ImageFont.truetype(fontpath, size=size)
