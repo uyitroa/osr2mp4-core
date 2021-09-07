@@ -28,8 +28,12 @@ class Background(AScorebar):
 				if inbreak or not self.settings.settings["In-game interface"]:
 					if self.settings.settings["Background dim"] == 100:
 						np.fill(0)
-				else:						
-					background.paste(self.frames[1], (0, 0))
+				else:
+					if self.settings.settings['Show background video']:
+						np.fill(0) # this is for 4:3 resolution when the background video height is smaller than the main height
+								   # it looks kinda gay with the bg bein visible so i disable it :troll:
+					else:
+						background.paste(self.frames[1], (0, 0))
 				return
 
 			self.frame_index = round(self.frame_index)
