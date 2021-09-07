@@ -26,6 +26,7 @@ from osr2mp4.ImageProcess.Objects.RankingScreens.RankingPanel import RankingPane
 from osr2mp4.ImageProcess.Objects.Components.Scoreboard import Scoreboard
 from osr2mp4.ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from osr2mp4.ImageProcess.Objects.Components.Background import Background
+from osr2mp4.ImageProcess.Objects.Components.Video import Video
 from osr2mp4.ImageProcess.Objects.Components.Scorebar import Scorebar
 from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
 from osr2mp4.ImageProcess.Objects.Components.Sections import Sections
@@ -83,7 +84,7 @@ from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings: object, diff: dict, mod_combination: Mod, ur: int = None, bg: list = None, loadranking: bool = True):
+	def __init__(self, settings: object, diff: dict, mod_combination: Mod, ur: int = None, bg: list = None, video: str = None, loadranking: bool = True):
 		skin = settings.skin_ini
 		self.loadranking = loadranking
 		check = DiffCalculator(diff)
@@ -169,7 +170,7 @@ class PreparedFrames:
 
 
 class FrameObjects:
-	def __init__(self, frames: PreparedFrames, settings: object, diff: dict, replay_info: object, meta: dict, maphash: str, map_time: int):
+	def __init__(self, frames: PreparedFrames, settings: object, diff: dict, replay_info: object, meta: dict, maphash: str, map_time: int, map_video: str):
 		opacity_interval, timepreempt, _ = calculate_ar(diff["ApproachRate"], settings)
 		check = DiffCalculator(diff)
 		rankinggap = 0
@@ -212,6 +213,7 @@ class FrameObjects:
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
+		self.video = Video(settings, os.path.join(settings.beatmap, map_video), map_time, [settings.width, settings.height])
 		self.sections = Sections(frames.sections, settings)
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
 		self.scorebar = Scorebar(frames.scorebar, settings)

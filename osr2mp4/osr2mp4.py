@@ -171,6 +171,7 @@ class Osr2mp4:
 		logger.log(TRACE, "Settings vars {}".format(vars(self.settings)))
 		gameplaysettings["api key"] = apikey  # restore api key
 
+
 	def startvideo(self):
 		if self.resultinfo is None:
 			self.analyse_replay()
