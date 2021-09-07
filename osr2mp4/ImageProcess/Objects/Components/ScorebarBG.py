@@ -1,3 +1,4 @@
+from PIL import Image
 from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
 
 
@@ -7,11 +8,9 @@ class ScorebarBG(AScorebar):
 		self.map_start = start_time
 		self.hasfl = hasfl
 
-	def add_to_frame(self, background, cur_time, inbreak):
+	def add_to_frame(self, background: Image.Image, cur_time: int, inbreak: bool):
 		AScorebar.animate(self)
-
 		if self.settings.settings["In-game interface"] or inbreak:
-
 			# use a more optimised algorithm to draw background and scorebarbg
 			if not self.hasfl:
 				# if in break then reset frame will be background's job. Otherwise it's ScorebarBG's job
@@ -20,6 +19,6 @@ class ScorebarBG(AScorebar):
 					self.frame_index = 0
 					super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
 				elif not inbreak:
-					background.paste(self.frames[1], (0, -self.h))
+					background.paste(self.frames[0], (0, 0), mask=self.frames[0])
 			else:
 				super().add_to_frame(background, 0, -self.h, alpha=self.alpha, topleft=True)
