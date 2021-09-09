@@ -11,7 +11,7 @@ from osr2mp4.Utils.VideoBuffer import VideoBuffer
 class Video:
     def __init__(self, settings: object, path: str, video_time: list, resolution: list):
         self.settings: object = settings
-        if not settings.settings['Show background video']:
+        if not settings.settings['Show background video'] or not path:
             return
         # ... epic trolling
         self.check_for_ffmpeg()
@@ -21,7 +21,7 @@ class Video:
         self.end_time: int = video_time[1]
         self.last_time: int = self.start_time
         self.resolution = resolution
-        self.video: VideoBuffer = VideoBuffer.from_file(path, resolution, self.ffmpeg_path)
+        self.video: VideoBuffer = VideoBuffer.from_file(os.path.join(self.settings.beatmap, path), resolution, self.ffmpeg_path)
         self.delta: int = 1000 / self.video.fps
         self.ffmpeg_path: str = None
         self.alpha: int = settings.settings['Background dim']
@@ -44,7 +44,7 @@ class Video:
         
     # TODO: fadeout fadein on inbreak and intro
     def add_to_frame(self, bg: Image.Image, np: np.array, time: int, in_break: bool) -> None:
-        if not self.settings.settings['Show background video'] or self.settings.settings['Background dim'] == 100:
+        if not self.settings.settings['Show background video'] or self.settings.settings['Background dim'] == 100 or not path:
             return
 
         while self.last_time < time:

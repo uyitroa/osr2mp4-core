@@ -213,7 +213,7 @@ class FrameObjects:
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
-		self.video = Video(settings, os.path.join(settings.beatmap, map_video), map_time, [settings.width, settings.height])
+		self.video = Video(settings, map_video, map_time, [settings.width, settings.height])
 		self.sections = Sections(frames.sections, settings)
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
 		self.scorebar = Scorebar(frames.scorebar, settings)
