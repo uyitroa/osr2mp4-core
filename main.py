@@ -1,6 +1,7 @@
 import os
 import time
 from osr2mp4.osr2mp4 import Osr2mp4
+from osr2mp4.VideoProcess.DiskUtils import convert_tomp4
 
 
 
@@ -33,11 +34,15 @@ def main():
 	osr2mp4 = Osr2mp4(
 		data = config,
 		gameplaysettings = settings,
-		ppsettings = pp
+		ppsettings = pp,
+		logtofile=True
 	)
 
 	osr2mp4.startall()
 	osr2mp4.joinall()
+
+	if os.name != 'nt':
+		convert_tomp4(osr2mp4.settings)
 
 
 
