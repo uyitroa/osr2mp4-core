@@ -4,8 +4,9 @@ from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
 class Background(AScorebar):
 	def __init__(self, bg, start_time, settings, hasfl):
 		super().__init__(bg, settings=settings)
-		self.map_start = start_time + 50
-		self.hasfl = hasfl
+		self.map_start: int = start_time + 50
+		self.hasfl: int = hasfl
+		self.bg_alpha: int = 0
 
 	def add_to_frame(self, background, np, cur_time, inbreak):
 		AScorebar.animate(self)
@@ -37,7 +38,12 @@ class Background(AScorebar):
 				return
 
 			self.frame_index = round(self.frame_index)
+
 			super().add_to_frame(background, self.settings.width // 2, self.settings.height // 2)
 		else:
 			self.frame_index = max(1, round(self.frame_index))
-			background.paste(self.frames[int(self.frame_index)])
+
+			if self.settings.settings['Show background video']:
+				np.fill(0)
+			else:
+				background.paste(self.frames[int(self.frame_index)])
