@@ -5,8 +5,8 @@ from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
 from osr2mp4.InfoProcessor import Updater
 from osr2mp4.CheckSystem.checkmain import checkmain
 from utils import getinfos, setupenv
-from Dummies.ComponentDummy import FrameObjects
-from Dummies.SettingDummy import Settings
+from .Dummies.ComponentDummy import FrameObjects
+from .Dummies.SettingDummy import Settings
 
 
 class InfoProcessTest(unittest.TestCase):
