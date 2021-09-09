@@ -228,7 +228,7 @@ class HitObjectChecker:
 
 				if self.hitobjects[i]["head not done"]:
 					self.combo = max(0, combostatus)
-					circle = Circle(0, 0, followappear, True, x, y)
+					circle = Circle(0, 0, followappear, True, x, y, self.hitobjects[i]['time'])
 					info = Info(replay[osr_index][3], 0, -1,
 								self.scorecounter, self.scorecounter,
 								copy.copy(self.results), copy.copy(self.clicks), 0, timestamp, idd,
