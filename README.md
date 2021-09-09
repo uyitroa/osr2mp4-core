@@ -1,19 +1,3 @@
-## Disclaimer for someone thats using this branch
-`
-this may or may not work with yuitora's current osr2mp4-app, so use my fork k thx.
-i will push it to master someday in the future :trollhd:. 
-also use python 3.7 minimum, im using python 3.9.5.
-`
-
-# Added
-```
-  * Background video (no smooth fadein fadeout on in_break for now)
-  * Background blur (for background image)
-  * URCounter
-  * Resampling (im not 100% sure if the code is actually right but it seems to do the resamplin shit right so /shrug)
-```
-
-
 # Installing
 ```
 cd osr2mp4/
