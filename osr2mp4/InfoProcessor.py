@@ -38,7 +38,8 @@ class Updater:
 				# smooth strain
 				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.ppsettings["Strain Smoothing"]) # use total strain for now
 				# create a plot and save it
-				fig = plt.figure(figsize=json.loads(settings.ppsettings["Strain AspectRatio"]), dpi=60)
+				# TODO: fix osr2mp4-app giving ppsettings attrs as str
+				fig = plt.figure(figsize=json.loads(str(settings.ppsettings["Strain AspectRatio"])), dpi=60)
 				plt.axis('off')
 				plt.margins(0,0)
 				graph_color = tuple(t/255.0 for t in settings.ppsettings["Rgb"]) + (1.0,)
