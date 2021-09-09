@@ -43,7 +43,7 @@ class Video:
 
         
     # TODO: fadeout fadein on inbreak and intro
-    def add_to_frame(self, bg: Image.Image, np: np.array, time: int) -> None:
+    def add_to_frame(self, bg: Image.Image, np: np.array, time: int, in_break: bool) -> None:
         if not self.settings.settings['Show background video'] or self.settings.settings['Background dim'] == 100:
             return
 
@@ -51,7 +51,7 @@ class Video:
             self.last_time += self.delta
             self.video.update()
 
-            imageproc.changealpha(self.video.img_ptr, self.alpha / 255) 
+            imageproc.changealpha(self.video.img_ptr, [self.alpha, 255][in_break] / 255) 
     
 
         bg.paste(self.video.img_ptr, (
