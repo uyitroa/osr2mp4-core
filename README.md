@@ -7,12 +7,10 @@ also use python 3.7 minimum, im using python 3.9.5.
 
 # Added
 ```
-  * Background video
-  * Background blur (not for video)
+  * Background video (no smooth fadein fadeout on in_break for now)
+  * Background blur (for background image)
   * URCounter
-  * Added 10% (prolly) typing stuff
   * Resampling (im not 100% sure if the code is actually right but it seems to do the resamplin shit right so /shrug)
-  * i dont fucking remember its 3:35am rn maybe ill update this later by e
 ```
 
 
