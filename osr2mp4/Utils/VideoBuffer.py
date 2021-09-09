@@ -12,10 +12,11 @@ from pathlib import Path
 from multiprocessing.sharedctypes import RawArray
 
 class VideoBuffer:
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, ffmpeg_path: Path) -> None:
         self.path: str = path
         self.pipe: subprocess.Popen = None
         self.running: bool = False
+        self.ffmpeg = ffmpeg_path
 
         # metadata
         self.end_resolution: list = None
@@ -35,7 +36,7 @@ class VideoBuffer:
             return
 
         args: list = [
-            'ffmpeg', '-i', str(self.path),
+            str(self.ffmpeg), '-i', str(self.path),
             '-f', 'rawvideo', '-pix_fmt', 
             'rgb24', '-ss', f'{int(time/1000)}.{time%1000}', '-'
         ]
@@ -56,14 +57,14 @@ class VideoBuffer:
         self.np_buffer[0:] = cv2.resize(raw_buffer, dsize=self.end_resolution)
 
     @classmethod
-    def from_file(cls: object, filepath: str, target_resolution: list) -> object:
+    def from_file(cls: object, filepath: str, target_resolution: list, ffmpeg_path: Path) -> object:
         filepath = Path(filepath)
 
         if not filepath.exists():
             raise Exception('Video file not existed, returning.')
 
         cv2_video = cv2.VideoCapture(str(filepath))
-        video = cls(filepath)
+        video = cls(filepath, ffmpeg_path)
 
         # metadata shit
         video.width = int(cv2_video.get(cv2.CAP_PROP_FRAME_WIDTH))
