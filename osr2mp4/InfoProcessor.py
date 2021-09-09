@@ -1,5 +1,6 @@
 import atexit
 
+import json
 from oppai import *
 from osr2mp4.EEnum.EState import States
 
@@ -31,16 +32,16 @@ class Updater:
 				start_time = ezpp_time_at(self.ez, 0)
 				total_time = ezpp_time_at(self.ez, nobjects-1)
 				# auto calculate time window
-				settings.strainsettings["TimeWindowInSeconds"] = total_time / float(settings.strainsettings["GraphDensity"])
+				settings.ppsettings["Strain TimeWindowInSeconds"] = total_time / float(settings.ppsettings["Strain GraphDensity"])
 				# calculate strain
-				self.strains = self.ezpp_calculate_strain(nobjects, start_time, total_time, settings.strainsettings["TimeWindowInSeconds"])
+				self.strains = self.ezpp_calculate_strain(nobjects, start_time, total_time, settings.ppsettings["Strain TimeWindowInSeconds"])
 				# smooth strain
-				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.strainsettings["Smoothing"]) # use total strain for now
+				strain_x, smoothed_strains = self.smooth_strain([s[2] for s in self.strains], settings.ppsettings["Strain Smoothing"]) # use total strain for now
 				# create a plot and save it
-				fig = plt.figure(figsize=tuple(settings.strainsettings["AspectRatio"]), dpi=60)
+				fig = plt.figure(figsize=json.loads(settings.ppsettings["Strain AspectRatio"]), dpi=60)
 				plt.axis('off')
 				plt.margins(0,0)
-				graph_color = tuple(t/255.0 for t in settings.strainsettings["Rgb"]) + (1.0,)
+				graph_color = tuple(t/255.0 for t in settings.ppsettings["Rgb"]) + (1.0,)
 				plt.fill_between(strain_x, smoothed_strains, color=graph_color)
 				plt.savefig(settings.temp / 'strain.png', bbox_inches='tight', transparent="True", pad_inches=0)
 

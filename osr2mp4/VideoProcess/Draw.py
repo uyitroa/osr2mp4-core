@@ -22,7 +22,7 @@ from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 
 class Drawer:
-	def __init__(self, shared, beatmap, frames, replay_info, resultinfo, videotime, settings):
+	def __init__(self, shared: object, beatmap: object, frames: object, replay_info: object, resultinfo: list, videotime: list, settings: object):
 		self.shared = shared
 		self.beatmap = beatmap
 		self.frames = frames
@@ -59,7 +59,7 @@ class Drawer:
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time, self.beatmap.video)
 		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
@@ -103,6 +103,8 @@ class Drawer:
 		cursor_y = int(cy * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		self.component.video.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		
 		if not self.hasfl:
 			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 
@@ -207,7 +209,7 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, video=beatmap.video, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
 	logger.log(1, "PROCESS {}, {}".format(videotime, drawer))

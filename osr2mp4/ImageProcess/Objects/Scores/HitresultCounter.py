@@ -16,14 +16,14 @@ class HitresultCounter(ACounter):
 
 	def draw_number(self, background):
 		counter = 0
-		gap = self.countersettings["Gap"] * self.countersettings["Size"]
-		origin = self.countersettings.get('Origin', 'right')
+		gap = self.countersettings[self.prefix + "Gap"] * self.countersettings[self.prefix + "Size"]
+		origin = self.countersettings.get(self.prefix + 'Origin', 'right')
 
 		for n in self.score:
 			if n == 300:
 				continue
 
-			x = (self.countersettings["x"] + gap * counter) * self.settings.scale - self.frames[0].size[0]/2
-			y = self.countersettings["y"] * self.settings.scale + self.frames[0].size[1]/2
-			imageproc.draw_number(background, self.score[n], self.frames, x, y, self.countersettings["Alpha"], origin=origin, gap=0)
+			x = (self.countersettings[self.prefix + "x"] + gap * counter) * self.settings.scale - self.frames[0].size[0]/2
+			y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
+			imageproc.draw_number(background, self.score[n], self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin=origin, gap=0)
 			counter += 1

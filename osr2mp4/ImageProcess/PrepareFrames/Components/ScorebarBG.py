@@ -11,8 +11,5 @@ def prepare_scorebarbg(scale, backgroundframe, settings):
 	:return: [PIL.Image]
 	"""
 	img = YImage(scorebarbg, settings, scale).img
-	img2 = backgroundframe[1].copy()
-
-	img2.paste(img, (0, 0), mask=img)
-	return [img, img2]
+	return [img]
 

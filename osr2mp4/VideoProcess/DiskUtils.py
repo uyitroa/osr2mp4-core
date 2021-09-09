@@ -7,7 +7,7 @@ from osr2mp4 import log_stream
 
 def concat_videos(settings: object):
 	f = str(settings.temp / ("outputf" + settings.output.suffix))
-	listvideopath = (settings.temp / "listvideo.txt").absolute().replace("\\", "/")
+	listvideopath = str((settings.temp / "listvideo.txt").absolute()).replace("\\", "/")
 	stream = log_stream()
 	subprocess.check_call([settings.ffmpeg, '-safe', '0', '-f', 'concat', '-i', listvideopath, '-c', 'copy', f, '-y'], stdout=stream, stderr=stream)
 

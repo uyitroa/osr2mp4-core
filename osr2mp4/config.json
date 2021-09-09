@@ -8,7 +8,6 @@
     "Width": 1920,
     "Height": 1080,
     "FPS": 60,
-    "Resample": false,
     "Start time": 60,
     "End time": -1,
     "Video codec": "X264",

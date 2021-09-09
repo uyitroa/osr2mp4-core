@@ -7,6 +7,7 @@ defaultsettings = {
 	"Cursor size": 1,
 	"In-game interface": True,
 	"Show scoreboard": True,
+	"Show background video": True,
 	"Background dim": 100,
 	"Background blur": 0,
 	"Rotate sliderball": False,
@@ -35,65 +36,57 @@ defaultsettings = {
 }
 
 defaultppconfig = {
-	"PPCounter": {
-		"x": 1240,
-		"y": 725,
-		"Size": 25,
-		"Rgb": [
-			255,
-			255,
-			255
-		],
-		"Alpha": 1,
-		"Font": "arial.ttf",
-		"Origin": "right",
-		"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
-	},
-
-	"Hitresult": {
-		"x": 50,
-		"y": 150,
-		"Size": 16,
-		"Rgb": [
-			255,
-			255,
-			255
-		],
-		"Origin": "right",
-		"Alpha": 1,
-		"Font": "arial.ttf",
-		"Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
-		"Gap": 3
-	},
-
-	"URCounter": {
-		"x": 675,
-		"y": 720,
-		"Size": 25,
-		"Rgb": [
-			255,
-			255,
-			255
-		],
-		"Origin": "center",
-		"Alpha": 1,
-		"Font": "arial.ttf",
-		"Background": ""
-	}
-}
-
-defaultstrainconfig = {
-	"x": 100,
-	"y": 150,
-	"Size": 8,
-	"AspectRatio": [8,4],
-	"Rgb": [255,255,255],
+	"x": 1240,
+	"y": 725,
+	"Size": 25,
+	"Rgb": [
+		255,
+		255,
+		255
+	],
 	"Alpha": 1,
-	"Smoothing": 5,
-	"ProgressAlpha": 0.75,
-	"GraphDensity": 30,
-}
+	"Font": "arial.ttf",
+	"Origin": "right",
+	"Background": os.path.join(os.path.dirname(__file__), "res/pptemplate.png"),
 
+	"Hitresult x": 50,
+	"Hitresult y": 150,
+	"Hitresult Size": 16,
+	"Hitresult Rgb": [
+		255,
+		255,
+		255
+	],
+	"Hitresult Origin": "right",
+	"Hitresult Alpha": 1,
+	"Hitresult Font": "arial.ttf",
+	"Hitresult Background": os.path.join(os.path.dirname(__file__), "res/hitresulttemplate.png"),
+	"Hitresult Gap": 3,
+
+
+	"URCounter x": 675,
+	"URCounter y": 720,
+	"URCounter Size": 25,
+	"URCounter Rgb": [
+		255,
+		255,
+		255
+	],
+	"URCounter Origin": "center",
+	"URCounter Alpha": 1,
+	"URCounter Font": "arial.ttf",
+	"URCounter Background": "",
+
+	"Strain x": 250,
+    "Strain y": 210,
+    "Strain Size": 7.9,
+    "Strain AspectRatio": [9,5],
+    "Strain Rgb": [247,215,159],
+    "Strain Alpha": 0.85,
+    "Strain Smoothing": 5,
+    "Strain ProgressAlpha": 0.75,
+    "Strain GraphDensity": 25
+}
 
 # source: ggjjwp
 sortedmods = [
@@ -146,7 +139,6 @@ class Settings:
 		self.moveright = None
 		self.timeframe = None
 
-		self.strainsettings = defaultstrainconfig
 		self.settings = defaultsettings
 		self.ppsettings = defaultppconfig
 

@@ -12,6 +12,7 @@ class Beatmap:
 		self.diff = {"CircleSize": 0, "OverallDifficulty": 0, "HPDrainRate": 0}
 		self.meta = {}
 		self.bg = [0, 0, "."]
+		self.video = None
 		self.breakperiods = []
 		self.timing_point = []
 		self.hitobjects = []
@@ -107,6 +108,9 @@ class Beatmap:
 				event["End"] = int(items[2])
 				event["Arrow"] = True
 				self.breakperiods.append(event)
+
+			if line.startswith('Video'):
+				self.video = line.split(',')[2].replace('"', '')
 
 	def parse_timingpoints(self):
 		timings = self.info["TimingPoints"].split("\n")
