@@ -8,31 +8,32 @@ def main():
 	settings_all = Osr2mp4.settings_json()
 
 	config = settings_all['config.json']
-	config['osu! path'] = r'D:\Games\osu!'
-	config['Skin path'] = r'D:\Games\osu!\Skins\Aristia(Edit)+trail'
-	config['Beatmap path'] = r'D:\Games\osu!\Songs\375648 S3RL - Bass Slut (Original Mix)'
-	config['.osr path'] = r"D:\Games\osu!\Replays\FireRedz - S3RL - Bass Slut (Original Mix) [Fort's Light Insane] (2021-05-01) Osu.osr"
-	config['Default skin path'] = r'D:\Projects\osr2mp4-core\osr2mp4\res\default'
+	config['osu! path'] = r''
+	config['Skin path'] = r''
+	config['Beatmap path'] = r''
+	config['.osr path'] = r''
+	config['Default skin path'] = r''
 	config['Output path'] = 'out.avi'
-	config['Width'] = 640
-	config['Height'] = 360
-	config['FPS'] = 30
-	config['Resample'] = False
-	config['Start time'] = 68 # 121
-	config['End time'] = 92
+	config['Width'] = 1280
+	config['Height'] = 720
+	config['FPS'] = 60
+	config['Start time'] = 0 # 121
+	config['End time'] = -1
 	config['Video codec'] = 'XVID'
 	config['Process'] = 1
 	config['ffmpeg path'] = 'ffmpeg'
 
 	pp = settings_all['ppsettings.json']
 	settings = settings_all['settings.json']
-	strain = settings_all['strainsettings.json']
+
+	settings['Show background video'] = True
+	settings['Resample'] = False
+	settings['Blend frames'] = 5
 
 	osr2mp4 = Osr2mp4(
 		data = config,
 		gameplaysettings = settings,
-		ppsettings = pp,
-		strainsettings = strain
+		ppsettings = pp
 	)
 
 	osr2mp4.startall()
