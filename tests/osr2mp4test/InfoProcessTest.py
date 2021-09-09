@@ -1,5 +1,5 @@
 import unittest
-import bruh2
+from .bruh2 import *
 from oppai import *
 from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
 from osr2mp4.InfoProcessor import Updater
