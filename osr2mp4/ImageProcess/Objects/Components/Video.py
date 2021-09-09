@@ -44,7 +44,7 @@ class Video:
         
     # TODO: fadeout fadein on inbreak and intro
     def add_to_frame(self, bg: Image.Image, np: np.array, time: int, in_break: bool) -> None:
-        if not self.settings.settings['Show background video'] or self.settings.settings['Background dim'] == 100 or not path:
+        if not self.settings.settings['Show background video'] or self.settings.settings['Background dim'] == 100 or not self.path:
             return
 
         while self.last_time < time:
