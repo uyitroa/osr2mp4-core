@@ -103,7 +103,7 @@ class Drawer:
 		cursor_y = int(cy * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
-		self.component.video.add_to_frame(self.img, self.np_img, self.frame_info.cur_time)
+		self.component.video.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
 		
 		if not self.hasfl:
 			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
