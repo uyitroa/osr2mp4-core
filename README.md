@@ -73,17 +73,24 @@ settings = {
    "In-game interface": True,
    "Show scoreboard": True,
    "Background dim": 90,
+   "Background blur": 1,
    "Always show key overlay": True,
    "Automatic cursor size": False,
    "Rotate sliderball": False,
+   "Enable PP counter": True,
+   "Enable Strain Graph": True,
    "Score meter size": 1.25,
    "Song volume": 50,
    "Effect volume": 100,
    "Ignore beatmap hitsounds": True,
    "Use skin's sound samples": True,
+   "Song delay": 0,
    "Global leaderboard": False,
    "Mods leaderboard": "(HD)HR",
-   "api key": "lol"
+   "api key": "lol",
+   "Show background video": False,
+   "Resample": False,
+   "Blend frames": 3
  }
 
 converter = Osr2mp4(data, settings)
@@ -114,39 +121,90 @@ converter.joinall()
  
  settings.json:
 ```json
- {
-   "Cursor size": 1,
-   "In-game interface": true,
-   "Show scoreboard": true,
-   "Background dim": 90,
-   "Always show key overlay": true,
-   "Automatic cursor size": true,
-   "Rotate sliderball": false,
-   "Score meter size": 1.25,
-   "Song volume": 50,
-   "Effect volume": 100,
-   "Ignore beatmap hitsounds": true,
-   "Use skin's sound samples": true,
-   "Global leaderboard": false,
-   "Mods leaderboard": "(HD)HR",
-   "api key": "lol"
- }
+  {
+    "Cursor size": 1,
+    "In-game interface": true,
+    "Show scoreboard": true,
+    "Background dim": 100,
+    "Background blur": 0,
+    "Always show key overlay": true,
+    "Automatic cursor size": false,
+    "Rotate sliderball": false,
+    "Enable PP counter": true,
+    "Enable Strain Graph": true,
+    "Score meter size": 1.25,
+    "Song volume": 50,
+    "Effect volume": 100,
+    "Ignore beatmap hitsounds": true,
+    "Use skin's sound samples": true,
+    "Song delay": 0,
+    "Global leaderboard": false,
+    "Mods leaderboard": "",
+    "Custom mods": "",
+    "api key": "lol",
+    "Show background video": true,
+    "Resample": false,
+    "Blend frames": 3
+  }
+```
+
+ ppsettings.json:
+```json
+  {
+    "x": 1240,
+    "y": 725,
+    "Size": 25,
+    "Rgb": [
+        255,
+        255,
+        255
+    ],
+    "Alpha": 1,
+    "Font": "arial.ttf",
+    "Origin": "right",
+    "Background": "osr2mp4/res/pptemplate.png",
+
+    "Hitresult x": 50,
+    "Hitresult y": 150,
+    "Hitresult Size": 16,
+    "Hitresult Rgb": [
+        255,
+        255,
+        255
+    ],
+    "Hitresult Origin": "right",
+    "Hitresult Alpha": 1,
+    "Hitresult Font": "arial.ttf",
+    "Hitresult Background": "osr2mp4/res/hitresulttemplate.png",
+    "Hitresult Gap": 3,
+
+    "URCounter x": 675,
+    "URCounter y": 720,
+    "URCounter Size": 25,
+    "URCounter Rgb": [
+        255,
+        255,
+        255
+    ],
+    "URCounter Origin": "center",
+    "URCounter Alpha": 1,
+    "URCounter Font": "arial.ttf",
+    "URCounter Background": "",
+
+    "Strain x": 250,
+    "Strain y": 210,
+    "Strain Size": 7.9,
+    "Strain AspectRatio": [9,5],
+    "Strain Rgb": [247,215,159],
+    "Strain Alpha": 0.85,
+    "Strain Smoothing": 5,
+    "Strain ProgressAlpha": 0.75,
+    "Strain GraphDensity": 25
+}
 ```
 
 strainsettings.json:
-```json
- {
-    "x": 205,
-    "y": 145,
-    "Size": 7.9, // size out of 20
-    "AspectRatio": [9,5], // adjusts width/height of the strain graph
-    "Rgb": [247,215,159], // area graph color
-    "Alpha": 0.85, // opacity of the graph on the video 0.0 - 1.0
-    "Smoothing": 5, // cubic smoothing between strain points. Higher = smoother. Should be between 1 and 10
-    "ProgressAlpha": 0.75, // opacity to set the chart to show progress over time 0.0 - 1.0
-    "GraphDensity": 25 // How many data points in the strain graph.  It is scaled to the beatmap time.  Higher = more granular strains, lower = smoother curves. Should be between 5 and 100.
- }
-```
+``` Moved to ppsettings.json ```
  
  And to load it in code
 ```python
