@@ -53,8 +53,10 @@ def getwriter(filename: Path, settings: dict, buf: object):
 			from osr2mp4.VideoProcess.FFmpegWriter.osr2mp4cv import PyFrameWriter
 		except ImportError as e:
 			raise LibAvNotFound
+
 		if settings.settings["FFmpeg codec"] == "":
 			settings.settings["FFmpeg codec"] = "libx264"
+			
 		ffmpegcodec = str.encode(settings.settings["FFmpeg codec"])
 		ffmpegargs = str.encode(settings.settings["FFmpeg custom commands"])
 		writer = PyFrameWriter(str.encode(filename), ffmpegcodec, settings.video_fps, settings.width, settings.height, ffmpegargs, buf)
