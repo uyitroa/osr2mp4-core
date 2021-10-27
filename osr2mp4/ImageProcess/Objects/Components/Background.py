@@ -25,14 +25,18 @@ class Background(AScorebar):
 				return np.fill(0)
 			"""
 
+			# TODO: make this if else not garbage holy fuck just look at it
 			if notanimating:
 				if inbreak or not self.settings.settings["In-game interface"]:
-					if self.settings.settings["Background dim"] == 100:
+					if self.settings.settings["Background dim"] == 100 or self.settings.settings["Show background video"]:
 						np.fill(0)
+					else:
+						background.paste(self.frames[1], (0, 0))
 				else:
-					if self.settings.settings['Show background video']:
-						np.fill(0) # this is for 4:3 resolution when the background video height is smaller than the main height
-								   # it looks kinda gay with the bg bein visible so i disable it :troll:
+					if self.settings.settings["Show background video"]:
+						# this is for 4:3 resolution when the background video height is smaller than the main height
+						# it looks kinda gay with the bg bein visible so i made it black
+						np.fill(0)  
 					else:
 						background.paste(self.frames[1], (0, 0))
 				return
