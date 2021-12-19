@@ -15,7 +15,7 @@ def update_progress(framecount, deltatime, videotime):
 	pass
 
 
-def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showranking):
+def create_frame(settings: object, beatmap: object, replay_info: object, resultinfo: list, videotime: list, showranking: bool):
 	logger.debug('entering preparedframes')
 
 	if settings.process >= 1:
@@ -49,7 +49,7 @@ def create_frame(settings, beatmap, replay_info, resultinfo, videotime, showrank
 			drawer = Process(target=draw_frame, args=(
 				shared, conn1, beatmap, replay_info, resultinfo, vid, settings, showranking and i == settings.process-1))
 
-			writer = Process(target=write_frame, args=(shared, conn2, settings.temp + f, settings, i == settings.process-1))
+			writer = Process(target=write_frame, args=(shared, conn2, settings.temp / f, settings, i == settings.process-1))
 
 			shared_array.append(shared)
 			shared_pipe.append((conn1, conn2))

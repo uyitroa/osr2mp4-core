@@ -22,7 +22,7 @@ from osr2mp4.CheckSystem.mathhelper import getunstablerate
 
 
 class Drawer:
-	def __init__(self, shared, beatmap, frames, replay_info, resultinfo, videotime, settings):
+	def __init__(self, shared: object, beatmap: object, frames: object, replay_info: object, resultinfo: list, videotime: list, settings: object):
 		self.shared = shared
 		self.beatmap = beatmap
 		self.frames = frames
@@ -59,7 +59,7 @@ class Drawer:
 		map_time = (self.beatmap.start_time, self.beatmap.end_time)
 		light_replay_info = Replay()
 		light_replay_info.set(self.replay_info.get())
-		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time)
+		self.component = FrameObjects(self.frames, self.settings, self.beatmap.diff, light_replay_info, self.beatmap.meta, self.beatmap.hash, map_time, self.beatmap.video)
 		self.component.scorebar.set_healthproc(healthproc)
 
 		self.component.cursor_trail.set_cursor(old_cursor_x, old_cursor_y, replay_event[0][Replays.TIMES])
@@ -69,7 +69,8 @@ class Drawer:
 
 		self.updater = Updater(self.resultinfo, self.component, self.settings, self.replay_info.mod_combination, self.beatmap.path)
 
-		self.component.strain_graph.set_strain_graph(self.settings.temp + "strain.png")
+		if self.settings.temp:
+			self.component.strain_graph.set_strain_graph(self.settings.temp / "strain.png")
 		self.component.strain_graph.set_beatmap(self.resultinfo)
 
 		to_time = replay_event[self.start_index][Replays.TIMES]
@@ -97,13 +98,14 @@ class Drawer:
 		add_hitobjects(self.beatmap, self.component, self.frame_info, self.time_preempt, self.settings)
 
 		self.updater.update(self.frame_info.cur_time)
-
 		cx, cy = smoothcursor(self.replay_event, self.frame_info.osr_index, self.frame_info.cur_time)
 
 		cursor_x = int(cx * self.settings.playfieldscale) + self.settings.moveright
 		cursor_y = int(cy * self.settings.playfieldscale) + self.settings.movedown
 
 		self.component.background.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		self.component.video.add_to_frame(self.img, self.np_img, self.frame_info.cur_time, in_break)
+		
 		if not self.hasfl:
 			self.component.scorebarbg.add_to_frame(self.img, self.frame_info.cur_time, in_break)
 
@@ -131,6 +133,7 @@ class Drawer:
 		self.component.combocounter.add_to_frame(self.img, in_break)
 		self.component.scorecounter.add_to_frame(self.img, self.cursor_event.event[Replays.TIMES], in_break)
 		self.component.accuracy.add_to_frame(self.img, in_break)
+		self.component.urbar.add_to_frame_counter(self.img)
 		self.component.urbar.add_to_frame(self.img)
 		self.component.cursor_trail.add_to_frame(self.img, cursor_x, cursor_y, self.frame_info.cur_time)
 		self.component.cursor.add_to_frame(self.img, cursor_x, cursor_y)
@@ -207,10 +210,9 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	logger.debug("process start")
 
 	ur = getunstablerate(resultinfo)
-	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, loadranking=showranking)
+	frames = PreparedFrames(settings, beatmap.diff, replay_info.mod_combination, ur=ur, bg=beatmap.bg, video=beatmap.video, loadranking=showranking)
 
 	drawer = Drawer(shared, beatmap, frames, replay_info, resultinfo, videotime, settings)
-
 	logger.log(1, "PROCESS {}, {}".format(videotime, drawer))
 
 	logger.debug("setup done")
@@ -218,9 +220,11 @@ def draw(shared, conn, beatmap, replay_info, resultinfo, videotime, settings, sh
 	timer = 0
 	timer2 = 0
 	timer3 = 0
+
 	while drawer.frame_info.osr_index < videotime[1]:
 		status = drawer.render_draw()
 		asdf = time.time()
+
 		if status:
 			conn.send(1)
 			timer3 += time.time() - asdf

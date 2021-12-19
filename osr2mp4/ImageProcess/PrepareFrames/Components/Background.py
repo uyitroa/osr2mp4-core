@@ -1,10 +1,11 @@
 import os
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 from osr2mp4 import logger
 from osr2mp4.ImageProcess import imageproc
+from osr2mp4.ImageProcess.Animation.easings import easeOutBack
 
 
 def prepare_background(backgroundname, settings):
@@ -37,8 +38,12 @@ def prepare_background(backgroundname, settings):
 	interval = int(1000/45)
 	c_interval = max(0, (settings.settings["Background dim"] - 50) * 2.55/interval)
 	color[:] = color[:] - c_interval
+
 	for x in range(interval):
 		color[:] = color[:] + c_interval
+		blur = easeOutBack(interval-x, 0, settings.settings.get('Background blur', 0), interval) # interval-x cuz the loop is reversed
 		a = imageproc.add_color(img, color)
+		a = a.filter(ImageFilter.GaussianBlur(blur))
 		imgs.append(a)
+
 	return imgs

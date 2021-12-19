@@ -6,29 +6,32 @@ from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
 
 
 class ACounter:
-	def __init__(self, settings, countersettings, prefix=""):
+	def __init__(self, settings: object, countersettings: dict, prefix: str = ""):
 		self.settings = settings
 		self.frames = {}
 		self.countersettings = countersettings
+		self.prefix = prefix + ' ' if prefix else ''
 		self.background = None
-		self.prefix = prefix
 		self.score = ""
 
-		self.loadsettings(settings.ppsettings)
 		self.loadimg()
 
-	def loadsettings(self, countersettings):
-		countersettings[self.prefix + "Rgb"] = tuple(countersettings[self.prefix + "Rgb"])
-		self.countersettings = countersettings
+	def loadsettings(self, settings: dict):
+		...
+		# self.countersettings = settings[self.prefix] # FireRedz: reverted to old format cuz im retarded and cant make it work with osr2mp4 app
 
 	def loadimg(self):
 		char = [str(x) for x in range(10)]
 		char.append(".")
 		char.append(" ")
-		frames = prepare_text(char, self.countersettings[self.prefix + "Size"] * self.settings.scale,
-		                           self.countersettings[self.prefix + "Rgb"], self.settings,
-		                           alpha=self.countersettings[self.prefix + "Alpha"],
-		                           fontpath=self.countersettings[self.prefix + "Font"])
+		frames = prepare_text(
+			char, 
+			self.countersettings[self.prefix + "Size"] * self.settings.scale,
+			self.countersettings[self.prefix + "Rgb"],
+			self.settings,
+			alpha=self.countersettings[self.prefix + "Alpha"],
+			fontpath=self.countersettings[self.prefix + "Font"]
+			)
 
 		for i in frames:
 			self.frames[int(i) if i.isdigit() else i] = frames[i]
@@ -50,7 +53,7 @@ class ACounter:
 	def draw_number(self, background):
 		x = self.countersettings[self.prefix + "x"] * self.settings.scale - self.frames[0].size[0]/2
 		y = self.countersettings[self.prefix + "y"] * self.settings.scale + self.frames[0].size[1]/2
-		origin = 'center' if self.countersettings["Center Text"] else 'right'
+		origin = self.countersettings.get(self.prefix + 'Origin', 'right')
 
 		imageproc.draw_number(background, self.score, self.frames, x, y, self.countersettings[self.prefix + "Alpha"], origin=origin, gap=0)
 

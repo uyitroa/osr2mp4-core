@@ -30,7 +30,7 @@ from osr2mp4.Utils.Setup import setupglobals
 from osr2mp4.Utils.Timing import find_time, get_offset
 from osr2mp4.VideoProcess.CreateFrames import create_frame
 from osr2mp4.VideoProcess.DiskUtils import concat_videos, mix_video_audio, setup_dir, cleanup, rename_video
-from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig, defaultstrainconfig
+from osr2mp4.global_var import Settings, defaultsettings, defaultppconfig
 
 
 
@@ -45,37 +45,34 @@ def excepthook(exc_type, exc_value, exc_tb):
 @logged(logger)
 @traced
 class Osr2mp4:
-
 	def __init__(self, data=None, gameplaysettings=None, ppsettings=None, strainsettings=None,
 	             filedata=None, filesettings=None, filepp=None, filestrain=None,
 	             logtofile=False, enablelog=True, logpath=""):
+		sys.excepthook = excepthook				 
 		self.settings = Settings()
 		self.settings.path = Path(__file__).parent
-		self.settings.path = os.path.relpath(self.settings.path) # ?????? why
-		sys.excepthook = excepthook
-
-		if self.settings.path[-1] != "/" and self.settings.path[-1] != "\\":
-			self.settings.path += "/"
-
+		self.settings.path = self.settings.path # abit fucky wucky yea
+		
 		if logpath == "":
-			logpath = os.path.join(self.settings.path, "logosr2mp4.log")
+			logpath = self.settings.path / "logosr2mp4.log"
 
 		logging.getLogger(PIL.__name__).setLevel(logging.WARNING)
 		fmt = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(funcName)s:%(message)s")
 		logger.setLevel(TRACE)
+
 		if logtofile:
 			handler = logging.FileHandler(logpath)
 		elif enablelog:
 			handler = logging.StreamHandler(sys.stdout)
 		else:
 			handler = logging.NullHandler()
+
 		logger.handlers.clear()
 		handler.setFormatter(fmt)
 		logger.addHandler(handler)
 
 		self.settings.enablelog = enablelog
-
-		self.settings.temp = os.path.join(self.settings.path, str(uuid.uuid1()) + "temp/")
+		self.settings.temp = self.settings.path / (str(uuid.uuid1()) + "temp")
 
 		self.__log.info("test")
 
@@ -87,8 +84,6 @@ class Osr2mp4:
 			gameplaysettings = defaultsettings
 		if ppsettings is None:
 			ppsettings = defaultppconfig
-		if strainsettings is None:
-			strainsettings = defaultstrainconfig
 
 		if filedata is not None:
 			data = read(filedata)
@@ -96,11 +91,10 @@ class Osr2mp4:
 			gameplaysettings = read(filesettings)
 		if filepp is not None:
 			ppsettings = read(filepp)
-		if filestrain is not None:
-			strainsettings = read(filestrain)
 
 		if os.path.isdir(data["Output path"]):
 			data["Output path"] = os.path.join(data["Output path"], "output.avi")
+
 		self.data = data
 		replaypath = data[".osr path"]
 		starttime = data["Start time"]
@@ -140,7 +134,7 @@ class Osr2mp4:
 				if Mod.HardRock not in self.replay_info.mod_combination and Mod.HardRock in original:
 					reverse_replay = True
 
-			setupglobals(self.data, gameplaysettings, self.replay_info.mod_combination, self.settings, ppsettings=ppsettings, strainsettings=strainsettings)
+			setupglobals(self.data, gameplaysettings, self.replay_info.mod_combination, self.settings, ppsettings=ppsettings)
 
 			self.beatmap_file = get_osu(self.settings.beatmap, self.replay_info.beatmap_hash)
 
@@ -152,7 +146,7 @@ class Osr2mp4:
 		else:
 			gameplaysettings["Custom mods"] = gameplaysettings.get("Custom mods", "")
 			mod_combination = mod_string_to_enums(gameplaysettings["Custom mods"])
-			setupglobals(self.data, gameplaysettings, mod_combination, self.settings, ppsettings=ppsettings, strainsettings=strainsettings)
+			setupglobals(self.data, gameplaysettings, mod_combination, self.settings, ppsettings=ppsettings)
 
 			self.beatmap_file = self.settings.beatmap
 			self.settings.beatmap = os.path.dirname(self.settings.beatmap)
@@ -172,6 +166,7 @@ class Osr2mp4:
 
 		logger.log(TRACE, "Settings vars {}".format(vars(self.settings)))
 		gameplaysettings["api key"] = apikey  # restore api key
+
 
 	def startvideo(self):
 		if self.resultinfo is None:
@@ -296,7 +291,7 @@ class Osr2mp4:
 		
 	@staticmethod
 	def settings_json():
-		settings = {'config.json': None, 'ppsettings.json': None, 'settings.json': None, 'strainsettings.json': None}
+		settings = {'config.json': None, 'ppsettings.json': None, 'settings.json': None}
 		real_dir = Path(__file__).parent
 		
 		
