@@ -1,8 +1,8 @@
-from PIL import Image
-from PIL.ImageDraw import ImageDraw
-
 from osr2mp4.ImageProcess import imageproc
 from osr2mp4.ImageProcess.PrepareFrames.Components.Text import prepare_text
+from osr2mp4.osrparse.enums import Mod
+from PIL import Image
+from PIL.ImageDraw import ImageDraw
 
 
 def rounded_rectangle(self: ImageDraw, xy, corner_radius, fill=None, outline=None):
@@ -54,7 +54,7 @@ def rounded_rectangle(self: ImageDraw, xy, corner_radius, fill=None, outline=Non
 					)
 
 
-def prepare_rankingur(settings, ur):
+def prepare_rankingur(settings: object, ur: list, mods: Mod):
 	"""
 	:param settings: Settings
 	:param ur: [error -, error +, ur]
@@ -63,7 +63,20 @@ def prepare_rankingur(settings, ur):
 	error_ = "{:.2f}".format(ur[0])
 	error = "{:.2f}".format(ur[1])
 	ur = "{:.2f}".format(ur[2])
-	text = ["Accuracy:", f"Error {error_}ms - {error}ms avg", f"Unstable Rate: {ur}"]
+
+	if Mod.DoubleTime in mods or Mod.Nightcore in mods:
+		divided_by = 1.5
+	elif Mod.HalfTime in mods:
+		divided_by = 0.75
+	else:
+		divided_by = 1
+	
+	if divided_by != 1:
+		converted_ur = "[" + "{:.2f}".format(float(ur) / divided_by) + "]"
+	else:
+		converted_ur = ''
+
+	text = ["Accuracy:", f"Error {error_}ms - {error}ms avg", f"Unstable Rate: {ur} {converted_ur}"]
 	scale = settings.scale * 1.3
 	width = int(scale * 350)
 	height = int(width * 9 / 16 * len(text)/6)

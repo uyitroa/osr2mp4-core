@@ -3,14 +3,17 @@ from PIL import Image
 
 from osr2mp4.ImageProcess.Animation.easing import easingout
 from osr2mp4.ImageProcess.Objects.Components.AScorebar import AScorebar
+from osr2mp4.ImageProcess.Objects.Scores.ACounter import ACounter
 from osr2mp4.ImageProcess import imageproc
 
 
+
 class URBar(AScorebar):
-	def __init__(self, frames, urarrow, settings):
+	def __init__(self, frames: list, urarrow: Image, settings: object, urcounter: ACounter):
 		AScorebar.__init__(self, frames[0], settings=settings)
 		self.scale = settings.scale
 		self.settings = settings
+		self.urcounter = urcounter
 		self.w, self.h = int(frames[0].size[0]), int(frames[0].size[1])
 		self.y = settings.height - self.h//2
 		self.x = settings.width//2
@@ -36,7 +39,9 @@ class URBar(AScorebar):
 		self.urarrow = urarrow[0]
 		self.arrowy = self.h // 4
 
-	def add_bar(self, delta_t, hitresult):
+		self.error_time: list = []
+
+	def add_bar(self, delta_t: int, hitresult: str):
 		pos = self.w/2 + delta_t/self.maxtime * self.w/2
 
 		self.floatingerror = self.floatingerror * 0.8 + pos * 0.2
@@ -50,20 +55,26 @@ class URBar(AScorebar):
 
 		a = self.barthin[xstart:xend, :] + img[:imgwidth, :]
 		self.barthin[xstart:xend, :] = a.clip(0, 255)
+		self.error_time += [delta_t]
 
-	def add_to_frame_bar(self, background):
+	def add_to_frame_bar(self, background: Image):
 		if not self.settings.settings["Show score meter"]:
 			return
+
 		img = self.urbar
 		imageproc.add(img, background, self.x, self.y, alpha=min(1, self.alpha*2))
 
-	def movearrow(self, current=None):
+	def add_to_frame_counter(self, background: Image):
+		self.urcounter.update_ur(self.error_time)
+		self.urcounter.add_to_frame(background, min(1,self.alpha*2))
+
+	def movearrow(self, current: int = None):
 		current = self.settings.timeframe/self.settings.fps
 		change = self.floatingerror - self.arrowx
 		duration = 800
 		self.arrowx = easingout(current, self.arrowx, change, duration)
 
-	def add_to_frame(self, background):
+	def add_to_frame(self, background: Image):
 		if not self.settings.settings["Show score meter"]:
 			return
 		AScorebar.animate(self)
@@ -84,3 +95,6 @@ class URBar(AScorebar):
 
 		self.movearrow()
 		imageproc.add(self.urarrow, background, self.x_offset + self.arrowx, self.y-self.arrowy, alpha=min(1, self.alpha*2))
+
+
+	

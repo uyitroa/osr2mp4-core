@@ -10,6 +10,7 @@ from osr2mp4.ImageProcess.Objects.Scores.HitresultCounter import HitresultCounte
 from osr2mp4.osrparse.enums import Mod
 
 from osr2mp4.ImageProcess.Objects.Scores.PPCounter import PPCounter
+from osr2mp4.ImageProcess.Objects.Scores.URCounter import URCounter
 from osr2mp4.ImageProcess.Objects.Scores.StrainGraph import StrainGraph
 from osr2mp4.ImageProcess.PrepareFrames.Components.PlayingGrade import prepare_playinggrade
 from osr2mp4.ImageProcess.Objects.Components.PlayingGrade import PlayingGrade
@@ -25,6 +26,7 @@ from osr2mp4.ImageProcess.Objects.RankingScreens.RankingPanel import RankingPane
 from osr2mp4.ImageProcess.Objects.Components.Scoreboard import Scoreboard
 from osr2mp4.ImageProcess.Objects.Components.ArrowWarning import ArrowWarning
 from osr2mp4.ImageProcess.Objects.Components.Background import Background
+from osr2mp4.ImageProcess.Objects.Components.Video import Video
 from osr2mp4.ImageProcess.Objects.Components.Scorebar import Scorebar
 from osr2mp4.ImageProcess.Objects.Components.ScorebarBG import ScorebarBG
 from osr2mp4.ImageProcess.Objects.Components.Sections import Sections
@@ -82,7 +84,7 @@ from osr2mp4.ImageProcess.PrepareFrames.Scores.URBar import prepare_bar
 
 
 class PreparedFrames:
-	def __init__(self, settings, diff, mod_combination, ur=None, bg=None, loadranking=True):
+	def __init__(self, settings: object, diff: dict, mod_combination: Mod, ur: int = None, bg: list = None, video: str = None, loadranking: bool = True):
 		skin = settings.skin_ini
 		self.loadranking = loadranking
 		check = DiffCalculator(diff)
@@ -146,6 +148,7 @@ class PreparedFrames:
 		self.scoreboardeffect = prepare_scoreboardeffect(settings.scale)
 
 		self.modicons = prepare_modicons(settings.scale, settings)
+
 		if loadranking:
 			self.rankingpanel = prepare_rankingpanel(settings.scale, self.bg, settings)
 			self.rankinghitresults = prepare_rankinghitresults(settings.scale, settings)
@@ -158,7 +161,7 @@ class PreparedFrames:
 			self.rankingreplay = prepare_rankingreplay(settings.scale, settings)
 			self.rankinggraph = prepare_rankinggraph(settings.scale, settings)
 			logger.debug("start preparing ur ranking")
-			self.rankingur = prepare_rankingur(settings, ur)
+			self.rankingur = prepare_rankingur(settings, ur, mod_combination)
 			self.rankinggraph.extend(self.rankingur)
 
 		self.flashlight = prepare_flashlight(settings, fl)
@@ -167,7 +170,7 @@ class PreparedFrames:
 
 
 class FrameObjects:
-	def __init__(self, frames, settings, diff, replay_info, meta, maphash, map_time):
+	def __init__(self, frames: PreparedFrames, settings: object, diff: dict, replay_info: object, meta: dict, maphash: str, map_time: int, map_video: str):
 		opacity_interval, timepreempt, _ = calculate_ar(diff["ApproachRate"], settings)
 		check = DiffCalculator(diff)
 		rankinggap = 0
@@ -197,7 +200,9 @@ class FrameObjects:
 		self.combocounter = ComboCounter(frames.combocounter, skin.fonts["ScoreOverlap"], settings)
 		self.scorecounter = ScoreCounter(frames.scorecounter, diff, skin.fonts["ScoreOverlap"], settings)
 
-		self.urbar = URBar(frames.urbar, frames.urarrow, settings)
+		
+		self.ur_counter = URCounter(settings, replay_info.mod_combination)
+		self.urbar = URBar(frames.urbar, frames.urarrow, settings, self.ur_counter)
 
 		self.followpoints = FollowPointsManager(frames.fpmanager, settings)
 
@@ -208,6 +213,7 @@ class FrameObjects:
 		self.hitobjmanager = HitObjectManager(self.circle, self.slider, self.spinner, check.scorewindow[2], settings)
 
 		self.background = Background(frames.bg, map_time[0] - timepreempt, settings, hasfl)
+		self.video = Video(settings, map_video, map_time, [settings.width, settings.height])
 		self.sections = Sections(frames.sections, settings)
 		self.scorebarbg = ScorebarBG(frames.scorebarbg, map_time[0] - timepreempt, settings, hasfl)
 		self.scorebar = Scorebar(frames.scorebar, settings)

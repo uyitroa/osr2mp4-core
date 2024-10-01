@@ -6,5 +6,6 @@ def get_screensize(width, height):
 	playfield_scale *= scale * 2  # don't ask
 	move_right = round((width-playfield_width)/2.1)  # center the playfield
 	move_down = round((height-playfield_height)/1.9)
+
 	return playfield_scale, playfield_width, playfield_height, scale, move_right, move_down
 

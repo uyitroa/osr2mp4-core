@@ -3,12 +3,13 @@ import numpy as np
 from osr2mp4.osrparse.enums import Mod
 
 
-def getunstablerate(resultinfo):
+def getunstablerate(resultinfo: list):
 	error_time = []
 	total = 0
 	_total = 0
 	count = 0
 	_count = 0
+
 	for i in resultinfo:
 		if type(i.more).__name__ == "Circle" and i.hitresult is not None and i.hitresult != 0:
 			error_time.append(i.more.deltat)

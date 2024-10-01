@@ -145,8 +145,15 @@ def draw_number(background, number, frames, x, y, alpha, origin, gap, constantga
 	direction = 1 if origin == "left" else -1
 	scorestr = str(number) if origin == "left" else str(number)[::-1]
 
-	# stupid way of doing this
-	if origin != 'center':
+	if origin == 'center':
+		width = sum([
+					frames[int(letter) if letter.isdigit() else letter].size[0] * -1
+					for letter in scorestr
+					])
+
+		x -= width / 2
+		draw_number(background, number, frames, x, y, alpha, 'right', 0)
+	else:
 		first = True
 		for n in scorestr:
 			index = int(n) if n.isdigit() else n
@@ -160,27 +167,7 @@ def draw_number(background, number, frames, x, y, alpha, origin, gap, constantga
 				x += (frames[0].size[0] - gap) * direction
 			else:
 				x += (frames[index].size[0] - gap) * direction/2
-	else:
-		width = sum([
-					(frames[ int(letter) if letter.isdigit() else letter].size[0]-gap)*direction
-					for letter in scorestr
-					])
-		x -= width/2
-
-		for n, letter in enumerate(scorestr):
-			index = int(letter) if letter.isdigit() else letter
-
-			if n != 0 and not constantgap:
-				x += (frames[index].size[0] - gap) * direction/2
-
-			add(frames[index], background, x, y, alpha=alpha)
-
-			if constantgap:
-				# im not really sure about this one =(
-				x += (frames[0].size[0] - gap) * direction
-			else:
-				x += (frames[index].size[0] - gap) * direction/2
-
+		
 
 def get_number_size(number, frames, gap, constantgap=False):
 	x = 0

@@ -8,10 +8,10 @@ class StrainGraph(FrameObject):
 	def __init__(self, settings, start_time, end_time):
 		self.settings = settings
 		if(settings.settings["Enable Strain Graph"]):
-			self.scale = settings.scale * settings.strainsettings["Size"]/20
-			self.x = settings.strainsettings["x"] * self.scale
-			self.y = settings.strainsettings["y"] * self.scale
-			self.alpha = settings.strainsettings["Alpha"]
+			self.scale = settings.scale * settings.ppsettings["Strain Size"]/20
+			self.x = settings.ppsettings["Strain x"] * self.scale
+			self.y = settings.ppsettings["Strain y"] * self.scale
+			self.alpha = settings.ppsettings["Strain Alpha"]
 			self.graph = None
 			self.graph_np = None
 			self.graph_mask = None
@@ -49,7 +49,7 @@ class StrainGraph(FrameObject):
 		ratio = (time-self.start_time)/max(self.end_time-self.start_time, 1)
 		progress = min(self.width, int(ratio*self.graph.size[0]))
 		if( (progress >= 0) & (progress > self.last_position) ):
-			self.set_graph_progress_opacity(self.last_position, progress, self.settings.strainsettings["ProgressAlpha"])
+			self.set_graph_progress_opacity(self.last_position, progress, self.settings.ppsettings["Strain ProgressAlpha"])
 			self.last_position = progress
 
 	def set_graph_progress_opacity(self, x0, x1, opacity_ratio):
@@ -57,5 +57,17 @@ class StrainGraph(FrameObject):
 
 	def add_to_frame(self, background, cur_time):
 		if(self.settings.settings["Enable Strain Graph"]):
-			self.update_progress(cur_time)
+			if self.beatmap:
+				self.update_progress(cur_time)
 			imageproc.add(self.graph, background, self.x, self.y, alpha=self.alpha)
+
+
+	def loadsettings(self, settings: dict):
+		self.scale = self.settings.scale * settings["Strain Size"] / 20
+		self.x = settings["Strain x"] * self.scale
+		self.y = settings["Strain y"] * self.scale
+		self.alpha = settings["Strain Alpha"]
+		
+
+	def loadimg(self):
+		...

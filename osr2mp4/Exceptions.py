@@ -52,3 +52,8 @@ class FourccIsNotExtension(Exception):
 class LibAvNotFound(Exception):
 	def __repr__(self):
 		return "To use ffmpeg video writer, you need to download ffmpeg's library here: https://ffmpeg.org/download.html and download the ffmpeg shared release, then put all the files from 'bin' folder to osr2mp4 folder (put all files from 'lib' folder to osr2mp4 if you are on macOS)."
+
+
+class FFmpegNotFound(Exception):
+	def __repr__(self):
+		return "To use background video, you need to download ffmpeg's library here: https://ffmpeg.org/download.html and download the ffmpeg shared release, then put all the files from 'bin' folder to osr2mp4 folder (put all files from 'lib' folder to osr2mp4 if you are on macOS)."
